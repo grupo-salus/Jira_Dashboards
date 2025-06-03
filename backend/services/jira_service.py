@@ -45,7 +45,6 @@ class JiraService:
         print(f"✅ Total de {len(all_issues)} issues coletadas do backlog.")
         return {"issues": all_issues}
 
-
     def get_raw_active_sprint_issues(self, board_id: int):
         """
         Retorna todas as issues da sprint ativa (com paginação).
