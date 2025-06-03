@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+
+# Ambientes Virtuais
+.env
+.venv
+env/
+venv/
+ENV/
+VENV/
+
+# Arquivos de configuração de ambiente (dotenv)
+.env.*
+!.env.example
+
+# Build/Distribution
+build/
+dist/
+*.egg-info/
+
+# Logs de instalação
+pip-log.txt
+
+# Relatórios de Teste/Cobertura (genéricos)
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+
+# IDEs comuns
+.vscode/
+.idea/
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
