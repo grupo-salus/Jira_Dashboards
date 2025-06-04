@@ -26,6 +26,7 @@ router = APIRouter()
 def get_backlog_summary(
     request: Request,
     departamento: Optional[str] = Query(None, description="Nome do departamento (ex: 'TI', 'Financeiro')"),
+    epico: Optional[str] = Query(None, description="Nome do epico (ex: 'CP simplificado', 'integração sefaz')"),
     status: Optional[str] = Query(None, description="Status atual do card (ex: 'Tarefas pendentes', 'Em andamento')"),
     prioridade: Optional[str] = Query(None, description="Prioridade do Jira (ex: 'Highest', 'Medium')"),
     grupo_solicitante: Optional[str] = Query(None, description="Grupo solicitante do card (ex: 'Franqueadora', 'Franqueado')"),
@@ -51,10 +52,13 @@ def get_backlog_summary(
     df["Prioridade"] = df["Prioridade"].fillna("Não informado")
     df["Status"] = df["Status"].fillna("Não informado")
     df["Prioridade Calculada"] = df["Prioridade Calculada"].fillna("")
+    df["Épico"] = df["Épico"].fillna("")
 
     # Aplicando filtros
     if departamento:
         df = df[df["Unidade / Departamento"] == departamento]
+    if epico:
+        df = df[df["Épico"] == epico]
     if status:
         df = df[df["Status"] == status]
     if prioridade:
@@ -76,8 +80,7 @@ def get_backlog_summary(
             "titulo": mais_antigo.get("Título"),
             "dias_no_backlog": int(mais_antigo.get("Dias no Backlog", 0))
         } if not df.empty else {},
-        "top_5_fila": df[["Chave", "Título", "Dias no Backlog"]]
-                        .head(5)
+        "fila_de_espera": df[df["Tipo"] != "Subtarefa"][["Chave", "Título", "Dias no Backlog"]]
                         .rename(columns={"Dias no Backlog": "dias"})
                         .to_dict(orient="records"),
         "por_departamento": df["Unidade / Departamento"].value_counts().to_dict(),

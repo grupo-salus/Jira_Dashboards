@@ -11,6 +11,9 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
         row = {
             "ID": issue.get("id"),
             "Chave": issue.get("key"),
+            "Épico": issue.get("epic", {}).get("summary", '') or '',
+        
+                    
             "Título": get(fields.get("summary")),
             "Tipo": (fields.get("issuetype") or {}).get("name", ''),
             "Status": (fields.get("status") or {}).get("name", ''),

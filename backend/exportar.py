@@ -1,12 +1,11 @@
 import pandas as pd
-from services.jira_service import JiraService  # seu service acima
-from datetime import datetime
+from services.jira_service import JiraService 
 from services.jira_parser import parse_issues_to_dataframe
-
+import json
 
 def main():
     jira = JiraService()
-    board_id = 71  # atualize se necessário
+    board_id = 88  # atualize se necessário
 
     # 🟡 Sprint ativa
     sprint_data = jira.get_raw_active_sprint_issues(board_id).get("issues", [])
@@ -17,7 +16,7 @@ def main():
     backlog_df = parse_issues_to_dataframe(backlog_data)
 
     # 📤 Exportar para Excel
-    file_name = f"jira_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    file_name = f"jira_export.xlsx"
     with pd.ExcelWriter(file_name, engine="openpyxl") as writer:
         sprint_df.to_excel(writer, index=False, sheet_name="Sprint Ativa")
         backlog_df.to_excel(writer, index=False, sheet_name="Backlog")
