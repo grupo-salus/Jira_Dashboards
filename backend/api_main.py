@@ -104,41 +104,69 @@ def get_backlog_summary(
 
     return resumo
 
-@router.get("/api/backlog/raw")
-def get_backlog_raw(request: Request):
-
-    print("🔄 Coletando JSON completo do backlog (board 71)...")
+@router.get("/api/sprint/desempenho")
+def get_sprint_summary(request: Request):
+    """
+    Retorna um resumo de desempenho da sprint ativa, incluindo comparação de tempo estimado vs. tempo real por desenvolvedor.
+    """
     service = JiraService()
-    issues = service.get_raw_backlog_issues(board_id=71).get("issues", [])
+    issues = service.get_raw_active_sprint_issues(board_id=71).get("issues", [])
     df = parse_issues_to_dataframe(issues)
 
     if df.empty:
-        print("⚠️ Nenhum card encontrado.")
-        return []
+        return {"mensagem": "Nenhum card encontrado na sprint ativa."}
 
-    # Converte e trata datas
-    df["Data de Criação"] = pd.to_datetime(df["Data de Criação"], errors="coerce").dt.tz_localize(None)
-    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de Criação"]).dt.days
+    # Prepara os campos
+    df["Estimativa Original (horas)"] = df["Estimativa Original (segundos)"].apply(lambda x: round(x / 3600, 2) if pd.notnull(x) and x != '' else 0)
+    df["Tempo Gasto (horas)"] = df["Controle de Tempo (segundos)"].apply(lambda x: round(x / 3600, 2) if pd.notnull(x) and x != '' else 0)
+    df["Dentro do Prazo"] = df["Tempo Gasto (horas)"] <= df["Estimativa Original (horas)"]
 
-    # 🧪 Aplica filtros via query string
-    params = request.query_params
-    if (departamento := params.get("departamento")):
-        df = df[df["Unidade / Departamento"] == departamento]
-    if (status := params.get("status")):
-        df = df[df["Status"] == status]
-    if (prioridade := params.get("prioridade")):
-        df = df[df["Prioridade Calculada"] == prioridade]
-    if (solicitante := params.get("solicitante")):
-        df = df[df["Solicitante"] == solicitante]
-    if (data_min := params.get("data_min")):
-        df = df[df["Data de Criação"] >= pd.to_datetime(data_min)]
-    if (data_max := params.get("data_max")):
-        df = df[df["Data de Criação"] <= pd.to_datetime(data_max)]
+    # Preenche campos vazios
+    df["Responsável (Dev)"] = df["Responsável (Dev)"].fillna("Não atribuído")
+    df["Status"] = df["Status"].fillna("Não informado")
 
-    # Converte para dicionário e retorna
-    df["Data de Criação"] = df["Data de Criação"].astype(str)  # serialização segura
-    print(f"✅ Total de {len(df)} issues coletadas do backlog com filtros: {dict(params)}")
-    return df.to_dict(orient="records")
+    # Resumo geral
+    total_cards = len(df)
+    dentro_prazo = int(df["Dentro do Prazo"].sum())
+    fora_prazo = total_cards - dentro_prazo
+    percentual_no_prazo = round((dentro_prazo / total_cards) * 100, 2) if total_cards > 0 else 0
+
+    resumo_geral = {
+        "total_cards": total_cards,
+        "entregues_no_prazo": dentro_prazo,
+        "fora_do_prazo": fora_prazo,
+        "percentual_no_prazo": percentual_no_prazo
+    }
+
+    # Por desenvolvedor
+    dev_group = df.groupby("Responsável (Dev)").agg(
+        qtd_cards=("Chave", "count"),
+        horas_estimadas=("Estimativa Original (horas)", "sum"),
+        horas_gastas=("Tempo Gasto (horas)", "sum"),
+        entregues_no_prazo=("Dentro do Prazo", "sum")
+    ).reset_index()
+
+    dev_group["fora_do_prazo"] = dev_group["qtd_cards"] - dev_group["entregues_no_prazo"]
+    dev_group["percentual_no_prazo"] = dev_group.apply(
+        lambda row: round((row["entregues_no_prazo"] / row["qtd_cards"]) * 100, 2) if row["qtd_cards"] > 0 else 0, axis=1
+    )
+
+    por_desenvolvedor = dev_group.to_dict(orient="records")
+
+    # Por status
+    por_status = df["Status"].value_counts().to_dict()
+
+    # Top 5 mais estourados (tempo gasto >> estimado)
+    df["Desvio"] = df["Tempo Gasto (horas)"] - df["Estimativa Original (horas)"]
+    top_5_mais_estourados = df[df["Desvio"] > 0].sort_values("Desvio", ascending=False).head(5)
+    top_5 = top_5_mais_estourados[["Chave", "Título", "Responsável (Dev)", "Estimativa Original (horas)", "Tempo Gasto (horas)"]].to_dict(orient="records")
+
+    return {
+        "resumo_geral": resumo_geral,
+        "por_desenvolvedor": por_desenvolvedor,
+        "por_status": por_status,
+        "top_5_mais_estourados": top_5
+    }
 
 
 app.include_router(router)
