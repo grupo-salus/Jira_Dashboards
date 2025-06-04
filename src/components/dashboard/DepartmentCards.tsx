@@ -1,10 +1,10 @@
 import React from 'react';
-import { BacklogItem, DepartmentType } from '../../types/backlog';
+import { DepartmentType } from '../../types/backlog';
 
 interface DepartmentCardsProps {
-  backlogItems: BacklogItem[];
   departments: DepartmentType[];
   onSelectDepartment: (department: DepartmentType) => void;
+  data: Record<string, number>;
 }
 
 // Department icon mapping (using emoji as placeholders, in a real app would use proper icons)
@@ -36,32 +36,32 @@ const departmentColors: Record<string, string> = {
 };
 
 const DepartmentCards: React.FC<DepartmentCardsProps> = ({ 
-  backlogItems, 
   departments,
-  onSelectDepartment 
+  onSelectDepartment,
+  data
 }) => {
-  // Get count of cards by department
-  const departmentCounts = departments.reduce<Record<string, number>>((acc, dept) => {
-    acc[dept] = backlogItems.filter(item => item['Unidade / Departamento'] === dept).length;
-    return acc;
-  }, {});
-
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
-      {departments.map((dept) => (
-        <div
-          key={dept}
-          className={`card cursor-pointer transform transition-all hover:scale-105 hover:shadow-md bg-gradient-to-r ${departmentColors[dept] || 'from-gray-500 to-gray-600'} text-white`}
-          onClick={() => onSelectDepartment(dept)}
-        >
-          <div className="flex flex-col items-center p-4">
-            <span className="text-2xl mb-2">{departmentIcons[dept] || '📁'}</span>
-            <h3 className="font-medium text-center">{dept}</h3>
-            <p className="text-xl font-bold mt-2">{departmentCounts[dept] || 0}</p>
-            <p className="text-xs opacity-80">cards</p>
-          </div>
-        </div>
-      ))}
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+      {departments.map((department) => {
+        const displayName = !department || department.trim() === '' ? 'Não informado' : department;
+        const count = data[department] || 0;
+
+        return (
+          <button
+            key={department}
+            onClick={() => onSelectDepartment(department)}
+            className="card p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            <h3 className="font-medium truncate" title={displayName}>
+              {displayName}
+            </h3>
+            <p className="text-2xl font-bold mt-2 text-primary-600 dark:text-primary-400">
+              {count}
+            </p>
+            <p className="text-xs text-gray-500">cards</p>
+          </button>
+        );
+      })}
     </div>
   );
 };

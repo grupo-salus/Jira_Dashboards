@@ -1,73 +1,48 @@
 import React from 'react';
-import { BacklogItem } from '../../types/backlog';
-import { ArrowRight, Clock, UserCheck } from 'lucide-react';
-import { formatEstimatedTime, getPriorityColorClass } from '../../utils/formatters';
+import { Clock } from 'lucide-react';
+
+interface NextInQueueItem {
+  Chave: string;
+  Título: string;
+  dias: number;
+}
 
 interface NextInQueueCardProps {
-  nextItems: BacklogItem[];
+  nextItems: NextInQueueItem[];
 }
 
 const NextInQueueCard: React.FC<NextInQueueCardProps> = ({ nextItems }) => {
-  if (!nextItems.length) {
-    return (
-      <div className="card">
-        <h2 className="text-lg font-semibold mb-4">Próximos na Fila</h2>
-        <p className="text-gray-500">Nenhum item na fila</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="card">
+    <div className="card h-full">
       <h2 className="text-lg font-semibold mb-4">Próximos na Fila</h2>
-      <div className="space-y-4">
-        {nextItems.slice(0, 5).map((item, index) => (
-          <div key={item.ID} className="flex flex-col">
-            <div className="flex items-center mb-2">
-              {index === 0 && (
-                <div className="flex-shrink-0 mr-3">
-                  <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 flex items-center justify-center font-semibold text-lg animate-pulse">
-                    <ArrowRight className="h-5 w-5" />
-                  </div>
+      
+      {nextItems.length > 0 ? (
+        <div className="space-y-4 h-[calc(100%-3rem)] overflow-y-auto pr-2">
+          {nextItems.map((item, index) => (
+            <div 
+              key={item.Chave}
+              className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate" title={item.Título}>
+                    {item.Título}
+                  </p>
+                  <p className="text-xs text-gray-500">{item.Chave}</p>
                 </div>
-              )}
-              
-              {index > 0 && (
-                <div className="flex-shrink-0 mr-3">
-                  <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 flex items-center justify-center">
-                    {index + 1}
-                  </div>
+                <div className="flex items-center ml-4 text-sm text-gray-500 whitespace-nowrap">
+                  <Clock className="h-4 w-4 mr-1" />
+                  <span>{item.dias} dias</span>
                 </div>
-              )}
-              
-              <div className="flex-grow">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-medium">{item.Título}</h3>
-                  <span className={`px-2 py-0.5 text-xs rounded-full ${getPriorityColorClass(item.Prioridade)}`}>
-                    {item.Prioridade}
-                  </span>
-                </div>
-                <div className="text-xs text-gray-500 flex items-center gap-4 mt-1">
-                  <span className="flex items-center gap-1">
-                    <UserCheck className="h-3 w-3" />
-                    {item.Solicitante}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {formatEstimatedTime(item['Estimativa Original (segundos)'])}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex-shrink-0 text-xs text-gray-500">
-                {item['Unidade / Departamento']}
               </div>
             </div>
-            
-            {index < 4 && <div className="border-b border-gray-100 dark:border-gray-700 my-2"></div>}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex items-center justify-center h-[calc(100%-3rem)]">
+          <p className="text-gray-500">Nenhum item na fila</p>
+        </div>
+      )}
     </div>
   );
 };

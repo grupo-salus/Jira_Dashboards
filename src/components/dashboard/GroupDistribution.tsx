@@ -1,49 +1,50 @@
 import React, { useMemo } from 'react';
-import { BacklogItem } from '../../types/backlog';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
 
 interface GroupDistributionProps {
-  backlogItems: BacklogItem[];
+  data: Record<string, number>;
 }
 
-const GroupDistribution: React.FC<GroupDistributionProps> = ({ backlogItems }) => {
-  const groupData = useMemo(() => {
-    const counts: Record<string, number> = {};
-    
-    backlogItems.forEach(item => {
-      const group = item['Grupo Solicitante'];
-      counts[group] = (counts[group] || 0) + 1;
-    });
-    
-    return Object.keys(counts).map(key => ({
-      name: key,
-      value: counts[key]
+const GroupDistribution: React.FC<GroupDistributionProps> = ({ data }) => {
+  const chartData = useMemo(() => {
+    return Object.entries(data).map(([name, value]) => ({
+      name,
+      value
     }));
-  }, [backlogItems]);
-  
-  const colors = ['#7C3AED', '#2563EB'];
+  }, [data]);
+
+  const colors = [
+    '#2563EB', // Blue
+    '#7C3AED', // Purple
+    '#EC4899', // Pink
+    '#EF4444', // Red
+    '#F59E0B', // Amber
+    '#10B981', // Emerald
+    '#06B6D4', // Cyan
+    '#8B5CF6', // Violet
+    '#F97316', // Orange
+    '#14B8A6'  // Teal
+  ];
 
   return (
-    <div className="card h-[300px]">
-      <h2 className="text-lg font-semibold mb-4">Distribuição por Grupo Solicitante</h2>
+    <div className="card h-full">
+      <h2 className="text-lg font-semibold mb-4">Distribuição por Status</h2>
       
-      {groupData.length > 0 ? (
+      {chartData.length > 0 ? (
         <ResponsiveContainer width="100%" height="85%">
           <BarChart
-            data={groupData}
-            margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
-            barSize={40}
+            data={chartData}
+            margin={{ top: 5, right: 20, left: 20, bottom: 25 }}
+            layout="vertical"
+            barSize={20}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-            <XAxis 
-              dataKey="name" 
-              angle={0}
-              tick={{ fontSize: 12 }}
-              tickMargin={8}
-            />
+            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
+            <XAxis type="number" tick={{ fontSize: 12 }} />
             <YAxis 
-              tick={{ fontSize: 12 }}
-              tickCount={5}
+              dataKey="name" 
+              type="category"
+              tick={{ fontSize: 11 }}
+              width={100}
             />
             <Tooltip 
               formatter={(value) => [`${value} cards`, 'Quantidade']}
@@ -55,8 +56,11 @@ const GroupDistribution: React.FC<GroupDistributionProps> = ({ backlogItems }) =
               }}
             />
             <Bar dataKey="value">
-              {groupData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+              {chartData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={colors[index % colors.length]} 
+                />
               ))}
             </Bar>
           </BarChart>

@@ -27,21 +27,9 @@ export interface BacklogItem {
   estimatedCompletion?: string;
 }
 
-export type PriorityType = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
-
-export type GroupType = 'Franqueado' | 'Franqueadora';
-
-export type DepartmentType = 
-  | 'TI'
-  | 'Marketing'
-  | 'Vendas'
-  | 'Financeiro'
-  | 'RH'
-  | 'Operações'
-  | 'Jurídico'
-  | 'Atendimento ao Cliente'
-  | 'P&D'
-  | 'Logística';
+export type PriorityType = string;
+export type GroupType = string;
+export type DepartmentType = string;
 
 export interface BacklogFilter {
   priority: PriorityType | 'All';
