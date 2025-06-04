@@ -26,3 +26,8 @@ dist-ssr
 backend/__pycache__/api_main.cpython-311.pyc
 backend/__pycache__/api_main.cpython-311.pyc
 /backend/__pycache__
+.venv
+backend/dashboards/__pycache__/__init__.cpython-311.pyc
+backend/dashboards/__pycache__/backlog_dashboard.cpython-311.pyc
+backend/dashboards/__pycache__/main.cpython-311.pyc
+backend/dashboards/__pycache__/sprint_dashboard.cpython-311.pyc
