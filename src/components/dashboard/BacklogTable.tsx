@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BacklogItem } from '../../types/backlog';
 import { formatEstimatedTime, getPriorityColorClass, formatTimeToString, calculateTimeInQueue } from '../../utils/formatters';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface BacklogTableProps {
   backlogItems: BacklogItem[];
@@ -24,9 +24,9 @@ const BacklogTable: React.FC<BacklogTableProps> = ({ backlogItems }) => {
   const sortedItems = [...backlogItems].sort((a, b) => {
     let comparison = 0;
     
-    if (a[sortField] < b[sortField]) {
+    if ((a?.[sortField] ?? '') < (b?.[sortField] ?? '')) {
       comparison = -1;
-    } else if (a[sortField] > b[sortField]) {
+    } else if ((a?.[sortField] ?? '') > (b?.[sortField] ?? '')) {
       comparison = 1;
     }
     

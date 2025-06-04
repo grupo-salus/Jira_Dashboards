@@ -1,25 +1,25 @@
 import React, { useMemo } from 'react';
-import { DepartmentType } from '../../types/backlog';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 interface DepartmentDistributionProps {
   data: Record<string, number>;
-  onDepartmentClick: (department: DepartmentType | 'All') => void;
 }
 
 const DepartmentDistribution: React.FC<DepartmentDistributionProps> = ({ 
-  data,
-  onDepartmentClick 
+  data
 }) => {
   const chartData = useMemo(() => {
     return Object.entries(data)
       .map(([name, value]) => ({
-        name,
+        name: name && name.trim() !== '' ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : 'Não informado',
         value
       }))
       .sort((a, b) => b.value - a.value);
   }, [data]);
   
+  // Detecta tema atual de forma confiável
+  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
   // Generate rainbow-like colors
   const colors = [
     '#2563EB', // Blue
@@ -38,31 +38,42 @@ const DepartmentDistribution: React.FC<DepartmentDistributionProps> = ({
     <div className="card h-full">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Distribuição por Departamento</h2>
-        <button 
-          onClick={() => onDepartmentClick('All')}
-          className="text-xs text-primary-600 hover:underline"
-        >
-          Ver todos
-        </button>
       </div>
       
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="95%">
           <BarChart
             data={chartData}
             layout="vertical"
-            margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+            margin={{ top: 10, right: 30, left: 1, bottom: 10 }}
           >
-            <XAxis type="number" />
+            <XAxis type="number" tick={{ fill: '#fff', fontSize: 14 }} />
             <YAxis 
               type="category" 
               dataKey="name" 
-              width={100}
-              tick={{ fontSize: 14 }}
+              width={180}
+              tick={props => (
+                <g>
+                  <rect x={10} y={props.y - 10} width={160} height={22} rx={6} fill="#222" opacity={0.7} />
+                  <text
+                    x={18}
+                    y={props.y + 6}
+                    textAnchor="start"
+                    fontSize={12}
+                    fill="#fff"
+                    style={{ fontWeight: 500 }}
+                  >
+                    {props.payload.value}
+                  </text>
+                </g>
+              )}
+              interval={0}
+              tickLine={false}
+              style={{ whiteSpace: 'nowrap', overflow: 'visible' }}
             />
             <Tooltip />
-            <Bar dataKey="value" fill="#8884d8">
-              {chartData.map((entry, index) => (
+            <Bar dataKey="value" fill="#8884d8" label={{ position: 'right', fill: '#fff', fontSize: 16, fontWeight: 'bold' }}>
+              {chartData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Bar>

@@ -31,14 +31,6 @@ export type PriorityType = string;
 export type GroupType = string;
 export type DepartmentType = string;
 
-export interface BacklogFilter {
-  priority: PriorityType | 'All';
-  department: DepartmentType | 'All';
-  requestGroup: GroupType | 'All';
-  requestor: string | 'All';
-  searchTerm: string;
-}
-
 export interface TimeMetric {
   days: number;
   hours: number;

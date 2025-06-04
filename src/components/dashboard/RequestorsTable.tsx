@@ -2,12 +2,10 @@ import React, { useMemo } from 'react';
 
 interface RequestorsTableProps {
   data: Record<string, number>;
-  onSelectRequestor: (requestor: string) => void;
 }
 
 const RequestorsTable: React.FC<RequestorsTableProps> = ({ 
   data,
-  onSelectRequestor 
 }) => {
   const sortedData = useMemo(() => {
     return Object.entries(data)
@@ -16,11 +14,11 @@ const RequestorsTable: React.FC<RequestorsTableProps> = ({
   }, [data]);
 
   return (
-    <div className="card">
+    <div className="card h-[500px] flex flex-col">
       <h2 className="text-lg font-semibold mb-4">Top Solicitantes</h2>
       
       {sortedData.length > 0 ? (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto flex-1 overflow-y-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b dark:border-gray-700">
@@ -33,7 +31,6 @@ const RequestorsTable: React.FC<RequestorsTableProps> = ({
                 <tr 
                   key={index}
                   className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                  onClick={() => onSelectRequestor(item.name)}
                 >
                   <td className="py-2 px-4">{item.name}</td>
                   <td className="text-right py-2 px-4">{item.count}</td>

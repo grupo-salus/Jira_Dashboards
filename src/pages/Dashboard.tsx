@@ -1,45 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { BacklogFilter, DepartmentType } from '../types/backlog';
 import { fetchBacklogSummary, BacklogSummary } from '../api/backlog';
 import SummaryStats from '../components/dashboard/SummaryStats';
 import PriorityDistribution from '../components/dashboard/PriorityDistribution';
-import GroupDistribution from '../components/dashboard/GroupDistribution';
+import StatusDistribution from '../components/dashboard/StatusDistribution';
 import DepartmentDistribution from '../components/dashboard/DepartmentDistribution';
-import FilterBar from '../components/dashboard/FilterBar';
 import NextInQueueCard from '../components/dashboard/NextInQueueCard';
 import RequestorsTable from '../components/dashboard/RequestorsTable';
-import DepartmentCards from '../components/dashboard/DepartmentCards';
 
 interface DashboardProps {
   view: 'backlog' | 'sprint';
+  lastUpdate?: Date;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ view }) => {
+const Dashboard: React.FC<DashboardProps> = ({ view, lastUpdate }) => {
   const [backlogSummary, setBacklogSummary] = useState<BacklogSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const [filters, setFilters] = useState<BacklogFilter>({
-    priority: 'All',
-    department: 'All',
-    requestGroup: 'All',
-    requestor: 'All',
-    searchTerm: ''
-  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        
-        const summary = await fetchBacklogSummary({
-          departamento: filters.department !== 'All' ? filters.department : undefined,
-          prioridade: filters.priority !== 'All' ? filters.priority : undefined,
-          grupo_solicitante: filters.requestGroup !== 'All' ? filters.requestGroup : undefined,
-          solicitante: filters.requestor !== 'All' ? filters.requestor : undefined
-        });
-        
+        const summary = await fetchBacklogSummary();
         setBacklogSummary(summary);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch data');
@@ -47,9 +30,8 @@ const Dashboard: React.FC<DashboardProps> = ({ view }) => {
         setLoading(false);
       }
     };
-    
     fetchData();
-  }, [filters]);
+  }, [view]);
 
   if (loading) {
     return (
@@ -83,61 +65,56 @@ const Dashboard: React.FC<DashboardProps> = ({ view }) => {
     );
   }
 
+  if (view === 'sprint') {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold mb-4">Em construção</h1>
+          <p className="text-lg text-gray-500">Esta área do dashboard está em desenvolvimento.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">
-          {view === 'backlog' ? 'JIRA Backlog Dashboard' : 'Sprint Ativa Dashboard'}
-        </h1>
-        <p className="text-gray-500">
-          {view === 'backlog' 
-            ? 'Visualize e gerencie o backlog de forma eficiente'
-            : 'Acompanhe o progresso da sprint atual'
-          }
-        </p>
+      <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">
+            {view === 'backlog' ? 'JIRA Backlog Dashboard' : 'Sprint Ativa Dashboard'}
+          </h1>
+          <p className="text-gray-500">
+            {view === 'backlog' 
+              ? 'Visualize e gerencie o backlog de forma eficiente'
+              : 'Acompanhe o progresso da sprint atual'
+            }
+          </p>
+        </div>
+        {lastUpdate && (
+          <div className="text-xs text-gray-400 mt-2 md:mt-0 md:text-right">
+            Última atualização: {lastUpdate.toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })}
+          </div>
+        )}
       </div>
-      
       <SummaryStats summary={backlogSummary} />
-      
-      <DepartmentCards 
-        departments={Object.keys(backlogSummary.por_departamento) as DepartmentType[]}
-        onSelectDepartment={(dept) => setFilters(prev => ({ ...prev, department: dept }))}
-        data={backlogSummary.por_departamento}
-      />
-      
-      <FilterBar 
-        filters={filters}
-        setFilters={setFilters}
-        departments={Object.keys(backlogSummary.por_departamento) as DepartmentType[]}
-        requestors={Object.keys(backlogSummary.por_solicitante)}
-      />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="h-[400px]">
           <PriorityDistribution data={backlogSummary.por_prioridade} />
         </div>
         <div className="h-[400px]">
-          <GroupDistribution data={backlogSummary.por_status} />
+          <StatusDistribution data={backlogSummary.por_status} />
+        </div>
+        <div className="h-[400px]">
+          <DepartmentDistribution data={backlogSummary.por_departamento} />
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="lg:col-span-2 h-[500px]">
-          <DepartmentDistribution 
-            data={backlogSummary.por_departamento}
-            onDepartmentClick={(dept) => setFilters(prev => ({ ...prev, department: dept }))}
-          />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="h-[500px]">
           <NextInQueueCard nextItems={backlogSummary.top_5_fila} />
         </div>
-      </div>
-      
-      <div className="mb-6">
-        <RequestorsTable 
-          data={backlogSummary.por_solicitante}
-          onSelectRequestor={(requestor) => setFilters(prev => ({ ...prev, requestor }))}
-        />
+        <div className="h-[500px]">
+          <RequestorsTable data={backlogSummary.por_solicitante} />
+        </div>
       </div>
     </div>
   );

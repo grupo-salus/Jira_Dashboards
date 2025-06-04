@@ -18,7 +18,7 @@ const NextInQueueCard: React.FC<NextInQueueCardProps> = ({ nextItems }) => {
       
       {nextItems.length > 0 ? (
         <div className="space-y-4 h-[calc(100%-3rem)] overflow-y-auto pr-2">
-          {nextItems.map((item, index) => (
+          {nextItems.map((item) => (
             <div 
               key={item.Chave}
               className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
