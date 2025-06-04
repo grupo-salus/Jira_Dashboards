@@ -1,5 +1,3 @@
-import { BacklogItem } from '../types/backlog';
-
 const API_URL = 'http://localhost:8000';
 
 export interface BacklogSummary {
@@ -28,30 +26,36 @@ export interface BacklogSummary {
   sem_prioridade_calculada: number;
 }
 
-export async function fetchBacklogData(): Promise<BacklogItem[]> {
-  try {
-    const response = await fetch(`${API_URL}/api/backlog/raw`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch backlog data');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching backlog data:', error);
-    throw error;
-  }
+export interface SprintResumoGeral {
+  total_cards: number;
+  entregues_no_prazo: number;
+  fora_do_prazo: number;
+  percentual_no_prazo: number;
 }
 
-export async function fetchSprintData(): Promise<BacklogItem[]> {
-  try {
-    const response = await fetch(`${API_URL}/api/sprint`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch sprint data');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching sprint data:', error);
-    throw error;
-  }
+export interface SprintDevResumo {
+  "Responsável (Dev)": string;
+  qtd_cards: number;
+  horas_estimadas: number;
+  horas_gastas: number;
+  entregues_no_prazo: number;
+  fora_do_prazo: number;
+  percentual_no_prazo: number;
+}
+
+export interface SprintMaisEstourados {
+  Chave: string;
+  Título: string;
+  "Responsável (Dev)": string;
+  "Estimativa Original (horas)": number;
+  "Tempo Gasto (horas)": number;
+}
+
+export interface SprintSummary {
+  resumo_geral: SprintResumoGeral;
+  por_desenvolvedor: SprintDevResumo[];
+  por_status: Record<string, number>;
+  top_5_mais_estourados: SprintMaisEstourados[];
 }
 
 export async function fetchBacklogSummary(filters?: {
@@ -82,3 +86,16 @@ export async function fetchBacklogSummary(filters?: {
     throw error;
   }
 }
+
+export async function fetchSprintSummary(): Promise<SprintSummary> {
+  try {
+    const response = await fetch('http://localhost:8000/api/sprint/resumo');
+    if (!response.ok) {
+      throw new Error('Failed to fetch sprint summary');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching sprint summary:', error);
+    throw error;
+  }
+} 

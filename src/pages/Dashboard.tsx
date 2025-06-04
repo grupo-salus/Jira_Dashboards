@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchBacklogSummary, BacklogSummary } from '../api/backlog';
+import { fetchBacklogSummary, BacklogSummary } from '../api/api_jira';
 import SummaryStats from '../components/dashboard/SummaryStats';
 import PriorityDistribution from '../components/dashboard/PriorityDistribution';
 import StatusDistribution from '../components/dashboard/StatusDistribution';
@@ -8,11 +8,10 @@ import NextInQueueCard from '../components/dashboard/NextInQueueCard';
 import RequestorsTable from '../components/dashboard/RequestorsTable';
 
 interface DashboardProps {
-  view: 'backlog' | 'sprint';
   lastUpdate?: Date;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ view, lastUpdate }) => {
+const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
   const [backlogSummary, setBacklogSummary] = useState<BacklogSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +30,7 @@ const Dashboard: React.FC<DashboardProps> = ({ view, lastUpdate }) => {
       }
     };
     fetchData();
-  }, [view]);
+  }, []);
 
   if (loading) {
     return (
@@ -65,29 +64,15 @@ const Dashboard: React.FC<DashboardProps> = ({ view, lastUpdate }) => {
     );
   }
 
-  if (view === 'sprint') {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Em construção</h1>
-          <p className="text-lg text-gray-500">Esta área do dashboard está em desenvolvimento.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {view === 'backlog' ? 'JIRA Backlog Dashboard' : 'Sprint Ativa Dashboard'}
+            JIRA Backlog Dashboard
           </h1>
           <p className="text-gray-500">
-            {view === 'backlog' 
-              ? 'Visualize e gerencie o backlog de forma eficiente'
-              : 'Acompanhe o progresso da sprint atual'
-            }
+            Visualize e gerencie o backlog de forma eficiente
           </p>
         </div>
         {lastUpdate && (

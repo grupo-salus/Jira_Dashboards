@@ -18,7 +18,6 @@ const DepartmentDistribution: React.FC<DepartmentDistributionProps> = ({
   }, [data]);
   
   // Detecta tema atual de forma confiável
-  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   // Generate rainbow-like colors
   const colors = [
@@ -44,6 +43,7 @@ const DepartmentDistribution: React.FC<DepartmentDistributionProps> = ({
         <ResponsiveContainer width="100%" height="95%">
           <BarChart
             data={chartData}
+           
             layout="vertical"
             margin={{ top: 10, right: 30, left: 1, bottom: 10 }}
           >

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BacklogSummary } from '../../api/backlog';
+import { BacklogSummary } from '../../api/api_jira';
 import { FileText, Clock, Calendar, AlertTriangle } from 'lucide-react';
 
 interface SummaryStatsProps {

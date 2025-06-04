@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './components/layout/Navbar';
 import Dashboard from './pages/Dashboard';
+import SprintDashboard from './pages/SprintDashboard.tsx';
 import { ThemeProvider } from './context/ThemeContext';
 
 // Altere este valor para definir o intervalo de atualização automática (em milissegundos)
@@ -32,7 +33,11 @@ function App() {
           onRefresh={handleRefresh}
         />
         <main className="dashboard-container">
-          <Dashboard view={currentView} key={refreshKey} lastUpdate={lastUpdate} />
+          {currentView === 'backlog' ? (
+            <Dashboard key={refreshKey} lastUpdate={lastUpdate} />
+          ) : (
+            <SprintDashboard key={refreshKey} lastUpdate={lastUpdate} />
+          )}
         </main>
       </div>
     </ThemeProvider>
