@@ -68,16 +68,22 @@ const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
     <div>
       <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">
-            JIRA Backlog Dashboard
-          </h1>
+          <h1 className="text-2xl font-bold">JIRA Backlog Dashboard</h1>
           <p className="text-gray-500">
             Visualize e gerencie o backlog de forma eficiente
           </p>
         </div>
         {lastUpdate && (
           <div className="text-xs text-gray-400 mt-2 md:mt-0 md:text-right">
-            Última atualização: {lastUpdate.toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' })}
+            Última atualização:{" "}
+            {lastUpdate.toLocaleString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            })}
           </div>
         )}
       </div>
@@ -95,7 +101,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="h-[500px]">
-          <NextInQueueCard nextItems={backlogSummary.top_5_fila} />
+          <NextInQueueCard nextItems={backlogSummary.fila_de_espera} />
         </div>
         <div className="h-[500px]">
           <RequestorsTable data={backlogSummary.por_solicitante} />

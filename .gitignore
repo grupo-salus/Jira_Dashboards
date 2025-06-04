@@ -34,3 +34,5 @@ backend/dashboards/__pycache__/sprint_dashboard.cpython-311.pyc
 jira_export.xlsx
 *.pyc
 __pycache__
+*.pyc
+/backend/services/__pycache__

@@ -8,7 +8,7 @@ export interface BacklogSummary {
     titulo: string;
     dias_no_backlog: number;
   };
-  top_5_fila: Array<{
+  fila_de_espera: Array<{
     Chave: string;
     Título: string;
     dias: number;
