@@ -104,7 +104,7 @@ def get_backlog_summary(
 
     return resumo
 
-@router.get("/api/sprint/desempenho")
+@router.get("/api/sprint/resumo")
 def get_sprint_summary(request: Request):
     """
     Retorna um resumo de desempenho da sprint ativa, incluindo comparação de tempo estimado vs. tempo real por desenvolvedor.
