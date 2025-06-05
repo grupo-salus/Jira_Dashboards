@@ -4,6 +4,7 @@ import { BacklogProjectsSummary, Project } from "../types/backlog";
 import SummaryStats from "../components/dashboard/SummaryStats";
 import ProjectList from "../components/dashboard/ProjectList";
 import DepartmentProjects from "../components/dashboard/DepartmentProjects";
+import DepartmentBarChart from "../components/dashboard/DepartmentBarChart";
 
 interface DashboardProps {
   lastUpdate?: Date;
@@ -96,6 +97,9 @@ const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
           ) / backlogSummary.projetos.length
         )}
       />
+      <div className="mb-4">
+        <DepartmentBarChart departments={backlogSummary.por_departamento} />
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ProjectList projects={backlogSummary.projetos} />
         <DepartmentProjects departments={backlogSummary.por_departamento} />
