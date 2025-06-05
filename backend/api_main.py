@@ -26,10 +26,10 @@ router = APIRouter()
 def get_backlog_summary(
     request: Request,
     departamento: Optional[str] = Query(None, description="Nome do departamento (ex: 'TI', 'Financeiro')"),
-    epico: Optional[str] = Query(None, description="Nome do epico (ex: 'CP simplificado', 'integração sefaz')"),
-    status: Optional[str] = Query(None, description="Status atual do card (ex: 'Tarefas pendentes', 'Em andamento')"),
+    epico: Optional[str] = Query(None, description="Nome do épico (ex: 'CP simplificado', 'Integração Sefaz')"),
+    status: Optional[str] = Query(None, description="Status do card (ex: 'Tarefas pendentes', 'Em andamento')"),
     prioridade: Optional[str] = Query(None, description="Prioridade do Jira (ex: 'Highest', 'Medium')"),
-    grupo_solicitante: Optional[str] = Query(None, description="Grupo solicitante do card (ex: 'Franqueadora', 'Franqueado')"),
+    grupo_solicitante: Optional[str] = Query(None, description="Grupo solicitante (ex: 'Franqueadora', 'Franqueado')"),
     solicitante: Optional[str] = Query(None, description="Nome do solicitante (quem abriu o chamado)")
 ):
     """
@@ -42,19 +42,23 @@ def get_backlog_summary(
     if df.empty:
         return {"total": 0, "mensagem": "Nenhum card encontrado."}
 
+    # Conversão de datas e cálculo de dias no backlog
     df["Data de Criação"] = pd.to_datetime(df["Data de Criação"], errors="coerce").dt.tz_localize(None)
     df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de Criação"]).dt.days
 
-    # Normaliza campos vazios para "Não informado"
-    df["Unidade / Departamento"] = df["Unidade / Departamento"].fillna("Não informado")
-    df["Solicitante"] = df["Solicitante"].fillna("Não informado")
-    df["Grupo Solicitante"] = df["Grupo Solicitante"].fillna("Não informado")
-    df["Prioridade"] = df["Prioridade"].fillna("Não informado")
-    df["Status"] = df["Status"].fillna("Não informado")
-    df["Prioridade Calculada"] = df["Prioridade Calculada"].fillna("")
-    df["Épico"] = df["Épico"].fillna("")
+    # Preenchimento padrão para colunas-chave
+    for col in [
+        "Unidade / Departamento", "Solicitante", "Grupo Solicitante", "Prioridade", "Status"
+    ]:
+        df[col] = df[col].fillna("Não informado")
 
-    # Aplicando filtros
+    # Tratamento seguro para a coluna "Épico"
+    if "Épico" not in df.columns:
+        df["Épico"] = ""
+    else:
+        df["Épico"] = df["Épico"].fillna("")
+
+    # Aplicação de filtros
     if departamento:
         df = df[df["Unidade / Departamento"] == departamento]
     if epico:
@@ -68,9 +72,10 @@ def get_backlog_summary(
     if solicitante:
         df = df[df["Solicitante"] == solicitante]
 
+    # Resumo
     total = len(df)
-    tempo_medio = int(df["Dias no Backlog"].mean()) if not df.empty else 0
-    mais_antigo = df.sort_values("Dias no Backlog", ascending=False).iloc[0] if not df.empty else {}
+    tempo_medio = int(df["Dias no Backlog"].mean()) if total > 0 else 0
+    mais_antigo = df.sort_values("Dias no Backlog", ascending=False).iloc[0] if total > 0 else {}
 
     resumo = {
         "total": total,
@@ -79,19 +84,16 @@ def get_backlog_summary(
             "chave": mais_antigo.get("Chave"),
             "titulo": mais_antigo.get("Título"),
             "dias_no_backlog": int(mais_antigo.get("Dias no Backlog", 0))
-        } if not df.empty else {},
+        } if total > 0 else {},
         "fila_de_espera": df[df["Tipo"] != "Subtarefa"][["Chave", "Título", "Dias no Backlog"]]
-                        .rename(columns={"Dias no Backlog": "dias"})
-                        .to_dict(orient="records"),
+            .rename(columns={"Dias no Backlog": "dias"})
+            .to_dict(orient="records"),
         "por_departamento": df["Unidade / Departamento"].value_counts().to_dict(),
         "por_solicitante": df["Solicitante"].value_counts().to_dict(),
         "por_prioridade": df["Prioridade"].value_counts().to_dict(),
         "por_status": df["Status"].value_counts().to_dict(),
         "tempo_medio_por_departamento": df.groupby("Unidade / Departamento")["Dias no Backlog"]
-                                           .mean()
-                                           .round()
-                                           .astype(int)
-                                           .to_dict(),
+            .mean().round().astype(int).to_dict(),
         "por_mes_criacao": [
             {"mes": str(row["mes"]), "total": int(row["total"])}
             for _, row in df["Data de Criação"].dt.to_period("M")
@@ -101,8 +103,8 @@ def get_backlog_summary(
                 .reset_index(name="total")
                 .iterrows()
         ],
-        "acima_de_15_dias": int(len(df[df["Dias no Backlog"] > 15])),
-        "sem_prioridade_calculada": int(len(df[df["Prioridade Calculada"] == ""])),
+        "acima_de_15_dias": int((df["Dias no Backlog"] > 15).sum()),
+        "sem_prioridade_calculada": int((df["Prioridade Calculada"] == "").sum()) if "Prioridade Calculada" in df.columns else 0,
     }
 
     return resumo
