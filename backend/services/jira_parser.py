@@ -11,16 +11,13 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
         row = {
             "ID": issue.get("id"),
             "Chave": issue.get("key"),
-            "Épico": issue.get("epic", {}).get("summary", '') or '',
-        
-                    
+            "Épico": issue.get("epic", {}).get("summary", '') or '',            
             "Título": get(fields.get("summary")),
             "Tipo": (fields.get("issuetype") or {}).get("name", ''),
             "Status": (fields.get("status") or {}).get("name", ''),
             "Data de Criação": get(fields.get("created")),
             "Última Atualização": get(fields.get("updated")),
             
-            "Prioridade Calculada": get(fields.get("customfield_10099")),
             "Relator Técnico": (fields.get("creator") or {}).get("displayName", ''),
             "Grupo Solicitante": (fields.get("customfield_10083") or {}).get("value", ''),
             "Unidade / Departamento": get(fields.get("customfield_10095")),
@@ -31,10 +28,11 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
             "Controle de Tempo (segundos)": get(fields.get("aggregatetimespent")),
             "Prioridade": (fields.get("priority") or {}).get("name", ''),
             "Branch": get(fields.get("customfield_10115")),
+            "versões afetadas": ", ".join(v.get("name") for v in fields.get("versions", [])),
+            "versões corrigidas": ", ".join(v.get("name") for v in fields.get("fixVersions", [])),
             "Backlog (nome)": get(fields.get("customfield_10212")),
-            "Versão": ", ".join(v.get("name") for v in fields.get("versions", [])),
-            "Descrição": get(fields.get("description")),
-        
+            
+    
 
         }
 
