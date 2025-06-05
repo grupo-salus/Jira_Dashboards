@@ -21,6 +21,9 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
     rows = []
     for issue in issues:
         fields = issue.get("fields", {})
+        epic_summary = (fields.get("epic") or {}).get("summary")
+        if not epic_summary and (fields.get("parent") or {}).get("fields", {}).get("issuetype", {}).get("name") == "Epic":
+            epic_summary = fields["parent"]["fields"].get("summary")
 
         row = {
             # Identificadores básicos da issue
@@ -28,7 +31,7 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
             "Chave": issue.get("key"),
 
             # Informações do épico e título
-            "Épico": issue.get("epic", {}).get("summary") or "Não informado",
+            "Épico": epic_summary or "Não informado",
             "Título": get(fields.get("summary")),
 
             # Metadados da issue
@@ -75,6 +78,9 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
 
     # Processamento de datas e cálculo de métricas temporais
     df["Data de Criação"] = pd.to_datetime(df["Data de Criação"], errors="coerce")  # Converte strings de data para objetos datetime
+    print('ANTES tz_localize:', df["Data de Criação"].dt.tz)  # Log do timezone antes
+    df["Data de Criação"] = df["Data de Criação"].dt.tz_localize(None)  # Remove timezone
+    print('DEPOIS tz_localize:', df["Data de Criação"].dt.tz)  # Log do timezone depois
     df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de Criação"]).dt.days  # Calcula quantos dias a issue está no backlog
 
     return df

@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:8000';
+import { BacklogProjectsSummary } from "../types/backlog";
+
+const API_URL = "http://localhost:8000";
 
 export interface BacklogSummary {
   total: number;
@@ -64,7 +66,8 @@ export async function fetchBacklogSummary(filters?: {
   prioridade?: string;
   grupo_solicitante?: string;
   solicitante?: string;
-}): Promise<BacklogSummary> {
+  epico?: string;
+}): Promise<BacklogProjectsSummary> {
   try {
     const queryParams = new URLSearchParams();
     if (filters) {
@@ -73,29 +76,31 @@ export async function fetchBacklogSummary(filters?: {
       });
     }
 
-    const url = `${API_URL}/api/backlog/resumo${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const url = `${API_URL}/api/backlog/por-projetos${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
     const response = await fetch(url);
-    
+
     if (!response.ok) {
-      throw new Error('Failed to fetch backlog summary');
+      throw new Error("Failed to fetch backlog summary");
     }
-    
+
     return await response.json();
   } catch (error) {
-    console.error('Error fetching backlog summary:', error);
+    console.error("Error fetching backlog summary:", error);
     throw error;
   }
 }
 
 export async function fetchSprintSummary(): Promise<SprintSummary> {
   try {
-    const response = await fetch('http://localhost:8000/api/sprint/resumo');
+    const response = await fetch("http://localhost:8000/api/sprint/resumo");
     if (!response.ok) {
-      throw new Error('Failed to fetch sprint summary');
+      throw new Error("Failed to fetch sprint summary");
     }
     return await response.json();
   } catch (error) {
-    console.error('Error fetching sprint summary:', error);
+    console.error("Error fetching sprint summary:", error);
     throw error;
   }
-} 
+}

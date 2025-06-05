@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { fetchBacklogSummary, BacklogSummary } from '../api/api_jira';
-import SummaryStats from '../components/dashboard/SummaryStats';
-import PriorityDistribution from '../components/dashboard/PriorityDistribution';
-import StatusDistribution from '../components/dashboard/StatusDistribution';
-import DepartmentDistribution from '../components/dashboard/DepartmentDistribution';
-import NextInQueueCard from '../components/dashboard/NextInQueueCard';
-import RequestorsTable from '../components/dashboard/RequestorsTable';
+import React, { useState, useEffect } from "react";
+import { fetchBacklogSummary } from "../api/api_jira";
+import { BacklogProjectsSummary, Project } from "../types/backlog";
+import SummaryStats from "../components/dashboard/SummaryStats";
+import ProjectList from "../components/dashboard/ProjectList";
+import DepartmentProjects from "../components/dashboard/DepartmentProjects";
 
 interface DashboardProps {
   lastUpdate?: Date;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
-  const [backlogSummary, setBacklogSummary] = useState<BacklogSummary | null>(null);
+  const [backlogSummary, setBacklogSummary] =
+    useState<BacklogProjectsSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +23,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
         const summary = await fetchBacklogSummary();
         setBacklogSummary(summary);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch data');
+        setError(err instanceof Error ? err.message : "Failed to fetch data");
       } finally {
         setLoading(false);
       }
@@ -65,7 +64,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold">JIRA Backlog Dashboard</h1>
@@ -87,25 +86,19 @@ const Dashboard: React.FC<DashboardProps> = ({ lastUpdate }) => {
           </div>
         )}
       </div>
-      <SummaryStats summary={backlogSummary} />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="h-[400px]">
-          <PriorityDistribution data={backlogSummary.por_prioridade} />
-        </div>
-        <div className="h-[400px]">
-          <StatusDistribution data={backlogSummary.por_status} />
-        </div>
-        <div className="h-[400px]">
-          <DepartmentDistribution data={backlogSummary.por_departamento} />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="h-[500px]">
-          <NextInQueueCard nextItems={backlogSummary.fila_de_espera} />
-        </div>
-        <div className="h-[500px]">
-          <RequestorsTable data={backlogSummary.por_solicitante} />
-        </div>
+      <SummaryStats
+        total={backlogSummary.total_geral_cards}
+        totalProjetos={backlogSummary.total_projetos}
+        mediaDiasBacklog={Math.round(
+          backlogSummary.projetos.reduce(
+            (acc: number, p: Project) => acc + p.media_dias_backlog,
+            0
+          ) / backlogSummary.projetos.length
+        )}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ProjectList projects={backlogSummary.projetos} />
+        <DepartmentProjects departments={backlogSummary.por_departamento} />
       </div>
     </div>
   );

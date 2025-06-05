@@ -5,7 +5,7 @@ import json
 
 def main():
     jira = JiraService()
-    board_id = 88  # atualize se necessário
+    board_id = 71  # atualize se necessário
 
     # 🟡 Sprint ativa
     sprint_data = jira.get_raw_active_sprint_issues(board_id).get("issues", [])
