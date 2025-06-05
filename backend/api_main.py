@@ -109,6 +109,93 @@ def get_backlog_summary(
 
     return resumo
 
+
+@router.get("/api/backlog/por-projetos")
+def get_backlog_by_projects(
+    request: Request,
+    departamento: Optional[str] = Query(None),
+    prioridade: Optional[str] = Query(None),
+    grupo_solicitante: Optional[str] = Query(None),
+    solicitante: Optional[str] = Query(None),
+    epico: Optional[str] = Query(None)
+):
+    """
+    Retorna visão detalhada do backlog agrupado por projetos (épicos), com filtros opcionais.
+    """
+    service = JiraService()
+    issues = service.get_raw_backlog_issues(board_id=71).get("issues", [])
+    df = parse_issues_to_dataframe(issues)
+
+    if df.empty:
+        return {"total": 0, "mensagem": "Nenhum card encontrado."}
+
+    # Tratamento de datas e cálculo
+    df["Data de Criação"] = pd.to_datetime(df["Data de Criação"], errors="coerce").dt.tz_localize(None)
+    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de Criação"]).dt.days
+
+    # Normalização de campos obrigatórios
+    df["Épico"] = df["Épico"].replace("", "Não informado")
+    df["Unidade / Departamento"] = df["Unidade / Departamento"].fillna("Não informado")
+    df["Solicitante"] = df["Solicitante"].fillna("Não informado")
+    df["Grupo Solicitante"] = df["Grupo Solicitante"].fillna("Não informado")
+    df["Prioridade"] = df["Prioridade"].fillna("Não informado")
+    df["Estimativa Original (segundos)"] = df["Estimativa Original (segundos)"].fillna(0)
+
+    # Filtros aplicáveis
+    if departamento:
+        df = df[df["Unidade / Departamento"] == departamento]
+    if prioridade:
+        df = df[df["Prioridade"] == prioridade]
+    if grupo_solicitante:
+        df = df[df["Grupo Solicitante"] == grupo_solicitante]
+    if solicitante:
+        df = df[df["Solicitante"] == solicitante]
+    if epico:
+        df = df[df["Épico"] == epico]
+
+    # Visão geral por projeto (épico)
+    projetos = []
+    agrupado = df.groupby("Épico")
+
+    for epico_nome, grupo in agrupado:
+        projeto = {
+            "epico": epico_nome,
+            "total_cards": len(grupo),
+            "prioridade_distribuicao": grupo["Prioridade"].value_counts().to_dict(),
+            "media_dias_backlog": int(grupo["Dias no Backlog"].mean()),
+            "mais_antigo": grupo.sort_values("Dias no Backlog", ascending=False).iloc[0]["Chave"],
+            "estimativa_total_horas": int(grupo["Estimativa Original (segundos)"].sum() / 3600),
+            "cards": grupo.sort_values("Dias no Backlog", ascending=False)[[
+                "Chave", "Título", "Solicitante", "Unidade / Departamento", "Dias no Backlog", "Prioridade"
+            ]].to_dict(orient="records")
+        }
+        projetos.append(projeto)
+
+    # Agrupamento por departamento com detalhamento
+    dep_dict = {}
+    for dep, grupo_dep in df.groupby("Unidade / Departamento"):
+        epicos_unicos = grupo_dep["Épico"].unique()
+        lista = []
+        for ep in epicos_unicos:
+            sub = df[(df["Unidade / Departamento"] == dep) & (df["Épico"] == ep)]
+            lista.append({
+                "epico": ep,
+                "total_cards": len(sub),
+                "cards": sub[["Chave", "Título", "Dias no Backlog"]].to_dict(orient="records")
+            })
+        dep_dict[dep] = {
+            "total_projetos": len(epicos_unicos),
+            "projetos": lista
+        }
+
+    return {
+        "total_geral_cards": len(df),
+        "total_projetos": len(df["Épico"].unique()),
+        "projetos": projetos,
+        "por_departamento": dep_dict
+    }
+
+
 @router.get("/api/sprint/resumo")
 def get_sprint_summary(request: Request):
     """
