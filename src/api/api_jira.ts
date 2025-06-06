@@ -1,33 +1,8 @@
-import { BacklogProjectsSummary } from "../types/backlog";
+import { BacklogSummary } from "../types/backlog";
 
 const API_URL = "http://localhost:8000";
 
-export interface BacklogSummary {
-  total: number;
-  tempo_medio: number;
-  mais_antigo: {
-    chave: string;
-    titulo: string;
-    dias_no_backlog: number;
-  };
-  fila_de_espera: Array<{
-    Chave: string;
-    Título: string;
-    dias: number;
-  }>;
-  por_departamento: Record<string, number>;
-  por_solicitante: Record<string, number>;
-  por_prioridade: Record<string, number>;
-  por_status: Record<string, number>;
-  tempo_medio_por_departamento: Record<string, number>;
-  por_mes_criacao: Array<{
-    mes: string;
-    total: number;
-  }>;
-  acima_de_15_dias: number;
-  sem_prioridade_calculada: number;
-}
-
+// Interfaces específicas para Sprint
 export interface SprintResumoGeral {
   total_cards: number;
   entregues_no_prazo: number;
@@ -60,6 +35,7 @@ export interface SprintSummary {
   top_5_mais_estourados: SprintMaisEstourados[];
 }
 
+// Funções de API
 export async function fetchBacklogSummary(filters?: {
   departamento?: string;
   status?: string;
@@ -67,7 +43,7 @@ export async function fetchBacklogSummary(filters?: {
   grupo_solicitante?: string;
   solicitante?: string;
   epico?: string;
-}): Promise<BacklogProjectsSummary> {
+}): Promise<BacklogSummary> {
   try {
     const queryParams = new URLSearchParams();
     if (filters) {

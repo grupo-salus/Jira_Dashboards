@@ -1,3 +1,6 @@
+// Funções utilitárias de formatação para datas, tempo, prioridade, etc.
+// Este arquivo é separado dos padrões de cor e fonte (ver themeColors.ts)
+
 import { differenceInSeconds } from 'date-fns';
 import { BacklogItem, TimeMetric } from '../types/backlog';
 

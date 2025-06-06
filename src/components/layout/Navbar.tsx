@@ -1,14 +1,15 @@
 import React from 'react';
-import { Kanban, RefreshCw, Search, Moon, Sun, Footprints as Sprint } from 'lucide-react';
+import { Kanban, RefreshCw, Moon, Sun, Footprints as Sprint, Home as HomeIcon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 interface NavbarProps {
-  currentView: 'backlog' | 'sprint';
-  onViewChange: (view: 'backlog' | 'sprint') => void;
+  currentView: 'home' | 'backlog' | 'sprint';
+  onViewChange: (view: 'home' | 'backlog' | 'sprint') => void;
   onRefresh?: () => void;
+  showHomeLink?: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentView, onViewChange, onRefresh }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentView, onViewChange, onRefresh, showHomeLink }) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -22,6 +23,21 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onViewChange, onRefresh })
             </div>
             
             <div className="flex space-x-2">
+              {showHomeLink && (
+                <button
+                  onClick={() => onViewChange('home')}
+                  className={`px-4 py-2 rounded-md transition-colors font-semibold ${
+                    currentView === 'home'
+                      ? 'bg-primary-600 text-white shadow-md'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <HomeIcon className="h-4 w-4" />
+                    Home
+                  </span>
+                </button>
+              )}
               <button
                 onClick={() => onViewChange('backlog')}
                 className={`px-4 py-2 rounded-md transition-colors font-semibold ${

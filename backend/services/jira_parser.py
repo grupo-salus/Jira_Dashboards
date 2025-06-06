@@ -11,7 +11,7 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame contendo os dados processados das issues
     """
-    def get(field, default=''):
+    def get(field, default=None):
         """
         Função auxiliar para garantir que sempre retornamos um valor válido,
         mesmo quando o campo está vazio ou nulo
@@ -21,8 +21,15 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
     rows = []
     for issue in issues:
         fields = issue.get("fields", {})
-        epic_summary = (fields.get("epic") or {}).get("summary")
-        if not epic_summary and (fields.get("parent") or {}).get("fields", {}).get("issuetype", {}).get("name") == "Epic":
+
+        # Processamento do campo de épico (casos diferentes para suportar variações da API)
+        epic_raw = fields.get("epic")
+        epic_summary = None
+        if isinstance(epic_raw, dict):
+            epic_summary = epic_raw.get("summary")
+        elif isinstance(epic_raw, str):
+            epic_summary = epic_raw
+        elif (fields.get("parent") or {}).get("fields", {}).get("issuetype", {}).get("name") == "Epic":
             epic_summary = fields["parent"]["fields"].get("summary")
 
         row = {
@@ -31,44 +38,42 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
             "Chave": issue.get("key"),
 
             # Informações do épico e título
-            "Épico": epic_summary or "Não informado",
+            "Épico": epic_summary or None,
             "Título": get(fields.get("summary")),
 
             # Metadados da issue
-            "Tipo": (fields.get("issuetype") or {}).get("name", '') or "Não informado",
-            "Status": (fields.get("status") or {}).get("name", '') or "Não informado",
+            "Tipo": (fields.get("issuetype") or {}).get("name"),
+            "Status": (fields.get("status") or {}).get("name"),
 
             # Datas importantes
             "Data de Criação": get(fields.get("created")),
             "Última Atualização": get(fields.get("updated")),
 
             # Informações do relator
-            "Relator Técnico": (fields.get("creator") or {}).get("displayName", '') or "Não informado",
+            "Relator Técnico": (fields.get("creator") or {}).get("displayName"),
 
             # Informações do solicitante e departamento
-            "Grupo Solicitante": (fields.get("customfield_10083") or {}).get("value", '') or "Não informado",
-            "Unidade / Departamento": get(fields.get("customfield_10095") or "Não informado"),
-            "Solicitante": get(fields.get("customfield_10093") or "Não informado"),
+            "Grupo Solicitante": (fields.get("customfield_10083") or {}).get("value"),
+            "Unidade / Departamento": get(fields.get("customfield_10095")),
+            "Solicitante": get(fields.get("customfield_10093")),
 
             # Informações de sprint e responsável
-            "Sprint": (fields.get("sprint") or {}).get("name", '') or "Não informado",
-            "Responsável (Dev)": (fields.get("assignee") or {}).get("displayName", '') or "Não informado",
+            "Sprint": (fields.get("sprint") or {}).get("name"),
+            "Responsável (Dev)": (fields.get("assignee") or {}).get("displayName"),
 
             # Métricas de tempo e estimativas
             "Estimativa Original (segundos)": int((fields.get("timetracking") or {}).get("originalEstimateSeconds") or 0),
             "Controle de Tempo (segundos)": int(get(fields.get("aggregatetimespent") or 0)),
 
             # Informações de prioridade
-            "Prioridade": (fields.get("priority") or {}).get("name", '') or "Não informado",
-            "Prioridade Calculada": get(fields.get("customfield_10099") or "Não informado"),
-
+            "Prioridade": (fields.get("priority") or {}).get("name"),
             # Informações de versão e branch
-            "Branch": get(fields.get("customfield_10115") or "Não informado"),
-            "versões afetadas": ", ".join(v.get("name") for v in fields.get("versions", [])) or "Nenhuma",
-            "versões corrigidas": ", ".join(v.get("name") for v in fields.get("fixVersions", [])) or "Nenhuma",
+            "Branch": get(fields.get("customfield_10115")),
+            "versões afetadas": ", ".join(v.get("name") for v in fields.get("versions", []) if v.get("name")) or None,
+            "versões corrigidas": ", ".join(v.get("name") for v in fields.get("fixVersions", []) if v.get("name")) or None,
 
             # Informação do backlog
-            "Backlog (nome)": get(fields.get("customfield_10212") or "Não informado"),
+            "Backlog (nome)": get(fields.get("customfield_10212")),
         }
 
         rows.append(row)

@@ -1,4 +1,18 @@
-export interface BacklogItem {
+// Interfaces base para métricas de tempo
+export interface TimeMetric {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+// Tipos básicos
+export type PriorityType = string;
+export type GroupType = string;
+export type DepartmentType = string;
+
+// Interface base para cards do Jira
+export interface BaseJiraCard {
   ID: string;
   Chave: string;
   Título: string;
@@ -20,24 +34,16 @@ export interface BacklogItem {
   "Backlog (nome)": string;
   Versão: string;
   Descrição: string;
+}
 
-  // Derived fields (calculated)
+// Interface para cards do backlog com campos calculados
+export interface BacklogItem extends BaseJiraCard {
   timeInQueue?: string;
   progressPercentage?: number;
   estimatedCompletion?: string;
 }
 
-export type PriorityType = string;
-export type GroupType = string;
-export type DepartmentType = string;
-
-export interface TimeMetric {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
+// Interface para cards em projetos
 export interface ProjectCard {
   Chave: string;
   Título: string;
@@ -47,6 +53,7 @@ export interface ProjectCard {
   Prioridade: string;
 }
 
+// Interface para projetos
 export interface Project {
   epico: string;
   total_cards: number;
@@ -57,6 +64,7 @@ export interface Project {
   cards: ProjectCard[];
 }
 
+// Interface para projetos por departamento
 export interface DepartmentProject {
   epico: string;
   total_cards: number;
@@ -67,14 +75,62 @@ export interface DepartmentProject {
   }>;
 }
 
+// Interface para informações de departamento
 export interface DepartmentInfo {
   total_projetos: number;
   projetos: DepartmentProject[];
 }
 
-export interface BacklogProjectsSummary {
+// Interface para resumo de departamento
+export interface DepartmentSummary {
+  total_projetos: number;
+  total_cards: number;
+  projetos: Array<{
+    epico: string;
+    total_cards: number;
+    cards: Array<{
+      Chave: string;
+      Título: string;
+      "Dias no Backlog": number;
+    }>;
+  }>;
+}
+
+// Interface para análise de épicos
+export interface EpicAnalysis {
+  epicos_por_departamento: Record<string, number>;
+  epicos_sem_departamento: string[];
+  departamentos_sem_epicos: string[];
+}
+
+// Interface principal para resumo do backlog
+export interface BacklogSummary {
   total_geral_cards: number;
   total_projetos: number;
+  total_cards_sem_projeto: number;
   projetos: Project[];
-  por_departamento: Record<string, DepartmentInfo>;
+  departamentos: Record<string, DepartmentSummary>;
+  analise_epicos: EpicAnalysis;
+  tempo_medio: number;
+  mais_antigo: {
+    chave: string;
+    titulo: string;
+    dias_no_backlog: number;
+  };
+  fila_de_espera: Array<{
+    Chave: string;
+    Título: string;
+    dias: number;
+  }>;
+  cards_por_departamento: Record<string, number>;
+  por_solicitante: Record<string, number>;
+  por_prioridade: Record<string, number>;
+  por_status: Record<string, number>;
+  tempo_medio_por_departamento: Record<string, number>;
+  por_mes_criacao: Array<{
+    mes: string;
+    total: number;
+  }>;
+  acima_de_15_dias: number;
+  sem_prioridade_calculada: number;
 }
