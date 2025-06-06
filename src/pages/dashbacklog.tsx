@@ -84,40 +84,44 @@ const DashBacklog: React.FC = () => {
             rawData={rawData}
           />
         </div>
-        {/* Área central: 9 gráficos à esquerda, filas à direita */}
+        {/* Área central: gráficos à esquerda, filas à direita */}
         <div className="grid grid-cols-[minmax(0,1fr)_420px] gap-6">
-          {/* Coluna dos gráficos: grid 3x3 */}
-          <div className="grid grid-cols-3 grid-rows-3 gap-6 w-full">
-            <BacklogCharts
-              epicosPorPrioridade={metrics.epicos_por_prioridade}
-            />
-            <TarefasPorPrioridadeChart
-              tarefasPorPrioridade={metrics.tarefas_por_prioridade}
-            />
-            <SaudeBacklogChart saude={metrics.saude_backlog} />
-            {/* Componente 4: EpicosPorDepartamentoChart */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-              <EpicosPorDepartamentoChart
-                epicosPorDepartamento={metrics.epicos_por_departamento}
-              />
+          {/* Coluna dos gráficos: agora usando columns para layout tipo Masonry */}
+          <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
+            <div className="break-inside-avoid">
+              <BacklogCharts epicosPorPrioridade={metrics.epicos_por_prioridade} />
             </div>
-            {/* Componente 5: CardsPorDepartamentoChart */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-              <CardsPorDepartamentoChart
-                cardsPorDepartamento={metrics.cards_por_departamento}
-              />
+            <div className="break-inside-avoid">
+              <TarefasPorPrioridadeChart tarefasPorPrioridade={metrics.tarefas_por_prioridade} />
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center min-h-[120px]">
-              <span className="text-gray-400">Componente 6</span>
+            <div className="break-inside-avoid">
+              <SaudeBacklogChart saude={metrics.saude_backlog} />
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center min-h-[120px]">
-              <span className="text-gray-400">Componente 7</span>
+            <div className="break-inside-avoid">
+              <EpicosPorDepartamentoChart epicosPorDepartamento={metrics.epicos_por_departamento} />
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center min-h-[120px]">
-              <span className="text-gray-400">Componente 8</span>
+            <div className="break-inside-avoid">
+              <CardsPorDepartamentoChart cardsPorDepartamento={metrics.cards_por_departamento} />
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center min-h-[120px]">
-              <span className="text-gray-400">Componente 9</span>
+            <div className="break-inside-avoid">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
+                <span className="text-gray-400">Componente 6</span>
+              </div>
+            </div>
+            <div className="break-inside-avoid">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
+                <span className="text-gray-400">Componente 7</span>
+              </div>
+            </div>
+            <div className="break-inside-avoid">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
+                <span className="text-gray-400">Componente 8</span>
+              </div>
+            </div>
+            <div className="break-inside-avoid">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
+                <span className="text-gray-400">Componente 9</span>
+              </div>
             </div>
           </div>
           {/* Coluna das filas */}
