@@ -263,3 +263,94 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
     </div>
   );
 };
+
+// Gráfico de colunas: Departamentos no eixo Y, total de épicos (projetos) no eixo X
+
+interface EpicosPorDepartamentoProps {
+  epicosPorDepartamento: Record<string, Record<string, number>>;
+}
+
+export const EpicosPorDepartamentoChart: React.FC<
+  EpicosPorDepartamentoProps
+> = ({ epicosPorDepartamento }) => {
+  const departamentos = Object.keys(epicosPorDepartamento);
+  const data = departamentos.map((dep) => ({
+    departamento: dep,
+    totalEpicos: Object.keys(epicosPorDepartamento[dep]).length,
+  }));
+
+  const max = Math.max(...data.map((d) => d.totalEpicos), 1);
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <h3 className="text-lg font-semibold mb-4">
+        Épicos/Projetos por Departamento
+      </h3>
+      <div className="flex flex-col gap-3">
+        {data.map((item, idx) => (
+          <div key={item.departamento} className="flex items-center gap-2">
+            <span className="w-32 text-xs font-semibold truncate">
+              {item.departamento}
+            </span>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
+              <div
+                className="h-4 rounded"
+                style={{
+                  width: `${(item.totalEpicos / max) * 100}%`,
+                  background: themeColors.chart[idx % themeColors.chart.length],
+                }}
+              />
+              <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
+                {item.totalEpicos}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Novo componente: Cards por Departamento
+interface CardsPorDepartamentoProps {
+  cardsPorDepartamento: Record<string, number>;
+}
+
+export const CardsPorDepartamentoChart: React.FC<CardsPorDepartamentoProps> = ({
+  cardsPorDepartamento,
+}) => {
+  const departamentos = Object.keys(cardsPorDepartamento);
+  const data = departamentos.map((dep) => ({
+    departamento: dep,
+    totalCards: cardsPorDepartamento[dep],
+  }));
+
+  const max = Math.max(...data.map((d) => d.totalCards), 1);
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <h3 className="text-lg font-semibold mb-4">Cards por Departamento</h3>
+      <div className="flex flex-col gap-3">
+        {data.map((item, idx) => (
+          <div key={item.departamento} className="flex items-center gap-2">
+            <span className="w-32 text-xs font-semibold truncate">
+              {item.departamento}
+            </span>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
+              <div
+                className="h-4 rounded"
+                style={{
+                  width: `${(item.totalCards / max) * 100}%`,
+                  background: themeColors.chart[idx % themeColors.chart.length],
+                }}
+              />
+              <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
+                {item.totalCards}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

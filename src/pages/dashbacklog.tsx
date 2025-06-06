@@ -8,6 +8,8 @@ import {
   BacklogCharts,
   TarefasPorPrioridadeChart,
   SaudeBacklogChart,
+  EpicosPorDepartamentoChart,
+  CardsPorDepartamentoChart,
 } from "../components/dashboard/BacklogCharts";
 
 const DashBacklog: React.FC = () => {
@@ -93,11 +95,17 @@ const DashBacklog: React.FC = () => {
               tarefasPorPrioridade={metrics.tarefas_por_prioridade}
             />
             <SaudeBacklogChart saude={metrics.saude_backlog} />
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center min-h-[120px]">
-              <span className="text-gray-400">Componente 4</span>
+            {/* Componente 4: EpicosPorDepartamentoChart */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <EpicosPorDepartamentoChart
+                epicosPorDepartamento={metrics.epicos_por_departamento}
+              />
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center min-h-[120px]">
-              <span className="text-gray-400">Componente 5</span>
+            {/* Componente 5: CardsPorDepartamentoChart */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <CardsPorDepartamentoChart
+                cardsPorDepartamento={metrics.cards_por_departamento}
+              />
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center min-h-[120px]">
               <span className="text-gray-400">Componente 6</span>

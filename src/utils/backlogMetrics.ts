@@ -184,8 +184,10 @@ export function calculateBacklogMetrics(items: BacklogItem[]) {
     fila_por_projeto: getFilaPorProjeto(items),
     epicos_por_prioridade: getEpicosPorPrioridade(items),
     tarefas_por_prioridade: getTarefasPorPrioridade(items),
-    saude_backlog: getSaudeBacklog(items), // <-- adicione aqui
-    // Outras métricas serão adicionadas aqui
+    saude_backlog: getSaudeBacklog(items),
+    epicos_por_departamento: getEpicosPorDepartamento(items),
+    cards_por_departamento: getCardsPorDepartamento(items), // <-- ADICIONE ESTA LINHA
+    // Outras métricas...
   };
 }
 
@@ -193,3 +195,33 @@ export function calculateBacklogMetrics(items: BacklogItem[]) {
 export const BACKLOG_METRICS = {
   // Constantes serão adicionadas aqui
 };
+
+export function getEpicosPorDepartamento(items: BacklogItem[]) {
+  const resultado: Record<
+    string, // Departamento
+    Record<string, number> // { épico: total_de_cards }
+  > = {};
+
+  items.forEach((item) => {
+    const epico = item.Épico;
+    const departamento = item["Unidade / Departamento"] || "Não informado";
+
+    if (!epico) return; // ignora sem épico
+
+    if (!resultado[departamento]) resultado[departamento] = {};
+    if (!resultado[departamento][epico]) resultado[departamento][epico] = 0;
+
+    resultado[departamento][epico]++;
+  });
+
+  return resultado;
+}
+
+export function getCardsPorDepartamento(items: BacklogItem[]) {
+  const resultado: Record<string, number> = {};
+  items.forEach((item) => {
+    const departamento = item["Unidade / Departamento"] || "Não informado";
+    resultado[departamento] = (resultado[departamento] || 0) + 1;
+  });
+  return resultado;
+}
