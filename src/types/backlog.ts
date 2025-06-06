@@ -58,11 +58,11 @@ export interface BacklogSummary {
   total_cards: number;
   total_epicos_unicos: number;
   total_cards_sem_epico: number;
-  
+
   // Primeiros cards na fila
   primeiro_card_na_fila: CardSummary | null;
   primeiro_projeto_na_fila: CardSummary | null;
-  
+
   // Distribuições e análises
   distribuicao_prioridade_por_epico: PriorityDistributionByEpic;
   saude_do_backlog: BacklogHealth;
@@ -70,7 +70,7 @@ export interface BacklogSummary {
   carga_de_trabalho_por_departamento: WorkloadByDepartment;
   distribuicao_geral_de_prioridade: Record<string, number>;
   relacao_departamento_vs_prioridade: DepartmentPriorityRelation;
-  
+
   // Detalhes das filas
   detalhes_cards_com_epico: CardSummary[];
   resumo_geral_cards: CardSummary[];
@@ -101,11 +101,35 @@ export interface BaseJiraCard {
   Descrição: string;
 }
 
-// Interface para cards do backlog com campos calculados
-export interface BacklogItem extends BaseJiraCard {
-  timeInQueue?: string;
-  progressPercentage?: number;
-  estimatedCompletion?: string;
+// Interface para cards do backlog
+export interface BacklogItem {
+  ID: string;
+  Chave: string;
+  Épico: string | null;
+  Título: string;
+  Tipo: string;
+  Status: string;
+  "Data de Criação": string;
+  "Última Atualização": string;
+  "Relator Técnico": string;
+  "Grupo Solicitante": string;
+  "Unidade / Departamento": string;
+  Solicitante: string;
+  Sprint: string | null;
+  "Responsável (Dev)": string;
+  "Estimativa Original (segundos)": number;
+  "Controle de Tempo (segundos)": number;
+  Prioridade: string;
+  Branch: string | null;
+  "versões afetadas": string | null;
+  "versões corrigidas": string | null;
+  "Backlog (nome)": string | null;
+  "Dias no Backlog": number;
+}
+
+// Interface para a resposta da API
+export interface BacklogResponse {
+  items: BacklogItem[];
 }
 
 // Interface para cards em projetos
@@ -166,4 +190,22 @@ export interface EpicAnalysis {
   epicos_por_departamento: Record<string, number>;
   epicos_sem_departamento: string[];
   departamentos_sem_epicos: string[];
+}
+
+export interface BacklogBasicMetrics {
+  total_cards: number;
+  total_epicos: number;
+  idade_media_dias: number;
+  card_mais_antigo: {
+    chave: string;
+    titulo: string;
+    dias: number;
+    epico: string | null;
+  };
+  primeiro_projeto: {
+    epico: string;
+    departamento: string;
+    prioridade: string;
+    chave: string;
+  } | null;
 }

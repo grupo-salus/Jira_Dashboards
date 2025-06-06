@@ -195,106 +195,72 @@ def get_backlog_summary(
         "por_departamento": dep_dict
     }
 
-@router.get("/api/backlog/por-projetos")
-def get_backlog_by_projects(request: Request):
+
+@router.get("/api/backlog/tabela")
+def get_tabela_backlog(
+    request: Request,
+    departamento: Optional[str] = Query(None, description="Nome do departamento (ex: 'TI', 'Financeiro')"),
+    epico: Optional[str] = Query(None, description="Nome do épico (ex: 'CP simplificado', 'Integração Sefaz')"),
+    status: Optional[str] = Query(None, description="Status do card (ex: 'Tarefas pendentes', 'Em andamento')"),
+    prioridade: Optional[str] = Query(None, description="Prioridade do Jira (ex: 'Highest', 'Medium')"),
+    grupo_solicitante: Optional[str] = Query(None, description="Grupo solicitante (ex: 'Franqueadora', 'Franqueado')"),
+    solicitante: Optional[str] = Query(None, description="Nome do solicitante (quem abriu o chamado)")
+):
     """
-    Fornece uma visão geral e completa do backlog com métricas chave e insights adicionais.
+    Retorna a tabela completa do backlog Jira (board_id=71), com suporte a filtros via query string.
     """
-    # -----------------------------------------------------
-    # 1. BUSCA E PREPARAÇÃO DOS DADOS
-    # -----------------------------------------------------
     service = JiraService()
     issues = service.get_raw_backlog_issues(board_id=71).get("issues", [])
-    
-    if not issues:
-        return {"mensagem": "Nenhum dado encontrado no backlog."}
-
     df = parse_issues_to_dataframe(issues)
 
     if df.empty:
-        return {"mensagem": "O DataFrame do backlog está vazio após o parse."}
+        return {"tabela_backlog": []}
 
-    # --- Limpeza de dados para cálculos seguros ---
-    df['Épico'] = df['Épico'].fillna('')
-    # Para os insights, vamos garantir que outras colunas importantes também não tenham nulos
-    df['Status'] = df['Status'].fillna('Não informado')
-    df['Unidade / Departamento'] = df['Unidade / Departamento'].fillna('Não informado')
-    df['Prioridade'] = df['Prioridade'].fillna('Não informada')
-    df['Dias no Backlog'] = df['Dias no Backlog'].fillna(0)
-    df['Estimativa Original (segundos)'] = df['Estimativa Original (segundos)'].fillna(0)
+    # Conversão de datas e cálculo de dias no backlog
+    df["Data de Criação"] = pd.to_datetime(df["Data de Criação"], errors="coerce").dt.tz_localize(None)
+    df["Última Atualização"] = pd.to_datetime(df["Última Atualização"], errors="coerce").dt.tz_localize(None)
+    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de Criação"]).dt.days
 
-    # -----------------------------------------------------
-    # 2. CÁLCULO DAS MÉTRICAS SOLICITADAS
-    # -----------------------------------------------------
+    # Preenchimento padrão para colunas-chave
+    for col in [
+        "Unidade / Departamento", "Solicitante", "Grupo Solicitante", "Prioridade", "Status"
+    ]:
+        df[col] = df[col].fillna("Não informado")
 
-    total_cards = len(df)
-    df_com_epico = df[df['Épico'] != '']
-    df_sem_epico = df[df['Épico'] == '']
-    total_epicos_unicos = df_com_epico['Épico'].nunique()
-    total_cards_sem_epico = len(df_sem_epico)
-    primeiro_card_fila = df.iloc[0].to_dict() if not df.empty else None
-    primeiro_projeto_fila = df_com_epico.iloc[0].to_dict() if not df_com_epico.empty else None
-    
-    distribuicao_prioridade = {}
-    if not df_com_epico.empty:
-        distribuicao_prioridade = df_com_epico.groupby('Épico')['Prioridade'].value_counts().unstack(fill_value=0).to_dict('index')
+    # Tratamento seguro para a coluna "Épico"
+    if "Épico" not in df.columns:
+        df["Épico"] = ""
+    else:
+        df["Épico"] = df["Épico"].fillna("")
 
-    fila_com_epicos = df_com_epico.replace({np.nan: None}).to_dict(orient='records')
-    colunas_principais = ['Chave', 'Título', 'Prioridade', 'Épico', 'Unidade / Departamento']
-    fila_geral_resumida = df[colunas_principais].replace({np.nan: None}).to_dict(orient='records')
-    
-    # --------------------------------------------------------------------------
-    # 3. CÁLCULO DOS INSIGHTS ADICIONAIS PARA O DASHBOARD (NOVA SEÇÃO)
-    # --------------------------------------------------------------------------
+    # Aplicação de filtros
+    if departamento:
+        df = df[df["Unidade / Departamento"] == departamento]
+    if epico:
+        df = df[df["Épico"] == epico]
+    if status:
+        df = df[df["Status"] == status]
+    if prioridade:
+        df = df[df["Prioridade"] == prioridade]
+    if grupo_solicitante:
+        df = df[df["Grupo Solicitante"] == grupo_solicitante]
+    if solicitante:
+        df = df[df["Solicitante"] == solicitante]
 
-    # Insight 1: Saúde do Backlog (Aging)
-    saude_backlog = {
-        "idade_media_dias": int(df['Dias no Backlog'].mean()),
-        "card_mais_antigo_dias": int(df['Dias no Backlog'].max())
-    }
-    # Cria faixas de idade e conta os cards em cada uma
-    bins = [-1, 30, 60, 90, np.inf] # Começa com -1 para incluir o dia 0
-    labels = ["0-30 dias", "31-60 dias", "61-90 dias", "91+ dias"]
-    df['faixa_idade'] = pd.cut(df['Dias no Backlog'], bins=bins, labels=labels, right=True)
-    saude_backlog['distribuicao_por_idade'] = df['faixa_idade'].value_counts().sort_index().to_dict()
-    
-    # Insight 2: Distribuição por Status
-    distribuicao_status = df['Status'].value_counts().to_dict()
+    # Formatação de datas para string ISO
+    df["Data de Criação"] = df["Data de Criação"].dt.strftime('%Y-%m-%dT%H:%M:%S')
+    df["Última Atualização"] = df["Última Atualização"].dt.strftime('%Y-%m-%dT%H:%M:%S')
 
-    # Insight 3: Carga de Trabalho por Departamento
-    carga_por_departamento = {
-        "total_cards": df['Unidade / Departamento'].value_counts().to_dict(),
-        "horas_estimadas": (df.groupby('Unidade / Departamento')['Estimativa Original (segundos)'].sum() / 3600).round(2).to_dict()
-    }
+    # Conversão para float para compatibilidade com JSON
+    df["Estimativa Original (segundos)"] = df["Estimativa Original (segundos)"].astype(float)
+    df["Controle de Tempo (segundos)"] = df["Controle de Tempo (segundos)"].astype(float)
+    df["Dias no Backlog"] = df["Dias no Backlog"].astype(int)
 
-    # Insight 4: Análise de Prioridades (Geral)
-    distribuicao_geral_prioridade = df['Prioridade'].value_counts().to_dict()
+    # Substitui NaN por None
+    df = df.where(pd.notnull(df), None)
 
-    # Insight 5: Relação Departamento vs. Prioridade
-    crosstab_dep_prio = pd.crosstab(df['Unidade / Departamento'], df['Prioridade']).to_dict('index')
+    return {"tabela_backlog": df.to_dict(orient="records")}
 
-    # -----------------------------------------------------
-    # 4. MONTAGEM DA RESPOSTA FINAL
-    # -----------------------------------------------------
-    return {
-        # Métricas originais
-        "total_cards": total_cards,
-        "total_epicos_unicos": total_epicos_unicos,
-        "total_cards_sem_epico": total_cards_sem_epico,
-        "primeiro_card_na_fila": primeiro_card_fila,
-        "primeiro_projeto_na_fila": primeiro_projeto_fila,
-        "distribuicao_prioridade_por_epico": distribuicao_prioridade,
-        
-        "saude_do_backlog": saude_backlog,
-        "distribuicao_por_status": distribuicao_status,
-        "carga_de_trabalho_por_departamento": carga_por_departamento,
-        "distribuicao_geral_de_prioridade": distribuicao_geral_prioridade,
-        "relacao_departamento_vs_prioridade": crosstab_dep_prio,
-
-        # Detalhes das filas (mantidos no final)
-        "detalhes_cards_com_epico": fila_com_epicos,
-        "resumo_geral_cards": fila_geral_resumida,
-    }
 
 @router.get("/api/sprint/resumo")
 def get_sprint_summary(request: Request):

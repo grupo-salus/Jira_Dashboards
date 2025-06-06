@@ -1,55 +1,69 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { fetchBacklogSummary } from '../api/api_jira';
-import { BacklogSummary } from '../types/backlog';
+import React, { createContext, useContext, ReactNode } from "react";
+import { BacklogItem, BacklogBasicMetrics } from "../types/backlog";
+import { useJira } from "./JiraContext";
 
 interface BacklogContextType {
-  data: BacklogSummary | null;
+  rawData: BacklogItem[];
+  metrics: {
+    basic: BacklogBasicMetrics;
+  };
   loading: boolean;
   error: string | null;
-  lastUpdate: Date | null;
   refreshData: () => Promise<void>;
+  lastUpdate: Date | null;
 }
 
-const BacklogContext = createContext<BacklogContextType | undefined>(undefined);
+export const BacklogContext = createContext<BacklogContextType>({
+  rawData: [],
+  metrics: {
+    basic: {
+      total_cards: 0,
+      total_epicos: 0,
+      idade_media_dias: 0,
+      card_mais_antigo: {
+        chave: "",
+        titulo: "",
+        dias: 0,
+        epico: null,
+      },
+      primeiro_projeto: null,
+    },
+  },
+  loading: false,
+  error: null,
+  refreshData: async () => {},
+  lastUpdate: null,
+});
 
-export const BacklogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [data, setData] = useState<BacklogSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+export const useBacklog = () => {
+  const context = useContext(BacklogContext);
+  if (!context) {
+    throw new Error("useBacklog must be used within a BacklogProvider");
+  }
+  return context;
+};
 
-  const refreshData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetchBacklogSummary();
-      setData(response);
-      setLastUpdate(new Date());
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
-    } finally {
-      setLoading(false);
-    }
-  };
+interface BacklogProviderProps {
+  children: ReactNode;
+}
 
-  // Carrega os dados apenas na primeira vez
-  useEffect(() => {
-    if (!data) {
-      refreshData();
-    }
-  }, []);
+export const BacklogProvider: React.FC<BacklogProviderProps> = ({
+  children,
+}) => {
+  const { backlogData, refreshBacklogData } = useJira();
 
   return (
-    <BacklogContext.Provider value={{ data, loading, error, lastUpdate, refreshData }}>
+    <BacklogContext.Provider
+      value={{
+        rawData: backlogData.rawData,
+        metrics: backlogData.metrics,
+        loading: backlogData.loading,
+        error: backlogData.error,
+        refreshData: refreshBacklogData,
+        lastUpdate: backlogData.lastUpdate,
+      }}
+    >
       {children}
     </BacklogContext.Provider>
   );
 };
-
-export const useBacklog = () => {
-  const context = useContext(BacklogContext);
-  if (context === undefined) {
-    throw new Error('useBacklog deve ser usado dentro de um BacklogProvider');
-  }
-  return context;
-}; 

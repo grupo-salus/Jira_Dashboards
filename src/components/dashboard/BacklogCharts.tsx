@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   BarChart,
   Bar,
@@ -11,10 +11,13 @@ import {
   PieChart,
   Pie,
   Cell,
-} from 'recharts';
-import { useTheme } from '../../context/ThemeContext';
-import { BacklogSummary } from '../../types/backlog';
-import { formatPercentage, formatHours, getPriorityColorClass } from '../../utils/formatters';
+} from "recharts";
+import { useTheme } from "../../context/ThemeContext";
+import { BacklogSummary } from "../../types/backlog";
+import {
+  formatPercentage,
+  getPriorityColorClass,
+} from "../../utils/formatters";
 import {
   CardsIcon,
   EpicIcon,
@@ -22,49 +25,49 @@ import {
   CalendarIcon,
   ClockIcon,
   FireIcon,
-  CompassIcon
-} from '../icons/DashboardIcons';
+  CompassIcon,
+} from "../icons/DashboardIcons";
 
 // Componente para os KPI Cards (Scorecards)
 export const KPICards: React.FC<{ data: BacklogSummary }> = ({ data }) => {
   const { colors } = useTheme();
-  
+
   const kpis = [
     {
-      title: 'Total de Cards',
+      title: "Total de Cards",
       value: data.total_cards,
       icon: <CardsIcon className="text-primary-600" size={32} />,
       color: colors.primary[600],
-      description: 'Total de cards no backlog'
+      description: "Total de cards no backlog",
     },
     {
-      title: 'Total de Épicos Únicos',
+      title: "Total de Épicos Únicos",
       value: data.total_epicos_unicos,
       icon: <EpicIcon className="text-primary-500" size={32} />,
       color: colors.primary[500],
-      description: 'Número de épicos diferentes'
+      description: "Número de épicos diferentes",
     },
     {
-      title: 'Cards Sem Épico',
+      title: "Cards Sem Épico",
       value: data.total_cards_sem_epico,
       icon: <NoEpicIcon className="text-error" size={32} />,
       color: colors.error,
-      description: 'Cards não associados a épicos'
+      description: "Cards não associados a épicos",
     },
     {
-      title: 'Idade Média do Backlog',
+      title: "Idade Média do Backlog",
       value: `${data.saude_do_backlog.idade_media_dias} dias`,
       icon: <CalendarIcon className="text-warning" size={32} />,
       color: colors.warning,
-      description: 'Tempo médio no backlog'
+      description: "Tempo médio no backlog",
     },
     {
-      title: 'Card Mais Antigo',
+      title: "Card Mais Antigo",
       value: `${data.saude_do_backlog.card_mais_antigo_dias} dias`,
       icon: <ClockIcon className="text-error" size={32} />,
       color: colors.error,
-      description: 'Tempo do card mais antigo'
-    }
+      description: "Tempo do card mais antigo",
+    },
   ];
 
   return (
@@ -73,8 +76,12 @@ export const KPICards: React.FC<{ data: BacklogSummary }> = ({ data }) => {
         <div key={index} className="card flex items-center p-4">
           <div className="mr-3">{kpi.icon}</div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">{kpi.title}</div>
-            <div className="text-2xl font-bold" style={{ color: kpi.color }}>{kpi.value}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {kpi.title}
+            </div>
+            <div className="text-2xl font-bold" style={{ color: kpi.color }}>
+              {kpi.value}
+            </div>
             <div className="text-xs text-gray-400">{kpi.description}</div>
           </div>
         </div>
@@ -84,22 +91,26 @@ export const KPICards: React.FC<{ data: BacklogSummary }> = ({ data }) => {
 };
 
 // Componente para o gráfico de distribuição de prioridade (Donut Chart)
-export const PriorityDistributionChart: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const PriorityDistributionChart: React.FC<{ data: BacklogSummary }> = ({
+  data,
+}) => {
   const { colors } = useTheme();
-  
+
   const priorityColors = {
-    'Highest': colors.error,
-    'High': colors.warning,
-    'Medium': colors.primary[500],
-    'Low': colors.primary[300],
-    'Lowest': colors.success
+    Highest: colors.error,
+    High: colors.warning,
+    Medium: colors.primary[500],
+    Low: colors.primary[300],
+    Lowest: colors.success,
   };
 
-  const chartData = Object.entries(data.distribuicao_geral_de_prioridade).map(([priority, count]) => ({
-    name: priority,
-    value: count,
-    color: priorityColors[priority as keyof typeof priorityColors]
-  }));
+  const chartData = Object.entries(data.distribuicao_geral_de_prioridade).map(
+    ([priority, count]) => ({
+      name: priority,
+      value: count,
+      color: priorityColors[priority as keyof typeof priorityColors],
+    })
+  );
 
   return (
     <div className="card mb-6">
@@ -115,7 +126,9 @@ export const PriorityDistributionChart: React.FC<{ data: BacklogSummary }> = ({ 
               cy="50%"
               innerRadius={60}
               outerRadius={100}
-              label={({ name, percent }) => `${name} (${formatPercentage(percent * 100)})`}
+              label={({ name, percent }) =>
+                `${name} (${formatPercentage(percent * 100)})`
+              }
             >
               {chartData.map((entry) => (
                 <Cell key={`cell-${entry.name}`} fill={entry.color} />
@@ -131,13 +144,15 @@ export const PriorityDistributionChart: React.FC<{ data: BacklogSummary }> = ({ 
 };
 
 // Componente para o gráfico de distribuição por status (Barras Horizontais)
-export const StatusDistributionChart: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const StatusDistributionChart: React.FC<{ data: BacklogSummary }> = ({
+  data,
+}) => {
   const { colors } = useTheme();
-  
+
   const chartData = Object.entries(data.distribuicao_por_status)
     .map(([status, count]) => ({
       status,
-      count
+      count,
     }))
     .sort((a, b) => b.count - a.count); // Ordena do maior para o menor
 
@@ -164,13 +179,15 @@ export const StatusDistributionChart: React.FC<{ data: BacklogSummary }> = ({ da
 };
 
 // Componente para o gráfico de distribuição por idade (Barras Verticais)
-export const AgeDistributionChart: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const AgeDistributionChart: React.FC<{ data: BacklogSummary }> = ({
+  data,
+}) => {
   const { colors } = useTheme();
-  
+
   const chartData = Object.entries(data.saude_do_backlog.distribuicao_por_idade)
     .map(([range, count]) => ({
       range,
-      count
+      count,
     }))
     .sort((a, b) => {
       // Ordena as faixas de idade corretamente
@@ -183,7 +200,9 @@ export const AgeDistributionChart: React.FC<{ data: BacklogSummary }> = ({ data 
 
   return (
     <div className="card mb-6">
-      <h2 className="text-lg font-semibold mb-4">Distribuição por Idade do Backlog</h2>
+      <h2 className="text-lg font-semibold mb-4">
+        Distribuição por Idade do Backlog
+      </h2>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -203,20 +222,26 @@ export const AgeDistributionChart: React.FC<{ data: BacklogSummary }> = ({ data 
 };
 
 // Componente para o gráfico de carga de trabalho por departamento (Barras Horizontais)
-export const WorkloadByDepartmentChart: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const WorkloadByDepartmentChart: React.FC<{ data: BacklogSummary }> = ({
+  data,
+}) => {
   const { colors } = useTheme();
-  
-  const chartData = Object.keys(data.carga_de_trabalho_por_departamento.total_cards)
-    .map(dept => ({
+
+  const chartData = Object.keys(
+    data.carga_de_trabalho_por_departamento.total_cards
+  )
+    .map((dept) => ({
       department: dept,
       cards: data.carga_de_trabalho_por_departamento.total_cards[dept],
-      hours: data.carga_de_trabalho_por_departamento.horas_estimadas[dept]
+      hours: data.carga_de_trabalho_por_departamento.horas_estimadas[dept],
     }))
     .sort((a, b) => b.cards - a.cards); // Ordena do maior para o menor
 
   return (
     <div className="card mb-6">
-      <h2 className="text-lg font-semibold mb-4">Carga de Trabalho por Departamento</h2>
+      <h2 className="text-lg font-semibold mb-4">
+        Carga de Trabalho por Departamento
+      </h2>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -229,7 +254,11 @@ export const WorkloadByDepartmentChart: React.FC<{ data: BacklogSummary }> = ({ 
             <YAxis type="category" dataKey="department" width={150} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="cards" name="Total de Cards" fill={colors.primary[500]} />
+            <Bar
+              dataKey="cards"
+              name="Total de Cards"
+              fill={colors.primary[500]}
+            />
             <Bar dataKey="hours" name="Horas Estimadas" fill={colors.warning} />
           </BarChart>
         </ResponsiveContainer>
@@ -239,30 +268,38 @@ export const WorkloadByDepartmentChart: React.FC<{ data: BacklogSummary }> = ({ 
 };
 
 // Componente para o heatmap de prioridade por departamento
-export const PriorityByDepartmentHeatmap: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const PriorityByDepartmentHeatmap: React.FC<{
+  data: BacklogSummary;
+}> = ({ data }) => {
   const { colors } = useTheme();
-  
+
   const departments = Object.keys(data.relacao_departamento_vs_prioridade);
-  const priorities = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
+  const priorities = ["Highest", "High", "Medium", "Low", "Lowest"];
 
   return (
     <div className="card mb-6 overflow-x-auto">
-      <h2 className="text-lg font-semibold mb-4">Prioridade por Departamento</h2>
+      <h2 className="text-lg font-semibold mb-4">
+        Prioridade por Departamento
+      </h2>
       <table className="min-w-full">
         <thead>
           <tr>
             <th className="px-4 py-2">Departamento</th>
-            {priorities.map(priority => (
-              <th key={priority} className="px-4 py-2">{priority}</th>
+            {priorities.map((priority) => (
+              <th key={priority} className="px-4 py-2">
+                {priority}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {departments.map(dept => (
+          {departments.map((dept) => (
             <tr key={dept}>
               <td className="px-4 py-2 font-medium">{dept}</td>
-              {priorities.map(priority => {
-                const value = data.relacao_departamento_vs_prioridade[dept]?.[priority] || 0;
+              {priorities.map((priority) => {
+                const value =
+                  data.relacao_departamento_vs_prioridade[dept]?.[priority] ||
+                  0;
                 const intensity = Math.min(value / 10, 1); // Normaliza para 0-1
                 return (
                   <td
@@ -270,7 +307,7 @@ export const PriorityByDepartmentHeatmap: React.FC<{ data: BacklogSummary }> = (
                     className="px-4 py-2 text-center"
                     style={{
                       backgroundColor: `rgba(${colors.primary[500]}, ${intensity})`,
-                      color: intensity > 0.5 ? 'white' : 'inherit'
+                      color: intensity > 0.5 ? "white" : "inherit",
                     }}
                   >
                     {value}
@@ -286,26 +323,29 @@ export const PriorityByDepartmentHeatmap: React.FC<{ data: BacklogSummary }> = (
 };
 
 // Componente para o gráfico de distribuição por épico (Barras Empilhadas)
-export const EpicDistributionChart: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const EpicDistributionChart: React.FC<{ data: BacklogSummary }> = ({
+  data,
+}) => {
   const { colors } = useTheme();
-  
-  const priorities = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
+
+  const priorities = ["Highest", "High", "Medium", "Low", "Lowest"];
   const priorityColors = {
-    'Highest': colors.error,
-    'High': colors.warning,
-    'Medium': colors.primary[500],
-    'Low': colors.primary[300],
-    'Lowest': colors.success
+    Highest: colors.error,
+    High: colors.warning,
+    Medium: colors.primary[500],
+    Low: colors.primary[300],
+    Lowest: colors.success,
   };
 
   const chartData = Object.entries(data.distribuicao_prioridade_por_epico)
     .map(([epic, priorities]) => ({
       epic,
-      ...priorities
+      ...priorities,
     }))
     .sort((a, b) => {
       // Ordena pelo total de cards (soma de todas as prioridades)
-      const getTotal = (obj: any) => priorities.reduce((sum, p) => sum + (obj[p] || 0), 0);
+      const getTotal = (obj: any) =>
+        priorities.reduce((sum, p) => sum + (obj[p] || 0), 0);
       return getTotal(b) - getTotal(a);
     });
 
@@ -340,13 +380,24 @@ export const EpicDistributionChart: React.FC<{ data: BacklogSummary }> = ({ data
 };
 
 // Componente para a tabela de cards sem épico
-export const CardsWithoutEpicTable: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const CardsWithoutEpicTable: React.FC<{ data: BacklogSummary }> = ({
+  data,
+}) => {
   const cardsWithoutEpic = data.resumo_geral_cards
-    .filter(card => !card.Épico)
+    .filter((card) => !card.Épico)
     .sort((a, b) => {
       // Ordena por prioridade (Highest primeiro)
-      const priorityOrder = { 'Highest': 0, 'High': 1, 'Medium': 2, 'Low': 3, 'Lowest': 4 };
-      return priorityOrder[a.Prioridade as keyof typeof priorityOrder] - priorityOrder[b.Prioridade as keyof typeof priorityOrder];
+      const priorityOrder = {
+        Highest: 0,
+        High: 1,
+        Medium: 2,
+        Low: 3,
+        Lowest: 4,
+      };
+      return (
+        priorityOrder[a.Prioridade as keyof typeof priorityOrder] -
+        priorityOrder[b.Prioridade as keyof typeof priorityOrder]
+      );
     });
 
   return (
@@ -363,12 +414,16 @@ export const CardsWithoutEpicTable: React.FC<{ data: BacklogSummary }> = ({ data
             </tr>
           </thead>
           <tbody>
-            {cardsWithoutEpic.map(card => (
+            {cardsWithoutEpic.map((card) => (
               <tr key={card.Chave}>
                 <td>{card.Chave}</td>
                 <td>{card.Título}</td>
                 <td>
-                  <span className={`px-2 py-1 rounded text-sm ${getPriorityColorClass(card.Prioridade)}`}>
+                  <span
+                    className={`px-2 py-1 rounded text-sm ${getPriorityColorClass(
+                      card.Prioridade
+                    )}`}
+                  >
                     {card.Prioridade}
                   </span>
                 </td>
@@ -383,7 +438,9 @@ export const CardsWithoutEpicTable: React.FC<{ data: BacklogSummary }> = ({ data
 };
 
 // Componente para destacar o primeiro da fila
-export const QueueHighlights: React.FC<{ data: BacklogSummary }> = ({ data }) => {
+export const QueueHighlights: React.FC<{ data: BacklogSummary }> = ({
+  data,
+}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       {data.primeiro_card_na_fila && (
@@ -392,26 +449,40 @@ export const QueueHighlights: React.FC<{ data: BacklogSummary }> = ({ data }) =>
             <FireIcon className="text-error mr-2" size={24} />
             <h3 className="text-lg font-semibold">Card Mais Antigo</h3>
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">Chave: {data.primeiro_card_na_fila.Chave}</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Chave: {data.primeiro_card_na_fila.Chave}
+          </div>
           <div className="font-medium">{data.primeiro_card_na_fila.Título}</div>
           <div className="mt-2">
-            <span className={`px-2 py-1 rounded text-sm ${getPriorityColorClass(data.primeiro_card_na_fila.Prioridade)}`}>
+            <span
+              className={`px-2 py-1 rounded text-sm ${getPriorityColorClass(
+                data.primeiro_card_na_fila.Prioridade
+              )}`}
+            >
               {data.primeiro_card_na_fila.Prioridade}
             </span>
           </div>
         </div>
       )}
-      
+
       {data.primeiro_projeto_na_fila && (
         <div className="card p-4">
           <div className="flex items-center mb-2">
             <CompassIcon className="text-primary-500 mr-2" size={24} />
             <h3 className="text-lg font-semibold">Primeiro Projeto</h3>
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">Chave: {data.primeiro_projeto_na_fila.Chave}</div>
-          <div className="font-medium">{data.primeiro_projeto_na_fila.Título}</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Chave: {data.primeiro_projeto_na_fila.Chave}
+          </div>
+          <div className="font-medium">
+            {data.primeiro_projeto_na_fila.Título}
+          </div>
           <div className="mt-2">
-            <span className={`px-2 py-1 rounded text-sm ${getPriorityColorClass(data.primeiro_projeto_na_fila.Prioridade)}`}>
+            <span
+              className={`px-2 py-1 rounded text-sm ${getPriorityColorClass(
+                data.primeiro_projeto_na_fila.Prioridade
+              )}`}
+            >
               {data.primeiro_projeto_na_fila.Prioridade}
             </span>
           </div>
@@ -419,4 +490,4 @@ export const QueueHighlights: React.FC<{ data: BacklogSummary }> = ({ data }) =>
       )}
     </div>
   );
-}; 
+};
