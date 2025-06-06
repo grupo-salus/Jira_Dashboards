@@ -22,7 +22,6 @@ def testar_resumo_backlog(filtros=None, nome_arquivo="backlog_summary.json"):
     with open(nome_arquivo, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-
 # ----------- Teste desempenho da sprint -----------
 def testar_resumo_sprint(nome_arquivo="sprint_summary.json"):
     url = f"{BASE_URL}/api/sprint/desempenho"
@@ -43,8 +42,8 @@ def testar_resumo_sprint(nome_arquivo="sprint_summary.json"):
         json.dump(data, f, indent=4, ensure_ascii=False)
 
 #@router.get("/api/backlog/por-projetos")
-def testar_backlog_por_projetos(nome_arquivo="backlog_por_projetos.json"):
-    url = f"{BASE_URL}/api/backlog/por-projetos"
+def testar_backlog_por_projetos(nome_arquivo="backlog_tabela.json"):
+    url = f"{BASE_URL}/api/backlog/tabela"
     try:
         response = requests.get(url)
         response.raise_for_status()

@@ -129,7 +129,7 @@ export interface BacklogItem {
 
 // Interface para a resposta da API
 export interface BacklogResponse {
-  items: BacklogItem[];
+  tabela_backlog: BacklogItem[];
 }
 
 // Interface para cards em projetos
@@ -208,4 +208,8 @@ export interface BacklogBasicMetrics {
     prioridade: string;
     chave: string;
   } | null;
+}
+
+export interface ItemsResponse {
+  items: BacklogItem[];
 }

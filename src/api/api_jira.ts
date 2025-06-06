@@ -1,4 +1,4 @@
-import { BacklogItem, BacklogResponse } from "../types/backlog";
+import { BacklogItem } from "../types/backlog";
 
 const API_URL = "http://localhost:8000";
 
@@ -28,8 +28,8 @@ export async function fetchBacklogTable(filters?: {
       throw new Error("Failed to fetch backlog table");
     }
 
-    const data: BacklogResponse = await response.json();
-    return data.tabela_backlog;
+    const data: any = await response.json();
+    return data.tabela_backlog ?? [];
   } catch (error) {
     console.error("Error fetching backlog table:", error);
     throw error;

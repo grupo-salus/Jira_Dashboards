@@ -10,7 +10,7 @@ interface BacklogKPICardsProps {
       chave: string;
       titulo: string;
       dias: number;
-      epico?: string;
+      epico?: string | null;
     };
     primeiro_projeto?: {
       epico: string;
@@ -36,7 +36,7 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
   const [showEpicsTooltip, setShowEpicsTooltip] = useState(false);
 
   // Filtrar subtarefas e preparar dados para tooltips
-  const cards = rawData.filter((item) => item.Tipo !== "Subtarefa");
+  const cards = rawData;
   const epicos = Array.from(
     new Set(cards.map((item) => item.Épico).filter(Boolean))
   );
