@@ -4,12 +4,15 @@ import Home from './pages/Home';
 import DashBacklog from './pages/dashbacklog';
 import SprintDashboard from './pages/SprintDashboard.tsx';
 import { ThemeProvider } from './context/ThemeContext';
+import { BacklogProvider } from './context/BacklogContext';
+import { useBacklog } from './context/BacklogContext';
 
 // Configuração do intervalo de atualização automática dos dados
 // Valor em milissegundos (1 hora = 3600000ms)
 const UPDATE_INTERVAL_MS = 3600000;
 
-function App() {
+// Componente interno que usa o contexto
+const AppContent: React.FC = () => {
   // Estado para controlar a visualização atual (home, backlog ou sprint)
   const [currentView, setCurrentView] = React.useState<'home' | 'backlog' | 'sprint'>('home');
   
@@ -19,8 +22,12 @@ function App() {
   // Estado para armazenar o timestamp da última atualização
   const [lastUpdate, setLastUpdate] = React.useState<Date>(new Date());
 
+  // Hook para acessar o contexto do backlog
+  const { refreshData } = useBacklog();
+
   // Função para atualizar os dados e o timestamp
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
+    await refreshData(); // Atualiza os dados do backlog
     setRefreshKey((k) => k + 1);
     setLastUpdate(new Date());
   };
@@ -35,30 +42,37 @@ function App() {
   }, []);
 
   return (
-    // Provider do tema para toda a aplicação
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      {/* Barra de navegação com controles de visualização e atualização */}
+      <Navbar 
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        onRefresh={handleRefresh}
+        showHomeLink
+      />
+      {/* Área principal que renderiza o componente apropriado baseado na visualização atual */}
+      <main className="dashboard-container">
+        {currentView === 'home' ? (
+          <Home />
+        ) : currentView === 'backlog' ? (
+          <DashBacklog key={refreshKey} lastUpdate={lastUpdate} />
+        ) : (
+          <SprintDashboard key={refreshKey} lastUpdate={lastUpdate} />
+        )}
+      </main>
+    </div>
+  );
+};
+
+// Componente principal que fornece o contexto
+function App() {
+  return (
     <ThemeProvider>
-      {/* Container principal com classes para tema claro/escuro */}
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        {/* Barra de navegação com controles de visualização e atualização */}
-        <Navbar 
-          currentView={currentView}
-          onViewChange={setCurrentView}
-          onRefresh={handleRefresh}
-          showHomeLink
-        />
-        {/* Área principal que renderiza o componente apropriado baseado na visualização atual */}
-        <main className="dashboard-container">
-          {currentView === 'home' ? (
-            <Home />
-          ) : currentView === 'backlog' ? (
-            <DashBacklog key={refreshKey} lastUpdate={lastUpdate} />
-          ) : (
-            <SprintDashboard key={refreshKey} lastUpdate={lastUpdate} />
-          )}
-        </main>
-      </div>
+      <BacklogProvider>
+        <AppContent />
+      </BacklogProvider>
     </ThemeProvider>
   );
 }
 
-export default App
+export default App;
