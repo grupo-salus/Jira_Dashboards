@@ -89,40 +89,74 @@ const DashBacklog: React.FC = () => {
           {/* Coluna dos gráficos: agora usando columns para layout tipo Masonry */}
           <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
             <div className="break-inside-avoid">
-              <BacklogCharts epicosPorPrioridade={metrics.epicos_por_prioridade} />
+              <BacklogCharts
+                epicosPorPrioridade={metrics.epicos_por_prioridade}
+              />
             </div>
             <div className="break-inside-avoid">
-              <TarefasPorPrioridadeChart tarefasPorPrioridade={metrics.tarefas_por_prioridade} />
+              <TarefasPorPrioridadeChart
+                tarefasPorPrioridade={metrics.tarefas_por_prioridade}
+              />
             </div>
             <div className="break-inside-avoid">
               <SaudeBacklogChart saude={metrics.saude_backlog} />
             </div>
             <div className="break-inside-avoid">
-              <EpicosPorDepartamentoChart epicosPorDepartamento={metrics.epicos_por_departamento} />
+              <EpicosPorDepartamentoChart
+                epicosPorDepartamento={metrics.epicos_por_departamento}
+              />
             </div>
             <div className="break-inside-avoid">
-              <CardsPorDepartamentoChart cardsPorDepartamento={metrics.cards_por_departamento} />
+              <CardsPorDepartamentoChart
+                cardsPorDepartamento={metrics.cards_por_departamento}
+              />
             </div>
+            {/* 
             <div className="break-inside-avoid">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-                <span className="text-gray-400">Componente 6</span>
+              <span className="text-gray-400">componente 6</span>
+              <span className="text-gray-500 mt-2">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
+                hic libero dolores qui odit omnis cupiditate vitae distinctio
+                quia et aspernatur veritatis veniam minus sunt sint sit,
+                possimus sequi.
+              </span>
               </div>
             </div>
             <div className="break-inside-avoid">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-                <span className="text-gray-400">Componente 7</span>
+              <span className="text-gray-400">Componente 7</span>
+              <span className="text-gray-500 mt-2">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
+                hic libero dolores qui odit omnis cupiditate vitae distinctio
+                quia et aspernatur veritatis veniam minus sunt sint sit,
+                possimus sequi.
+              </span>
               </div>
             </div>
             <div className="break-inside-avoid">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-                <span className="text-gray-400">Componente 8</span>
+              <span className="text-gray-400">Componente 8</span>
+              <span className="text-gray-500 mt-2">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
+                hic libero dolores qui odit omnis cupiditate vitae distinctio
+                quia et aspernatur veritatis veniam minus sunt sint sit,
+                possimus sequi.
+              </span>
               </div>
             </div>
             <div className="break-inside-avoid">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-                <span className="text-gray-400">Componente 9</span>
+              <span className="text-gray-400">Componente 9</span>
+              <span className="text-gray-500 mt-2">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
+                hic libero dolores qui odit omnis cupiditate vitae distinctio
+                quia et aspernatur veritatis veniam minus sunt sint sit,
+                possimus sequi.
+              </span>
               </div>
             </div>
+            */}
           </div>
           {/* Coluna das filas */}
           <div className="w-full max-w-[420px]">
