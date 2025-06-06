@@ -89,3 +89,31 @@ export const calculateAverageTime = (items: BacklogItem[]): TimeMetric => {
   
   return formatTime(Math.floor(totalSeconds / items.length));
 };
+
+/**
+ * Formata um número para porcentagem com 2 casas decimais
+ */
+export const formatPercentage = (value: number): string => {
+  return `${value.toFixed(2)}%`;
+};
+
+/**
+ * Formata um número para horas com 2 casas decimais
+ */
+export const formatHours = (value: number): string => {
+  return `${value.toFixed(2)}h`;
+};
+
+/**
+ * Formata uma data para o padrão brasileiro
+ */
+export const formatDate = (date: string | Date): string => {
+  const d = new Date(date);
+  return d.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};

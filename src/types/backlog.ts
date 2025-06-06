@@ -11,6 +11,71 @@ export type PriorityType = string;
 export type GroupType = string;
 export type DepartmentType = string;
 
+// Interface para saúde do backlog
+export interface BacklogHealth {
+  idade_media_dias: number;
+  card_mais_antigo_dias: number;
+  distribuicao_por_idade: {
+    "0-30 dias": number;
+    "31-60 dias": number;
+    "61-90 dias": number;
+    "91+ dias": number;
+  };
+}
+
+// Interface para carga de trabalho
+export interface WorkloadByDepartment {
+  total_cards: Record<string, number>;
+  horas_estimadas: Record<string, number>;
+}
+
+// Interface para relação departamento vs prioridade
+export interface DepartmentPriorityRelation {
+  [department: string]: {
+    [priority: string]: number;
+  };
+}
+
+// Interface para distribuição de prioridade por épico
+export interface PriorityDistributionByEpic {
+  [epic: string]: {
+    [priority: string]: number;
+  };
+}
+
+// Interface para card resumido
+export interface CardSummary {
+  Chave: string;
+  Título: string;
+  Prioridade: string;
+  Épico: string;
+  "Unidade / Departamento": string;
+}
+
+// Interface principal para resumo do backlog por projetos
+export interface BacklogSummary {
+  // Métricas principais
+  total_cards: number;
+  total_epicos_unicos: number;
+  total_cards_sem_epico: number;
+  
+  // Primeiros cards na fila
+  primeiro_card_na_fila: CardSummary | null;
+  primeiro_projeto_na_fila: CardSummary | null;
+  
+  // Distribuições e análises
+  distribuicao_prioridade_por_epico: PriorityDistributionByEpic;
+  saude_do_backlog: BacklogHealth;
+  distribuicao_por_status: Record<string, number>;
+  carga_de_trabalho_por_departamento: WorkloadByDepartment;
+  distribuicao_geral_de_prioridade: Record<string, number>;
+  relacao_departamento_vs_prioridade: DepartmentPriorityRelation;
+  
+  // Detalhes das filas
+  detalhes_cards_com_epico: CardSummary[];
+  resumo_geral_cards: CardSummary[];
+}
+
 // Interface base para cards do Jira
 export interface BaseJiraCard {
   ID: string;
@@ -101,36 +166,4 @@ export interface EpicAnalysis {
   epicos_por_departamento: Record<string, number>;
   epicos_sem_departamento: string[];
   departamentos_sem_epicos: string[];
-}
-
-// Interface principal para resumo do backlog
-export interface BacklogSummary {
-  total_geral_cards: number;
-  total_projetos: number;
-  total_cards_sem_projeto: number;
-  projetos: Project[];
-  departamentos: Record<string, DepartmentSummary>;
-  analise_epicos: EpicAnalysis;
-  tempo_medio: number;
-  mais_antigo: {
-    chave: string;
-    titulo: string;
-    dias_no_backlog: number;
-  };
-  fila_de_espera: Array<{
-    Chave: string;
-    Título: string;
-    dias: number;
-  }>;
-  cards_por_departamento: Record<string, number>;
-  por_solicitante: Record<string, number>;
-  por_prioridade: Record<string, number>;
-  por_status: Record<string, number>;
-  tempo_medio_por_departamento: Record<string, number>;
-  por_mes_criacao: Array<{
-    mes: string;
-    total: number;
-  }>;
-  acima_de_15_dias: number;
-  sem_prioridade_calculada: number;
 }
