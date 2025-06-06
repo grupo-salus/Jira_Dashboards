@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Optional
 import pandas as pd
 from collections import defaultdict
+import numpy as np
 
 app = FastAPI()
 
@@ -194,150 +195,106 @@ def get_backlog_summary(
         "por_departamento": dep_dict
     }
 
-
 @router.get("/api/backlog/por-projetos")
-def get_backlog_by_projects(
-    request: Request,
-    departamento: Optional[str] = Query(None),
-    prioridade: Optional[str] = Query(None),
-    grupo_solicitante: Optional[str] = Query(None),
-    solicitante: Optional[str] = Query(None),
-    epico: Optional[str] = Query(None)
-):
+def get_backlog_by_projects(request: Request):
     """
-    Retorna visão detalhada do backlog agrupado por projetos (épicos), com filtros opcionais.
-    Inclui:
-    - Lista de projetos com cards agrupados por épico
-    - Análise de distribuição por departamento
-    - Contagem de épicos por departamento (incluindo casos com dados ausentes)
+    Fornece uma visão geral e completa do backlog com métricas chave e insights adicionais.
     """
+    # -----------------------------------------------------
+    # 1. BUSCA E PREPARAÇÃO DOS DADOS
+    # -----------------------------------------------------
     service = JiraService()
     issues = service.get_raw_backlog_issues(board_id=71).get("issues", [])
-
+    
     if not issues:
-        return {"total_geral_cards": 0, "total_projetos": 0, "projetos": [], "por_departamento": {}, "analise_epicos": {}}
+        return {"mensagem": "Nenhum dado encontrado no backlog."}
 
     df = parse_issues_to_dataframe(issues)
 
     if df.empty:
-        return {"total_geral_cards": 0, "total_projetos": 0, "projetos": [], "por_departamento": {}, "analise_epicos": {}}
+        return {"mensagem": "O DataFrame do backlog está vazio após o parse."}
 
-    # =========================================================================
-    # 1. LIMPEZA E PREPARAÇÃO CENTRALIZADA DOS DADOS
-    # =========================================================================
-    df["Épico"] = df.get("Épico").fillna("Épico não informado").replace("", "Épico não informado")
-    df["Unidade / Departamento"] = df.get("Unidade / Departamento").fillna("Departamento não informado")
-    df["Solicitante"] = df.get("Solicitante").fillna("Solicitante não informado")
-    df["Grupo Solicitante"] = df.get("Grupo Solicitante").fillna("Grupo não informado")
-    df["Prioridade"] = df.get("Prioridade").fillna("Prioridade não informada")
-    df["Estimativa Original (segundos)"] = df.get("Estimativa Original (segundos)").fillna(0)
+    # --- Limpeza de dados para cálculos seguros ---
+    df['Épico'] = df['Épico'].fillna('')
+    # Para os insights, vamos garantir que outras colunas importantes também não tenham nulos
+    df['Status'] = df['Status'].fillna('Não informado')
+    df['Unidade / Departamento'] = df['Unidade / Departamento'].fillna('Não informado')
+    df['Prioridade'] = df['Prioridade'].fillna('Não informada')
+    df['Dias no Backlog'] = df['Dias no Backlog'].fillna(0)
+    df['Estimativa Original (segundos)'] = df['Estimativa Original (segundos)'].fillna(0)
 
-    # =========================================================================
-    # 2. APLICAÇÃO DOS FILTROS
-    # =========================================================================
-    if departamento:
-        df = df[df["Unidade / Departamento"] == departamento]
-    if prioridade:
-        df = df[df["Prioridade"] == prioridade]
-    if grupo_solicitante:
-        df = df[df["Grupo Solicitante"] == grupo_solicitante]
-    if solicitante:
-        df = df[df["Solicitante"] == solicitante]
-    if epico:
-        df = df[df["Épico"] == epico]
+    # -----------------------------------------------------
+    # 2. CÁLCULO DAS MÉTRICAS SOLICITADAS
+    # -----------------------------------------------------
 
-    if df.empty:
-        return {"total_geral_cards": 0, "total_projetos": 0, "projetos": [], "por_departamento": {}, "analise_epicos": {}}
+    total_cards = len(df)
+    df_com_epico = df[df['Épico'] != '']
+    df_sem_epico = df[df['Épico'] == '']
+    total_epicos_unicos = df_com_epico['Épico'].nunique()
+    total_cards_sem_epico = len(df_sem_epico)
+    primeiro_card_fila = df.iloc[0].to_dict() if not df.empty else None
+    primeiro_projeto_fila = df_com_epico.iloc[0].to_dict() if not df_com_epico.empty else None
+    
+    distribuicao_prioridade = {}
+    if not df_com_epico.empty:
+        distribuicao_prioridade = df_com_epico.groupby('Épico')['Prioridade'].value_counts().unstack(fill_value=0).to_dict('index')
 
-    # =========================================================================
-    # 3. AGRUPAMENTO POR ÉPICO (PROJETOS)
-    # =========================================================================
-    projetos = []
-    agrupado_por_epico = df.groupby("Épico")
+    fila_com_epicos = df_com_epico.replace({np.nan: None}).to_dict(orient='records')
+    colunas_principais = ['Chave', 'Título', 'Prioridade', 'Épico', 'Unidade / Departamento']
+    fila_geral_resumida = df[colunas_principais].replace({np.nan: None}).to_dict(orient='records')
+    
+    # --------------------------------------------------------------------------
+    # 3. CÁLCULO DOS INSIGHTS ADICIONAIS PARA O DASHBOARD (NOVA SEÇÃO)
+    # --------------------------------------------------------------------------
 
-    for epico_nome, grupo in agrupado_por_epico:
-        grupo_ordenado = grupo.sort_values("Dias no Backlog", ascending=False)
+    # Insight 1: Saúde do Backlog (Aging)
+    saude_backlog = {
+        "idade_media_dias": int(df['Dias no Backlog'].mean()),
+        "card_mais_antigo_dias": int(df['Dias no Backlog'].max())
+    }
+    # Cria faixas de idade e conta os cards em cada uma
+    bins = [-1, 30, 60, 90, np.inf] # Começa com -1 para incluir o dia 0
+    labels = ["0-30 dias", "31-60 dias", "61-90 dias", "91+ dias"]
+    df['faixa_idade'] = pd.cut(df['Dias no Backlog'], bins=bins, labels=labels, right=True)
+    saude_backlog['distribuicao_por_idade'] = df['faixa_idade'].value_counts().sort_index().to_dict()
+    
+    # Insight 2: Distribuição por Status
+    distribuicao_status = df['Status'].value_counts().to_dict()
 
-        projeto = {
-            "epico": epico_nome,
-            "total_cards": len(grupo),
-            "prioridade_distribuicao": grupo["Prioridade"].value_counts().to_dict(),
-            "media_dias_backlog": int(grupo["Dias no Backlog"].mean()),
-            "mais_antigo": grupo_ordenado.iloc[0]["Chave"] if not grupo_ordenado.empty else None,
-            "estimativa_total_horas": int(grupo["Estimativa Original (segundos)"].sum() / 3600),
-            "cards": grupo_ordenado[[
-                "Chave", "Título", "Solicitante", "Unidade / Departamento", "Dias no Backlog", "Prioridade"
-            ]].to_dict(orient="records")
-        }
-        projetos.append(projeto)
-
-    # =========================================================================
-    # 4. AGRUPAMENTO POR DEPARTAMENTO
-    # =========================================================================
-    dep_dict = {}
-    agrupado_dep_epico = df.groupby(["Unidade / Departamento", "Épico"])
-    projetos_por_departamento = {}
-
-    for (dep, ep), sub_grupo in agrupado_dep_epico:
-        if dep not in dep_dict:
-            dep_dict[dep] = {"total_projetos": 0, "projetos": []}
-            projetos_por_departamento[dep] = set()
-        if ep != "Épico não informado":
-            projetos_por_departamento[dep].add(ep)
-        dep_dict[dep]["projetos"].append({
-            "epico": ep,
-            "total_cards": len(sub_grupo),
-            "cards": sub_grupo[["Chave", "Título", "Dias no Backlog"]].to_dict(orient="records")
-        })
-
-    for dep in dep_dict:
-        dep_dict[dep]["total_projetos"] = len(projetos_por_departamento.get(dep, set()))
-
-    total_projetos = len(df[df["Épico"] != "Épico não informado"]["Épico"].unique())
-    total_cards_sem_projeto = len(df[df["Épico"] == "Épico não informado"])
-
-    # =========================================================================
-    # 5. ANÁLISE DE ÉPICOS POR DEPARTAMENTO
-    # =========================================================================
-    epicos_por_departamento = defaultdict(set)
-
-    for projeto in projetos:
-        for card in projeto["cards"]:
-            departamento = card.get("Unidade / Departamento", "Departamento não informado")
-            epico = projeto["epico"]
-            if epico != "Épico não informado":
-                epicos_por_departamento[departamento].add(epico)
-
-    epicos_por_departamento_contagem = {
-        dep: len(epis) for dep, epis in epicos_por_departamento.items()
+    # Insight 3: Carga de Trabalho por Departamento
+    carga_por_departamento = {
+        "total_cards": df['Unidade / Departamento'].value_counts().to_dict(),
+        "horas_estimadas": (df.groupby('Unidade / Departamento')['Estimativa Original (segundos)'].sum() / 3600).round(2).to_dict()
     }
 
-    epicos_sem_departamento = df[
-        (df["Unidade / Departamento"] == "Departamento não informado") &
-        (df["Épico"] != "Épico não informado")
-    ]["Épico"].unique().tolist()
+    # Insight 4: Análise de Prioridades (Geral)
+    distribuicao_geral_prioridade = df['Prioridade'].value_counts().to_dict()
 
-    todos_departamentos = set(df["Unidade / Departamento"].unique())
-    departamentos_sem_epicos = list(todos_departamentos - set(epicos_por_departamento.keys()))
+    # Insight 5: Relação Departamento vs. Prioridade
+    crosstab_dep_prio = pd.crosstab(df['Unidade / Departamento'], df['Prioridade']).to_dict('index')
 
-    analise_epicos = {
-        "epicos_por_departamento": epicos_por_departamento_contagem,
-        "epicos_sem_departamento": epicos_sem_departamento,
-        "departamentos_sem_epicos": departamentos_sem_epicos
-    }
-
-    # =========================================================================
-    # 6. RETORNO FINAL
-    # =========================================================================
+    # -----------------------------------------------------
+    # 4. MONTAGEM DA RESPOSTA FINAL
+    # -----------------------------------------------------
     return {
-        "total_geral_cards": len(df),
-        "total_projetos": total_projetos,
-        "total_cards_sem_projeto": total_cards_sem_projeto,  
-        "projetos": sorted(projetos, key=lambda p: p['total_cards'], reverse=True),
-        "por_departamento": dep_dict,
-        "analise_epicos": analise_epicos
-    }
+        # Métricas originais
+        "total_cards": total_cards,
+        "total_epicos_unicos": total_epicos_unicos,
+        "total_cards_sem_epico": total_cards_sem_epico,
+        "primeiro_card_na_fila": primeiro_card_fila,
+        "primeiro_projeto_na_fila": primeiro_projeto_fila,
+        "distribuicao_prioridade_por_epico": distribuicao_prioridade,
+        
+        "saude_do_backlog": saude_backlog,
+        "distribuicao_por_status": distribuicao_status,
+        "carga_de_trabalho_por_departamento": carga_por_departamento,
+        "distribuicao_geral_de_prioridade": distribuicao_geral_prioridade,
+        "relacao_departamento_vs_prioridade": crosstab_dep_prio,
 
+        # Detalhes das filas (mantidos no final)
+        "detalhes_cards_com_epico": fila_com_epicos,
+        "resumo_geral_cards": fila_geral_resumida,
+    }
 
 @router.get("/api/sprint/resumo")
 def get_sprint_summary(request: Request):
