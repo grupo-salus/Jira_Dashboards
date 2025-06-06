@@ -22,16 +22,15 @@ const AppContent: React.FC = () => {
   const [refreshKey, setRefreshKey] = React.useState(0);
 
   // Estado para armazenar o timestamp da última atualização
-  const [lastUpdate, setLastUpdate] = React.useState<Date>(new Date());
+  // (Removido porque não está sendo utilizado)
 
   // Hook para acessar o contexto do backlog
   const { refreshData } = useBacklog();
 
-  // Função para atualizar os dados e o timestamp
+  // Função para atualizar os dados
   const handleRefresh = async () => {
     await refreshData(); // Atualiza os dados do backlog
     setRefreshKey((k) => k + 1);
-    setLastUpdate(new Date());
   };
 
   // Efeito para configurar a atualização automática periódica

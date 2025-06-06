@@ -1,14 +1,44 @@
 import React from "react";
-import { calculateBacklogMetrics } from "../../utils/backlogMetrics";
-import { BacklogItem } from "../../types/backlog";
+
 import { getPriorityConfig } from "../../constants/priorities";
 import { themeColors } from "../../utils/themeColors";
 
-// Componente de gráfico
+/* =======================
+   Tipos/Interfaces
+======================= */
 interface BacklogChartsProps {
   epicosPorPrioridade: Record<string, number>;
 }
+interface TarefasPorPrioridadeProps {
+  tarefasPorPrioridade: Record<string, number>;
+}
+interface SaudeBacklogProps {
+  saude: {
+    total: number;
+    faixa30: number;
+    faixa60: number;
+    faixa90: number;
+    faixa90mais: number;
+    idade_media: number;
+    mais_antigo: number;
+    projeto_mais_antigo: {
+      chave: string;
+      titulo: string;
+      prioridade: string;
+      dias: number;
+    };
+  };
+}
+interface EpicosPorDepartamentoProps {
+  epicosPorDepartamento: Record<string, Record<string, number>>;
+}
+interface CardsPorDepartamentoProps {
+  cardsPorDepartamento: Record<string, number>;
+}
 
+/* =======================
+   Gráfico: Épicos/Projetos por Prioridade
+======================= */
 export const BacklogCharts: React.FC<BacklogChartsProps> = ({
   epicosPorPrioridade,
 }) => {
@@ -49,30 +79,9 @@ export const BacklogCharts: React.FC<BacklogChartsProps> = ({
   );
 };
 
-// Página que usa o gráfico
-interface BacklogPageProps {
-  items: BacklogItem[];
-}
-
-export const BacklogPage: React.FC<BacklogPageProps> = ({ items }) => {
-  const metrics = calculateBacklogMetrics(items);
-
-  return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Backlog</h1>
-      <BacklogCharts epicosPorPrioridade={metrics.epicos_por_prioridade} />
-      {/* Outros componentes e métricas */}
-    </div>
-  );
-};
-
-export default BacklogPage;
-
-// Novo componente para Tarefas por Prioridade
-interface TarefasPorPrioridadeProps {
-  tarefasPorPrioridade: Record<string, number>;
-}
-
+/* =======================
+   Gráfico: Tarefas por Prioridade
+======================= */
 export const TarefasPorPrioridadeChart: React.FC<TarefasPorPrioridadeProps> = ({
   tarefasPorPrioridade,
 }) => {
@@ -111,48 +120,25 @@ export const TarefasPorPrioridadeChart: React.FC<TarefasPorPrioridadeProps> = ({
   );
 };
 
-// Novo componente para Saúde do Backlog
-interface SaudeBacklogProps {
-  saude: {
-    total: number;
-    faixa30: number;
-    faixa60: number;
-    faixa90: number;
-    faixa90mais: number;
-    idade_media: number;
-    mais_antigo: number;
-    projeto_mais_antigo: {
-      chave: string;
-      titulo: string;
-      prioridade: string;
-      dias: number;
-    };
-  };
-}
-
+/* =======================
+   Gráfico: Saúde do Backlog
+======================= */
 export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
-  // Use as primeiras 4 cores da paleta chart
   const fatias = [
-    { label: "Até 30 dias", value: saude.faixa30, color: themeColors.chart[5] }, // Emerald
-    { label: "31-60 dias", value: saude.faixa60, color: themeColors.chart[4] }, // Amber
-    { label: "61-90 dias", value: saude.faixa90, color: themeColors.chart[8] }, // Orange
-    {
-      label: "90+ dias",
-      value: saude.faixa90mais,
-      color: themeColors.chart[3],
-    }, // Red
+    { label: "Até 30 dias", value: saude.faixa30, color: themeColors.chart[5] },
+    { label: "31-60 dias", value: saude.faixa60, color: themeColors.chart[4] },
+    { label: "61-90 dias", value: saude.faixa90, color: themeColors.chart[8] },
+    { label: "90+ dias", value: saude.faixa90mais, color: themeColors.chart[3] },
   ];
   const total = saude.total || 1;
   let startAngle = 0;
 
-  // Calcula as fatias do gráfico de pizza
   const paths = fatias.map((fatia) => {
     const percent = fatia.value / total;
     const angle = percent * 360;
     const large = angle > 180 ? 1 : 0;
     const r = 48;
-    const cx = 60,
-      cy = 60;
+    const cx = 60, cy = 60;
     const x1 = cx + r * Math.cos((Math.PI * (startAngle - 90)) / 180);
     const y1 = cy + r * Math.sin((Math.PI * (startAngle - 90)) / 180);
     startAngle += angle;
@@ -174,11 +160,10 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
   );
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col">
       {/* Header com SVG e título */}
       <div className="flex items-center mb-4">
         <div className="mr-3 flex-shrink-0">
-          {/* SVG de saúde */}
           <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
             <circle
               cx="12"
@@ -222,7 +207,6 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
       </div>
       {/* Gráfico e legenda */}
       <div className="flex items-center justify-between flex-1">
-        {/* Gráfico centralizado */}
         <div className="flex-1 flex justify-center">
           <svg width="120" height="120" className="mb-2">
             {paths}
@@ -239,7 +223,6 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
             </text>
           </svg>
         </div>
-        {/* Legenda à direita */}
         <div className="flex flex-col gap-2 ml-4">
           {fatias.map((fatia) => (
             <div
@@ -264,15 +247,12 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
   );
 };
 
-// Gráfico de colunas: Departamentos no eixo Y, total de épicos (projetos) no eixo X
-
-interface EpicosPorDepartamentoProps {
-  epicosPorDepartamento: Record<string, Record<string, number>>;
-}
-
-export const EpicosPorDepartamentoChart: React.FC<
-  EpicosPorDepartamentoProps
-> = ({ epicosPorDepartamento }) => {
+/* =======================
+   Gráfico: Épicos/Projetos por Departamento
+======================= */
+export const EpicosPorDepartamentoChart: React.FC<EpicosPorDepartamentoProps> = ({
+  epicosPorDepartamento,
+}) => {
   const departamentos = Object.keys(epicosPorDepartamento);
   const data = departamentos.map((dep) => ({
     departamento: dep,
@@ -311,11 +291,9 @@ export const EpicosPorDepartamentoChart: React.FC<
   );
 };
 
-// Novo componente: Cards por Departamento
-interface CardsPorDepartamentoProps {
-  cardsPorDepartamento: Record<string, number>;
-}
-
+/* =======================
+   Gráfico: Cards por Departamento
+======================= */
 export const CardsPorDepartamentoChart: React.FC<CardsPorDepartamentoProps> = ({
   cardsPorDepartamento,
 }) => {
