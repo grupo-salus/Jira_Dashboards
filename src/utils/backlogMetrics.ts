@@ -147,8 +147,9 @@ export function getSaudeBacklog(items: BacklogItem[]) {
   const faixa90 = items.filter(
     (item) => item["Dias no Backlog"] > 60 && item["Dias no Backlog"] <= 90
   ).length;
-  const faixa90mais = items.filter((item) => item["Dias no Backlog"] > 90)
-    .length;
+  const faixa90mais = items.filter(
+    (item) => item["Dias no Backlog"] > 90
+  ).length;
   const idade_media = Math.round(
     items.reduce((acc, item) => acc + item["Dias no Backlog"], 0) / (total || 1)
   );
@@ -186,7 +187,9 @@ export function calculateBacklogMetrics(items: BacklogItem[]) {
     tarefas_por_prioridade: getTarefasPorPrioridade(items),
     saude_backlog: getSaudeBacklog(items),
     epicos_por_departamento: getEpicosPorDepartamento(items),
-    cards_por_departamento: getCardsPorDepartamento(items), // <-- ADICIONE ESTA LINHA
+    cards_por_departamento: getCardsPorDepartamento(items),
+    projetos_por_solicitante: getProjetosPorSolicitante(items),
+    cards_por_solicitante: getCardsPorSolicitante(items),
     // Outras métricas...
   };
 }
@@ -222,6 +225,34 @@ export function getCardsPorDepartamento(items: BacklogItem[]) {
   items.forEach((item) => {
     const departamento = item["Unidade / Departamento"] || "Não informado";
     resultado[departamento] = (resultado[departamento] || 0) + 1;
+  });
+  return resultado;
+}
+
+export function getProjetosPorSolicitante(items: BacklogItem[]) {
+  // Conta quantos épicos únicos cada solicitante possui
+  const resultado: Record<string, Set<string>> = {};
+  items.forEach((item) => {
+    const solicitante = item.Solicitante || "Não informado";
+    const epico = item.Épico;
+    if (!epico) return;
+    if (!resultado[solicitante]) resultado[solicitante] = new Set();
+    resultado[solicitante].add(epico);
+  });
+  // Converte o Set em número
+  const final: Record<string, number> = {};
+  Object.entries(resultado).forEach(([solicitante, epicos]) => {
+    final[solicitante] = epicos.size;
+  });
+  return final;
+}
+
+export function getCardsPorSolicitante(items: BacklogItem[]) {
+  // Conta quantos cards cada solicitante possui
+  const resultado: Record<string, number> = {};
+  items.forEach((item) => {
+    const solicitante = item.Solicitante || "Não informado";
+    resultado[solicitante] = (resultado[solicitante] || 0) + 1;
   });
   return resultado;
 }

@@ -10,6 +10,8 @@ import {
   SaudeBacklogChart,
   EpicosPorDepartamentoChart,
   CardsPorDepartamentoChart,
+  ProjetosPorSolicitanteChart, // importe o novo chart
+  CardsPorSolicitanteChart, // importe o novo chart
 } from "../components/dashboard/BacklogCharts";
 
 const DashBacklog: React.FC = () => {
@@ -111,52 +113,17 @@ const DashBacklog: React.FC = () => {
                 cardsPorDepartamento={metrics.cards_por_departamento}
               />
             </div>
-            {/* 
+            {/* NOVOS CHARTS DE SOLICITANTE */}
             <div className="break-inside-avoid">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-              <span className="text-gray-400">componente 6</span>
-              <span className="text-gray-500 mt-2">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
-                hic libero dolores qui odit omnis cupiditate vitae distinctio
-                quia et aspernatur veritatis veniam minus sunt sint sit,
-                possimus sequi.
-              </span>
-              </div>
+              <ProjetosPorSolicitanteChart
+                projetosPorSolicitante={metrics.projetos_por_solicitante}
+              />
             </div>
             <div className="break-inside-avoid">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-              <span className="text-gray-400">Componente 7</span>
-              <span className="text-gray-500 mt-2">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
-                hic libero dolores qui odit omnis cupiditate vitae distinctio
-                quia et aspernatur veritatis veniam minus sunt sint sit,
-                possimus sequi.
-              </span>
-              </div>
+              <CardsPorSolicitanteChart
+                cardsPorSolicitante={metrics.cards_por_solicitante}
+              />
             </div>
-            <div className="break-inside-avoid">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-              <span className="text-gray-400">Componente 8</span>
-              <span className="text-gray-500 mt-2">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
-                hic libero dolores qui odit omnis cupiditate vitae distinctio
-                quia et aspernatur veritatis veniam minus sunt sint sit,
-                possimus sequi.
-              </span>
-              </div>
-            </div>
-            <div className="break-inside-avoid">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center">
-              <span className="text-gray-400">Componente 9</span>
-              <span className="text-gray-500 mt-2">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab ut
-                hic libero dolores qui odit omnis cupiditate vitae distinctio
-                quia et aspernatur veritatis veniam minus sunt sint sit,
-                possimus sequi.
-              </span>
-              </div>
-            </div>
-            */}
           </div>
           {/* Coluna das filas */}
           <div className="w-full max-w-[420px]">

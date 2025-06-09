@@ -128,7 +128,11 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
     { label: "Até 30 dias", value: saude.faixa30, color: themeColors.chart[5] },
     { label: "31-60 dias", value: saude.faixa60, color: themeColors.chart[4] },
     { label: "61-90 dias", value: saude.faixa90, color: themeColors.chart[8] },
-    { label: "90+ dias", value: saude.faixa90mais, color: themeColors.chart[3] },
+    {
+      label: "90+ dias",
+      value: saude.faixa90mais,
+      color: themeColors.chart[3],
+    },
   ];
   const total = saude.total || 1;
   let startAngle = 0;
@@ -138,7 +142,8 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
     const angle = percent * 360;
     const large = angle > 180 ? 1 : 0;
     const r = 48;
-    const cx = 60, cy = 60;
+    const cx = 60,
+      cy = 60;
     const x1 = cx + r * Math.cos((Math.PI * (startAngle - 90)) / 180);
     const y1 = cy + r * Math.sin((Math.PI * (startAngle - 90)) / 180);
     startAngle += angle;
@@ -250,9 +255,9 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
 /* =======================
    Gráfico: Épicos/Projetos por Departamento
 ======================= */
-export const EpicosPorDepartamentoChart: React.FC<EpicosPorDepartamentoProps> = ({
-  epicosPorDepartamento,
-}) => {
+export const EpicosPorDepartamentoChart: React.FC<
+  EpicosPorDepartamentoProps
+> = ({ epicosPorDepartamento }) => {
   const departamentos = Object.keys(epicosPorDepartamento);
   const data = departamentos.map((dep) => ({
     departamento: dep,
@@ -313,6 +318,96 @@ export const CardsPorDepartamentoChart: React.FC<CardsPorDepartamentoProps> = ({
           <div key={item.departamento} className="flex items-center gap-2">
             <span className="w-32 text-xs font-semibold truncate">
               {item.departamento}
+            </span>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
+              <div
+                className="h-4 rounded"
+                style={{
+                  width: `${(item.totalCards / max) * 100}%`,
+                  background: themeColors.chart[idx % themeColors.chart.length],
+                }}
+              />
+              <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
+                {item.totalCards}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* =======================
+   Gráfico: Projetos por Solicitante
+======================= */
+interface ProjetosPorSolicitanteProps {
+  projetosPorSolicitante: Record<string, number>;
+}
+
+export const ProjetosPorSolicitanteChart: React.FC<
+  ProjetosPorSolicitanteProps
+> = ({ projetosPorSolicitante }) => {
+  const solicitantes = Object.keys(projetosPorSolicitante);
+  const data = solicitantes.map((sol) => ({
+    solicitante: sol,
+    totalProjetos: projetosPorSolicitante[sol],
+  }));
+  const max = Math.max(...data.map((d) => d.totalProjetos), 1);
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <h3 className="text-lg font-semibold mb-4">Projetos por Solicitante</h3>
+      <div className="flex flex-col gap-3">
+        {data.map((item, idx) => (
+          <div key={item.solicitante} className="flex items-center gap-2">
+            <span className="w-32 text-xs font-semibold truncate">
+              {item.solicitante}
+            </span>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
+              <div
+                className="h-4 rounded"
+                style={{
+                  width: `${(item.totalProjetos / max) * 100}%`,
+                  background: themeColors.chart[idx % themeColors.chart.length],
+                }}
+              />
+              <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
+                {item.totalProjetos}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* =======================
+   Gráfico: Cards por Solicitante
+======================= */
+interface CardsPorSolicitanteProps {
+  cardsPorSolicitante: Record<string, number>;
+}
+
+export const CardsPorSolicitanteChart: React.FC<CardsPorSolicitanteProps> = ({
+  cardsPorSolicitante,
+}) => {
+  const solicitantes = Object.keys(cardsPorSolicitante);
+  const data = solicitantes.map((sol) => ({
+    solicitante: sol,
+    totalCards: cardsPorSolicitante[sol],
+  }));
+  const max = Math.max(...data.map((d) => d.totalCards), 1);
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <h3 className="text-lg font-semibold mb-4">Cards por Solicitante</h3>
+      <div className="flex flex-col gap-3">
+        {data.map((item, idx) => (
+          <div key={item.solicitante} className="flex items-center gap-2">
+            <span className="w-32 text-xs font-semibold truncate">
+              {item.solicitante}
             </span>
             <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
               <div
