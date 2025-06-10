@@ -55,17 +55,17 @@ def get_tabela_backlog(
     ]:
         df[col] = df[col].fillna("Não informado")
 
-    # Tratamento seguro para a coluna "Épico"
-    if "Épico" not in df.columns:
-        df["Épico"] = ""
+    # Tratamento seguro para a coluna "Projeto"
+    if "Projeto" not in df.columns:
+        df["Projeto"] = ""
     else:
-        df["Épico"] = df["Épico"].fillna("")
+        df["Projeto"] = df["Projeto"].fillna("")
 
     # Aplicação de filtros
     if area:
         df = df[df["Unidade / Departamento"] == area]
     if projeto:
-        df = df[df["Épico"] == projeto]
+        df = df[df["Projeto"] == projeto]
     if status:
         df = df[df["Status"] == status]
     if prioridade:

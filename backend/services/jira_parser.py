@@ -22,7 +22,7 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
     for issue in issues:
         fields = issue.get("fields", {})
 
-        # Processamento do campo de épico (casos diferentes para suportar variações da API)
+        # Processamento do campo de projeto (casos diferentes para suportar variações da API)
         epic_raw = fields.get("epic")
         epic_summary = None
         if isinstance(epic_raw, dict):
@@ -37,8 +37,8 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
             "ID": issue.get("id"),
             "Chave": issue.get("key"),
 
-            # Informações do épico e título
-            "Épico": epic_summary or None,
+            # Informações do projeto e título
+            "Projeto": epic_summary or None,
             "Título": get(fields.get("summary")),
 
             # Metadados da issue
@@ -78,7 +78,6 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
 
         rows.append(row)
 
-    # Cria o DataFrame a partir da lista de dicionários
     df = pd.DataFrame(rows)
 
     # Processamento de datas e cálculo de métricas temporais
