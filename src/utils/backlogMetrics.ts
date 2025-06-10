@@ -26,7 +26,7 @@ export interface FilaItem {
   titulo: string;
   prioridade: string;
   epico: string | null;
-  departamento: string;
+  area: string;
 }
 
 // Função para calcular os totalizadores básicos
@@ -124,7 +124,7 @@ function getFilaAtual(items: BacklogItem[]): FilaItem[] {
       titulo: item.Título,
       prioridade: item.Prioridade,
       epico: item.Épico,
-      departamento: item["Unidade / Departamento"],
+      area: item["Unidade / Departamento"],
     }));
 }
 
@@ -143,7 +143,7 @@ function getFilaPorProjeto(items: BacklogItem[]): FilaItem[] {
         titulo: item.Título,
         prioridade: item.Prioridade,
         epico: item.Épico,
-        departamento: item["Unidade / Departamento"],
+        area: item["Unidade / Departamento"],
       });
     }
   }
@@ -243,24 +243,24 @@ export function getSaudeBacklog(items: BacklogItem[]) {
 
 // (As funções abaixo já são seguras para arrays vazios)
 
-export function getEpicosPorDepartamento(items: BacklogItem[]) {
+export function getEpicosPorArea(items: BacklogItem[]) {
   const resultado: Record<string, Record<string, number>> = {};
   items.forEach((item) => {
     const epico = item.Épico;
-    const departamento = item["Unidade / Departamento"] || "Não informado";
+    const area = item["Unidade / Departamento"] || "Não informado";
     if (!epico) return;
-    if (!resultado[departamento]) resultado[departamento] = {};
-    if (!resultado[departamento][epico]) resultado[departamento][epico] = 0;
-    resultado[departamento][epico]++;
+    if (!resultado[area]) resultado[area] = {};
+    if (!resultado[area][epico]) resultado[area][epico] = 0;
+    resultado[area][epico]++;
   });
   return resultado;
 }
 
-export function getCardsPorDepartamento(items: BacklogItem[]) {
+export function getCardsPorArea(items: BacklogItem[]) {
   const resultado: Record<string, number> = {};
   items.forEach((item) => {
-    const departamento = item["Unidade / Departamento"] || "Não informado";
-    resultado[departamento] = (resultado[departamento] || 0) + 1;
+    const area = item["Unidade / Departamento"] || "Não informado";
+    resultado[area] = (resultado[area] || 0) + 1;
   });
   return resultado;
 }
@@ -299,8 +299,8 @@ export function calculateBacklogMetrics(items: BacklogItem[]) {
     epicos_por_prioridade: getEpicosPorPrioridade(items),
     tarefas_por_prioridade: getTarefasPorPrioridade(items),
     saude_backlog: getSaudeBacklog(items),
-    epicos_por_departamento: getEpicosPorDepartamento(items),
-    cards_por_departamento: getCardsPorDepartamento(items),
+    epicos_por_area: getEpicosPorArea(items),
+    cards_por_area: getCardsPorArea(items),
     projetos_por_solicitante: getProjetosPorSolicitante(items),
     cards_por_solicitante: getCardsPorSolicitante(items),
   };

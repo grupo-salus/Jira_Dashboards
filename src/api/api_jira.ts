@@ -4,7 +4,7 @@ const API_URL = "http://localhost:8000";
 
 // Funções de API
 export async function fetchBacklogTable(filters?: {
-  departamento?: string;
+  area?: string;
   status?: string;
   prioridade?: string;
   grupo_solicitante?: string;

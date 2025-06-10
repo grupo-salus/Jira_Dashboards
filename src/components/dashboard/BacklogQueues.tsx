@@ -17,7 +17,10 @@ export const BacklogQueues: React.FC<BacklogQueuesProps> = ({
       <div className="flex items-center gap-2 px-2 py-3 w-full bg-white dark:bg-gray-800">
         {/* SVG de projeto */}
         <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M4 4h16v2H4V4zm0 4h16v2H4V8zm0 4h10v2H4v-2zm0 4h10v2H4v-2z" />
+          <path
+            fill="currentColor"
+            d="M4 4h16v2H4V4zm0 4h16v2H4V8zm0 4h10v2H4v-2zm0 4h10v2H4v-2z"
+          />
         </svg>
         <h2 className="text-lg font-semibold">
           Fila por Projeto
@@ -51,9 +54,7 @@ export const BacklogQueues: React.FC<BacklogQueuesProps> = ({
                 >
                   {item.epico || "-"}
                 </span>
-                <span className="truncate max-w-[80px]">
-                  {item.departamento}
-                </span>
+                <span className="truncate max-w-[80px]">{item.area}</span>
               </div>
               <div className="text-xs text-gray-700 dark:text-gray-300 truncate max-w-full pl-1">
                 {item.titulo}
@@ -68,7 +69,10 @@ export const BacklogQueues: React.FC<BacklogQueuesProps> = ({
       <div className="flex items-center gap-2 px-2 py-3 w-full bg-white dark:bg-gray-800">
         {/* SVG de lista */}
         <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+          <path
+            fill="currentColor"
+            d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
+          />
         </svg>
         <h2 className="text-lg font-semibold">
           Fila Atual
@@ -102,9 +106,7 @@ export const BacklogQueues: React.FC<BacklogQueuesProps> = ({
                 >
                   {item.epico || "-"}
                 </span>
-                <span className="truncate max-w-[80px]">
-                  {item.departamento}
-                </span>
+                <span className="truncate max-w-[80px]">{item.area}</span>
               </div>
               <div className="text-xs text-gray-700 dark:text-gray-300 truncate max-w-full pl-1">
                 {item.titulo}

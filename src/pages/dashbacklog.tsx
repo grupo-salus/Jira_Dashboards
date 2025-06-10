@@ -8,8 +8,8 @@ import {
   BacklogCharts,
   TarefasPorPrioridadeChart,
   SaudeBacklogChart,
-  EpicosPorDepartamentoChart,
-  CardsPorDepartamentoChart,
+  EpicosPorAreaChart,
+  CardsPorAreaChart,
   ProjetosPorSolicitanteChart,
   CardsPorSolicitanteChart,
 } from "../components/dashboard/BacklogCharts";
@@ -21,7 +21,7 @@ const DashBacklog: React.FC = () => {
 
   const [filtros, setFiltros] = useState({
     epico: "",
-    departamento: "",
+    area: "",
     solicitante: "",
     prioridade: "",
   });
@@ -46,8 +46,8 @@ const DashBacklog: React.FC = () => {
     return rawData.filter(
       (item) =>
         (filtros.epico ? item.Épico === filtros.epico : true) &&
-        (filtros.departamento
-          ? item["Unidade / Departamento"] === filtros.departamento
+        (filtros.area
+          ? item["Unidade / Departamento"] === filtros.area
           : true) &&
         (filtros.solicitante
           ? item.Solicitante === filtros.solicitante
@@ -60,7 +60,7 @@ const DashBacklog: React.FC = () => {
     () => [...new Set(rawData.map((i) => i.Épico).filter(Boolean))],
     [rawData]
   );
-  const departamentoOptions = useMemo(
+  const areaOptions = useMemo(
     () => [
       ...new Set(
         rawData.map((i) => i["Unidade / Departamento"]).filter(Boolean)
@@ -132,26 +132,26 @@ const DashBacklog: React.FC = () => {
             ))}
           </select>
         </div>
-        {/* Filtro de Departamento */}
+        {/* Filtro de Área */}
         <div>
           <label
-            htmlFor="departamento-filter"
+            htmlFor="area-filter"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Departamento
+            Área
           </label>
           <select
-            id="departamento-filter"
+            id="area-filter"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            value={filtros.departamento}
+            value={filtros.area}
             onChange={(e) =>
-              setFiltros((f) => ({ ...f, departamento: e.target.value }))
+              setFiltros((f) => ({ ...f, area: e.target.value }))
             }
           >
-            <option value="">Todos</option>
-            {departamentoOptions.map((dep) => (
-              <option key={dep} value={dep}>
-                {dep}
+            <option value="">Todas</option>
+            {areaOptions.map((area) => (
+              <option key={area} value={area}>
+                {area}
               </option>
             ))}
           </select>
@@ -256,14 +256,10 @@ const DashBacklog: React.FC = () => {
               <SaudeBacklogChart saude={metrics.saude_backlog} />
             </div>
             <div className="break-inside-avoid">
-              <EpicosPorDepartamentoChart
-                epicosPorDepartamento={metrics.epicos_por_departamento}
-              />
+              <EpicosPorAreaChart epicosPorArea={metrics.epicos_por_area} />
             </div>
             <div className="break-inside-avoid">
-              <CardsPorDepartamentoChart
-                cardsPorDepartamento={metrics.cards_por_departamento}
-              />
+              <CardsPorAreaChart cardsPorArea={metrics.cards_por_area} />
             </div>
             <div className="break-inside-avoid">
               <ProjetosPorSolicitanteChart

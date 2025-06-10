@@ -14,7 +14,7 @@ interface BacklogKPICardsProps {
     };
     primeiro_projeto?: {
       epico: string;
-      departamento: string;
+      area: string;
       prioridade: string;
       chave: string;
     };
@@ -281,7 +281,7 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {metrics.primeiro_projeto.departamento}
+                    {metrics.primeiro_projeto.area}
                   </span>
                   {(() => {
                     const priorityConfig = getPriorityConfig(

@@ -29,11 +29,11 @@ interface SaudeBacklogProps {
     };
   };
 }
-interface EpicosPorDepartamentoProps {
-  epicosPorDepartamento: Record<string, Record<string, number>>;
+interface EpicosPorAreaProps {
+  epicosPorArea: Record<string, Record<string, number>>;
 }
-interface CardsPorDepartamentoProps {
-  cardsPorDepartamento: Record<string, number>;
+interface CardsPorAreaProps {
+  cardsPorArea: Record<string, number>;
 }
 
 /* =======================
@@ -253,29 +253,27 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
 };
 
 /* =======================
-   Gráfico: Épicos/Projetos por Departamento
+   Gráfico: Épicos/Projetos por Área
 ======================= */
-export const EpicosPorDepartamentoChart: React.FC<
-  EpicosPorDepartamentoProps
-> = ({ epicosPorDepartamento }) => {
-  const departamentos = Object.keys(epicosPorDepartamento);
-  const data = departamentos.map((dep) => ({
-    departamento: dep,
-    totalEpicos: Object.keys(epicosPorDepartamento[dep]).length,
+export const EpicosPorAreaChart: React.FC<EpicosPorAreaProps> = ({
+  epicosPorArea,
+}) => {
+  const areas = Object.keys(epicosPorArea);
+  const data = areas.map((area) => ({
+    area: area,
+    totalEpicos: Object.keys(epicosPorArea[area]).length,
   }));
 
   const max = Math.max(...data.map((d) => d.totalEpicos), 1);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <h3 className="text-lg font-semibold mb-4">
-        Épicos/Projetos por Departamento
-      </h3>
+      <h3 className="text-lg font-semibold mb-4">Épicos/Projetos por Área</h3>
       <div className="flex flex-col gap-3">
         {data.map((item, idx) => (
-          <div key={item.departamento} className="flex items-center gap-2">
+          <div key={item.area} className="flex items-center gap-2">
             <span className="w-32 text-xs font-semibold truncate">
-              {item.departamento}
+              {item.area}
             </span>
             <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
               <div
@@ -297,27 +295,27 @@ export const EpicosPorDepartamentoChart: React.FC<
 };
 
 /* =======================
-   Gráfico: Cards por Departamento
+   Gráfico: Cards por Área
 ======================= */
-export const CardsPorDepartamentoChart: React.FC<CardsPorDepartamentoProps> = ({
-  cardsPorDepartamento,
+export const CardsPorAreaChart: React.FC<CardsPorAreaProps> = ({
+  cardsPorArea,
 }) => {
-  const departamentos = Object.keys(cardsPorDepartamento);
-  const data = departamentos.map((dep) => ({
-    departamento: dep,
-    totalCards: cardsPorDepartamento[dep],
+  const areas = Object.keys(cardsPorArea);
+  const data = areas.map((area) => ({
+    area: area,
+    totalCards: cardsPorArea[area],
   }));
 
   const max = Math.max(...data.map((d) => d.totalCards), 1);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <h3 className="text-lg font-semibold mb-4">Cards por Departamento</h3>
+      <h3 className="text-lg font-semibold mb-4">Cards por Área</h3>
       <div className="flex flex-col gap-3">
         {data.map((item, idx) => (
-          <div key={item.departamento} className="flex items-center gap-2">
+          <div key={item.area} className="flex items-center gap-2">
             <span className="w-32 text-xs font-semibold truncate">
-              {item.departamento}
+              {item.area}
             </span>
             <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
               <div

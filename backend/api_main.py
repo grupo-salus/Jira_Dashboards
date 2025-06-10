@@ -26,7 +26,7 @@ router = APIRouter()
 @router.get("/api/backlog/resumo")
 def get_backlog_summary(
     request: Request,
-    departamento: Optional[str] = Query(None, description="Nome do departamento (ex: 'TI', 'Financeiro')"),
+    area: Optional[str] = Query(None, description="Nome da área (ex: 'TI', 'Financeiro')"),
     epico: Optional[str] = Query(None, description="Nome do épico (ex: 'CP simplificado', 'Integração Sefaz')"),
     status: Optional[str] = Query(None, description="Status do card (ex: 'Tarefas pendentes', 'Em andamento')"),
     prioridade: Optional[str] = Query(None, description="Prioridade do Jira (ex: 'Highest', 'Medium')"),
@@ -60,8 +60,8 @@ def get_backlog_summary(
         df["Épico"] = df["Épico"].fillna("")
 
     # Aplicação de filtros
-    if departamento:
-        df = df[df["Unidade / Departamento"] == departamento]
+    if area:
+        df = df[df["Unidade / Departamento"] == area]
     if epico:
         df = df[df["Épico"] == epico]
     if status:
@@ -117,8 +117,8 @@ def get_backlog_summary(
     # =========================================================================
     
     # Os filtros agora operam em um DataFrame limpo
-    if departamento:
-        df = df[df["Unidade / Departamento"] == departamento]
+    if area:
+        df = df[df["Unidade / Departamento"] == area]
     if prioridade:
         df = df[df["Prioridade"] == prioridade]
     if grupo_solicitante:
@@ -199,7 +199,7 @@ def get_backlog_summary(
 @router.get("/api/backlog/tabela")
 def get_tabela_backlog(
     request: Request,
-    departamento: Optional[str] = Query(None, description="Nome do departamento (ex: 'TI', 'Financeiro')"),
+    area: Optional[str] = Query(None, description="Nome da área (ex: 'TI', 'Financeiro')"),
     epico: Optional[str] = Query(None, description="Nome do épico (ex: 'CP simplificado', 'Integração Sefaz')"),
     status: Optional[str] = Query(None, description="Status do card (ex: 'Tarefas pendentes', 'Em andamento')"),
     prioridade: Optional[str] = Query(None, description="Prioridade do Jira (ex: 'Highest', 'Medium')"),
@@ -234,8 +234,8 @@ def get_tabela_backlog(
         df["Épico"] = df["Épico"].fillna("")
 
     # Aplicação de filtros
-    if departamento:
-        df = df[df["Unidade / Departamento"] == departamento]
+    if area:
+        df = df[df["Unidade / Departamento"] == area]
     if epico:
         df = df[df["Épico"] == epico]
     if status:
