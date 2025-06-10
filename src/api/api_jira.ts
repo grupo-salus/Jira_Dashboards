@@ -9,7 +9,7 @@ export async function fetchBacklogTable(filters?: {
   prioridade?: string;
   grupo_solicitante?: string;
   solicitante?: string;
-  epico?: string;
+  projeto?: string;
 }): Promise<BacklogItem[]> {
   try {
     const queryParams = new URLSearchParams();

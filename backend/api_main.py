@@ -28,7 +28,7 @@ router = APIRouter()
 def get_tabela_backlog(
     request: Request,
     area: Optional[str] = Query(None, description="Nome da área (ex: 'TI', 'Financeiro')"),
-    epico: Optional[str] = Query(None, description="Nome do épico (ex: 'CP simplificado', 'Integração Sefaz')"),
+    projeto: Optional[str] = Query(None, description="Nome do projeto (ex: 'CP simplificado', 'Integração Sefaz')"),
     status: Optional[str] = Query(None, description="Status do card (ex: 'Tarefas pendentes', 'Em andamento')"),
     prioridade: Optional[str] = Query(None, description="Prioridade do Jira (ex: 'Highest', 'Medium')"),
     grupo_solicitante: Optional[str] = Query(None, description="Grupo solicitante (ex: 'Franqueadora', 'Franqueado')"),
@@ -64,8 +64,8 @@ def get_tabela_backlog(
     # Aplicação de filtros
     if area:
         df = df[df["Unidade / Departamento"] == area]
-    if epico:
-        df = df[df["Épico"] == epico]
+    if projeto:
+        df = df[df["Épico"] == projeto]
     if status:
         df = df[df["Status"] == status]
     if prioridade:
