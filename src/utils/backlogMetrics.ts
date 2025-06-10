@@ -3,18 +3,18 @@ import { BacklogItem } from "../types/backlog";
 // Interface para os totalizadores básicos
 interface BacklogBasicMetrics {
   total_cards: number;
-  total_epicos: number;
+  total_projetos: number;
   idade_media_dias: number;
   card_mais_antigo: {
     dias: number;
     chave: string;
     titulo: string;
-    epico: string | null;
+    projeto: string | null;
   };
   primeiro_projeto: {
     chave: string;
     titulo: string;
-    epico: string;
+    projeto: string;
     departamento: string;
     prioridade: string;
   } | null;
@@ -25,7 +25,7 @@ export interface FilaItem {
   chave: string;
   titulo: string;
   prioridade: string;
-  epico: string | null;
+  projeto: string | null;
   area: string;
 }
 
@@ -38,13 +38,13 @@ export function calculateBasicMetrics(
   if (items.length === 0) {
     return {
       total_cards: 0,
-      total_epicos: 0,
+      total_projetos: 0,
       idade_media_dias: 0,
       card_mais_antigo: {
         dias: 0,
         chave: "N/A",
         titulo: "Nenhum card encontrado",
-        epico: null,
+        projeto: null,
       },
       primeiro_projeto: null,
     };
@@ -57,13 +57,13 @@ export function calculateBasicMetrics(
   if (cards.length === 0) {
     return {
       total_cards: items.length, // Mostra o total de subtarefas
-      total_epicos: 0,
+      total_projetos: 0,
       idade_media_dias: 0,
       card_mais_antigo: {
         dias: 0,
         chave: "N/A",
         titulo: "Apenas subtarefas",
-        epico: null,
+        projeto: null,
       },
       primeiro_projeto: null,
     };
@@ -72,9 +72,10 @@ export function calculateBasicMetrics(
   // Total de cards
   const total_cards = items.length;
 
-  // Total de épicos únicos (excluindo nulos)
-  const total_epicos = new Set(cards.map((item) => item.Épico).filter(Boolean))
-    .size;
+  // Total de projetos únicos (excluindo nulos)
+  const total_projetos = new Set(
+    cards.map((item) => item.Projeto).filter(Boolean)
+  ).size;
 
   // CORREÇÃO: Evita divisão por zero se `cards` for vazio, resultando em NaN.
   const idade_media_dias = Math.round(
@@ -89,24 +90,24 @@ export function calculateBasicMetrics(
       : mais_antigo;
   });
 
-  // Encontrar o primeiro projeto (primeiro card com épico)
-  const primeiro_projeto = cards.find((item) => item.Épico !== null) || null;
+  // Encontrar o primeiro projeto (primeiro card com projeto)
+  const primeiro_projeto = cards.find((item) => item.Projeto !== null) || null;
 
   return {
     total_cards,
-    total_epicos,
+    total_projetos,
     idade_media_dias,
     card_mais_antigo: {
       dias: card_mais_antigo["Dias no Backlog"],
       chave: card_mais_antigo.Chave,
       titulo: card_mais_antigo.Título,
-      epico: card_mais_antigo.Épico,
+      projeto: card_mais_antigo.Projeto,
     },
     primeiro_projeto: primeiro_projeto
       ? {
           chave: primeiro_projeto.Chave,
           titulo: primeiro_projeto.Título,
-          epico: primeiro_projeto.Épico || "", // Garante que não seja nulo
+          projeto: primeiro_projeto.Projeto || "", // Garante que não seja nulo
           departamento: primeiro_projeto["Unidade / Departamento"],
           prioridade: primeiro_projeto.Prioridade,
         }
@@ -115,7 +116,6 @@ export function calculateBasicMetrics(
 }
 
 // Fila atual: todos os cards (exceto subtarefas)
-// (Nenhuma alteração necessária aqui)
 function getFilaAtual(items: BacklogItem[]): FilaItem[] {
   return items
     .filter((item) => item.Tipo !== "Subtarefa")
@@ -123,64 +123,59 @@ function getFilaAtual(items: BacklogItem[]): FilaItem[] {
       chave: item.Chave,
       titulo: item.Título,
       prioridade: item.Prioridade,
-      epico: item.Épico,
+      projeto: item.Projeto,
       area: item["Unidade / Departamento"],
     }));
 }
 
-// Fila por projeto: um card por épico (projeto)
-// (Nenhuma alteração necessária aqui)
+// Fila por projeto: um card por projeto
 function getFilaPorProjeto(items: BacklogItem[]): FilaItem[] {
-  const cards = items.filter((item) => item.Tipo !== "Subtarefa" && item.Épico);
-  const vistos = new Set<string>();
-  const result: FilaItem[] = [];
-  for (const item of cards) {
-    if (item.Épico && !vistos.has(item.Épico)) {
-      // Checagem extra de segurança
-      vistos.add(item.Épico);
-      result.push({
-        chave: item.Chave,
-        titulo: item.Título,
-        prioridade: item.Prioridade,
-        epico: item.Épico,
-        area: item["Unidade / Departamento"],
-      });
+  const cards = items.filter(
+    (item) => item.Tipo !== "Subtarefa" && item.Projeto
+  );
+  const projetosUnicos = new Map<string, BacklogItem>();
+
+  cards.forEach((item) => {
+    if (!projetosUnicos.has(item.Projeto!)) {
+      projetosUnicos.set(item.Projeto!, item);
     }
-  }
-  return result;
+  });
+
+  return Array.from(projetosUnicos.values()).map((item) => ({
+    chave: item.Chave,
+    titulo: item.Título,
+    prioridade: item.Prioridade,
+    projeto: item.Projeto,
+    area: item["Unidade / Departamento"],
+  }));
 }
 
-// (Nenhuma alteração necessária aqui)
-export function getEpicosPorPrioridade(items: BacklogItem[]) {
-  const epicosUnicos = new Map<string, { prioridade: string }>();
+export function getProjetosPorPrioridade(items: BacklogItem[]) {
+  const projetosUnicos = new Map<string, { prioridade: string }>();
   items.forEach((item) => {
-    if (item.Épico) {
-      if (!epicosUnicos.has(item.Épico)) {
-        epicosUnicos.set(item.Épico, { prioridade: item.Prioridade });
+    if (item.Projeto && item.Projeto !== "Sem Projeto") {
+      if (!projetosUnicos.has(item.Projeto)) {
+        projetosUnicos.set(item.Projeto, { prioridade: item.Prioridade });
       }
     }
   });
   const resultado: Record<string, number> = {};
-  epicosUnicos.forEach(({ prioridade }) => {
+  projetosUnicos.forEach(({ prioridade }) => {
     resultado[prioridade] = (resultado[prioridade] || 0) + 1;
   });
   return resultado;
 }
 
-// (Nenhuma alteração necessária aqui)
 export function getTarefasPorPrioridade(items: BacklogItem[]) {
   const resultado: Record<string, number> = {};
   items.forEach((item) => {
-    if (item.Prioridade) {
-      // Pequena guarda para evitar chaves 'undefined'
-      resultado[item.Prioridade] = (resultado[item.Prioridade] || 0) + 1;
-    }
+    resultado[item.Prioridade] = (resultado[item.Prioridade] || 0) + 1;
   });
   return resultado;
 }
 
 export function getSaudeBacklog(items: BacklogItem[]) {
-  // GUARDA: Proteção contra array vazio para evitar crashes
+  // GUARDA: Se a lista estiver vazia, retorna um objeto padrão seguro
   if (items.length === 0) {
     return {
       total: 0,
@@ -194,7 +189,7 @@ export function getSaudeBacklog(items: BacklogItem[]) {
         chave: "N/A",
         titulo: "Nenhum",
         prioridade: "N/A",
-        dias: 0,
+        projeto: "N/A",
       },
     };
   }
@@ -213,16 +208,16 @@ export function getSaudeBacklog(items: BacklogItem[]) {
   const idade_media = Math.round(
     items.reduce((acc, item) => acc + item["Dias no Backlog"], 0) / (total || 1)
   );
-  // CORREÇÃO: Math.max em array vazio retorna -Infinity. Adicionar 0 como valor base.
   const mais_antigo = Math.max(
     0,
     ...items.map((item) => item["Dias no Backlog"])
   );
 
-  // Agora seguro por causa da guarda no início da função
-  const projeto_mais_antigo = items.reduce((antigo, atual) =>
-    atual["Dias no Backlog"] > antigo["Dias no Backlog"] ? atual : antigo
-  );
+  const projeto_mais_antigo = items.reduce((mais_antigo, atual) => {
+    return atual["Dias no Backlog"] > mais_antigo["Dias no Backlog"]
+      ? atual
+      : mais_antigo;
+  });
 
   return {
     total,
@@ -236,22 +231,20 @@ export function getSaudeBacklog(items: BacklogItem[]) {
       chave: projeto_mais_antigo.Chave,
       titulo: projeto_mais_antigo.Título,
       prioridade: projeto_mais_antigo.Prioridade,
-      dias: projeto_mais_antigo["Dias no Backlog"],
+      projeto: projeto_mais_antigo.Projeto || "N/A",
     },
   };
 }
 
-// (As funções abaixo já são seguras para arrays vazios)
-
-export function getEpicosPorArea(items: BacklogItem[]) {
+export function getProjetosPorArea(items: BacklogItem[]) {
   const resultado: Record<string, Record<string, number>> = {};
   items.forEach((item) => {
-    const epico = item.Épico;
+    const projeto = item.Projeto;
     const area = item["Unidade / Departamento"] || "Não informado";
-    if (!epico) return;
+    if (!projeto || projeto === "Sem Projeto") return;
     if (!resultado[area]) resultado[area] = {};
-    if (!resultado[area][epico]) resultado[area][epico] = 0;
-    resultado[area][epico]++;
+    if (!resultado[area][projeto]) resultado[area][projeto] = 0;
+    resultado[area][projeto]++;
   });
   return resultado;
 }
@@ -269,25 +262,16 @@ export function getProjetosPorSolicitante(items: BacklogItem[]) {
   const resultado: Record<string, Set<string>> = {};
   items.forEach((item) => {
     const solicitante = item.Solicitante || "Não informado";
-    const epico = item.Épico;
-    if (!epico) return;
+    const projeto = item.Projeto;
+    if (!projeto || projeto === "Sem Projeto") return;
     if (!resultado[solicitante]) resultado[solicitante] = new Set();
-    resultado[solicitante].add(epico);
+    resultado[solicitante].add(projeto);
   });
   const final: Record<string, number> = {};
-  Object.entries(resultado).forEach(([solicitante, epicos]) => {
-    final[solicitante] = epicos.size;
+  Object.entries(resultado).forEach(([solicitante, projetos]) => {
+    final[solicitante] = projetos.size;
   });
   return final;
-}
-
-export function getCardsPorSolicitante(items: BacklogItem[]) {
-  const resultado: Record<string, number> = {};
-  items.forEach((item) => {
-    const solicitante = item.Solicitante || "Não informado";
-    resultado[solicitante] = (resultado[solicitante] || 0) + 1;
-  });
-  return resultado;
 }
 
 // Função principal que agora chama as funções robustas
@@ -296,13 +280,12 @@ export function calculateBacklogMetrics(items: BacklogItem[]) {
     basic: calculateBasicMetrics(items),
     fila_atual: getFilaAtual(items),
     fila_por_projeto: getFilaPorProjeto(items),
-    epicos_por_prioridade: getEpicosPorPrioridade(items),
+    projetos_por_prioridade: getProjetosPorPrioridade(items),
     tarefas_por_prioridade: getTarefasPorPrioridade(items),
     saude_backlog: getSaudeBacklog(items),
-    epicos_por_area: getEpicosPorArea(items),
+    projetos_por_area: getProjetosPorArea(items),
     cards_por_area: getCardsPorArea(items),
     projetos_por_solicitante: getProjetosPorSolicitante(items),
-    cards_por_solicitante: getCardsPorSolicitante(items),
   };
 }
 

@@ -8,10 +8,9 @@ import {
   BacklogCharts,
   TarefasPorPrioridadeChart,
   SaudeBacklogChart,
-  EpicosPorAreaChart,
+  ProjetosPorAreaChart,
   CardsPorAreaChart,
   ProjetosPorSolicitanteChart,
-  CardsPorSolicitanteChart,
 } from "../components/dashboard/BacklogCharts";
 
 const DashBacklog: React.FC = () => {
@@ -20,7 +19,7 @@ const DashBacklog: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [filtros, setFiltros] = useState({
-    epico: "",
+    projeto: "",
     area: "",
     solicitante: "",
     prioridade: "",
@@ -45,7 +44,7 @@ const DashBacklog: React.FC = () => {
   const filteredData = useMemo(() => {
     return rawData.filter(
       (item) =>
-        (filtros.epico ? item.Épico === filtros.epico : true) &&
+        (filtros.projeto ? item.Projeto === filtros.projeto : true) &&
         (filtros.area
           ? item["Unidade / Departamento"] === filtros.area
           : true) &&
@@ -56,8 +55,9 @@ const DashBacklog: React.FC = () => {
     );
   }, [rawData, filtros]);
 
-  const epicosOptions = useMemo(
-    () => [...new Set(rawData.map((i) => i.Épico).filter(Boolean))],
+  const projetosOptions = useMemo(
+    () =>
+      [...new Set(rawData.map((i) => i.Projeto).filter(Boolean))] as string[],
     [rawData]
   );
   const areaOptions = useMemo(
@@ -108,26 +108,26 @@ const DashBacklog: React.FC = () => {
         Filtros
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Filtro de Épico/Projeto */}
+        {/* Filtro de Projeto */}
         <div>
           <label
-            htmlFor="epico-filter"
+            htmlFor="projeto-filter"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Épico/Projeto
+            Projeto
           </label>
           <select
-            id="epico-filter"
+            id="projeto-filter"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            value={filtros.epico}
+            value={filtros.projeto}
             onChange={(e) =>
-              setFiltros((f) => ({ ...f, epico: e.target.value }))
+              setFiltros((f) => ({ ...f, projeto: e.target.value }))
             }
           >
             <option value="">Todos</option>
-            {epicosOptions.map((epico) => (
-              <option key={epico} value={epico}>
-                {epico}
+            {projetosOptions.map((projeto) => (
+              <option key={projeto} value={projeto}>
+                {projeto}
               </option>
             ))}
           </select>
@@ -233,9 +233,14 @@ const DashBacklog: React.FC = () => {
               ...metrics.basic,
               card_mais_antigo: {
                 ...(metrics.basic.card_mais_antigo ?? {}),
-                epico: metrics.basic.card_mais_antigo?.epico ?? null,
+                projeto: metrics.basic.card_mais_antigo?.projeto ?? undefined,
               },
-              primeiro_projeto: metrics.basic.primeiro_projeto ?? undefined,
+              primeiro_projeto: metrics.basic.primeiro_projeto
+                ? {
+                    ...metrics.basic.primeiro_projeto,
+                    area: metrics.basic.primeiro_projeto.departamento,
+                  }
+                : undefined,
             }}
             rawData={filteredData}
           />
@@ -244,7 +249,7 @@ const DashBacklog: React.FC = () => {
           <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
             <div className="break-inside-avoid">
               <BacklogCharts
-                epicosPorPrioridade={metrics.epicos_por_prioridade}
+                projetosPorPrioridade={metrics.projetos_por_prioridade}
               />
             </div>
             <div className="break-inside-avoid">
@@ -253,10 +258,20 @@ const DashBacklog: React.FC = () => {
               />
             </div>
             <div className="break-inside-avoid">
-              <SaudeBacklogChart saude={metrics.saude_backlog} />
+              <SaudeBacklogChart
+                saude={{
+                  ...metrics.saude_backlog,
+                  projeto_mais_antigo: {
+                    ...metrics.saude_backlog.projeto_mais_antigo,
+                    dias: metrics.saude_backlog.mais_antigo,
+                  },
+                }}
+              />
             </div>
             <div className="break-inside-avoid">
-              <EpicosPorAreaChart epicosPorArea={metrics.epicos_por_area} />
+              <ProjetosPorAreaChart
+                projetosPorArea={metrics.projetos_por_area}
+              />
             </div>
             <div className="break-inside-avoid">
               <CardsPorAreaChart cardsPorArea={metrics.cards_por_area} />
@@ -264,11 +279,6 @@ const DashBacklog: React.FC = () => {
             <div className="break-inside-avoid">
               <ProjetosPorSolicitanteChart
                 projetosPorSolicitante={metrics.projetos_por_solicitante}
-              />
-            </div>
-            <div className="break-inside-avoid">
-              <CardsPorSolicitanteChart
-                cardsPorSolicitante={metrics.cards_por_solicitante}
               />
             </div>
           </div>

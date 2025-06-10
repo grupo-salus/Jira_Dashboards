@@ -4,16 +4,16 @@ import { getPriorityConfig } from "../../constants/priorities";
 interface BacklogKPICardsProps {
   metrics: {
     total_cards: number;
-    total_epicos: number;
+    total_projetos: number;
     idade_media_dias: number;
     card_mais_antigo: {
       chave: string;
       titulo: string;
       dias: number;
-      epico?: string | null;
+      projeto?: string | null;
     };
     primeiro_projeto?: {
-      epico: string;
+      projeto: string;
       area: string;
       prioridade: string;
       chave: string;
@@ -22,7 +22,7 @@ interface BacklogKPICardsProps {
   rawData: {
     Chave: string;
     Título: string;
-    Épico: string | null;
+    Projeto: string | null;
     Tipo: string;
     Prioridade: string;
   }[];
@@ -33,16 +33,16 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
   rawData,
 }) => {
   const [showCardsTooltip, setShowCardsTooltip] = useState(false);
-  const [showEpicsTooltip, setShowEpicsTooltip] = useState(false);
+  const [showProjetosTooltip, setShowProjetosTooltip] = useState(false);
 
   // Filtrar subtarefas e preparar dados para tooltips
   const cards = rawData;
-  const epicos = Array.from(
-    new Set(cards.map((item) => item.Épico).filter(Boolean))
+  const projetos = Array.from(
+    new Set(cards.map((item) => item.Projeto).filter(Boolean))
   );
 
   return (
-    <div className="grid grid-cols-5 gap-4 mb-6">
+    <div className="grid grid-cols-3 gap-4 mb-6">
       {/* Card Total de Cards */}
       <div
         className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 relative flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -73,7 +73,7 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
               {metrics.total_cards}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-left">
-              Tarefas dentro dos projetos/épicos
+              Tarefas dentro dos projetos
             </p>
           </div>
         </div>
@@ -101,11 +101,11 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
         )}
       </div>
 
-      {/* Card Total de Épicos */}
+      {/* Card Total de Projetos */}
       <div
         className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 relative flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-        onMouseEnter={() => setShowEpicsTooltip(true)}
-        onMouseLeave={() => setShowEpicsTooltip(false)}
+        onMouseEnter={() => setShowProjetosTooltip(true)}
+        onMouseLeave={() => setShowProjetosTooltip(false)}
       >
         <div className="flex items-center">
           <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300">
@@ -125,29 +125,29 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
           </div>
           <div className="ml-4 flex-1">
             <h3 className="text-gray-500 dark:text-gray-400 text-sm text-left">
-              Total de Épicos
+              Total de Projetos
             </h3>
             <p className="text-2xl font-semibold text-gray-700 dark:text-gray-200 text-left">
-              {metrics.total_epicos}
+              {metrics.total_projetos}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-left">
               Projetos criados no backlog
             </p>
           </div>
         </div>
-        {showEpicsTooltip && (
+        {showProjetosTooltip && (
           <div className="absolute z-10 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-gray-700">
             <h4 className="font-semibold mb-2 text-gray-700 dark:text-gray-200">
-              Lista de Épicos
+              Lista de Projetos
             </h4>
             <div className="max-h-40 overflow-y-auto">
-              {epicos.map((epico, index) => {
-                const cardsDoEpico = rawData.filter(
-                  (card) => card.Épico === epico
+              {projetos.map((projeto, index) => {
+                const cardsDoProjeto = rawData.filter(
+                  (card) => card.Projeto === projeto
                 );
                 const prioridade =
-                  cardsDoEpico.length > 0
-                    ? cardsDoEpico[0].Prioridade
+                  cardsDoProjeto.length > 0
+                    ? cardsDoProjeto[0].Prioridade
                     : "Não definida";
                 const priorityConfig = getPriorityConfig(prioridade);
                 return (
@@ -157,7 +157,7 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
                   >
                     <div className="flex justify-between items-center">
                       <p className="font-medium text-gray-700 dark:text-gray-200">
-                        {epico}
+                        {projeto}
                       </p>
                       <span
                         className={`text-xs font-medium px-2 py-0.5 rounded-full ${priorityConfig.color.bg} ${priorityConfig.color.text} ${priorityConfig.color.dark.bg} ${priorityConfig.color.dark.text}`}
@@ -166,8 +166,8 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {cardsDoEpico.length}{" "}
-                      {cardsDoEpico.length === 1 ? "card" : "cards"}
+                      {cardsDoProjeto.length}{" "}
+                      {cardsDoProjeto.length === 1 ? "card" : "cards"}
                     </p>
                   </div>
                 );
@@ -175,78 +175,6 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
             </div>
           </div>
         )}
-      </div>
-
-      {/* Card Idade Média */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-        <div className="flex items-center">
-          <div className="p-3 rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div className="ml-4 flex-1">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm text-left">
-              Idade Média
-            </h3>
-            <p className="text-2xl font-semibold text-gray-700 dark:text-gray-200 text-left">
-              {metrics.idade_media_dias} dias
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-left">
-              Tempo médio dos cards no backlog
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Card Mais Antigo */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-        <div className="flex items-center">
-          <div className="p-3 rounded-full bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div className="ml-4 flex-1">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm text-left">
-              Card Mais Antigo
-            </h3>
-            <p className="text-lg font-semibold text-gray-700 dark:text-gray-200 text-left">
-              {metrics.card_mais_antigo.chave}
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-left">
-              {metrics.card_mais_antigo.titulo}
-            </p>
-            {metrics.card_mais_antigo.epico && (
-              <p className="text-sm text-red-600 dark:text-red-400 text-left">
-                Épico: {metrics.card_mais_antigo.epico}
-              </p>
-            )}
-            <p className="text-sm text-red-600 dark:text-red-400 mt-1 text-left">
-              {metrics.card_mais_antigo.dias} dias
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Card Próximo Projeto */}
@@ -277,7 +205,7 @@ export const BacklogKPICards: React.FC<BacklogKPICardsProps> = ({
             {metrics.primeiro_projeto ? (
               <>
                 <p className="text-lg font-semibold text-gray-700 dark:text-gray-200 text-left">
-                  {metrics.primeiro_projeto.epico}
+                  {metrics.primeiro_projeto.projeto}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-sm text-gray-500 dark:text-gray-400">

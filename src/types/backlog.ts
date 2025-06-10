@@ -36,9 +36,9 @@ export interface DepartmentPriorityRelation {
   };
 }
 
-// Interface para distribuição de prioridade por épico
-export interface PriorityDistributionByEpic {
-  [epic: string]: {
+// Interface para distribuição de prioridade por projeto
+export interface PriorityDistributionByProject {
+  [project: string]: {
     [priority: string]: number;
   };
 }
@@ -48,7 +48,7 @@ export interface CardSummary {
   Chave: string;
   Título: string;
   Prioridade: string;
-  Épico: string;
+  Projeto: string;
   "Unidade / Departamento": string;
 }
 
@@ -56,15 +56,15 @@ export interface CardSummary {
 export interface BacklogSummary {
   // Métricas principais
   total_cards: number;
-  total_epicos_unicos: number;
-  total_cards_sem_epico: number;
+  total_projetos_unicos: number;
+  total_cards_sem_projeto: number;
 
   // Primeiros cards na fila
   primeiro_card_na_fila: CardSummary | null;
   primeiro_projeto_na_fila: CardSummary | null;
 
   // Distribuições e análises
-  distribuicao_prioridade_por_epico: PriorityDistributionByEpic;
+  distribuicao_prioridade_por_projeto: PriorityDistributionByProject;
   saude_do_backlog: BacklogHealth;
   distribuicao_por_status: Record<string, number>;
   carga_de_trabalho_por_departamento: WorkloadByDepartment;
@@ -72,7 +72,7 @@ export interface BacklogSummary {
   relacao_departamento_vs_prioridade: DepartmentPriorityRelation;
 
   // Detalhes das filas
-  detalhes_cards_com_epico: CardSummary[];
+  detalhes_cards_com_projeto: CardSummary[];
   resumo_geral_cards: CardSummary[];
 }
 
@@ -105,7 +105,7 @@ export interface BaseJiraCard {
 export interface BacklogItem {
   ID: string;
   Chave: string;
-  Épico: string | null;
+  Projeto: string | null;
   Título: string;
   Tipo: string;
   Status: string;
@@ -144,7 +144,7 @@ export interface ProjectCard {
 
 // Interface para projetos
 export interface Project {
-  epico: string;
+  projeto: string;
   total_cards: number;
   prioridade_distribuicao: Record<string, number>;
   media_dias_backlog: number;
@@ -155,7 +155,7 @@ export interface Project {
 
 // Interface para projetos por departamento
 export interface DepartmentProject {
-  epico: string;
+  projeto: string;
   total_cards: number;
   cards: Array<{
     Chave: string;
@@ -175,7 +175,7 @@ export interface DepartmentSummary {
   total_projetos: number;
   total_cards: number;
   projetos: Array<{
-    epico: string;
+    projeto: string;
     total_cards: number;
     cards: Array<{
       Chave: string;
@@ -185,25 +185,18 @@ export interface DepartmentSummary {
   }>;
 }
 
-// Interface para análise de épicos
-export interface EpicAnalysis {
-  epicos_por_departamento: Record<string, number>;
-  epicos_sem_departamento: string[];
-  departamentos_sem_epicos: string[];
+// Interface para análise de projetos
+export interface ProjectAnalysis {
+  projetos_por_departamento: Record<string, number>;
+  projetos_sem_departamento: string[];
+  departamentos_sem_projetos: string[];
 }
 
 export interface BacklogBasicMetrics {
   total_cards: number;
-  total_epicos: number;
-  idade_media_dias: number;
-  card_mais_antigo: {
-    chave: string;
-    titulo: string;
-    dias: number;
-    epico: string | null;
-  };
+  total_projetos: number;
   primeiro_projeto: {
-    epico: string;
+    projeto: string;
     departamento: string;
     prioridade: string;
     chave: string;

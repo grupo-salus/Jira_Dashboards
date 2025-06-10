@@ -7,7 +7,7 @@ import { themeColors } from "../../utils/themeColors";
    Tipos/Interfaces
 ======================= */
 interface BacklogChartsProps {
-  epicosPorPrioridade: Record<string, number>;
+  projetosPorPrioridade: Record<string, number>;
 }
 interface TarefasPorPrioridadeProps {
   tarefasPorPrioridade: Record<string, number>;
@@ -29,27 +29,40 @@ interface SaudeBacklogProps {
     };
   };
 }
-interface EpicosPorAreaProps {
-  epicosPorArea: Record<string, Record<string, number>>;
+interface ProjetosPorAreaProps {
+  projetosPorArea: Record<string, Record<string, number>>;
 }
 interface CardsPorAreaProps {
   cardsPorArea: Record<string, number>;
 }
 
 /* =======================
-   Gráfico: Épicos/Projetos por Prioridade
+   Gráfico: Projetos por Prioridade
 ======================= */
 export const BacklogCharts: React.FC<BacklogChartsProps> = ({
-  epicosPorPrioridade,
+  projetosPorPrioridade,
 }) => {
-  const prioridades = Object.keys(epicosPorPrioridade);
-  const max = Math.max(...Object.values(epicosPorPrioridade), 1);
+  // Se não houver dados, retorna um componente vazio
+  if (
+    !projetosPorPrioridade ||
+    Object.keys(projetosPorPrioridade).length === 0
+  ) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <h3 className="text-lg font-semibold mb-4">Projetos por Prioridade</h3>
+        <div className="text-gray-500 dark:text-gray-400 text-center py-4">
+          Nenhum dado disponível
+        </div>
+      </div>
+    );
+  }
+
+  const prioridades = Object.keys(projetosPorPrioridade);
+  const max = Math.max(...Object.values(projetosPorPrioridade), 1);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <h3 className="text-lg font-semibold mb-4">
-        Épicos/Projetos por Prioridade
-      </h3>
+      <h3 className="text-lg font-semibold mb-4">Projetos por Prioridade</h3>
       <div className="flex flex-col gap-3">
         {prioridades.map((prioridade) => {
           const config = getPriorityConfig(prioridade);
@@ -64,11 +77,13 @@ export const BacklogCharts: React.FC<BacklogChartsProps> = ({
                 <div
                   className={`${config.color.bg} ${config.color.dark.bg} h-4 rounded`}
                   style={{
-                    width: `${(epicosPorPrioridade[prioridade] / max) * 100}%`,
+                    width: `${
+                      (projetosPorPrioridade[prioridade] / max) * 100
+                    }%`,
                   }}
                 />
                 <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
-                  {epicosPorPrioridade[prioridade]}
+                  {projetosPorPrioridade[prioridade]}
                 </span>
               </div>
             </div>
@@ -253,42 +268,59 @@ export const SaudeBacklogChart: React.FC<SaudeBacklogProps> = ({ saude }) => {
 };
 
 /* =======================
-   Gráfico: Épicos/Projetos por Área
+   Gráfico: Projetos por Área
 ======================= */
-export const EpicosPorAreaChart: React.FC<EpicosPorAreaProps> = ({
-  epicosPorArea,
+export const ProjetosPorAreaChart: React.FC<ProjetosPorAreaProps> = ({
+  projetosPorArea,
 }) => {
-  const areas = Object.keys(epicosPorArea);
-  const data = areas.map((area) => ({
-    area: area,
-    totalEpicos: Object.keys(epicosPorArea[area]).length,
-  }));
+  // Se não houver dados, retorna um componente vazio
+  if (!projetosPorArea || Object.keys(projetosPorArea).length === 0) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <h3 className="text-lg font-semibold mb-4">Projetos por Área</h3>
+        <div className="text-gray-500 dark:text-gray-400 text-center py-4">
+          Nenhum dado disponível
+        </div>
+      </div>
+    );
+  }
 
-  const max = Math.max(...data.map((d) => d.totalEpicos), 1);
+  const areas = Object.keys(projetosPorArea);
+  const max = Math.max(
+    ...areas.map((area) =>
+      Object.values(projetosPorArea[area]).reduce((a, b) => a + b, 0)
+    ),
+    1
+  );
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <h3 className="text-lg font-semibold mb-4">Épicos/Projetos por Área</h3>
+      <h3 className="text-lg font-semibold mb-4">Projetos por Área</h3>
       <div className="flex flex-col gap-3">
-        {data.map((item, idx) => (
-          <div key={item.area} className="flex items-center gap-2">
-            <span className="w-32 text-xs font-semibold truncate">
-              {item.area}
-            </span>
-            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
-              <div
-                className="h-4 rounded"
-                style={{
-                  width: `${(item.totalEpicos / max) * 100}%`,
-                  background: themeColors.chart[idx % themeColors.chart.length],
-                }}
-              />
-              <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
-                {item.totalEpicos}
+        {areas.map((area) => {
+          const total = Object.values(projetosPorArea[area]).reduce(
+            (a, b) => a + b,
+            0
+          );
+          return (
+            <div key={area} className="flex items-center gap-2">
+              <span className="w-24 text-xs font-semibold text-gray-700 dark:text-gray-300">
+                {area}
               </span>
+              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
+                <div
+                  className="bg-blue-500 dark:bg-blue-600 h-4 rounded"
+                  style={{
+                    width: `${(total / max) * 100}%`,
+                  }}
+                />
+                <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
+                  {total}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -372,51 +404,6 @@ export const ProjetosPorSolicitanteChart: React.FC<
               />
               <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
                 {item.totalProjetos}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-/* =======================
-   Gráfico: Cards por Solicitante
-======================= */
-interface CardsPorSolicitanteProps {
-  cardsPorSolicitante: Record<string, number>;
-}
-
-export const CardsPorSolicitanteChart: React.FC<CardsPorSolicitanteProps> = ({
-  cardsPorSolicitante,
-}) => {
-  const solicitantes = Object.keys(cardsPorSolicitante);
-  const data = solicitantes.map((sol) => ({
-    solicitante: sol,
-    totalCards: cardsPorSolicitante[sol],
-  }));
-  const max = Math.max(...data.map((d) => d.totalCards), 1);
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <h3 className="text-lg font-semibold mb-4">Cards por Solicitante</h3>
-      <div className="flex flex-col gap-3">
-        {data.map((item, idx) => (
-          <div key={item.solicitante} className="flex items-center gap-2">
-            <span className="w-32 text-xs font-semibold truncate">
-              {item.solicitante}
-            </span>
-            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
-              <div
-                className="h-4 rounded"
-                style={{
-                  width: `${(item.totalCards / max) * 100}%`,
-                  background: themeColors.chart[idx % themeColors.chart.length],
-                }}
-              />
-              <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
-                {item.totalCards}
               </span>
             </div>
           </div>

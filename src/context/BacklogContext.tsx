@@ -18,14 +18,7 @@ export const BacklogContext = createContext<BacklogContextType>({
   metrics: {
     basic: {
       total_cards: 0,
-      total_epicos: 0,
-      idade_media_dias: 0,
-      card_mais_antigo: {
-        chave: "",
-        titulo: "",
-        dias: 0,
-        epico: null,
-      },
+      total_projetos: 0,
       primeiro_projeto: null,
     },
   },

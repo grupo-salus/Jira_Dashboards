@@ -30,7 +30,7 @@ export const BacklogQueues: React.FC<BacklogQueuesProps> = ({
         </h2>
       </div>
       <div className="px-2 pb-1 text-xs text-gray-500 dark:text-gray-400">
-        Um card por projeto (épico) do backlog.
+        Um card por projeto do backlog.
       </div>
       <div className="overflow-y-auto max-h-[350px] flex flex-col gap-2 px-2">
         {filaPorProjeto.map((item, idx) => {
@@ -52,7 +52,7 @@ export const BacklogQueues: React.FC<BacklogQueuesProps> = ({
                   className="bg-purple-700 text-purple-200 rounded px-2 py-0.5 font-semibold"
                   style={{ minWidth: 32, display: "inline-block" }}
                 >
-                  {item.epico || "-"}
+                  {item.projeto || "-"}
                 </span>
                 <span className="truncate max-w-[80px]">{item.area}</span>
               </div>
@@ -104,7 +104,7 @@ export const BacklogQueues: React.FC<BacklogQueuesProps> = ({
                   className="bg-purple-700 text-purple-200 rounded px-2 py-0.5 font-semibold"
                   style={{ minWidth: 32, display: "inline-block" }}
                 >
-                  {item.epico || "-"}
+                  {item.projeto || "-"}
                 </span>
                 <span className="truncate max-w-[80px]">{item.area}</span>
               </div>
