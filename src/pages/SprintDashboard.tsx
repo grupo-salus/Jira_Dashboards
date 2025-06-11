@@ -1,3 +1,18 @@
+/**
+ * SprintDashboard.tsx
+ * 
+ * Este é o componente do dashboard de sprint que:
+ * 1. Exibe uma mensagem de "em desenvolvimento"
+ * 2. Lista as funcionalidades futuras
+ * 3. Serve como placeholder para a implementação futura
+ * 
+ * Funcionalidades planejadas:
+ * - Visualização de sprints ativas
+ * - Acompanhamento de progresso
+ * - Métricas de velocidade
+ * - Monitoramento de burndown
+ */
+
 import React from "react";
 
 interface SprintDashboardProps {

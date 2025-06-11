@@ -1,3 +1,19 @@
+/**
+ * JiraContext.tsx
+ *
+ * Este arquivo implementa o contexto global para dados do Jira que:
+ * 1. Gerencia o estado dos dados do backlog e sprint
+ * 2. Fornece funções para atualizar os dados
+ * 3. Implementa cache local para melhor performance
+ * 4. Controla o refresh automático dos dados
+ *
+ * Funcionalidades principais:
+ * - Cache local com expiração de 1 hora
+ * - Refresh automático periódico
+ * - Gerenciamento de estado de loading e erros
+ * - Métricas calculadas em tempo real
+ */
+
 import React, {
   createContext,
   useContext,
@@ -98,8 +114,6 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   // Estado da Sprint (será implementado depois)
   const [sprintRawData, setSprintRawData] = useState<any[]>([]);
   const [sprintMetrics, setSprintMetrics] = useState<any>({});
-  const [sprintLoading, setSprintLoading] = useState(false);
-  const [sprintError, setSprintError] = useState<string | null>(null);
   const [sprintLastUpdate, setSprintLastUpdate] = useState<Date | null>(null);
 
   const loadFromCache = (): boolean => {
@@ -218,8 +232,8 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
         sprintData: {
           rawData: sprintRawData,
           metrics: sprintMetrics,
-          loading: sprintLoading,
-          error: sprintError,
+          loading: false,
+          error: null,
           lastUpdate: sprintLastUpdate,
         },
         refreshBacklogData,

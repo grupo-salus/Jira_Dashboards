@@ -1,3 +1,18 @@
+/**
+ * App.tsx
+ *
+ * Este é o componente raiz da aplicação que:
+ * 1. Configura o roteamento com React Router
+ * 2. Gerencia a navegação entre as páginas (Backlog e Sprint)
+ * 3. Fornece os contextos globais (Theme e Jira)
+ * 4. Controla o estado da view atual (backlog/sprint)
+ *
+ * O componente AppContent é responsável por:
+ * - Sincronizar a URL com o estado da view
+ * - Gerenciar a navegação programática
+ * - Renderizar o layout principal com Navbar e conteúdo
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,

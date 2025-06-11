@@ -1,4 +1,22 @@
 /**
+ * backlog.ts
+ *
+ * Este arquivo é a fonte única de verdade para todas as definições de tipos relacionados ao backlog.
+ * Ele organiza os tipos em namespaces para melhor organização e manutenção:
+ *
+ * Namespaces:
+ * - Card: Interfaces para cards do Jira (Base, Backlog, Project, Summary, Queue)
+ * - Metrics: Interfaces para métricas (Basic, BacklogHealth, WorkloadByDepartment, etc.)
+ * - Project: Interfaces para projetos e suas relações
+ * - Department: Interfaces para departamentos e suas relações
+ * - Analysis: Interfaces para análises de dados
+ * - Response: Interfaces para respostas da API
+ * - Summary: Interfaces para resumos e dashboards
+ *
+ * O arquivo também exporta tipos principais para manter compatibilidade com código existente.
+ */
+
+/**
  * Tipos e interfaces para o sistema de Backlog
  * Este arquivo é a fonte única de verdade para todas as definições de tipos relacionados ao backlog
  */

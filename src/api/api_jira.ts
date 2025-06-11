@@ -1,3 +1,20 @@
+/**
+ * api_jira.ts
+ *
+ * Este arquivo contém as funções para comunicação com a API do Jira:
+ * 1. Funções para buscar dados do backlog
+ * 2. Tratamento de erros e respostas
+ * 3. Gerenciamento de parâmetros de filtro
+ *
+ * Principais funções:
+ * - fetchBacklogTable: Busca a tabela de backlog com suporte a filtros
+ *
+ * O arquivo também lida com:
+ * - Decodificação de caracteres especiais
+ * - Tratamento de erros de rede
+ * - Validação de respostas
+ */
+
 import { Card, Response } from "../types/backlog";
 
 const API_URL = "http://localhost:8000";

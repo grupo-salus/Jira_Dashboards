@@ -1,3 +1,20 @@
+/**
+ * backlogMetrics.ts
+ *
+ * Este arquivo contém funções utilitárias para calcular métricas do backlog:
+ * 1. Métricas básicas (total de cards, projetos, etc.)
+ * 2. Saúde do backlog (distribuição por idade)
+ * 3. Filas e ordenação (fila atual, fila por projeto)
+ * 4. Distribuições (por área, solicitante, prioridade)
+ *
+ * Principais funções:
+ * - calculateBasicMetrics: Calcula métricas básicas do backlog
+ * - getSaudeBacklog: Analisa a saúde do backlog por idade
+ * - getFilaAtual: Gera a fila atual de cards
+ * - getFilaPorProjeto: Gera uma fila com um card por projeto
+ * - calculateAverageTime: Calcula o tempo médio na fila
+ */
+
 import { Card, Metrics } from "../types/backlog";
 import { differenceInSeconds } from "date-fns";
 

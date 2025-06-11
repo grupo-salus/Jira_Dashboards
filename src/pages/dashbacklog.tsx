@@ -1,5 +1,23 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { BacklogItem } from "../types/backlog";
+/**
+ * dashbacklog.tsx
+ *
+ * Este é o componente principal do dashboard de backlog que:
+ * 1. Exibe métricas e gráficos do backlog
+ * 2. Gerencia filtros (projeto, área, solicitante, prioridade)
+ * 3. Renderiza diferentes visualizações dos dados
+ *
+ * Componentes utilizados:
+ * - BacklogKPICards: Exibe métricas principais
+ * - BacklogQueues: Mostra as filas de cards
+ * - BacklogCharts: Renderiza gráficos e análises
+ *
+ * O componente também:
+ * - Gerencia o estado dos filtros
+ * - Calcula dados filtrados em tempo real
+ * - Trata estados de loading e erro
+ */
+
+import React, { useState, useMemo } from "react";
 import { calculateBacklogMetrics } from "../utils/backlogMetrics";
 import { BacklogKPICards } from "../components/dashboard/BacklogKPICards";
 import BacklogQueues from "../components/dashboard/BacklogQueues";
@@ -240,15 +258,21 @@ const DashBacklog: React.FC = () => {
         <div>
           <BacklogKPICards
             metrics={{
-              ...metrics.basic,
+              total_cards: metrics.basic.total_cards,
+              total_projetos: metrics.basic.total_projetos,
+              idade_media_dias: metrics.saude_backlog.idade_media,
               card_mais_antigo: {
-                ...(metrics.basic.card_mais_antigo ?? {}),
-                projeto: metrics.basic.card_mais_antigo?.projeto ?? undefined,
+                chave: metrics.saude_backlog.projeto_mais_antigo.chave,
+                titulo: metrics.saude_backlog.projeto_mais_antigo.titulo,
+                dias: metrics.saude_backlog.mais_antigo,
+                projeto: metrics.saude_backlog.projeto_mais_antigo.projeto,
               },
               primeiro_projeto: metrics.basic.primeiro_projeto
                 ? {
-                    ...metrics.basic.primeiro_projeto,
+                    projeto: metrics.basic.primeiro_projeto.projeto,
                     area: metrics.basic.primeiro_projeto.departamento,
+                    prioridade: metrics.basic.primeiro_projeto.prioridade,
+                    chave: metrics.basic.primeiro_projeto.chave,
                   }
                 : undefined,
             }}
