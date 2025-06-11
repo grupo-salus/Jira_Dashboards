@@ -38,8 +38,17 @@ def get_tabela_backlog(
     Retorna a tabela completa do backlog Jira (board_id=71), com suporte a filtros via query string.
     """
     service = JiraService()
+    
+    # Busca issues do backlog
     issues = service.get_raw_backlog_issues(board_id=71).get("issues", [])
     df = parse_issues_to_dataframe(issues)
+    
+    # Busca issues da sprint específica
+    sprint_issues = service.get_issues_from_sprint(724).get("issues", [])
+    sprint_df = parse_issues_to_dataframe(sprint_issues)
+    
+    # Concatena os DataFrames
+    df = pd.concat([df, sprint_df], ignore_index=True)
 
     if df.empty:
         return {"tabela_backlog": []}
@@ -91,4 +100,3 @@ def get_tabela_backlog(
 
 
 app.include_router(router)
-
