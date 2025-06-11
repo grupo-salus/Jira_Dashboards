@@ -1,3 +1,8 @@
+/**
+ * Configurações centralizadas para prioridades do Jira
+ * Este arquivo é a única fonte de verdade para configurações de prioridade
+ * Inclui labels em português, cores para modo claro e escuro, e classes Tailwind
+ */
 export interface PriorityConfig {
   label: string;
   color: {
@@ -68,6 +73,10 @@ export const PRIORITIES: Record<string, PriorityConfig> = {
   },
 };
 
+/**
+ * Retorna a configuração de prioridade para uma determinada prioridade
+ * Se a prioridade não for encontrada, retorna uma configuração padrão
+ */
 export const getPriorityConfig = (priority: string): PriorityConfig => {
   return (
     PRIORITIES[priority] || {

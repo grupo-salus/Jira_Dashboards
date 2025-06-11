@@ -8,7 +8,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
 }
 
@@ -54,23 +54,6 @@ body {
   @apply bg-gray-400 dark:bg-gray-600;
 }
 
-/* Priority colors */
-.priority-highest {
-  @apply bg-red-500 text-white;
-}
-.priority-high {
-  @apply bg-orange-500 text-white;
-}
-.priority-medium {
-  @apply bg-yellow-500 text-black;
-}
-.priority-low {
-  @apply bg-blue-500 text-white;
-}
-.priority-lowest {
-  @apply bg-green-500 text-white;
-}
-
 /* Table styles */
 .backlog-table {
   @apply w-full border-collapse;
@@ -90,9 +73,15 @@ body {
 
 /* Animation for data refresh */
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .refreshing {

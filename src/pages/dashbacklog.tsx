@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { fetchBacklogTable } from "../api/api_jira";
 import { BacklogItem } from "../types/backlog";
 import { calculateBacklogMetrics } from "../utils/backlogMetrics";
 import { BacklogKPICards } from "../components/dashboard/BacklogKPICards";
 import BacklogQueues from "../components/dashboard/BacklogQueues";
+import { useJira } from "../context/JiraContext";
 import {
   BacklogCharts,
   SaudeBacklogChart,
@@ -13,10 +13,7 @@ import {
 } from "../components/dashboard/BacklogCharts";
 
 const DashBacklog: React.FC = () => {
-  const [rawData, setRawData] = useState<BacklogItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const { backlogData } = useJira();
   const [filtros, setFiltros] = useState({
     projeto: "",
     area: "",
@@ -24,24 +21,8 @@ const DashBacklog: React.FC = () => {
     prioridade: "",
   });
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const backlogData = await fetchBacklogTable();
-        setRawData(backlogData);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro ao carregar dados");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
   const filteredData = useMemo(() => {
-    return rawData.filter(
+    return backlogData.rawData.filter(
       (item) =>
         (filtros.projeto ? item.Projeto === filtros.projeto : true) &&
         (filtros.area
@@ -52,31 +33,39 @@ const DashBacklog: React.FC = () => {
           : true) &&
         (filtros.prioridade ? item.Prioridade === filtros.prioridade : true)
     );
-  }, [rawData, filtros]);
+  }, [backlogData.rawData, filtros]);
 
   const projetosOptions = useMemo(
     () =>
-      [...new Set(rawData.map((i) => i.Projeto).filter(Boolean))] as string[],
-    [rawData]
+      [
+        ...new Set(backlogData.rawData.map((i) => i.Projeto).filter(Boolean)),
+      ] as string[],
+    [backlogData.rawData]
   );
   const areaOptions = useMemo(
     () => [
       ...new Set(
-        rawData.map((i) => i["Unidade / Departamento"]).filter(Boolean)
+        backlogData.rawData
+          .map((i) => i["Unidade / Departamento"])
+          .filter(Boolean)
       ),
     ],
-    [rawData]
+    [backlogData.rawData]
   );
   const solicitanteOptions = useMemo(
-    () => [...new Set(rawData.map((i) => i.Solicitante).filter(Boolean))],
-    [rawData]
+    () => [
+      ...new Set(backlogData.rawData.map((i) => i.Solicitante).filter(Boolean)),
+    ],
+    [backlogData.rawData]
   );
   const prioridadeOptions = useMemo(
-    () => [...new Set(rawData.map((i) => i.Prioridade).filter(Boolean))],
-    [rawData]
+    () => [
+      ...new Set(backlogData.rawData.map((i) => i.Prioridade).filter(Boolean)),
+    ],
+    [backlogData.rawData]
   );
 
-  if (loading) {
+  if (backlogData.loading) {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="text-xl text-gray-500">
@@ -86,11 +75,11 @@ const DashBacklog: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (backlogData.error) {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="text-xl text-red-500">
-          Erro ao carregar dados: {error}
+          Erro ao carregar dados: {backlogData.error}
         </div>
       </div>
     );
