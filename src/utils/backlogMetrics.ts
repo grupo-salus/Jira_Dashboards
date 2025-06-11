@@ -15,36 +15,36 @@
  * - calculateAverageTime: Calcula o tempo médio na fila
  */
 
-import { Card, Metrics } from "../types/backlog";
+import {
+  JiraCard,
+  TimeMetric,
+  BasicMetrics,
+  QueueItem,
+} from "../types/backlog";
 import { differenceInSeconds } from "date-fns";
 
 // Função para calcular métricas básicas
-export function calculateBasicMetrics(items: Card.Backlog[]): Metrics.Basic {
-  const total_cards = items.length;
-  const projetos = new Set(items.map((item) => item.Projeto).filter(Boolean));
-  const total_projetos = projetos.size;
-
-  // Encontra o primeiro projeto na fila
-  const primeiro_projeto = items
-    .filter((item) => item.Projeto)
-    .sort((a, b) => a["Dias no Backlog"] - b["Dias no Backlog"])[0];
+function calculateBasicMetrics(items: JiraCard[]): BasicMetrics {
+  const uniqueProjects = new Set(items.map((item) => item.Projeto));
+  const firstProject =
+    items.length > 0 && items[0].Projeto
+      ? {
+          projeto: items[0].Projeto,
+          departamento: items[0]["Unidade / Departamento"],
+          prioridade: items[0].Prioridade,
+          chave: items[0].Chave,
+        }
+      : null;
 
   return {
-    total_cards,
-    total_projetos,
-    primeiro_projeto: primeiro_projeto
-      ? {
-          projeto: primeiro_projeto.Projeto || "",
-          departamento: primeiro_projeto["Unidade / Departamento"],
-          prioridade: primeiro_projeto.Prioridade,
-          chave: primeiro_projeto.Chave,
-        }
-      : null,
+    total_cards: items.length,
+    total_projetos: uniqueProjects.size,
+    primeiro_projeto: firstProject,
   };
 }
 
 // Fila atual: todos os cards
-function getFilaAtual(items: Card.Backlog[]): Card.Queue[] {
+function getFilaAtual(items: JiraCard[]): QueueItem[] {
   return items
     .filter((item) => item.Tipo !== "Subtarefa")
     .map((item) => ({
@@ -57,11 +57,11 @@ function getFilaAtual(items: Card.Backlog[]): Card.Queue[] {
 }
 
 // Fila por projeto: um card por projeto
-function getFilaPorProjeto(items: Card.Backlog[]): Card.Queue[] {
+function getFilaPorProjeto(items: JiraCard[]): QueueItem[] {
   const cards = items.filter(
     (item) => item.Tipo !== "Subtarefa" && item.Projeto
   );
-  const projetosUnicos = new Map<string, Card.Backlog>();
+  const projetosUnicos = new Map<string, JiraCard>();
 
   cards.forEach((item) => {
     if (!projetosUnicos.has(item.Projeto!)) {
@@ -78,7 +78,7 @@ function getFilaPorProjeto(items: Card.Backlog[]): Card.Queue[] {
   }));
 }
 
-export function getProjetosPorPrioridade(items: Card.Backlog[]) {
+export function getProjetosPorPrioridade(items: JiraCard[]) {
   const projetosUnicos = new Map<string, { prioridade: string }>();
   items.forEach((item) => {
     if (item.Projeto && item.Projeto !== "Sem Projeto") {
@@ -94,7 +94,7 @@ export function getProjetosPorPrioridade(items: Card.Backlog[]) {
   return resultado;
 }
 
-export function getSaudeBacklog(items: Card.Backlog[]) {
+export function getSaudeBacklog(items: JiraCard[]) {
   // GUARDA: Se a lista estiver vazia, retorna um objeto padrão seguro
   if (items.length === 0) {
     return {
@@ -156,7 +156,7 @@ export function getSaudeBacklog(items: Card.Backlog[]) {
   };
 }
 
-export function getProjetosPorArea(items: Card.Backlog[]) {
+export function getProjetosPorArea(items: JiraCard[]) {
   const resultado: Record<string, Record<string, number>> = {};
   items.forEach((item) => {
     const projeto = item.Projeto;
@@ -169,7 +169,7 @@ export function getProjetosPorArea(items: Card.Backlog[]) {
   return resultado;
 }
 
-export function getCardsPorArea(items: Card.Backlog[]) {
+export function getCardsPorArea(items: JiraCard[]) {
   const resultado: Record<string, number> = {};
   items.forEach((item) => {
     const area = item["Unidade / Departamento"] || "Não informado";
@@ -178,7 +178,7 @@ export function getCardsPorArea(items: Card.Backlog[]) {
   return resultado;
 }
 
-export function getProjetosPorSolicitante(items: Card.Backlog[]) {
+export function getProjetosPorSolicitante(items: JiraCard[]) {
   const resultado: Record<string, Set<string>> = {};
   items.forEach((item) => {
     const solicitante = item.Solicitante || "Não informado";
@@ -195,7 +195,7 @@ export function getProjetosPorSolicitante(items: Card.Backlog[]) {
 }
 
 // Função principal que agora chama as funções robustas
-export function calculateBacklogMetrics(items: Card.Backlog[]) {
+export function calculateBacklogMetrics(items: JiraCard[]) {
   return {
     basic: calculateBasicMetrics(items),
     fila_atual: getFilaAtual(items),
@@ -214,7 +214,7 @@ export const BACKLOG_METRICS = {
 };
 
 // Função para formatar tempo em segundos para dias, horas, minutos e segundos
-function formatTime(seconds: number): Metrics.TimeMetric {
+function formatTime(seconds: number): TimeMetric {
   const days = Math.floor(seconds / (24 * 60 * 60));
   const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
   const minutes = Math.floor((seconds % (60 * 60)) / 60);
@@ -229,9 +229,7 @@ function formatTime(seconds: number): Metrics.TimeMetric {
 }
 
 // Calcula o tempo médio na fila para um conjunto de itens do backlog
-export function calculateAverageTime(
-  items: Card.Backlog[]
-): Metrics.TimeMetric {
+export function calculateAverageTime(items: JiraCard[]): TimeMetric {
   if (!items.length) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
   const totalSeconds = items.reduce((total, item) => {
@@ -242,3 +240,52 @@ export function calculateAverageTime(
 
   return formatTime(Math.floor(totalSeconds / items.length));
 }
+
+// Função para calcular métricas de tempo
+export const calculateTimeMetrics = (cards: JiraCard[]): TimeMetric => {
+  let totalSeconds = 0;
+  let totalCards = 0;
+
+  cards.forEach((card) => {
+    if (card["Dias no Backlog"]) {
+      totalSeconds += card["Dias no Backlog"] * 24 * 60 * 60; // Convertendo dias para segundos
+      totalCards++;
+    }
+  });
+
+  const averageSeconds = totalCards > 0 ? totalSeconds / totalCards : 0;
+  const days = Math.floor(averageSeconds / (24 * 60 * 60));
+  const hours = Math.floor((averageSeconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((averageSeconds % (60 * 60)) / 60);
+  const seconds = Math.floor(averageSeconds % 60);
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+  };
+};
+
+// Função para calcular métricas de filas
+export const calculateQueueMetrics = (cards: JiraCard[]): QueueItem[] => {
+  const queueMap = new Map<string, JiraCard[]>();
+
+  cards.forEach((card) => {
+    const queue = card["Unidade / Departamento"] || "Sem Fila";
+    if (!queueMap.has(queue)) {
+      queueMap.set(queue, []);
+    }
+    queueMap.get(queue)?.push(card);
+  });
+
+  return Array.from(queueMap.entries()).map(([name, cards]) => ({
+    name,
+    count: cards.length,
+    chave: cards[0].Chave,
+    titulo: cards[0].Título,
+    prioridade: cards[0].Prioridade,
+    projeto: cards[0].Projeto,
+    area: cards[0]["Unidade / Departamento"],
+  }));
+};

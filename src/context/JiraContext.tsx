@@ -22,15 +22,15 @@ import React, {
   ReactNode,
 } from "react";
 import { fetchBacklogTable } from "../api/api_jira";
-import { Card, Metrics } from "../types/backlog";
+import { JiraCard, BasicMetrics } from "../types/backlog";
 import { calculateBacklogMetrics } from "../utils/backlogMetrics";
 
 interface JiraContextType {
   // Dados do Backlog
   backlogData: {
-    rawData: Card.Backlog[];
+    rawData: JiraCard[];
     metrics: {
-      basic: Metrics.Basic;
+      basic: BasicMetrics;
     };
     loading: boolean;
     error: string | null;
@@ -54,9 +54,9 @@ const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hora em milissegundos
 
 interface CacheData {
   backlog: {
-    rawData: Card.Backlog[];
+    rawData: JiraCard[];
     metrics: {
-      basic: Metrics.Basic;
+      basic: BasicMetrics;
     };
     timestamp: number;
   };
@@ -102,9 +102,9 @@ interface JiraProviderProps {
 
 export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   // Estado do Backlog
-  const [backlogRawData, setBacklogRawData] = useState<Card.Backlog[]>([]);
+  const [backlogRawData, setBacklogRawData] = useState<JiraCard[]>([]);
   const [backlogMetrics, setBacklogMetrics] = useState<{
-    basic: Metrics.Basic;
+    basic: BasicMetrics;
   }>(defaultBacklogMetrics);
   const [backlogLoading, setBacklogLoading] = useState(false);
   const [backlogError, setBacklogError] = useState<string | null>(null);

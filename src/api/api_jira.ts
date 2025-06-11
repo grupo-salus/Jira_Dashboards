@@ -15,7 +15,7 @@
  * - Validação de respostas
  */
 
-import { Card, Response } from "../types/backlog";
+import { JiraCard, BacklogResponse } from "../types/backlog";
 
 const API_URL = "http://localhost:8000";
 
@@ -27,7 +27,7 @@ export async function fetchBacklogTable(filters?: {
   grupo_solicitante?: string;
   solicitante?: string;
   projeto?: string;
-}): Promise<Card.Backlog[]> {
+}): Promise<JiraCard[]> {
   try {
     const queryParams = new URLSearchParams();
     if (filters) {
@@ -49,10 +49,10 @@ export async function fetchBacklogTable(filters?: {
       throw new Error("Failed to fetch backlog table");
     }
 
-    const data: Response.Backlog = await response.json();
+    const data: BacklogResponse = await response.json();
 
     // Decodifica os caracteres especiais nos dados retornados
-    return (data.tabela_backlog ?? []).map((item) => ({
+    return (data.tabela_backlog ?? []).map((item: JiraCard) => ({
       ...item,
       Título: decodeURIComponent(item.Título || ""),
       Projeto: decodeURIComponent(item.Projeto || ""),
