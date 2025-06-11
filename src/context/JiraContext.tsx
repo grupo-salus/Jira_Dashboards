@@ -22,16 +22,13 @@ import React, {
   ReactNode,
 } from "react";
 import { fetchBacklogTable } from "../api/api_jira";
-import { JiraCard, BasicMetrics } from "../types/backlog";
-import { calculateBacklogMetrics } from "../utils/backlogMetrics";
+import { ResultApi } from "../types/jira";
+
 
 interface JiraContextType {
   // Dados do Backlog
   backlogData: {
-    rawData: JiraCard[];
-    metrics: {
-      basic: BasicMetrics;
-    };
+    rawData: ResultApi[];
     loading: boolean;
     error: string | null;
     lastUpdate: Date | null;
@@ -54,10 +51,7 @@ const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hora em milissegundos
 
 interface CacheData {
   backlog: {
-    rawData: JiraCard[];
-    metrics: {
-      basic: BasicMetrics;
-    };
+    rawData: ResultApi[];
     timestamp: number;
   };
   sprint: {
@@ -67,18 +61,9 @@ interface CacheData {
   };
 }
 
-const defaultBacklogMetrics = {
-  basic: {
-    total_cards: 0,
-    total_projetos: 0,
-    primeiro_projeto: null,
-  },
-};
-
 export const JiraContext = createContext<JiraContextType>({
   backlogData: {
     rawData: [],
-    metrics: defaultBacklogMetrics,
     loading: false,
     error: null,
     lastUpdate: null,
@@ -102,10 +87,7 @@ interface JiraProviderProps {
 
 export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   // Estado do Backlog
-  const [backlogRawData, setBacklogRawData] = useState<JiraCard[]>([]);
-  const [backlogMetrics, setBacklogMetrics] = useState<{
-    basic: BasicMetrics;
-  }>(defaultBacklogMetrics);
+  const [backlogRawData, setBacklogRawData] = useState<ResultApi[]>([]);
   const [backlogLoading, setBacklogLoading] = useState(false);
   const [backlogError, setBacklogError] = useState<string | null>(null);
   const [backlogLastUpdate, setBacklogLastUpdate] = useState<Date | null>(null);
@@ -130,7 +112,6 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
 
       if (!backlogExpired) {
         setBacklogRawData(backlog.rawData);
-        setBacklogMetrics(backlog.metrics);
         setBacklogLastUpdate(new Date(backlog.timestamp));
       }
 
@@ -152,7 +133,6 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
       const cacheData: CacheData = {
         backlog: {
           rawData: backlogRawData,
-          metrics: backlogMetrics,
           timestamp: Date.now(),
         },
         sprint: {
@@ -173,10 +153,8 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
       setBacklogError(null);
 
       const data = await fetchBacklogTable();
-      const calculatedMetrics = calculateBacklogMetrics(data);
 
       setBacklogRawData(data);
-      setBacklogMetrics(calculatedMetrics);
       setBacklogLastUpdate(new Date());
       saveToCache();
     } catch (error) {
@@ -224,7 +202,6 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
       value={{
         backlogData: {
           rawData: backlogRawData,
-          metrics: backlogMetrics,
           loading: backlogLoading,
           error: backlogError,
           lastUpdate: backlogLastUpdate,

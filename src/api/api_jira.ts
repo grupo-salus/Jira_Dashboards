@@ -14,8 +14,11 @@
  * - Tratamento de erros de rede
  * - Validação de respostas
  */
+import { ResultApi } from "../types/jira";
 
-import { JiraCard, BacklogResponse } from "../types/backlog";
+interface BacklogResponse {
+  tabela_backlog: ResultApi[];
+}
 
 const API_URL = "http://localhost:8000";
 
@@ -27,7 +30,7 @@ export async function fetchBacklogTable(filters?: {
   grupo_solicitante?: string;
   solicitante?: string;
   projeto?: string;
-}): Promise<JiraCard[]> {
+}): Promise<ResultApi[]> {
   try {
     const queryParams = new URLSearchParams();
     if (filters) {
@@ -52,7 +55,7 @@ export async function fetchBacklogTable(filters?: {
     const data: BacklogResponse = await response.json();
 
     // Decodifica os caracteres especiais nos dados retornados
-    return (data.tabela_backlog ?? []).map((item: JiraCard) => ({
+    return (data.tabela_backlog ?? []).map((item: ResultApi) => ({
       ...item,
       Título: decodeURIComponent(item.Título || ""),
       Projeto: decodeURIComponent(item.Projeto || ""),

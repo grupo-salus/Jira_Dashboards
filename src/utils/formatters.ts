@@ -1,91 +1,75 @@
-// Funções utilitárias de formatação para datas, tempo, prioridade, etc.
-// Este arquivo é separado dos padrões de cor e fonte (ver themeColors.ts)
-
-import { differenceInSeconds } from "date-fns";
-import { Metrics } from "../types/backlog";
+import { PRIORITIES } from "../constants/priorities";
 
 /**
- * Formats seconds into days, hours, minutes and seconds
+ * Formata uma data ISO para o formato brasileiro
+ * @param dateString Data no formato ISO (ex: 2024-07-12T10:01:39)
+ * @returns Data formatada (ex: 12/07/2024 10:01)
  */
-export const formatTime = (seconds: number): Metrics.TimeMetric => {
-  if (!seconds || isNaN(seconds)) {
-    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  }
-
-  const days = Math.floor(seconds / (24 * 3600));
-  seconds -= days * 24 * 3600;
-
-  const hours = Math.floor(seconds / 3600);
-  seconds -= hours * 3600;
-
-  const minutes = Math.floor(seconds / 60);
-  seconds -= minutes * 60;
-
-  return {
-    days,
-    hours,
-    minutes,
-    seconds: Math.floor(seconds),
-  };
-};
-
-/**
- * Formats time metric object into readable string
- */
-export const formatTimeToString = (time: Metrics.TimeMetric): string => {
-  let result = "";
-  if (time.days > 0) result += `${time.days}d `;
-  if (time.hours > 0) result += `${time.hours}h `;
-  if (time.minutes > 0) result += `${time.minutes}m `;
-  if (time.seconds > 0 || result === "") result += `${time.seconds}s`;
-  return result.trim();
-};
-
-/**
- * Calculates time in queue based on creation date
- */
-export const calculateTimeInQueue = (
-  creationDate: string
-): Metrics.TimeMetric => {
-  const created = new Date(creationDate);
-  const now = new Date();
-  const seconds = differenceInSeconds(now, created);
-  return formatTime(seconds);
-};
-
-/**
- * Converts estimated time in seconds to human-readable format
- */
-export const formatEstimatedTime = (seconds: number): string => {
-  if (!seconds) return "N/A";
-  const time = formatTime(seconds);
-  return formatTimeToString(time);
-};
-
-/**
- * Formata um número para porcentagem com 2 casas decimais
- */
-export const formatPercentage = (value: number): string => {
-  return `${value.toFixed(2)}%`;
-};
-
-/**
- * Formata um número para horas com 2 casas decimais
- */
-export const formatHours = (value: number): string => {
-  return `${value.toFixed(2)}h`;
-};
-
-/**
- * Formata uma data para o padrão brasileiro
- */
-export const formatDate = (date: string | Date): string => {
-  const d = new Date(date);
-  return d.toLocaleDateString("pt-BR", {
+export const formatDate = (dateString: string): string => {
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  return date.toLocaleString("pt-BR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+/**
+ * Formata segundos em um formato legível (horas, minutos, segundos)
+ * @param seconds Número de segundos
+ * @returns String formatada (ex: 2h 30m 15s)
+ */
+export const formatSeconds = (seconds: number): string => {
+  if (!seconds) return "-";
+
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (remainingSeconds > 0 || parts.length === 0)
+    parts.push(`${remainingSeconds}s`);
+
+  return parts.join(" ");
+};
+
+/**
+ * Calcula a diferença entre estimativa e tempo real
+ * @param estimativa Tempo estimado em segundos
+ * @param tempoReal Tempo real em segundos
+ * @returns Objeto com a diferença e status
+ */
+export const calcularDiferencaTempo = (
+  estimativa: number,
+  tempoReal: number
+) => {
+  if (!estimativa || !tempoReal) return { diferenca: 0, status: "neutral" };
+
+  const diferenca = tempoReal - estimativa;
+  const percentual = (diferenca / estimativa) * 100;
+
+  let status: "under" | "over" | "neutral" = "neutral";
+  if (percentual > 10) status = "over";
+  else if (percentual < -10) status = "under";
+
+  return {
+    diferenca,
+    percentual,
+    status,
+    formatado: formatSeconds(Math.abs(diferenca)),
+  };
+};
+
+/**
+ * Traduz e formata a prioridade do Jira
+ * @param priority Prioridade do Jira (ex: Highest, High, Medium, etc)
+ * @returns Objeto com label traduzido e configurações de cor
+ */
+export const formatPriority = (priority: string) => {
+  return PRIORITIES[priority] || PRIORITIES["Medium"];
 };
