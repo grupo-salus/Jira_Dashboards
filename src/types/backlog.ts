@@ -24,17 +24,6 @@
 // ==================== Tipos Base ====================
 
 /**
- * Interface base para métricas de tempo
- * Usada para representar durações em diferentes unidades
- */
-export interface TimeMetric {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
-/**
  * Tipos básicos para categorização
  */
 export type PriorityType = string;
@@ -134,6 +123,17 @@ export namespace Card {
  * Namespace para todas as interfaces relacionadas a métricas
  */
 export namespace Metrics {
+  /**
+   * Interface base para métricas de tempo
+   * Usada para representar durações em diferentes unidades
+   */
+  export interface TimeMetric {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }
+
   /**
    * Interface para saúde do backlog
    * Contém métricas sobre a idade e distribuição dos cards

@@ -2,12 +2,12 @@
 // Este arquivo é separado dos padrões de cor e fonte (ver themeColors.ts)
 
 import { differenceInSeconds } from "date-fns";
-import { BacklogItem, TimeMetric } from "../types/backlog";
+import { Metrics } from "../types/backlog";
 
 /**
  * Formats seconds into days, hours, minutes and seconds
  */
-export const formatTime = (seconds: number): TimeMetric => {
+export const formatTime = (seconds: number): Metrics.TimeMetric => {
   if (!seconds || isNaN(seconds)) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
@@ -32,7 +32,7 @@ export const formatTime = (seconds: number): TimeMetric => {
 /**
  * Formats time metric object into readable string
  */
-export const formatTimeToString = (time: TimeMetric): string => {
+export const formatTimeToString = (time: Metrics.TimeMetric): string => {
   let result = "";
   if (time.days > 0) result += `${time.days}d `;
   if (time.hours > 0) result += `${time.hours}h `;
@@ -44,7 +44,9 @@ export const formatTimeToString = (time: TimeMetric): string => {
 /**
  * Calculates time in queue based on creation date
  */
-export const calculateTimeInQueue = (creationDate: string): TimeMetric => {
+export const calculateTimeInQueue = (
+  creationDate: string
+): Metrics.TimeMetric => {
   const created = new Date(creationDate);
   const now = new Date();
   const seconds = differenceInSeconds(now, created);
