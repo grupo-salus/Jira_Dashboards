@@ -166,14 +166,6 @@ export function getProjetosPorPrioridade(items: BacklogItem[]) {
   return resultado;
 }
 
-export function getTarefasPorPrioridade(items: BacklogItem[]) {
-  const resultado: Record<string, number> = {};
-  items.forEach((item) => {
-    resultado[item.Prioridade] = (resultado[item.Prioridade] || 0) + 1;
-  });
-  return resultado;
-}
-
 export function getSaudeBacklog(items: BacklogItem[]) {
   // GUARDA: Se a lista estiver vazia, retorna um objeto padrão seguro
   if (items.length === 0) {
@@ -281,7 +273,6 @@ export function calculateBacklogMetrics(items: BacklogItem[]) {
     fila_atual: getFilaAtual(items),
     fila_por_projeto: getFilaPorProjeto(items),
     projetos_por_prioridade: getProjetosPorPrioridade(items),
-    tarefas_por_prioridade: getTarefasPorPrioridade(items),
     saude_backlog: getSaudeBacklog(items),
     projetos_por_area: getProjetosPorArea(items),
     cards_por_area: getCardsPorArea(items),

@@ -6,7 +6,6 @@ import { BacklogKPICards } from "../components/dashboard/BacklogKPICards";
 import BacklogQueues from "../components/dashboard/BacklogQueues";
 import {
   BacklogCharts,
-  TarefasPorPrioridadeChart,
   SaudeBacklogChart,
   ProjetosPorAreaChart,
   CardsPorAreaChart,
@@ -250,11 +249,6 @@ const DashBacklog: React.FC = () => {
             <div className="break-inside-avoid">
               <BacklogCharts
                 projetosPorPrioridade={metrics.projetos_por_prioridade}
-              />
-            </div>
-            <div className="break-inside-avoid">
-              <TarefasPorPrioridadeChart
-                tarefasPorPrioridade={metrics.tarefas_por_prioridade}
               />
             </div>
             <div className="break-inside-avoid">

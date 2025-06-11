@@ -9,9 +9,6 @@ import { themeColors } from "../../utils/themeColors";
 interface BacklogChartsProps {
   projetosPorPrioridade: Record<string, number>;
 }
-interface TarefasPorPrioridadeProps {
-  tarefasPorPrioridade: Record<string, number>;
-}
 interface SaudeBacklogProps {
   saude: {
     total: number;
@@ -84,47 +81,6 @@ export const BacklogCharts: React.FC<BacklogChartsProps> = ({
                 />
                 <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
                   {projetosPorPrioridade[prioridade]}
-                </span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-/* =======================
-   Gráfico: Tarefas por Prioridade
-======================= */
-export const TarefasPorPrioridadeChart: React.FC<TarefasPorPrioridadeProps> = ({
-  tarefasPorPrioridade,
-}) => {
-  const prioridades = Object.keys(tarefasPorPrioridade);
-  const max = Math.max(...Object.values(tarefasPorPrioridade), 1);
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <h3 className="text-lg font-semibold mb-4">Tarefas por Prioridade</h3>
-      <div className="flex flex-col gap-3">
-        {prioridades.map((prioridade) => {
-          const config = getPriorityConfig(prioridade);
-          return (
-            <div key={prioridade} className="flex items-center gap-2">
-              <span
-                className={`w-24 text-xs capitalize font-semibold ${config.color.text} ${config.color.dark.text}`}
-              >
-                {config.label}
-              </span>
-              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded h-4 relative">
-                <div
-                  className={`${config.color.bg} ${config.color.dark.bg} h-4 rounded`}
-                  style={{
-                    width: `${(tarefasPorPrioridade[prioridade] / max) * 100}%`,
-                  }}
-                />
-                <span className="absolute right-2 top-0 text-xs text-gray-800 dark:text-gray-200">
-                  {tarefasPorPrioridade[prioridade]}
                 </span>
               </div>
             </div>
