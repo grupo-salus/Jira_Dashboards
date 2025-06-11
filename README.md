@@ -8,40 +8,168 @@ Este repositório contém dashboards para acompanhamento do backlog e do quadro 
 .
 ├── .gitignore
 ├── README.md
-└── backend/
-    ├── config/
-    │   └── __init__.py
-    ├── controllers/          # (Planejado para futuros controladores de API)
-    ├── main.py
-    ├── services/
-    │   ├── __init__.py
-    │   ├── jira_parser.py
-    │   └── jira_service.py
-    └── utils/                # (Planejado para futuras funções utilitárias)
+├── backend/          # Backend em Python
+│   ├── config/
+│   ├── controllers/
+│   ├── main.py
+│   ├── services/
+│   └── utils/
+└── src/             # Frontend em React/TypeScript
+    ├── api/         # Serviços de API
+    │   └── api_jira.ts
+    ├── components/  # Componentes React
+    │   ├── dashboard/  # Componentes do Dashboard
+    │   │   ├── BacklogCharts.tsx
+    │   │   ├── BacklogKPICards.tsx
+    │   │   └── BacklogQueues.tsx
+    │   ├── layout/    # Componentes de Layout
+    │   └── icons/     # Ícones personalizados
+    ├── context/     # Contextos React
+    │   └── JiraContext.tsx
+    ├── pages/       # Páginas da aplicação
+    │   ├── dashbacklog.tsx
+    │   ├── SprintDashboard.tsx
+    │   └── Home.tsx
+    ├── types/       # Definições de tipos
+    │   └── backlog.ts
+    ├── utils/       # Funções utilitárias
+    │   ├── backlogMetrics.ts
+    │   ├── formatters.ts
+    │   └── themeColors.ts
+    ├── constants/   # Constantes e configurações
+    ├── App.tsx      # Componente principal
+    ├── main.tsx     # Ponto de entrada
+    └── index.css    # Estilos globais
 ```
 
-## Explicação dos Arquivos e Pastas
+## Fluxo do Frontend
 
-- **`.gitignore`**: Especifica arquivos e pastas intencionalmente não rastreados pelo Git. Isso inclui arquivos de ambiente virtual (ex: `venv/`), caches do Python (`__pycache__/`), arquivos de configuração de IDEs (ex: `.vscode/`, `.idea/`) e arquivos `.env` que contêm segredos.
+### 1. Estrutura de Arquivos
 
-- **`README.md`**: Este arquivo. Fornece uma visão geral do projeto, instruções de configuração e uso.
+#### API e Dados
 
-- **`backend/`**: Diretório principal que contém toda a lógica da aplicação backend.
-  - **`backend/config/`**: Destinado a armazenar arquivos de configuração da aplicação.
-    - **`backend/config/__init__.py`**: Arquivo vazio que marca o diretório `config` como um pacote Python, permitindo que seus módulos sejam importados.
-  - **`backend/controllers/`**: Atualmente vazio. Planejado para conter os controladores de API (por exemplo, usando Flask ou FastAPI) se o projeto for exposto como um serviço web no futuro.
-  - **`backend/main.py`**: Ponto de entrada principal da aplicação. Ele orquestra as chamadas ao `JiraService` para buscar dados, usa o `jira_parser` para transformar esses dados e, em seguida, exporta os DataFrames resultantes para um arquivo Excel.
-  - **`backend/services/`**: Contém a lógica de negócio e os módulos que interagem com serviços externos, como a API do Jira.
-    - **`backend/services/__init__.py`**: Marca o diretório `services` como um pacote Python.
-    - **`backend/services/jira_service.py`**: Define a classe `JiraService`. Esta classe é responsável por se conectar à API do Jira (usando credenciais carregadas de variáveis de ambiente via `python-dotenv`) e buscar as issues do backlog e da sprint ativa do quadro Kanban especificado.
-    - **`backend/services/jira_parser.py`**: Contém a lógica para processar e transformar os dados brutos (JSON) retornados pela API do Jira. A função principal, `parse_issues_to_dataframe`, converte a lista de issues em um DataFrame do Pandas para facilitar a análise e a exportação.
-  - **`backend/utils/`**: Atualmente vazio. Planejado para conter funções utilitárias que podem ser reutilizadas em diferentes partes do backend.
+- `src/api/api_jira.ts`: Contém as funções que fazem as chamadas à API do backend
+  - `fetchBacklogTable`: Busca dados do backlog com filtros
+
+#### Tipos e Interfaces
+
+- `src/types/backlog.ts`: Define todas as interfaces e tipos do sistema
+  - `Card`: Interfaces para cards do Jira (Base, Backlog, Project, etc.)
+  - `Metrics`: Interfaces para métricas (Basic, BacklogHealth, etc.)
+  - `Project`: Interfaces para projetos
+  - `Department`: Interfaces para departamentos
+  - `Analysis`: Interfaces para análises
+  - `Response`: Interfaces para respostas da API
+  - `Summary`: Interfaces para resumos
+
+#### Componentes
+
+- `src/components/dashboard/`: Componentes específicos do dashboard
+  - `BacklogKPICards.tsx`: Cards com métricas principais
+  - `BacklogCharts.tsx`: Gráficos do backlog
+  - `BacklogQueues.tsx`: Visualização das filas do backlog
+
+#### Páginas
+
+- `src/pages/dashbacklog.tsx`: Página principal do dashboard de backlog
+  - Gerencia o estado global dos filtros
+  - Coordena a busca e atualização dos dados
+  - Renderiza os componentes do dashboard
+- `src/pages/SprintDashboard.tsx`: Dashboard da sprint atual (em desenvolvimento)
+- `src/pages/Home.tsx`: Página inicial com navegação
+
+#### Utilitários
+
+- `src/utils/backlogMetrics.ts`: Funções para cálculo de métricas
+- `src/utils/formatters.ts`: Funções para formatação de dados
+- `src/utils/themeColors.ts`: Definições de cores e estilos
+
+### 2. Fluxo de Dados
+
+1. **Inicialização**:
+
+   - A página `dashbacklog.tsx` é carregada
+   - O contexto `JiraContext` é inicializado
+   - Os filtros padrão são aplicados
+
+2. **Busca de Dados**:
+
+   - `dashbacklog.tsx` chama `fetchBacklogTable` do `api_jira.ts`
+   - A API faz requisição ao backend
+   - Os dados são processados e tipados conforme interfaces em `backlog.ts`
+
+3. **Processamento**:
+
+   - Os dados brutos são processados por funções em `backlogMetrics.ts`
+   - Métricas são calculadas (idade média, distribuição, etc.)
+   - Dados são formatados usando funções de `formatters.ts`
+
+4. **Renderização**:
+   - `BacklogKPICards` exibe métricas principais
+   - `BacklogCharts` gera gráficos usando os dados processados
+   - `BacklogQueues` mostra a distribuição por filas
+
+### 3. Componentes Principais
+
+#### BacklogKPICards
+
+- Exibe métricas principais do backlog
+- Mostra total de cards, projetos, idade média e card mais antigo
+- Atualiza automaticamente com mudanças nos filtros
+
+#### BacklogCharts
+
+- Renderiza gráficos usando a biblioteca Recharts
+- Inclui gráficos de:
+  - Distribuição por idade
+  - Distribuição por prioridade
+  - Distribuição por área
+  - Distribuição por solicitante
+
+#### BacklogQueues
+
+- Visualiza a distribuição de cards por fila
+- Mostra métricas específicas de cada fila
+- Permite análise do fluxo de trabalho
+
+### 4. Gerenciamento de Estado
+
+- **JiraContext**: Gerencia o estado global da aplicação
+
+  - Dados do backlog
+  - Estado de carregamento
+  - Erros
+  - Funções de atualização
+
+- **Filtros**: Gerenciados localmente em `dashbacklog.tsx`
+  - Estado dos filtros
+  - Funções de atualização
+  - Efeitos para buscar dados quando filtros mudam
+
+### 5. Estilização
+
+- Usa Tailwind CSS para estilização
+- Tema personalizado definido em `themeColors.ts`
+- Componentes estilizados com classes utilitárias
+- Layout responsivo para diferentes tamanhos de tela
 
 ## Dependências Principais
 
-Este projeto depende das seguintes bibliotecas Python, que precisam ser instaladas no seu ambiente (por exemplo, usando `pip install <biblioteca>`):
+### Backend
 
-- `requests`: Para realizar as chamadas HTTP à API do Jira.
-- `python-dotenv`: Para carregar variáveis de ambiente de um arquivo `.env` (onde as credenciais e configurações do Jira são armazenadas de forma segura).
-- `pandas`: Para manipulação de dados e criação de DataFrames, que são usados para organizar os dados das issues do Jira.
-- `openpyxl`: Motor utilizado pelo Pandas para escrever os DataFrames em arquivos Excel (`.xlsx`).
+Este projeto depende das seguintes bibliotecas Python:
+
+- `requests`: Para chamadas HTTP à API do Jira
+- `python-dotenv`: Para variáveis de ambiente
+- `pandas`: Para manipulação de dados
+- `openpyxl`: Para exportação Excel
+
+### Frontend
+
+Este projeto depende das seguintes bibliotecas JavaScript/TypeScript:
+
+- `react`: Biblioteca principal para UI
+- `recharts`: Para criação de gráficos
+- `tailwindcss`: Para estilização
+- `date-fns`: Para manipulação de datas
+- `axios`: Para chamadas HTTP
