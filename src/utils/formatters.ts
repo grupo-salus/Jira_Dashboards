@@ -61,21 +61,6 @@ export const formatEstimatedTime = (seconds: number): string => {
 };
 
 /**
- * Calculates average time in queue for a set of backlog items
- */
-export const calculateAverageTime = (items: BacklogItem[]): TimeMetric => {
-  if (!items.length) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-
-  const totalSeconds = items.reduce((total, item) => {
-    const created = new Date(item["Data de Criação"]);
-    const now = new Date();
-    return total + differenceInSeconds(now, created);
-  }, 0);
-
-  return formatTime(Math.floor(totalSeconds / items.length));
-};
-
-/**
  * Formata um número para porcentagem com 2 casas decimais
  */
 export const formatPercentage = (value: number): string => {

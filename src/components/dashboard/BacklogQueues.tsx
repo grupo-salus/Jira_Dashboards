@@ -1,10 +1,10 @@
 import React from "react";
-import { FilaItem } from "../../utils/backlogMetrics";
+import { Card } from "../../types/backlog";
 import { getPriorityConfig } from "../../constants/priorities";
 
 interface BacklogQueuesProps {
-  filaAtual: FilaItem[];
-  filaPorProjeto: FilaItem[];
+  filaAtual: Card.Queue[];
+  filaPorProjeto: Card.Queue[];
 }
 
 export const BacklogQueues: React.FC<BacklogQueuesProps> = ({

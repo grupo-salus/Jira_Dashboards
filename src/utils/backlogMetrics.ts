@@ -1,122 +1,33 @@
 import { Card, Metrics } from "../types/backlog";
+import { differenceInSeconds } from "date-fns";
 
-// Interface para os totalizadores básicos
-interface BacklogBasicMetrics {
-  total_cards: number;
-  total_projetos: number;
-  idade_media_dias: number;
-  card_mais_antigo: {
-    dias: number;
-    chave: string;
-    titulo: string;
-    projeto: string | null;
-  };
-  primeiro_projeto: {
-    chave: string;
-    titulo: string;
-    projeto: string;
-    departamento: string;
-    prioridade: string;
-  } | null;
-}
-
-// Tipo para os itens da fila
-export interface FilaItem {
-  chave: string;
-  titulo: string;
-  prioridade: string;
-  projeto: string | null;
-  area: string;
-}
-
-// Função para calcular os totalizadores básicos
-export function calculateBasicMetrics(
-  items: BacklogItem[]
-): BacklogBasicMetrics {
-  // GUARDA: Se a lista de entrada estiver vazia, retorna um objeto padrão seguro.
-  // Isso evita o crash "Cannot read properties of undefined".
-  if (items.length === 0) {
-    return {
-      total_cards: 0,
-      total_projetos: 0,
-      idade_media_dias: 0,
-      card_mais_antigo: {
-        dias: 0,
-        chave: "N/A",
-        titulo: "Nenhum card encontrado",
-        projeto: null,
-      },
-      primeiro_projeto: null,
-    };
-  }
-
-  // Filtra apenas cards que não são subtarefas
-  const cards = items.filter((item) => item.Tipo !== "Subtarefa");
-
-  // GUARDA 2: Proteção caso só existam subtarefas
-  if (cards.length === 0) {
-    return {
-      total_cards: items.length, // Mostra o total de subtarefas
-      total_projetos: 0,
-      idade_media_dias: 0,
-      card_mais_antigo: {
-        dias: 0,
-        chave: "N/A",
-        titulo: "Apenas subtarefas",
-        projeto: null,
-      },
-      primeiro_projeto: null,
-    };
-  }
-
-  // Total de cards
+// Função para calcular métricas básicas
+export function calculateBasicMetrics(items: Card.Backlog[]): Metrics.Basic {
   const total_cards = items.length;
+  const projetos = new Set(items.map((item) => item.Projeto).filter(Boolean));
+  const total_projetos = projetos.size;
 
-  // Total de projetos únicos (excluindo nulos)
-  const total_projetos = new Set(
-    cards.map((item) => item.Projeto).filter(Boolean)
-  ).size;
-
-  // CORREÇÃO: Evita divisão por zero se `cards` for vazio, resultando em NaN.
-  const idade_media_dias = Math.round(
-    cards.reduce((acc, item) => acc + item["Dias no Backlog"], 0) /
-      (cards.length || 1)
-  );
-
-  // Encontrar o card mais antigo. Agora seguro por causa das guardas acima.
-  const card_mais_antigo = cards.reduce((mais_antigo, atual) => {
-    return atual["Dias no Backlog"] > mais_antigo["Dias no Backlog"]
-      ? atual
-      : mais_antigo;
-  });
-
-  // Encontrar o primeiro projeto (primeiro card com projeto)
-  const primeiro_projeto = cards.find((item) => item.Projeto !== null) || null;
+  // Encontra o primeiro projeto na fila
+  const primeiro_projeto = items
+    .filter((item) => item.Projeto)
+    .sort((a, b) => a["Dias no Backlog"] - b["Dias no Backlog"])[0];
 
   return {
     total_cards,
     total_projetos,
-    idade_media_dias,
-    card_mais_antigo: {
-      dias: card_mais_antigo["Dias no Backlog"],
-      chave: card_mais_antigo.Chave,
-      titulo: card_mais_antigo.Título,
-      projeto: card_mais_antigo.Projeto,
-    },
     primeiro_projeto: primeiro_projeto
       ? {
-          chave: primeiro_projeto.Chave,
-          titulo: primeiro_projeto.Título,
-          projeto: primeiro_projeto.Projeto || "", // Garante que não seja nulo
+          projeto: primeiro_projeto.Projeto || "",
           departamento: primeiro_projeto["Unidade / Departamento"],
           prioridade: primeiro_projeto.Prioridade,
+          chave: primeiro_projeto.Chave,
         }
       : null,
   };
 }
 
-// Fila atual: todos os cards (exceto subtarefas)
-function getFilaAtual(items: BacklogItem[]): FilaItem[] {
+// Fila atual: todos os cards
+function getFilaAtual(items: Card.Backlog[]): Card.Queue[] {
   return items
     .filter((item) => item.Tipo !== "Subtarefa")
     .map((item) => ({
@@ -129,11 +40,11 @@ function getFilaAtual(items: BacklogItem[]): FilaItem[] {
 }
 
 // Fila por projeto: um card por projeto
-function getFilaPorProjeto(items: BacklogItem[]): FilaItem[] {
+function getFilaPorProjeto(items: Card.Backlog[]): Card.Queue[] {
   const cards = items.filter(
     (item) => item.Tipo !== "Subtarefa" && item.Projeto
   );
-  const projetosUnicos = new Map<string, BacklogItem>();
+  const projetosUnicos = new Map<string, Card.Backlog>();
 
   cards.forEach((item) => {
     if (!projetosUnicos.has(item.Projeto!)) {
@@ -150,7 +61,7 @@ function getFilaPorProjeto(items: BacklogItem[]): FilaItem[] {
   }));
 }
 
-export function getProjetosPorPrioridade(items: BacklogItem[]) {
+export function getProjetosPorPrioridade(items: Card.Backlog[]) {
   const projetosUnicos = new Map<string, { prioridade: string }>();
   items.forEach((item) => {
     if (item.Projeto && item.Projeto !== "Sem Projeto") {
@@ -166,7 +77,7 @@ export function getProjetosPorPrioridade(items: BacklogItem[]) {
   return resultado;
 }
 
-export function getSaudeBacklog(items: BacklogItem[]) {
+export function getSaudeBacklog(items: Card.Backlog[]) {
   // GUARDA: Se a lista estiver vazia, retorna um objeto padrão seguro
   if (items.length === 0) {
     return {
@@ -228,7 +139,7 @@ export function getSaudeBacklog(items: BacklogItem[]) {
   };
 }
 
-export function getProjetosPorArea(items: BacklogItem[]) {
+export function getProjetosPorArea(items: Card.Backlog[]) {
   const resultado: Record<string, Record<string, number>> = {};
   items.forEach((item) => {
     const projeto = item.Projeto;
@@ -241,7 +152,7 @@ export function getProjetosPorArea(items: BacklogItem[]) {
   return resultado;
 }
 
-export function getCardsPorArea(items: BacklogItem[]) {
+export function getCardsPorArea(items: Card.Backlog[]) {
   const resultado: Record<string, number> = {};
   items.forEach((item) => {
     const area = item["Unidade / Departamento"] || "Não informado";
@@ -250,7 +161,7 @@ export function getCardsPorArea(items: BacklogItem[]) {
   return resultado;
 }
 
-export function getProjetosPorSolicitante(items: BacklogItem[]) {
+export function getProjetosPorSolicitante(items: Card.Backlog[]) {
   const resultado: Record<string, Set<string>> = {};
   items.forEach((item) => {
     const solicitante = item.Solicitante || "Não informado";
@@ -267,7 +178,7 @@ export function getProjetosPorSolicitante(items: BacklogItem[]) {
 }
 
 // Função principal que agora chama as funções robustas
-export function calculateBacklogMetrics(items: BacklogItem[]) {
+export function calculateBacklogMetrics(items: Card.Backlog[]) {
   return {
     basic: calculateBasicMetrics(items),
     fila_atual: getFilaAtual(items),
@@ -284,3 +195,33 @@ export function calculateBacklogMetrics(items: BacklogItem[]) {
 export const BACKLOG_METRICS = {
   // Constantes serão adicionadas aqui
 };
+
+// Função para formatar tempo em segundos para dias, horas, minutos e segundos
+function formatTime(seconds: number): Metrics.TimeMetric {
+  const days = Math.floor(seconds / (24 * 60 * 60));
+  const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((seconds % (60 * 60)) / 60);
+  const remainingSeconds = seconds % 60;
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds: remainingSeconds,
+  };
+}
+
+// Calcula o tempo médio na fila para um conjunto de itens do backlog
+export function calculateAverageTime(
+  items: Card.Backlog[]
+): Metrics.TimeMetric {
+  if (!items.length) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+  const totalSeconds = items.reduce((total, item) => {
+    const created = new Date(item["Data de Criação"]);
+    const now = new Date();
+    return total + differenceInSeconds(now, created);
+  }, 0);
+
+  return formatTime(Math.floor(totalSeconds / items.length));
+}

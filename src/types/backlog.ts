@@ -96,6 +96,18 @@ export namespace Card {
     Projeto: string;
     "Unidade / Departamento": string;
   }
+
+  /**
+   * Interface para itens da fila
+   * Usada para visualização em listas e filas
+   */
+  export interface Queue {
+    chave: string;
+    titulo: string;
+    prioridade: string;
+    projeto: string | null;
+    area: string;
+  }
 }
 
 // ==================== Namespace: Metrics ====================
