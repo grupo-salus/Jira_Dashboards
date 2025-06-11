@@ -21,18 +21,40 @@ const DashBacklog: React.FC = () => {
     prioridade: "",
   });
 
+  // Função auxiliar para normalizar strings
+  const normalizeString = (str: string) => {
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+
   const filteredData = useMemo(() => {
-    return backlogData.rawData.filter(
-      (item) =>
-        (filtros.projeto ? item.Projeto === filtros.projeto : true) &&
-        (filtros.area
-          ? item["Unidade / Departamento"] === filtros.area
-          : true) &&
-        (filtros.solicitante
-          ? item.Solicitante === filtros.solicitante
-          : true) &&
-        (filtros.prioridade ? item.Prioridade === filtros.prioridade : true)
-    );
+    return backlogData.rawData.filter((item) => {
+      const matchesProjeto =
+        !filtros.projeto ||
+        normalizeString(item.Projeto || "") ===
+          normalizeString(filtros.projeto);
+
+      const matchesArea =
+        !filtros.area ||
+        normalizeString(item["Unidade / Departamento"] || "") ===
+          normalizeString(filtros.area);
+
+      const matchesSolicitante =
+        !filtros.solicitante ||
+        normalizeString(item.Solicitante || "") ===
+          normalizeString(filtros.solicitante);
+
+      const matchesPrioridade =
+        !filtros.prioridade ||
+        normalizeString(item.Prioridade || "") ===
+          normalizeString(filtros.prioridade);
+
+      return (
+        matchesProjeto && matchesArea && matchesSolicitante && matchesPrioridade
+      );
+    });
   }, [backlogData.rawData, filtros]);
 
   const projetosOptions = useMemo(

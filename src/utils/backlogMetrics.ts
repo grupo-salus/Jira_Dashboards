@@ -1,4 +1,4 @@
-import { BacklogItem } from "../types/backlog";
+import { Card, Metrics } from "../types/backlog";
 
 // Interface para os totalizadores básicos
 interface BacklogBasicMetrics {

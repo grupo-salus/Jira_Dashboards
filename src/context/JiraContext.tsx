@@ -6,15 +6,15 @@ import React, {
   ReactNode,
 } from "react";
 import { fetchBacklogTable } from "../api/api_jira";
-import { BacklogItem, BacklogBasicMetrics } from "../types/backlog";
+import { Card, Metrics } from "../types/backlog";
 import { calculateBacklogMetrics } from "../utils/backlogMetrics";
 
 interface JiraContextType {
   // Dados do Backlog
   backlogData: {
-    rawData: BacklogItem[];
+    rawData: Card.Backlog[];
     metrics: {
-      basic: BacklogBasicMetrics;
+      basic: Metrics.Basic;
     };
     loading: boolean;
     error: string | null;
@@ -38,9 +38,9 @@ const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hora em milissegundos
 
 interface CacheData {
   backlog: {
-    rawData: BacklogItem[];
+    rawData: Card.Backlog[];
     metrics: {
-      basic: BacklogBasicMetrics;
+      basic: Metrics.Basic;
     };
     timestamp: number;
   };
@@ -86,13 +86,14 @@ interface JiraProviderProps {
 
 export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   // Estado do Backlog
-  const [backlogRawData, setBacklogRawData] = useState<BacklogItem[]>([]);
+  const [backlogRawData, setBacklogRawData] = useState<Card.Backlog[]>([]);
   const [backlogMetrics, setBacklogMetrics] = useState<{
-    basic: BacklogBasicMetrics;
+    basic: Metrics.Basic;
   }>(defaultBacklogMetrics);
   const [backlogLoading, setBacklogLoading] = useState(false);
   const [backlogError, setBacklogError] = useState<string | null>(null);
   const [backlogLastUpdate, setBacklogLastUpdate] = useState<Date | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Estado da Sprint (será implementado depois)
   const [sprintRawData, setSprintRawData] = useState<any[]>([]);
@@ -185,12 +186,15 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
     console.log("Refresh sprint data - a ser implementado");
   };
 
-  // Carrega dados iniciais
+  // Carrega dados iniciais apenas uma vez
   useEffect(() => {
-    if (!loadFromCache()) {
-      fetchBacklogData();
+    if (isInitialLoad) {
+      if (!loadFromCache()) {
+        fetchBacklogData();
+      }
+      setIsInitialLoad(false);
     }
-  }, []);
+  }, [isInitialLoad]);
 
   // Configura refresh automático a cada hora
   useEffect(() => {
