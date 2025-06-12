@@ -22,8 +22,7 @@ import React, {
   ReactNode,
 } from "react";
 import { fetchBacklogTable } from "../api/api_jira";
-import { ResultApi } from "../types/jira";
-
+import { ResultApi } from "../types/Typesjira";
 
 interface JiraContextType {
   // Dados do Backlog

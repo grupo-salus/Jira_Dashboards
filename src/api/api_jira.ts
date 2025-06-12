@@ -15,7 +15,7 @@
  * - Tratamento de erros de rede
  * - Validação de respostas
  */
-import { ResultApi, AcompanhamentoTI } from "../types/jira";
+import { ResultApi, AcompanhamentoTI } from "../types/Typesjira";
 
 interface BacklogResponse {
   tabela_backlog: ResultApi[];

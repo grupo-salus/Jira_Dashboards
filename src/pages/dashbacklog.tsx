@@ -19,7 +19,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useJira } from "../context/JiraContext";
-import BacklogTable from "../components/dashbacklog/BacklogTable";
+import BacklogTable from "../components/DashBacklog/BacklogTable";
 
 const DashBacklog: React.FC = () => {
   const { backlogData } = useJira();

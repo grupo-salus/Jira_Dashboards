@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ResultApi } from "../../types/jira";
+import { ResultApi } from "../../types/Typesjira";
 import {
   formatDate,
   formatSeconds,
