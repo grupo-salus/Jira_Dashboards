@@ -8,16 +8,21 @@
  *
  * Principais funções:
  * - fetchBacklogTable: Busca a tabela de backlog com suporte a filtros
+ * - fetchAcompanhamentoTI: Busca a tabela de acompanhamento TI com suporte a filtros
  *
  * O arquivo também lida com:
  * - Decodificação de caracteres especiais
  * - Tratamento de erros de rede
  * - Validação de respostas
  */
-import { ResultApi } from "../types/jira";
+import { ResultApi, AcompanhamentoTI } from "../types/jira";
 
 interface BacklogResponse {
   tabela_backlog: ResultApi[];
+}
+
+interface AcompanhamentoTIResponse {
+  tabela_dashboard_ti: AcompanhamentoTI[];
 }
 
 const API_URL = "http://localhost:8000";
@@ -67,6 +72,50 @@ export async function fetchBacklogTable(filters?: {
     }));
   } catch (error) {
     console.error("Error fetching backlog table:", error);
+    throw error;
+  }
+}
+
+export async function fetchAcompanhamentoTI(filters?: {
+  responsavel?: string;
+  prioridade?: string;
+  periodo_dias?: number;
+}): Promise<AcompanhamentoTI[]> {
+  try {
+    const queryParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) {
+          // Converte o valor para string e decodifica antes de adicionar aos parâmetros
+          const decodedValue = decodeURIComponent(String(value));
+          queryParams.append(key, decodedValue);
+        }
+      });
+    }
+
+    const url = `${API_URL}/api/acompanhamento_ti/tabela${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch acompanhamento TI table");
+    }
+
+    const data: AcompanhamentoTIResponse = await response.json();
+
+    // Decodifica os caracteres especiais nos dados retornados
+    return (data.tabela_dashboard_ti ?? []).map((item: AcompanhamentoTI) => ({
+      ...item,
+      Título: decodeURIComponent(item.Título || ""),
+      Responsável: decodeURIComponent(item.Responsável || ""),
+      Relator: decodeURIComponent(item.Relator || ""),
+      Prioridade: decodeURIComponent(item.Prioridade || ""),
+      Time: decodeURIComponent(item.Time || ""),
+      Categoria: decodeURIComponent(item.Categoria || ""),
+    }));
+  } catch (error) {
+    console.error("Error fetching acompanhamento TI table:", error);
     throw error;
   }
 }
