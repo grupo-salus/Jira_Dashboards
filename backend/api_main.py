@@ -104,10 +104,10 @@ def get_tabela_acompanhamento_ti(
     request: Request,
     responsavel: Optional[str] = Query(None, description="Responsável técnico (ex: 'Luis Henrique Gomes da Fonseca')"),
     prioridade: Optional[str] = Query(None, description="Prioridade da issue (ex: 'Média', 'Alta')"),
-    periodo_dias: int = Query(7, description="Filtrar por datas nos últimos X dias")
+    periodo_dias: Optional[int] = Query(None, description="Filtrar por datas nos últimos X dias (opcional)")
 ):
     """
-    Retorna a tabela de issues do projeto 'Acompanhamento T.I' (BL), com suporte a filtros de responsável, prioridade e período.
+    Retorna a tabela de issues do projeto 'Acompanhamento T.I' (BL), com suporte a filtros de responsável, prioridade e período (opcional).
     """
     service = JiraService()
     issues = service.get_all_issues_from_project("BL").get("issues", [])
@@ -117,44 +117,43 @@ def get_tabela_acompanhamento_ti(
         return {"tabela_dashboard_ti": []}
 
     # Conversão de datas
-    hoje = pd.Timestamp.today()
-    inicio_periodo = hoje - timedelta(days=periodo_dias)
-
     df["Criado em"] = pd.to_datetime(df["Criado em"], errors="coerce").dt.tz_localize(None)
     df["Atualizado em"] = pd.to_datetime(df["Atualizado em"], errors="coerce").dt.tz_localize(None)
 
-    # Preenchimento padrão para evitar NaNs
+    # Preenchimento padrão
     for col in ["Responsável", "Prioridade", "Status", "Time", "Categoria"]:
         df[col] = df[col].fillna("Não informado")
 
-    # Filtros
+    # Filtros por parâmetros
     if responsavel:
         df = df[df["Responsável"] == responsavel]
     if prioridade:
         df = df[df["Prioridade"] == prioridade]
+    if periodo_dias is not None:
+        hoje = pd.Timestamp.today()
+        inicio_periodo = hoje - timedelta(days=periodo_dias)
+        df = df[
+            (df["Criado em"] >= inicio_periodo) |
+            (df["Atualizado em"] >= inicio_periodo)
+        ]
 
-    # Filtro por período (criação ou atualização recente)
-    df = df[
-        (df["Criado em"] >= inicio_periodo) |
-        (df["Atualizado em"] >= inicio_periodo)
-    ]
-
-    # Conversões para exportação segura
+    # Formatação de datas
     for col in [
         "Criado em", "Atualizado em", "Data de Início", "Data Prevista de Término", "Data Limite", "Data de Conclusão"
     ]:
         df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S')
 
+    # Conversões numéricas
     df["Tempo Gasto (segundos)"] = df["Tempo Gasto (segundos)"].astype(float)
     df["Estimativa (segundos)"] = df["Estimativa (segundos)"].astype(float)
     df["Esforço Registrado Total"] = df["Esforço Registrado Total"].astype(float)
     df["Dias no Backlog"] = df["Dias no Backlog"].astype(int)
     df["Dias até Entrega (estimado)"] = df["Dias até Entrega (estimado)"].astype("Int64")
 
-    df = df.where(pd.notnull(df), None)  # substitui NaN por None
+    # Substituição de NaN por None
+    df = df.where(pd.notnull(df), None)
 
     return {"tabela_dashboard_ti": df.to_dict(orient="records")}
-
 
 app.include_router(router)
 

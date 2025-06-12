@@ -21,8 +21,8 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { fetchBacklogTable } from "../api/api_jira";
-import { ResultApi } from "../types/Typesjira";
+import { fetchBacklogTable, fetchAcompanhamentoTI } from "../api/api_jira";
+import { ResultApi, AcompanhamentoTI } from "../types/Typesjira";
 
 interface JiraContextType {
   // Dados do Backlog
@@ -40,9 +40,17 @@ interface JiraContextType {
     error: string | null;
     lastUpdate: Date | null;
   };
+  // Dados do acompanhamento TI
+  acompanhamentoTIData: {
+    rawData: AcompanhamentoTI[];
+    loading: boolean;
+    error: string | null;
+    lastUpdate: Date | null;
+  };
   // Funções de atualização
   refreshBacklogData: () => Promise<void>;
   refreshSprintData: () => Promise<void>;
+  refreshAcompanhamentoTIData: () => Promise<void>;
 }
 
 const CACHE_KEY = "jira_data_cache";
@@ -63,7 +71,7 @@ interface CacheData {
 export const JiraContext = createContext<JiraContextType>({
   backlogData: {
     rawData: [],
-    loading: false,
+    loading: true,
     error: null,
     lastUpdate: null,
   },
@@ -74,8 +82,15 @@ export const JiraContext = createContext<JiraContextType>({
     error: null,
     lastUpdate: null,
   },
+  acompanhamentoTIData: {
+    rawData: [],
+    loading: true,
+    error: null,
+    lastUpdate: null,
+  },
   refreshBacklogData: async () => {},
   refreshSprintData: async () => {},
+  refreshAcompanhamentoTIData: async () => {},
 });
 
 export const useJira = () => useContext(JiraContext);
@@ -87,7 +102,7 @@ interface JiraProviderProps {
 export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   // Estado do Backlog
   const [backlogRawData, setBacklogRawData] = useState<ResultApi[]>([]);
-  const [backlogLoading, setBacklogLoading] = useState(false);
+  const [backlogLoading, setBacklogLoading] = useState(true);
   const [backlogError, setBacklogError] = useState<string | null>(null);
   const [backlogLastUpdate, setBacklogLastUpdate] = useState<Date | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -96,6 +111,17 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   const [sprintRawData, setSprintRawData] = useState<any[]>([]);
   const [sprintMetrics, setSprintMetrics] = useState<any>({});
   const [sprintLastUpdate, setSprintLastUpdate] = useState<Date | null>(null);
+
+  // Estado do acompanhamento TI
+  const [acompanhamentoTIData, setAcompanhamentoTIData] = useState<
+    AcompanhamentoTI[]
+  >([]);
+  const [acompanhamentoTILoading, setAcompanhamentoTILoading] = useState(true);
+  const [acompanhamentoTIError, setAcompanhamentoTIError] = useState<
+    string | null
+  >(null);
+  const [acompanhamentoTILastUpdate, setAcompanhamentoTILastUpdate] =
+    useState<Date | null>(null);
 
   const loadFromCache = (): boolean => {
     try {
@@ -177,6 +203,66 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
     console.log("Refresh sprint data - a ser implementado");
   };
 
+  const refreshAcompanhamentoTIData = async () => {
+    try {
+      setAcompanhamentoTILoading(true);
+      setAcompanhamentoTIError(null);
+      const response = await fetchAcompanhamentoTI();
+      setAcompanhamentoTIData(response);
+      setAcompanhamentoTILastUpdate(new Date());
+    } catch (err) {
+      setAcompanhamentoTIError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao carregar dados do acompanhamento TI"
+      );
+    } finally {
+      setAcompanhamentoTILoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const carregarDados = async () => {
+      try {
+        setBacklogLoading(true);
+        setBacklogError(null);
+        const backlogResponse = await fetchBacklogTable();
+        setBacklogRawData(backlogResponse);
+      } catch (err) {
+        setBacklogError(
+          err instanceof Error
+            ? err.message
+            : "Erro ao carregar dados do backlog"
+        );
+      } finally {
+        setBacklogLoading(false);
+      }
+    };
+
+    carregarDados();
+  }, []);
+
+  useEffect(() => {
+    const carregarDadosTI = async () => {
+      try {
+        setAcompanhamentoTILoading(true);
+        setAcompanhamentoTIError(null);
+        const tiResponse = await fetchAcompanhamentoTI();
+        setAcompanhamentoTIData(tiResponse);
+      } catch (err) {
+        setAcompanhamentoTIError(
+          err instanceof Error
+            ? err.message
+            : "Erro ao carregar dados do acompanhamento TI"
+        );
+      } finally {
+        setAcompanhamentoTILoading(false);
+      }
+    };
+
+    carregarDadosTI();
+  }, []);
+
   // Carrega dados iniciais apenas uma vez
   useEffect(() => {
     if (isInitialLoad) {
@@ -212,8 +298,15 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
           error: null,
           lastUpdate: sprintLastUpdate,
         },
+        acompanhamentoTIData: {
+          rawData: acompanhamentoTIData,
+          loading: acompanhamentoTILoading,
+          error: acompanhamentoTIError,
+          lastUpdate: acompanhamentoTILastUpdate,
+        },
         refreshBacklogData,
         refreshSprintData,
+        refreshAcompanhamentoTIData,
       }}
     >
       {children}

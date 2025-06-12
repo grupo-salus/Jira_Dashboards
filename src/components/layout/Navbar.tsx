@@ -23,13 +23,16 @@ const Navbar: React.FC<NavbarProps> = ({
   showHomeLink,
 }) => {
   const { theme, toggleTheme } = useTheme();
-  const { refreshBacklogData, refreshSprintData } = useJira();
+  const { refreshBacklogData, refreshSprintData, refreshAcompanhamentoTIData } =
+    useJira();
 
   const handleRefresh = () => {
     if (currentView === "backlog") {
       refreshBacklogData();
     } else if (currentView === "sprint") {
       refreshSprintData();
+    } else if (currentView === "ti") {
+      refreshAcompanhamentoTIData();
     }
   };
 

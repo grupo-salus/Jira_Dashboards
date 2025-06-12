@@ -13,35 +13,56 @@
  * - Acompanhamento de prazos
  */
 
-import React from "react";
+import React, { useState } from "react";
+import { useJira } from "../context/JiraContext";
+import AcompanhamentoTITable from "../components/DashAcompanhamentoTI/AcompanhamentoTITable";
 
-interface TIDashboardProps {
-  lastUpdate?: Date;
-}
+const TIDashboard: React.FC = () => {
+  const { acompanhamentoTIData, refreshAcompanhamentoTIData } = useJira();
+  const [filtros, setFiltros] = useState({
+    responsavel: "",
+    prioridade: "",
+    periodo_dias: 0, // 0 representa "geral"
+  });
 
-const TIDashboard: React.FC<TIDashboardProps> = () => {
-  return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-          Dashboard de Acompanhamento TI em Desenvolvimento
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-          Estamos trabalhando para trazer uma visão completa das atividades da
-          equipe de TI.
-        </p>
-        <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-          <p className="text-blue-800 dark:text-blue-200">
-            Em breve você poderá:
-          </p>
-          <ul className="list-disc list-inside mt-2 text-blue-700 dark:text-blue-300">
-            <li>Visualizar atividades por membro da equipe</li>
-            <li>Acompanhar métricas de produtividade</li>
-            <li>Analisar distribuição de carga de trabalho</li>
-            <li>Monitorar prazos e entregas</li>
-          </ul>
+  const periodos = [
+    { label: "Geral", value: 0 },
+    { label: "Últimos 7 dias", value: 7 },
+    { label: "Últimos 15 dias", value: 15 },
+    { label: "Últimos 30 dias", value: 30 },
+  ];
+
+  if (acompanhamentoTIData.loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-xl text-gray-500">
+          Carregando dados do acompanhamento TI...
         </div>
       </div>
+    );
+  }
+
+  if (acompanhamentoTIData.error) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-xl text-red-500">
+          Erro ao carregar dados: {acompanhamentoTIData.error}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Dashboard de Acompanhamento TI</h1>
+      </div>
+      <AcompanhamentoTITable
+        data={acompanhamentoTIData.rawData}
+        filtros={filtros}
+        onFiltrosChange={setFiltros}
+        periodos={periodos}
+      />
     </div>
   );
 };

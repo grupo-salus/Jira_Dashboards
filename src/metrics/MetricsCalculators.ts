@@ -20,14 +20,36 @@ export function calcularVisaoGeral(
   const seteDiasAtras = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
   const amanha = new Date(hoje.getTime() + 24 * 60 * 60 * 1000);
 
+  // Filtrar dados com base nos filtros
+  let dadosFiltrados = [...dados];
+  if (filtros.responsavel) {
+    dadosFiltrados = dadosFiltrados.filter(
+      (d) => d.Responsável === filtros.responsavel
+    );
+  }
+  if (filtros.prioridade) {
+    dadosFiltrados = dadosFiltrados.filter(
+      (d) => d.Prioridade === filtros.prioridade
+    );
+  }
+  if (filtros.periodo_dias) {
+    const dataLimite = new Date(
+      hoje.getTime() - filtros.periodo_dias * 24 * 60 * 60 * 1000
+    );
+    dadosFiltrados = dadosFiltrados.filter(
+      (d) => new Date(d["Criado em"]) >= dataLimite
+    );
+  }
+
   return {
-    concluidos: dados.filter((d) => d.Status === "CONCLUÍDO").length,
-    atualizados7d: dados.filter(
+    concluidos: dadosFiltrados.filter((d) => d.Status === "CONCLUÍDO").length,
+    atualizados7d: dadosFiltrados.filter(
       (d) => new Date(d["Atualizado em"]) >= seteDiasAtras
     ).length,
-    criados7d: dados.filter((d) => new Date(d["Criado em"]) >= seteDiasAtras)
-      .length,
-    entregar24h: dados.filter(
+    criados7d: dadosFiltrados.filter(
+      (d) => new Date(d["Criado em"]) >= seteDiasAtras
+    ).length,
+    entregar24h: dadosFiltrados.filter(
       (d) =>
         d["Data Prevista de Término"] &&
         new Date(d["Data Prevista de Término"]) <= amanha &&

@@ -1,5 +1,3 @@
-import { AcompanhamentoTI } from "./Typesjira";
-
 /**
  * Interface para as métricas de visão geral (Top Cards Resumo)
  */
