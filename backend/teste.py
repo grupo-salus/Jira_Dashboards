@@ -60,6 +60,25 @@ def testar_backlog_por_projetos(nome_arquivo="backlog_tabela.json"):
     with open(nome_arquivo, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
+
+def testar_acompanhamento_ti(nome_arquivo="acompanhamento_ti_tabela.json"):
+    url = f"{BASE_URL}/api/acompanhamento_ti/tabela"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"❌ Erro ao requisitar acompanhamento TI: {e}")
+        return
+    
+    data = response.json()
+    print(f"\n✅ Acompanhamento TI salvo em '{nome_arquivo}'")
+
+
+    with open(nome_arquivo, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+    
+
 # ----------- Execução dos testes -----------
 if __name__ == "__main__":
     # print("📊 Teste 1 - Resumo backlog (sem filtros):")
@@ -76,5 +95,8 @@ if __name__ == "__main__":
     # print("\n🚀 Teste 3 - Resumo da sprint ativa:")
     # testar_resumo_sprint()
 
-    print("\n🚀 Teste 4 - Backlog por projetos:")
-    testar_backlog_por_projetos()
+    # print("\n🚀 Teste 4 - Backlog por projetos:")
+    # testar_backlog_por_projetos()
+
+    print("\n🚀 Teste 5 - Acompanhamento TI:")
+    testar_acompanhamento_ti()

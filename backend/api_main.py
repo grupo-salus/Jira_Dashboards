@@ -2,12 +2,13 @@ from fastapi import FastAPI, Request, Query, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from services.jira_service import JiraService
-from services.jira_parser import parse_issues_to_dataframe
+from services.jira_parser import parse_issues_to_dataframe, parse_issues_time_to_dataframe
 from datetime import datetime
 from typing import Optional
 import pandas as pd
 from collections import defaultdict
 import numpy as np
+from datetime import timedelta
 
 app = FastAPI()
 
@@ -98,5 +99,68 @@ def get_tabela_backlog(
 
     return {"tabela_backlog": df.to_dict(orient="records")}
 
+@router.get("/api/acompanhamento_ti/tabela")
+def get_tabela_acompanhamento_ti(
+    request: Request,
+    responsavel: Optional[str] = Query(None, description="Responsável técnico (ex: 'Luis Henrique Gomes da Fonseca')"),
+    prioridade: Optional[str] = Query(None, description="Prioridade da issue (ex: 'Média', 'Alta')"),
+    periodo_dias: int = Query(7, description="Filtrar por datas nos últimos X dias")
+):
+    """
+    Retorna a tabela de issues do projeto 'Acompanhamento T.I' (BL), com suporte a filtros de responsável, prioridade e período.
+    """
+    service = JiraService()
+    issues = service.get_all_issues_from_project("BL").get("issues", [])
+    df = parse_issues_time_to_dataframe(issues)
+
+    if df.empty:
+        return {"tabela_dashboard_ti": []}
+
+    # Conversão de datas
+    hoje = pd.Timestamp.today()
+    inicio_periodo = hoje - timedelta(days=periodo_dias)
+
+    df["Criado em"] = pd.to_datetime(df["Criado em"], errors="coerce").dt.tz_localize(None)
+    df["Atualizado em"] = pd.to_datetime(df["Atualizado em"], errors="coerce").dt.tz_localize(None)
+
+    # Preenchimento padrão para evitar NaNs
+    for col in ["Responsável", "Prioridade", "Status", "Time", "Categoria"]:
+        df[col] = df[col].fillna("Não informado")
+
+    # Filtros
+    if responsavel:
+        df = df[df["Responsável"] == responsavel]
+    if prioridade:
+        df = df[df["Prioridade"] == prioridade]
+
+    # Filtro por período (criação ou atualização recente)
+    df = df[
+        (df["Criado em"] >= inicio_periodo) |
+        (df["Atualizado em"] >= inicio_periodo)
+    ]
+
+    # Conversões para exportação segura
+    for col in [
+        "Criado em", "Atualizado em", "Data de Início", "Data Prevista de Término", "Data Limite", "Data de Conclusão"
+    ]:
+        df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S')
+
+    df["Tempo Gasto (segundos)"] = df["Tempo Gasto (segundos)"].astype(float)
+    df["Estimativa (segundos)"] = df["Estimativa (segundos)"].astype(float)
+    df["Esforço Registrado Total"] = df["Esforço Registrado Total"].astype(float)
+    df["Dias no Backlog"] = df["Dias no Backlog"].astype(int)
+    df["Dias até Entrega (estimado)"] = df["Dias até Entrega (estimado)"].astype("Int64")
+
+    df = df.where(pd.notnull(df), None)  # substitui NaN por None
+
+    return {"tabela_dashboard_ti": df.to_dict(orient="records")}
+
 
 app.include_router(router)
+
+
+
+
+
+
+
