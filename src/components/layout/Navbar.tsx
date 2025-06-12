@@ -6,13 +6,14 @@ import {
   Sun,
   Footprints as Sprint,
   Home as HomeIcon,
+  Users,
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useJira } from "../../context/JiraContext";
 
 interface NavbarProps {
-  currentView: "home" | "backlog" | "sprint";
-  onViewChange: (view: "home" | "backlog" | "sprint") => void;
+  currentView: "home" | "backlog" | "sprint" | "ti";
+  onViewChange: (view: "home" | "backlog" | "sprint" | "ti") => void;
   showHomeLink?: boolean;
 }
 
@@ -87,6 +88,20 @@ const Navbar: React.FC<NavbarProps> = ({
                 <span className="flex items-center gap-2">
                   <Sprint className="h-4 w-4" />
                   Sprint Ativa
+                </span>
+              </button>
+
+              <button
+                onClick={() => onViewChange("ti")}
+                className={`px-4 py-2 rounded-md transition-colors font-semibold ${
+                  currentView === "ti"
+                    ? "bg-primary-600 text-white shadow-md"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Acompanhamento TI
                 </span>
               </button>
             </div>
