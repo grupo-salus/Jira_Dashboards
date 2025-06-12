@@ -88,3 +88,61 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
     df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de Criação"]).dt.days  # Calcula quantos dias a issue está no backlog
 
     return df
+
+def parse_issues_time_to_dataframe(issues: list) -> pd.DataFrame:
+    """
+    Converte uma lista de issues do Jira em um DataFrame com foco em campos de tempo, datas e equipe,
+    baseado no projeto Acompanhamento T.I.
+    """
+    def get(field, default=None):
+        return field if field is not None else default
+
+    rows = []
+    for issue in issues:
+        fields = issue.get("fields", {})
+
+        row = {
+            "ID": issue.get("id"),
+            "Chave": issue.get("key"),
+            "Título": get(fields.get("summary")),
+            "Status": (fields.get("status") or {}).get("name"),
+            "Tipo": (fields.get("issuetype") or {}).get("name"),
+            "Prioridade": (fields.get("priority") or {}).get("name"),
+
+            # Responsáveis
+            "Responsável": (fields.get("assignee") or {}).get("displayName"),
+            "Relator": (fields.get("creator") or {}).get("displayName"),
+            "Time": (fields.get("customfield_10119") or {}).get("value"),  # Ex: Administrativo
+            "Categoria": (fields.get("customfield_10092") or {}).get("value"),  # Ex: Atividade
+
+            # Datas importantes
+            "Criado em": get(fields.get("created")),
+            "Atualizado em": get(fields.get("updated")),
+            "Data de Início": get(fields.get("customfield_10015")),
+            "Data Prevista de Término": get(fields.get("customfield_10112")),
+            "Data Limite": get(fields.get("duedate")),
+            "Data de Conclusão": get(fields.get("resolutiondate")),
+
+            # Tempo e controle de esforço
+            "Tempo Gasto (segundos)": int(fields.get("aggregatetimespent") or 0),
+            "Tempo Gasto (formatado)": (fields.get("timetracking") or {}).get("timeSpent"),
+            "Estimativa (segundos)": int(fields.get("timeoriginalestimate") or 0),
+            "Esforço Registrado Total": sum(w.get("timeSpentSeconds", 0) for w in (fields.get("worklog", {}).get("worklogs", []))),
+
+            # Outras
+            "Labels": ", ".join(fields.get("labels", [])) if fields.get("labels") else None
+        }
+
+        rows.append(row)
+
+    df = pd.DataFrame(rows)
+
+    # Converter datas
+    for col in ["Criado em", "Atualizado em", "Data de Início", "Data Prevista de Término", "Data Limite", "Data de Conclusão"]:
+        df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
+
+    # Cálculo de métricas temporais
+    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Criado em"]).dt.days
+    df["Dias até Entrega (estimado)"] = (df["Data Prevista de Término"] - df["Data de Início"]).dt.days
+
+    return df
