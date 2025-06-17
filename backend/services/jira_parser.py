@@ -1,6 +1,6 @@
 import pandas as pd
 
-def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
+def parse_issues_to_dataframe_backlog(issues: list) -> pd.DataFrame:
     """
     Converte uma lista de issues do Jira em um DataFrame do Pandas.
     Esta função processa os dados brutos do Jira e os organiza em um formato tabular.
@@ -89,7 +89,7 @@ def parse_issues_to_dataframe(issues: list) -> pd.DataFrame:
 
     return df
 
-def parse_issues_time_to_dataframe(issues: list) -> pd.DataFrame:
+def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
     """
     Converte uma lista de issues do Jira em um DataFrame com foco em campos de tempo, datas e equipe,
     baseado no projeto Acompanhamento T.I.
@@ -146,3 +146,94 @@ def parse_issues_time_to_dataframe(issues: list) -> pd.DataFrame:
     df["Dias até Entrega (estimado)"] = (df["Data Prevista de Término"] - df["Data de Início"]).dt.days
 
     return df
+
+def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
+    """
+    Converte uma lista de issues do Jira em um DataFrame com foco em campos de tempo, datas e equipe,
+    baseado no projeto Espaço de Projetos.
+    """
+    def get(field, default=None):
+        return field if field is not None else default
+
+    rows = []
+    for issue in issues:
+        fields = issue.get("fields", {})
+
+        row = {
+            "ID": issue.get("id"),
+            "Tipo": issue.get("fields", {}).get("issuetype", {}).get("name"),
+            "Chave": issue.get("key"),
+            "Título": issue.get("fields", {}).get("summary"),
+            "Prioridade": issue.get("fields", {}).get("priority", {}).get("name"),
+
+            # Campos descritivos
+            "Descrição": (
+                issue.get("fields", {}).get("description", {}).get("content", [{}])[0]
+                .get("content", [{}])[0].get("text")
+                if issue.get("fields", {}).get("description") else None
+            ),
+            "Aprovador por (diretor)": issue.get("fields", {}).get("customfield_10250"),
+            "Benefícios Esperados": (
+                issue.get("fields", {}).get("customfield_10248", {}).get("content", [{}])[0]
+                .get("content", [{}])[0].get("text")
+                if issue.get("fields", {}).get("customfield_10248") else None
+            ),
+
+            # Status
+            "Status": issue.get("fields", {}).get("status", {}).get("name"),
+
+            # Solicitante e organização
+            "Grupo Solicitante": (
+                issue.get("fields", {}).get("customfield_10083")["value"]
+                if issue.get("fields", {}).get("customfield_10083") else None
+            ),
+            "Departamento Solicitante": (
+                issue.get("fields", {}).get("customfield_10245")["value"]
+                if issue.get("fields", {}).get("customfield_10245") else None
+            ),
+            "Solicitante": (
+                issue.get("fields", {}).get("customfield_10093", {}).get("content", [{}])[0]
+                .get("content", [{}])[0].get("text")
+                if issue.get("fields", {}).get("customfield_10093") else None
+            ),
+            "Telefone do Solicitante": issue.get("fields", {}).get("customfield_10246"),
+            "Email do Solicitante": issue.get("fields", {}).get("customfield_10247"),
+
+            # Responsáveis
+            "Responsável": issue.get("fields", {}).get("assignee", {}).get("displayName"),
+            "Relator": issue.get("fields", {}).get("creator", {}).get("displayName"),
+
+            # Categorização
+            "Categoria": (
+                issue.get("fields", {}).get("labels")[0]
+                if issue.get("fields", {}).get("labels") else None
+            ),
+
+            # Tempo e estimativas
+            "Estimativa original (segundos)": issue.get("fields", {}).get("timeoriginalestimate"),
+            "Tempo Gasto (formatado)": issue.get("fields", {}).get("timetracking", {}).get("timeSpent"),
+            "Investimento Esperado": issue.get("fields", {}).get("customfield_10249"),
+
+            # Datas importantes
+            "Data de criação": issue.get("fields", {}).get("created"),
+            "Data de atualização": issue.get("fields", {}).get("updated"),
+            "Target start": issue.get("fields", {}).get("customfield_10022"),
+            "Target end": issue.get("fields", {}).get("customfield_10023"),
+            "Data de término": issue.get("fields", {}).get("resolutiondate"),
+        }
+
+
+        rows.append(row)
+
+    df = pd.DataFrame(rows)
+
+    # Converter datas
+    for col in ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]:
+        df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
+
+    # Cálculo de métricas temporais
+    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de criação"]).dt.days
+    df["Dias até Entrega (estimado)"] = (df["Target end"] - df["Target start"]).dt.days
+
+    return df
+

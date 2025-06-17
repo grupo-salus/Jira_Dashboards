@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Query, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from services.jira_service import JiraService
-from services.jira_parser import parse_issues_to_dataframe, parse_issues_time_to_dataframe
+from services.jira_parser import parse_issues_to_dataframe_backlog, parse_issues_to_dataframe_acompanhamento_ti, parse_issues_to_dataframe_espaco_de_projetos
 from datetime import datetime
 from typing import Optional
 import pandas as pd
@@ -42,11 +42,11 @@ def get_tabela_backlog(
     
     # Busca issues do backlog
     issues = service.get_raw_backlog_issues(board_id=71).get("issues", [])
-    df = parse_issues_to_dataframe(issues)
+    df = parse_issues_to_dataframe_backlog(issues)
     
     # Busca issues da sprint específica
     sprint_issues = service.get_issues_from_sprint(724).get("issues", [])
-    sprint_df = parse_issues_to_dataframe(sprint_issues)
+    sprint_df = parse_issues_to_dataframe_backlog(sprint_issues)
     
     # Concatena os DataFrames
     df = pd.concat([df, sprint_df], ignore_index=True)
@@ -111,7 +111,7 @@ def get_tabela_acompanhamento_ti(
     """
     service = JiraService()
     issues = service.get_all_issues_from_project("BL").get("issues", [])
-    df = parse_issues_time_to_dataframe(issues)
+    df = parse_issues_to_dataframe_acompanhamento_ti(issues)
 
     if df.empty:
         return {"tabela_dashboard_ti": []}
@@ -154,6 +154,27 @@ def get_tabela_acompanhamento_ti(
     df = df.where(pd.notnull(df), None)
 
     return {"tabela_dashboard_ti": df.to_dict(orient="records")}
+
+@router.get("/api/espaco_de_projetos/tabela")
+def get_tabela_espaco_de_projetos(
+    request: Request,
+    responsavel: Optional[str] = Query(None, description="Responsável técnico (ex: 'Luis Henrique Gomes da Fonseca')"),
+    prioridade: Optional[str] = Query(None, description="Prioridade da issue (ex: 'Média', 'Alta')"),
+    periodo_dias: Optional[int] = Query(None, description="Filtrar por datas nos últimos X dias (opcional)")
+):
+    """
+    Retorna a tabela de issues do projeto 'Espaço de Projetos' (EP), com suporte a filtros de projeto, status, prioridade, grupo solicitante e solicitante.
+    """
+    service = JiraService()
+    issues = service.get_all_issues_from_project("EP").get("issues", [])
+    df = parse_issues_to_dataframe_espaco_de_projetos(issues)
+
+    if df.empty:
+        return {"tabela_dashboard_ep": []}
+
+    return {"tabela_dashboard_ep": df.to_dict(orient="records")}
+
+
 
 app.include_router(router)
 

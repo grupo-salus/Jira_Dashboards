@@ -128,3 +128,4 @@ class JiraService:
         print(f"✅ {len(issues)} issues encontradas no projeto '{project_key}'.")
         return {"issues": issues}
 
+    
