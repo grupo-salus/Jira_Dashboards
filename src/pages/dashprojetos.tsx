@@ -16,7 +16,7 @@
  * - Trata estados de loading e erro
  */
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useJira } from "../context/JiraContext";
 import { EspacoDeProjetos } from "../types/Typesjira";
 import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
@@ -29,12 +29,15 @@ import {
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosRadarPorPrioridade from "../components/DashProjetos/ProjetosRadarPorPrioridade";
 import ProjetosPiePorStatus from "../components/DashProjetos/ProjetosPiePorStatus";
+import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
 
 const DashProjetos: React.FC = () => {
   const { projetosData } = useJira();
   const [visualizacao, setVisualizacao] = useState<"tabela" | "kanban">(
     "kanban"
   );
+  const [menuAberto, setMenuAberto] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [filtros, setFiltros] = useState({
     area: "",
     projeto: "",
@@ -43,6 +46,23 @@ const DashProjetos: React.FC = () => {
     status: "",
     grupo_solicitante: "",
   });
+
+  // Fechar menu quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuAberto(false);
+      }
+    };
+
+    if (menuAberto) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuAberto]);
 
   // Função auxiliar para normalizar strings
   const normalizeString = (str: string) => {
@@ -309,18 +329,18 @@ const DashProjetos: React.FC = () => {
     <div className="p-6 w-full max-w-none">
       {/* Seção de Filtros */}
       <div className="mb-6">
-        <div className="flex flex-wrap items-end gap-3 w-full">
+        <div className="flex flex-wrap items-end gap-4 w-full">
           {/* Filtro de Área */}
           <div>
             <label
               htmlFor="area-filter"
-              className="block mb-1 text-xs font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               Área
             </label>
             <select
               id="area-filter"
-              className="bg-gray-50 border border-gray-300 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 h-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.area}
               onChange={(e) => handleFiltroChange("area", e.target.value)}
             >
@@ -337,13 +357,13 @@ const DashProjetos: React.FC = () => {
           <div>
             <label
               htmlFor="projeto-filter"
-              className="block mb-1 text-xs font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               Projeto
             </label>
             <select
               id="projeto-filter"
-              className="bg-gray-50 border border-gray-300 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 h-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.projeto}
               onChange={(e) => handleFiltroChange("projeto", e.target.value)}
             >
@@ -360,13 +380,13 @@ const DashProjetos: React.FC = () => {
           <div>
             <label
               htmlFor="status-filter"
-              className="block mb-1 text-xs font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               Status
             </label>
             <select
               id="status-filter"
-              className="bg-gray-50 border border-gray-300 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 h-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.status}
               onChange={(e) => handleFiltroChange("status", e.target.value)}
             >
@@ -383,13 +403,13 @@ const DashProjetos: React.FC = () => {
           <div>
             <label
               htmlFor="prioridade-filter"
-              className="block mb-1 text-xs font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               Prioridade
             </label>
             <select
               id="prioridade-filter"
-              className="bg-gray-50 border border-gray-300 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 h-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.prioridade}
               onChange={(e) => handleFiltroChange("prioridade", e.target.value)}
             >
@@ -406,13 +426,13 @@ const DashProjetos: React.FC = () => {
           <div>
             <label
               htmlFor="grupo-solicitante-filter"
-              className="block mb-1 text-xs font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               Grupo Solicitante
             </label>
             <select
               id="grupo-solicitante-filter"
-              className="bg-gray-50 border border-gray-300 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 h-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.grupo_solicitante}
               onChange={(e) =>
                 handleFiltroChange("grupo_solicitante", e.target.value)
@@ -431,13 +451,13 @@ const DashProjetos: React.FC = () => {
           <div>
             <label
               htmlFor="solicitante-filter"
-              className="block mb-1 text-xs font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               Solicitante
             </label>
             <select
               id="solicitante-filter"
-              className="bg-gray-50 border border-gray-300 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 h-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.solicitante}
               onChange={(e) =>
                 handleFiltroChange("solicitante", e.target.value)
@@ -465,13 +485,16 @@ const DashProjetos: React.FC = () => {
                   grupo_solicitante: "",
                 })
               }
-              className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 h-8"
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 h-10"
             >
               Limpar Filtros
             </button>
           </div>
         </div>
       </div>
+
+      {/* Totalizadores */}
+      <ProjetosTotalizadores filteredData={filteredData} />
 
       {/* Gráficos do dashboard */}
       <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6 max-w-none">
@@ -496,35 +519,87 @@ const DashProjetos: React.FC = () => {
       </div>
 
       {/* Resultados */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-lg font-semibold">
-            Resultados: {filteredData.length} itens encontrados
-          </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative">
+        {/* Menu de três pontos flutuante */}
+        <div className="absolute top-2 right-2 z-50" ref={menuRef}>
+          <button
+            onClick={() => setMenuAberto(!menuAberto)}
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            aria-label="Opções de visualização"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+            </svg>
+          </button>
 
-          {/* Toggle de visualização */}
-          <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-            <button
-              onClick={() => setVisualizacao("kanban")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                visualizacao === "kanban"
-                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              }`}
-            >
-              Kanban
-            </button>
-            <button
-              onClick={() => setVisualizacao("tabela")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                visualizacao === "tabela"
-                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              }`}
-            >
-              Tabela
-            </button>
-          </div>
+          {/* Dropdown menu */}
+          {menuAberto && (
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-600">
+              <div className="py-1">
+                <button
+                  onClick={() => {
+                    setVisualizacao("kanban");
+                    setMenuAberto(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
+                    visualizacao === "kanban"
+                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                      : "text-gray-700 dark:text-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <svg
+                      className="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
+                    Kanban
+                  </div>
+                </button>
+                <button
+                  onClick={() => {
+                    setVisualizacao("tabela");
+                    setMenuAberto(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
+                    visualizacao === "tabela"
+                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                      : "text-gray-700 dark:text-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <svg
+                      className="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    Tabela
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Renderização condicional */}
