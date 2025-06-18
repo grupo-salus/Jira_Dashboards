@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+import numpy as np
 
 def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
     """
@@ -139,6 +140,28 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]
     for col in date_cols:
         df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
+
+
+    # Calculos
+    # df["Dias em ideacao"] = (df["Data de criação"] - datetime.now()).dt.days
+
+    # df["status ideacao"] = np.where(df["Dias em ideacao"].abs() <= 30, "Avaliação Inicial",
+    #                                np.where(df["Dias em ideacao"].abs() <= 90, "Em Análise",
+    #                                       np.where(df["Dias em ideacao"].abs() <= 120, "Reavaliação Necessária",
+    #                                              "Revisão Crítica")))
+
+    # df["Dias planejados"] = (df["Target end"] - df["Target start"]).dt.days
+
+    # df["Dias corridos"] = np.where(datetime.now() >= df["Target start"],
+    #                               (datetime.now() - df["Target start"]).dt.days,
+    #                               None)
+    
+
+
+
+
+
+
 
     return df
 
