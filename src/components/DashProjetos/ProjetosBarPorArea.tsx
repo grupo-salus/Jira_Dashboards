@@ -29,12 +29,12 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
   }, [data]);
 
   return (
-    <div className="w-full h-64">
+    <div className="w-full h-full flex-1 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={areaCount}
           layout="vertical"
-          margin={{ left: 16, right: 16, top: 16, bottom: 16 }}
+          margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
         >
           <XAxis type="number" allowDecimals={false} />
           <YAxis

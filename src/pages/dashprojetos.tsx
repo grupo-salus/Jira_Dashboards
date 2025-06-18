@@ -27,7 +27,7 @@ import {
   STATUS_COLUMNS,
 } from "../components/DashProjetos/ProjetosKanban";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
-import ProjetosRadarPorPrioridade from "../components/DashProjetos/ProjetosRadarPorPrioridade";
+import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosPiePorStatus from "../components/DashProjetos/ProjetosPiePorStatus";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
 
@@ -506,15 +506,15 @@ const DashProjetos: React.FC = () => {
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
           <div className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-left">
-            Projetos por Prioridade
-          </div>
-          <ProjetosRadarPorPrioridade data={filteredData} />
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-left">
             Projetos por Status
           </div>
           <ProjetosPiePorStatus data={filteredData} />
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          <div className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-left">
+            Projetos por Prioridade
+          </div>
+          <ProjetosBarPorPrioridade data={filteredData} />
         </div>
       </div>
 

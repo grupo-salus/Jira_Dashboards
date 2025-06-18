@@ -42,13 +42,10 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
   }, [data]);
 
   return (
-    <div
-      className="w-full flex flex-row items-center justify-center gap-4 md:gap-8"
-      style={{ minHeight: 260 }}
-    >
-      <div className="flex-1 min-w-0" style={{ height: 240 }}>
-        <ResponsiveContainer width="100%" height={240}>
-          <PieChart>
+    <div className="w-full h-full flex-1 flex flex-col items-center justify-center">
+      <div className="w-full flex-1 flex items-center justify-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
             <Pie
               data={statusCount}
               dataKey="count"
@@ -67,20 +64,15 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex flex-col flex-wrap gap-y-2 max-w-[140px] w-full">
-        {statusCount.map((entry, index) => (
-          <div
-            key={entry.status}
-            className="flex items-center gap-2 min-w-0 w-full"
-          >
+      {/* Legenda dos status abaixo do gráfico */}
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4 w-full">
+        {statusCount.map((entry) => (
+          <div key={entry.status} className="flex items-center gap-2">
             <span
-              className="inline-block w-4 h-2 rounded-sm flex-shrink-0"
+              className="inline-block w-4 h-2 rounded-sm"
               style={{ background: entry.color }}
             />
-            <span
-              className="text-xs text-gray-800 dark:text-gray-200 font-medium break-words text-left block w-full"
-              title={entry.status}
-            >
+            <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">
               {entry.status}
             </span>
           </div>
