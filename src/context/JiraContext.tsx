@@ -21,13 +21,13 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { fetchBacklogTable, fetchAcompanhamentoTI } from "../api/api_jira";
-import { ResultApi, AcompanhamentoTI } from "../types/Typesjira";
+import { fetchAcompanhamentoTI, fetchEspacoDeProjetos } from "../api/api_jira";
+import { AcompanhamentoTI, EspacoDeProjetos } from "../types/Typesjira";
 
 interface JiraContextType {
-  // Dados do Backlog
-  backlogData: {
-    rawData: ResultApi[];
+  // Dados do Espaço de Projetos
+  projetosData: {
+    rawData: EspacoDeProjetos[];
     loading: boolean;
     error: string | null;
     lastUpdate: Date | null;
@@ -48,7 +48,7 @@ interface JiraContextType {
     lastUpdate: Date | null;
   };
   // Funções de atualização
-  refreshBacklogData: () => Promise<void>;
+  refreshProjetosData: () => Promise<void>;
   refreshSprintData: () => Promise<void>;
   refreshAcompanhamentoTIData: () => Promise<void>;
 }
@@ -57,8 +57,8 @@ const CACHE_KEY = "jira_data_cache";
 const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hora em milissegundos
 
 interface CacheData {
-  backlog: {
-    rawData: ResultApi[];
+  projetos: {
+    rawData: EspacoDeProjetos[];
     timestamp: number;
   };
   sprint: {
@@ -69,7 +69,7 @@ interface CacheData {
 }
 
 export const JiraContext = createContext<JiraContextType>({
-  backlogData: {
+  projetosData: {
     rawData: [],
     loading: true,
     error: null,
@@ -88,7 +88,7 @@ export const JiraContext = createContext<JiraContextType>({
     error: null,
     lastUpdate: null,
   },
-  refreshBacklogData: async () => {},
+  refreshProjetosData: async () => {},
   refreshSprintData: async () => {},
   refreshAcompanhamentoTIData: async () => {},
 });
@@ -100,11 +100,15 @@ interface JiraProviderProps {
 }
 
 export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
-  // Estado do Backlog
-  const [backlogRawData, setBacklogRawData] = useState<ResultApi[]>([]);
-  const [backlogLoading, setBacklogLoading] = useState(true);
-  const [backlogError, setBacklogError] = useState<string | null>(null);
-  const [backlogLastUpdate, setBacklogLastUpdate] = useState<Date | null>(null);
+  // Estado do Espaço de Projetos
+  const [projetosRawData, setProjetosRawData] = useState<EspacoDeProjetos[]>(
+    []
+  );
+  const [projetosLoading, setProjetosLoading] = useState(true);
+  const [projetosError, setProjetosError] = useState<string | null>(null);
+  const [projetosLastUpdate, setProjetosLastUpdate] = useState<Date | null>(
+    null
+  );
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Estado da Sprint (será implementado depois)
@@ -128,16 +132,16 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
       const cachedData = localStorage.getItem(CACHE_KEY);
       if (!cachedData) return false;
 
-      const { backlog, sprint } = JSON.parse(cachedData) as CacheData;
+      const { projetos, sprint } = JSON.parse(cachedData) as CacheData;
 
       // Verifica se o cache expirou
       const now = Date.now();
-      const backlogExpired = now - backlog.timestamp > CACHE_EXPIRATION;
+      const projetosExpired = now - projetos.timestamp > CACHE_EXPIRATION;
       const sprintExpired = now - sprint.timestamp > CACHE_EXPIRATION;
 
-      if (!backlogExpired) {
-        setBacklogRawData(backlog.rawData);
-        setBacklogLastUpdate(new Date(backlog.timestamp));
+      if (!projetosExpired) {
+        setProjetosRawData(projetos.rawData);
+        setProjetosLastUpdate(new Date(projetos.timestamp));
       }
 
       if (!sprintExpired) {
@@ -146,7 +150,7 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
         setSprintLastUpdate(new Date(sprint.timestamp));
       }
 
-      return !backlogExpired || !sprintExpired;
+      return !projetosExpired || !sprintExpired;
     } catch (error) {
       console.error("Erro ao carregar cache:", error);
       return false;
@@ -156,8 +160,8 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   const saveToCache = () => {
     try {
       const cacheData: CacheData = {
-        backlog: {
-          rawData: backlogRawData,
+        projetos: {
+          rawData: projetosRawData,
           timestamp: Date.now(),
         },
         sprint: {
@@ -172,30 +176,30 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
     }
   };
 
-  const fetchBacklogData = async () => {
+  const fetchProjetosData = async () => {
     try {
-      setBacklogLoading(true);
-      setBacklogError(null);
+      setProjetosLoading(true);
+      setProjetosError(null);
 
-      const data = await fetchBacklogTable();
+      const data = await fetchEspacoDeProjetos();
 
-      setBacklogRawData(data);
-      setBacklogLastUpdate(new Date());
+      setProjetosRawData(data);
+      setProjetosLastUpdate(new Date());
       saveToCache();
     } catch (error) {
-      setBacklogError(
+      setProjetosError(
         error instanceof Error
           ? error.message
-          : "Erro ao carregar dados do backlog"
+          : "Erro ao carregar dados dos projetos"
       );
-      console.error("Erro ao buscar dados do backlog:", error);
+      console.error("Erro ao buscar dados dos projetos:", error);
     } finally {
-      setBacklogLoading(false);
+      setProjetosLoading(false);
     }
   };
 
-  const refreshBacklogData = async () => {
-    await fetchBacklogData();
+  const refreshProjetosData = async () => {
+    await fetchProjetosData();
   };
 
   const refreshSprintData = async () => {
@@ -224,18 +228,18 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   useEffect(() => {
     const carregarDados = async () => {
       try {
-        setBacklogLoading(true);
-        setBacklogError(null);
-        const backlogResponse = await fetchBacklogTable();
-        setBacklogRawData(backlogResponse);
+        setProjetosLoading(true);
+        setProjetosError(null);
+        const projetosResponse = await fetchEspacoDeProjetos();
+        setProjetosRawData(projetosResponse);
       } catch (err) {
-        setBacklogError(
+        setProjetosError(
           err instanceof Error
             ? err.message
-            : "Erro ao carregar dados do backlog"
+            : "Erro ao carregar dados dos projetos"
         );
       } finally {
-        setBacklogLoading(false);
+        setProjetosLoading(false);
       }
     };
 
@@ -267,7 +271,7 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   useEffect(() => {
     if (isInitialLoad) {
       if (!loadFromCache()) {
-        fetchBacklogData();
+        fetchProjetosData();
       }
       setIsInitialLoad(false);
     }
@@ -276,7 +280,7 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   // Configura refresh automático a cada hora
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetchBacklogData();
+      fetchProjetosData();
     }, CACHE_EXPIRATION);
 
     return () => clearInterval(intervalId);
@@ -285,11 +289,11 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   return (
     <JiraContext.Provider
       value={{
-        backlogData: {
-          rawData: backlogRawData,
-          loading: backlogLoading,
-          error: backlogError,
-          lastUpdate: backlogLastUpdate,
+        projetosData: {
+          rawData: projetosRawData,
+          loading: projetosLoading,
+          error: projetosError,
+          lastUpdate: projetosLastUpdate,
         },
         sprintData: {
           rawData: sprintRawData,
@@ -304,7 +308,7 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
           error: acompanhamentoTIError,
           lastUpdate: acompanhamentoTILastUpdate,
         },
-        refreshBacklogData,
+        refreshProjetosData,
         refreshSprintData,
         refreshAcompanhamentoTIData,
       }}

@@ -3,9 +3,9 @@
  *
  * Este é o componente raiz da aplicação que:
  * 1. Configura o roteamento com React Router
- * 2. Gerencia a navegação entre as páginas (Backlog, Sprint e TI)
+ * 2. Gerencia a navegação entre as páginas (Projetos, Sprint e TI)
  * 3. Fornece os contextos globais (Theme e Jira)
- * 4. Controla o estado da view atual (backlog/sprint/ti)
+ * 4. Controla o estado da view atual (projetos/sprint/ti)
  *
  * O componente AppContent é responsável por:
  * - Sincronizar a URL com o estado da view
@@ -23,7 +23,7 @@ import {
 } from "react-router-dom";
 import { JiraProvider } from "./context/JiraContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import DashBacklog from "./pages/dashbacklog";
+import DashProjetos from "./pages/dashprojetos";
 import SprintDashboard from "./pages/SprintDashboard";
 import TIDashboard from "./pages/TIDashboard";
 import Navbar from "./components/layout/Navbar";
@@ -32,13 +32,13 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<
-    "home" | "backlog" | "sprint" | "ti"
-  >("backlog");
+    "home" | "projetos" | "sprint" | "ti"
+  >("projetos");
 
   // Atualiza a view baseado na rota atual
   useEffect(() => {
     if (location.pathname === "/") {
-      setCurrentView("backlog");
+      setCurrentView("projetos");
     } else if (location.pathname === "/sprint") {
       setCurrentView("sprint");
     } else if (location.pathname === "/ti") {
@@ -47,9 +47,9 @@ const AppContent: React.FC = () => {
   }, [location]);
 
   // Atualiza a rota quando a view muda
-  const handleViewChange = (view: "home" | "backlog" | "sprint" | "ti") => {
+  const handleViewChange = (view: "home" | "projetos" | "sprint" | "ti") => {
     setCurrentView(view);
-    if (view === "backlog") {
+    if (view === "projetos") {
       navigate("/");
     } else if (view === "sprint") {
       navigate("/sprint");
@@ -67,7 +67,7 @@ const AppContent: React.FC = () => {
       />
       <main className="container mx-auto px-4 py-8">
         <Routes>
-          <Route path="/" element={<DashBacklog />} />
+          <Route path="/" element={<DashProjetos />} />
           <Route path="/sprint" element={<SprintDashboard />} />
           <Route path="/ti" element={<TIDashboard />} />
         </Routes>

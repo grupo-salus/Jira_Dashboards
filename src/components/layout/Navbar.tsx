@@ -12,8 +12,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { useJira } from "../../context/JiraContext";
 
 interface NavbarProps {
-  currentView: "home" | "backlog" | "sprint" | "ti";
-  onViewChange: (view: "home" | "backlog" | "sprint" | "ti") => void;
+  currentView: "home" | "projetos" | "sprint" | "ti";
+  onViewChange: (view: "home" | "projetos" | "sprint" | "ti") => void;
   showHomeLink?: boolean;
 }
 
@@ -23,12 +23,15 @@ const Navbar: React.FC<NavbarProps> = ({
   showHomeLink,
 }) => {
   const { theme, toggleTheme } = useTheme();
-  const { refreshBacklogData, refreshSprintData, refreshAcompanhamentoTIData } =
-    useJira();
+  const {
+    refreshProjetosData,
+    refreshSprintData,
+    refreshAcompanhamentoTIData,
+  } = useJira();
 
   const handleRefresh = () => {
-    if (currentView === "backlog") {
-      refreshBacklogData();
+    if (currentView === "projetos") {
+      refreshProjetosData();
     } else if (currentView === "sprint") {
       refreshSprintData();
     } else if (currentView === "ti") {
@@ -67,16 +70,16 @@ const Navbar: React.FC<NavbarProps> = ({
                 </button>
               )}
               <button
-                onClick={() => onViewChange("backlog")}
+                onClick={() => onViewChange("projetos")}
                 className={`px-4 py-2 rounded-md transition-colors font-semibold ${
-                  currentView === "backlog"
+                  currentView === "projetos"
                     ? "bg-primary-600 text-white shadow-md"
                     : "hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <span className="flex items-center gap-2">
                   <Kanban className="h-4 w-4" />
-                  Backlog
+                  Espaço de Projetos
                 </span>
               </button>
 

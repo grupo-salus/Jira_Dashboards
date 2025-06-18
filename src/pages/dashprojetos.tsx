@@ -17,6 +17,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useJira } from "../context/JiraContext";
+import { EspacoDeProjetos } from "../types/Typesjira";
 import ProjetosTable from "../components/DashProjetos/ProjetosTable";
 
 const DashProjetos: React.FC = () => {
@@ -39,7 +40,7 @@ const DashProjetos: React.FC = () => {
   };
 
   const filteredData = useMemo(() => {
-    return projetosData.rawData.filter((item) => {
+    return projetosData.rawData.filter((item: EspacoDeProjetos) => {
       const matchesArea =
         !filtros.area ||
         normalizeString(item["Departamento Solicitante"] || "") ===
@@ -83,7 +84,7 @@ const DashProjetos: React.FC = () => {
     () => [
       ...new Set(
         projetosData.rawData
-          .map((i) => i["Departamento Solicitante"])
+          .map((i: EspacoDeProjetos) => i["Departamento Solicitante"])
           .filter(Boolean)
       ),
     ],
@@ -93,7 +94,11 @@ const DashProjetos: React.FC = () => {
   const projetoOptions = useMemo(
     () =>
       [
-        ...new Set(projetosData.rawData.map((i) => i.Título).filter(Boolean)),
+        ...new Set(
+          projetosData.rawData
+            .map((i: EspacoDeProjetos) => i.Título)
+            .filter(Boolean)
+        ),
       ] as string[],
     [projetosData.rawData]
   );
@@ -101,7 +106,9 @@ const DashProjetos: React.FC = () => {
   const solicitanteOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData.map((i) => i.Solicitante).filter(Boolean)
+        projetosData.rawData
+          .map((i: EspacoDeProjetos) => i.Solicitante)
+          .filter(Boolean)
       ),
     ],
     [projetosData.rawData]
@@ -109,14 +116,22 @@ const DashProjetos: React.FC = () => {
 
   const prioridadeOptions = useMemo(
     () => [
-      ...new Set(projetosData.rawData.map((i) => i.Prioridade).filter(Boolean)),
+      ...new Set(
+        projetosData.rawData
+          .map((i: EspacoDeProjetos) => i.Prioridade)
+          .filter(Boolean)
+      ),
     ],
     [projetosData.rawData]
   );
 
   const statusOptions = useMemo(
     () => [
-      ...new Set(projetosData.rawData.map((i) => i.Status).filter(Boolean)),
+      ...new Set(
+        projetosData.rawData
+          .map((i: EspacoDeProjetos) => i.Status)
+          .filter(Boolean)
+      ),
     ],
     [projetosData.rawData]
   );
@@ -124,7 +139,9 @@ const DashProjetos: React.FC = () => {
   const grupoSolicitanteOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData.map((i) => i["Grupo Solicitante"]).filter(Boolean)
+        projetosData.rawData
+          .map((i: EspacoDeProjetos) => i["Grupo Solicitante"])
+          .filter(Boolean)
       ),
     ],
     [projetosData.rawData]

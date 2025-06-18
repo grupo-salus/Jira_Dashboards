@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ResultApi } from "../../types/Typesjira";
+import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   formatDate,
   formatSeconds,
@@ -7,8 +7,8 @@ import {
   calcularDiferencaTempo,
 } from "../../utils/formatters";
 
-interface BacklogTableProps {
-  data: ResultApi[];
+interface ProjetosTableProps {
+  data: EspacoDeProjetos[];
 }
 
 interface ColumnWidth {
@@ -17,62 +17,74 @@ interface ColumnWidth {
 
 type SortDirection = "asc" | "desc" | null;
 
-const BacklogTable: React.FC<BacklogTableProps> = ({ data }) => {
+const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
   const [columnWidths, setColumnWidths] = useState<ColumnWidth>({
     ID: 80,
+    Tipo: 100,
     Chave: 100,
     Título: 200,
-    Projeto: 150,
-    Tipo: 100,
-    Status: 120,
-    "Data de Criação": 150,
-    "Última Atualização": 150,
-    "Relator Técnico": 150,
-    "Grupo Solicitante": 150,
-    "Unidade / Departamento": 150,
-    Solicitante: 150,
-    Sprint: 120,
-    "Responsável (Dev)": 150,
-    "Estimativa Original (segundos)": 180,
-    "Controle de Tempo (segundos)": 180,
     Prioridade: 100,
-    Branch: 120,
-    "versões afetadas": 150,
-    "versões corrigidas": 150,
-    "Backlog (nome)": 150,
+    Descrição: 200,
+    "Aprovador por (diretor)": 150,
+    "Benefícios Esperados": 200,
+    Status: 120,
+    "Grupo Solicitante": 150,
+    "Departamento Solicitante": 150,
+    Solicitante: 150,
+    "Telefone do Solicitante": 150,
+    "Email do Solicitante": 150,
+    Responsável: 150,
+    Relator: 150,
+    Categoria: 120,
+    "Estimativa original (segundos)": 180,
+    "Tempo Gasto (formatado)": 150,
+    "Investimento Esperado": 150,
+    "Data de criação": 150,
+    "Data de atualização": 150,
+    "Target start": 150,
+    "Target end": 150,
+    "Data de término": 150,
     "Dias no Backlog": 120,
+    "Dias até Entrega (estimado)": 150,
   });
 
   const [isResizing, setIsResizing] = useState(false);
   const [currentColumn, setCurrentColumn] = useState<string | null>(null);
   const [startX, setStartX] = useState(0);
   const [startWidth, setStartWidth] = useState(0);
-  const [sortColumn, setSortColumn] = useState<keyof ResultApi | null>(null);
+  const [sortColumn, setSortColumn] = useState<keyof EspacoDeProjetos | null>(
+    null
+  );
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-  const columns: (keyof ResultApi)[] = [
+  const columns: (keyof EspacoDeProjetos)[] = [
     "ID",
+    "Tipo",
     "Chave",
     "Título",
-    "Projeto",
-    "Tipo",
-    "Status",
-    "Data de Criação",
-    "Última Atualização",
-    "Relator Técnico",
-    "Grupo Solicitante",
-    "Unidade / Departamento",
-    "Solicitante",
-    "Sprint",
-    "Responsável (Dev)",
-    "Estimativa Original (segundos)",
-    "Controle de Tempo (segundos)",
     "Prioridade",
-    "Branch",
-    "versões afetadas",
-    "versões corrigidas",
-    "Backlog (nome)",
+    "Descrição",
+    "Aprovador por (diretor)",
+    "Benefícios Esperados",
+    "Status",
+    "Grupo Solicitante",
+    "Departamento Solicitante",
+    "Solicitante",
+    "Telefone do Solicitante",
+    "Email do Solicitante",
+    "Responsável",
+    "Relator",
+    "Categoria",
+    "Estimativa original (segundos)",
+    "Tempo Gasto (formatado)",
+    "Investimento Esperado",
+    "Data de criação",
+    "Data de atualização",
+    "Target start",
+    "Target end",
+    "Data de término",
     "Dias no Backlog",
+    "Dias até Entrega (estimado)",
   ];
 
   const handleMouseDown = (e: React.MouseEvent, column: string) => {
@@ -99,7 +111,7 @@ const BacklogTable: React.FC<BacklogTableProps> = ({ data }) => {
     setCurrentColumn(null);
   };
 
-  const handleSort = (column: keyof ResultApi) => {
+  const handleSort = (column: keyof EspacoDeProjetos) => {
     if (sortColumn === column) {
       setSortDirection((prev) => {
         if (prev === "asc") return "desc";
@@ -145,22 +157,24 @@ const BacklogTable: React.FC<BacklogTableProps> = ({ data }) => {
     };
   }, [isResizing, currentColumn, startX, startWidth]);
 
-  const getSortIcon = (column: keyof ResultApi) => {
+  const getSortIcon = (column: keyof EspacoDeProjetos) => {
     if (sortColumn !== column) return "↕️";
     if (sortDirection === "asc") return "↑";
     if (sortDirection === "desc") return "↓";
     return "↕️";
   };
 
-  const formatCellValue = (column: keyof ResultApi, value: any) => {
+  const formatCellValue = (column: keyof EspacoDeProjetos, value: any) => {
     if (!value) return "-";
 
     switch (column) {
-      case "Data de Criação":
-      case "Última Atualização":
+      case "Data de criação":
+      case "Data de atualização":
+      case "Target start":
+      case "Target end":
+      case "Data de término":
         return formatDate(value);
-      case "Estimativa Original (segundos)":
-      case "Controle de Tempo (segundos)":
+      case "Estimativa original (segundos)":
         return formatSeconds(Number(value));
       case "Prioridade":
         const priorityConfig = formatPriority(value);
@@ -171,6 +185,9 @@ const BacklogTable: React.FC<BacklogTableProps> = ({ data }) => {
             {priorityConfig.label}
           </span>
         );
+      case "Descrição":
+      case "Benefícios Esperados":
+        return value.length > 100 ? `${value.substring(0, 100)}...` : value;
       default:
         return value;
     }
@@ -244,4 +261,4 @@ const BacklogTable: React.FC<BacklogTableProps> = ({ data }) => {
   );
 };
 
-export default BacklogTable;
+export default ProjetosTable;

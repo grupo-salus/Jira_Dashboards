@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Query, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from services.jira_service import JiraService
-from services.jira_parser import parse_issues_to_dataframe_backlog, parse_issues_to_dataframe_acompanhamento_ti, parse_issues_to_dataframe_espaco_de_projetos
+from services.jira_parser import parse_issues_to_dataframe_acompanhamento_ti, parse_issues_to_dataframe_espaco_de_projetos
 from datetime import datetime
 from typing import Optional
 import pandas as pd
@@ -24,80 +24,6 @@ app.add_middleware(
 
 router = APIRouter()
 
-
-@router.get("/api/backlog/tabela")
-def get_tabela_backlog(
-    request: Request,
-    area: Optional[str] = Query(None, description="Nome da área (ex: 'TI', 'Financeiro')"),
-    projeto: Optional[str] = Query(None, description="Nome do projeto (ex: 'CP simplificado', 'Integração Sefaz')"),
-    status: Optional[str] = Query(None, description="Status do card (ex: 'Tarefas pendentes', 'Em andamento')"),
-    prioridade: Optional[str] = Query(None, description="Prioridade do Jira (ex: 'Highest', 'Medium')"),
-    grupo_solicitante: Optional[str] = Query(None, description="Grupo solicitante (ex: 'Franqueadora', 'Franqueado')"),
-    solicitante: Optional[str] = Query(None, description="Nome do solicitante (quem abriu o chamado)")
-):
-    """
-    Retorna a tabela completa do backlog Jira (board_id=71), com suporte a filtros via query string.
-    """
-    service = JiraService()
-    
-    # Busca issues do backlog
-    issues = service.get_raw_backlog_issues(board_id=71).get("issues", [])
-    df = parse_issues_to_dataframe_backlog(issues)
-    
-    # Busca issues da sprint específica
-    sprint_issues = service.get_issues_from_sprint(724).get("issues", [])
-    sprint_df = parse_issues_to_dataframe_backlog(sprint_issues)
-    
-    # Concatena os DataFrames
-    df = pd.concat([df, sprint_df], ignore_index=True)
-
-    if df.empty:
-        return {"tabela_backlog": []}
-
-    # Conversão de datas e cálculo de dias no backlog
-    df["Data de Criação"] = pd.to_datetime(df["Data de Criação"], errors="coerce").dt.tz_localize(None)
-    df["Última Atualização"] = pd.to_datetime(df["Última Atualização"], errors="coerce").dt.tz_localize(None)
-    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de Criação"]).dt.days
-
-    # Preenchimento padrão para colunas-chave
-    for col in [
-        "Unidade / Departamento", "Solicitante", "Grupo Solicitante", "Prioridade", "Status"
-    ]:
-        df[col] = df[col].fillna("Não informado")
-
-    # Tratamento seguro para a coluna "Projeto"
-    if "Projeto" not in df.columns:
-        df["Projeto"] = ""
-    else:
-        df["Projeto"] = df["Projeto"].fillna("")
-
-    # Aplicação de filtros
-    if area:
-        df = df[df["Unidade / Departamento"] == area]
-    if projeto:
-        df = df[df["Projeto"] == projeto]
-    if status:
-        df = df[df["Status"] == status]
-    if prioridade:
-        df = df[df["Prioridade"] == prioridade]
-    if grupo_solicitante:
-        df = df[df["Grupo Solicitante"] == grupo_solicitante]
-    if solicitante:
-        df = df[df["Solicitante"] == solicitante]
-
-    # Formatação de datas para string ISO
-    df["Data de Criação"] = df["Data de Criação"].dt.strftime('%Y-%m-%dT%H:%M:%S')
-    df["Última Atualização"] = df["Última Atualização"].dt.strftime('%Y-%m-%dT%H:%M:%S')
-
-    # Conversão para float para compatibilidade com JSON
-    df["Estimativa Original (segundos)"] = df["Estimativa Original (segundos)"].astype(float)
-    df["Controle de Tempo (segundos)"] = df["Controle de Tempo (segundos)"].astype(float)
-    df["Dias no Backlog"] = df["Dias no Backlog"].astype(int)
-
-    # Substitui NaN por None
-    df = df.where(pd.notnull(df), None)
-
-    return {"tabela_backlog": df.to_dict(orient="records")}
 
 @router.get("/api/acompanhamento_ti/tabela")
 def get_tabela_acompanhamento_ti(
