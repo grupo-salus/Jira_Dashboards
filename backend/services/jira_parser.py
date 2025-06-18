@@ -58,14 +58,15 @@ def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
 
     return df
 
+import pandas as pd
+from datetime import datetime
+
 def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     """
     Converte uma lista de issues do Jira em um DataFrame com foco em campos de tempo, datas e equipe,
     baseado no projeto Espaço de Projetos.
+    As colunas de data/hora serão do tipo datetime64[ns] do Pandas.
     """
-    def get(field, default=None):
-        return field if field is not None else default
-
     rows = []
     for issue in issues:
         fields = issue.get("fields", {})
@@ -122,7 +123,7 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
 
             # Tempo e estimativas
             "Estimativa original (segundos)": issue.get("fields", {}).get("timeoriginalestimate"),
-            "Tempo Gasto (formatado)": issue.get("fields", {}).get("timetracking", {}).get("timeSpent"),
+            "Controle de tempo": issue.get("fields", {}).get("timetracking", {}).get("timeSpent"),
             "Investimento Esperado": issue.get("fields", {}).get("customfield_10249"),
 
             # Datas importantes
@@ -132,19 +133,44 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Target end": issue.get("fields", {}).get("customfield_10023"),
             "Data de término": issue.get("fields", {}).get("resolutiondate"),
         }
-
-
         rows.append(row)
 
     df = pd.DataFrame(rows)
 
-    # Converter datas
-    for col in ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]:
+    # Converter colunas de data/hora para o tipo datetime do Pandas e remover timezone
+    date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]
+    for col in date_cols:
         df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
 
-    # Cálculo de métricas temporais
-    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Data de criação"]).dt.days
-    df["Dias até Entrega (estimado)"] = (df["Target end"] - df["Target start"]).dt.days
+    # Cálculo de métricas temporais (ainda com NaT/NaN se as datas forem nulas)
+    current_datetime = pd.Timestamp.now().tz_localize(None)
+
+    df["Dias corridos"] = (current_datetime - df["Target start"]).dt.days
+    df["Prazo Estimado (dias)"] = (df["Target end"] - df["Target start"]).dt.days
+    df["Dias Restantes"] = (df["Target end"] - current_datetime).dt.days
 
     return df
 
+def prepare_dataframe_for_json_export(df: pd.DataFrame, numeric_or_object_cols_with_nan: list = None) -> pd.DataFrame:
+    """
+    Prepara um DataFrame, ajustando tipos de dados para exportação JSON.
+    Converte datetime64[ns] para strings e NaN/NaT para None.
+    Retorna uma CÓPIA do DataFrame para evitar modificações no original.
+    """
+    df_adjusted = df.copy() # Trabalha em uma cópia para não alterar o DF original
+
+    # 1. Converter colunas de data/hora (datetime64[ns]) para string formatada ou None
+    for col in df_adjusted.select_dtypes(include=['datetime64[ns]']).columns:
+        df_adjusted[col] = df_adjusted[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
+
+    # 2. Converter valores NaN/NaT em colunas numéricas para None para JSON
+    # Isso inclui as colunas de "dias" calculadas e quaisquer outras colunas numéricas
+    # que possam ter vindo com NaN (ex: Estimativa original (segundos), Investimento Esperado)
+
+    for col in numeric_or_object_cols_with_nan:
+        if col in df_adjusted.columns:
+            # Substitui NaN (float), pd.NA (missing data), pd.NaT (missing datetime) por None
+            # e converte a coluna para o tipo 'object' para permitir misturar números e None
+            df_adjusted[col] = df_adjusted[col].replace({pd.NA: None, pd.NaT: None, float('nan'): None}).astype(object)
+            
+    return df_adjusted
