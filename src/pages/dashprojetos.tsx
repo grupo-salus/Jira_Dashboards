@@ -541,13 +541,13 @@ const DashProjetos: React.FC = () => {
           {menuAberto && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-600">
               <div className="py-1">
-                <button
+            <button
                   onClick={() => {
                     setVisualizacao("kanban");
                     setMenuAberto(false);
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                    visualizacao === "kanban"
+                visualizacao === "kanban"
                       ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                       : "text-gray-700 dark:text-gray-300"
                   }`}
@@ -566,16 +566,16 @@ const DashProjetos: React.FC = () => {
                         d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                       />
                     </svg>
-                    Kanban
+              Kanban
                   </div>
-                </button>
-                <button
+            </button>
+            <button
                   onClick={() => {
                     setVisualizacao("tabela");
                     setMenuAberto(false);
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                    visualizacao === "tabela"
+                visualizacao === "tabela"
                       ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                       : "text-gray-700 dark:text-gray-300"
                   }`}
@@ -594,10 +594,10 @@ const DashProjetos: React.FC = () => {
                         d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    Tabela
+              Tabela
                   </div>
-                </button>
-              </div>
+            </button>
+          </div>
             </div>
           )}
         </div>

@@ -45,11 +45,11 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   }, [data]);
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center">
+    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={prioridadeCount}
-          margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
+          margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
         >
           <XAxis
             dataKey="prioridade"

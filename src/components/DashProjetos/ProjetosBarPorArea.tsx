@@ -18,6 +18,13 @@ interface ProjetosBarPorAreaProps {
 }
 
 const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
+  // Função para determinar a cor do texto baseada no tema
+  const getTextColor = () => {
+    // Verifica se está no modo escuro
+    const isDark = document.documentElement.classList.contains("dark");
+    return isDark ? "#ffffff" : "#111827"; // branco para dark, cinza escuro para light
+  };
+
   // Agrupa projetos por área
   const areaCount = React.useMemo(() => {
     const counts: Record<string, number> = {};
@@ -29,12 +36,12 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
   }, [data]);
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center">
+    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={areaCount}
           layout="vertical"
-          margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
+          margin={{ left: 20, right: 20, top: 20, bottom: 20 }}
         >
           <XAxis type="number" allowDecimals={false} />
           <YAxis
@@ -45,10 +52,11 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
               <text
                 x={x}
                 y={y + 6}
-                fill={themeColors.chart[index % themeColors.chart.length]}
+                fill={getTextColor()}
                 fontSize={12}
                 textAnchor="end"
                 alignmentBaseline="middle"
+                fontWeight="500"
               >
                 {payload.value}
               </text>

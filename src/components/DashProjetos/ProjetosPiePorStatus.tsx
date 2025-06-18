@@ -42,10 +42,10 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
   }, [data]);
 
   return (
-    <div className="w-full h-full flex-1 flex flex-col items-center justify-center">
+    <div className="w-full h-full flex-1 flex flex-col items-center justify-center min-h-[300px]">
       <div className="w-full flex-1 flex items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+          <PieChart margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
             <Pie
               data={statusCount}
               dataKey="count"
