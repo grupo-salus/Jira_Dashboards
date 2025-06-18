@@ -59,7 +59,7 @@ function KanbanCard({ projeto }: { projeto: EspacoDeProjetos }) {
   const corBarra = corBarraTema[prioridadeConfig.label] || themeColors.gray;
   return (
     <div
-      className={`group relative flex w-full bg-gray-50 dark:bg-gray-700 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-shadow cursor-pointer items-center`}
+      className={`group relative flex w-full bg-gray-50 dark:bg-gray-700 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-shadow cursor-pointer items-start`}
       tabIndex={0}
     >
       {/* Barra de prioridade com cor do tema */}
@@ -68,14 +68,14 @@ function KanbanCard({ projeto }: { projeto: EspacoDeProjetos }) {
         style={{ background: corBarra }}
       />
       {/* Conteúdo do card */}
-      <div className="pl-3 w-full">
-        <div className="font-medium text-gray-900 dark:text-white text-xs line-clamp-2 mb-1">
+      <div className="pl-3 w-full text-left">
+        <div className="font-medium text-gray-900 dark:text-white text-xs mb-1 break-words text-left">
           {projeto.Título}
         </div>
         {projeto["Departamento Solicitante"] &&
           projeto["Departamento Solicitante"].trim() !== "" &&
           projeto["Departamento Solicitante"] !== "-" && (
-            <div className="inline-block text-xs mb-1 px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-medium">
+            <div className="inline-block text-xs mb-1 px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-medium text-left">
               {projeto["Departamento Solicitante"]}
             </div>
           )}
@@ -163,7 +163,7 @@ const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
                 </span>
               </div>
               {/* Cards dos projetos */}
-              <div className="space-y-2 max-h-80 overflow-y-auto hide-scrollbar">
+              <div className="space-y-2 max-h-96 overflow-y-auto hide-scrollbar">
                 {projetos.map((projeto) => (
                   <KanbanCard key={projeto.ID} projeto={projeto} />
                 ))}
