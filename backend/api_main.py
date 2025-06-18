@@ -50,10 +50,7 @@ def get_tabela_espaco_de_projetos(request: Request):
     service = JiraService()
     issues = service.get_all_issues_from_project("EP").get("issues", [])
     df = parse_issues_to_dataframe_espaco_de_projetos(issues)
-    numeric_or_object_cols_with_nan = [
-        "Estimativa original (segundos)", "Controle de tempo", "Investimento Esperado",
-        "Dias corridos", "Prazo Estimado (dias)", "Dias Restantes"
-    ]
+    numeric_or_object_cols_with_nan = ["Estimativa original (segundos)", "Controle de tempo", "Investimento Esperado"]
     
     df = prepare_dataframe_for_json_export(df, numeric_or_object_cols_with_nan)
 

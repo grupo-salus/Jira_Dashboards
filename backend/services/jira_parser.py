@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import datetime
 
 def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
     """
@@ -57,9 +58,6 @@ def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
     df["Dias até Entrega (estimado)"] = (df["Data Prevista de Término"] - df["Data de Início"]).dt.days
 
     return df
-
-import pandas as pd
-from datetime import datetime
 
 def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     """
@@ -141,13 +139,6 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]
     for col in date_cols:
         df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
-
-    # Cálculo de métricas temporais (ainda com NaT/NaN se as datas forem nulas)
-    current_datetime = pd.Timestamp.now().tz_localize(None)
-
-    df["Dias corridos"] = (current_datetime - df["Target start"]).dt.days
-    df["Prazo Estimado (dias)"] = (df["Target end"] - df["Target start"]).dt.days
-    df["Dias Restantes"] = (df["Target end"] - current_datetime).dt.days
 
     return df
 
