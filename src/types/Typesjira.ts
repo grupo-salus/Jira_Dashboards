@@ -58,6 +58,4 @@ export interface EspacoDeProjetos {
   "Target start": string | null;
   "Target end": string | null;
   "Data de término": string | null;
-  "Dias no Backlog": number;
-  "Dias até Entrega (estimado)": number | null;
 }

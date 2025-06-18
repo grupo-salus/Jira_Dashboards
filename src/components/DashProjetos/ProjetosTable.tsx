@@ -4,7 +4,6 @@ import {
   formatDate,
   formatSeconds,
   formatPriority,
-  calcularDiferencaTempo,
 } from "../../utils/formatters";
 
 interface ProjetosTableProps {
@@ -43,9 +42,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Data de atualização": 150,
     "Target start": 150,
     "Target end": 150,
-    "Data de término": 150,
-    "Dias no Backlog": 120,
-    "Dias até Entrega (estimado)": 150,
   });
 
   const [isResizing, setIsResizing] = useState(false);
@@ -82,9 +78,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Data de atualização",
     "Target start",
     "Target end",
-    "Data de término",
-    "Dias no Backlog",
-    "Dias até Entrega (estimado)",
   ];
 
   const handleMouseDown = (e: React.MouseEvent, column: string) => {

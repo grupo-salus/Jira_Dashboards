@@ -19,6 +19,7 @@ import React, { useState, useMemo } from "react";
 import { useJira } from "../context/JiraContext";
 import { EspacoDeProjetos } from "../types/Typesjira";
 import ProjetosTable from "../components/DashProjetos/ProjetosTable";
+import { getPriorityConfig } from "../constants/priorities";
 
 const DashProjetos: React.FC = () => {
   const { projetosData } = useJira();
@@ -39,35 +40,41 @@ const DashProjetos: React.FC = () => {
       .replace(/[\u0300-\u036f]/g, "");
   };
 
-  const filteredData = useMemo(() => {
-    return projetosData.rawData.filter((item: EspacoDeProjetos) => {
+  // Função para aplicar filtros em cascata
+  const aplicarFiltrosCascata = (
+    dados: EspacoDeProjetos[],
+    filtrosAtivos: typeof filtros
+  ) => {
+    return dados.filter((item: EspacoDeProjetos) => {
       const matchesArea =
-        !filtros.area ||
+        !filtrosAtivos.area ||
         normalizeString(item["Departamento Solicitante"] || "") ===
-          normalizeString(filtros.area);
+          normalizeString(filtrosAtivos.area);
 
       const matchesProjeto =
-        !filtros.projeto ||
-        normalizeString(item.Título || "") === normalizeString(filtros.projeto);
+        !filtrosAtivos.projeto ||
+        normalizeString(item.Título || "") ===
+          normalizeString(filtrosAtivos.projeto);
 
       const matchesSolicitante =
-        !filtros.solicitante ||
+        !filtrosAtivos.solicitante ||
         normalizeString(item.Solicitante || "") ===
-          normalizeString(filtros.solicitante);
+          normalizeString(filtrosAtivos.solicitante);
 
       const matchesPrioridade =
-        !filtros.prioridade ||
+        !filtrosAtivos.prioridade ||
         normalizeString(item.Prioridade || "") ===
-          normalizeString(filtros.prioridade);
+          normalizeString(filtrosAtivos.prioridade);
 
       const matchesStatus =
-        !filtros.status ||
-        normalizeString(item.Status || "") === normalizeString(filtros.status);
+        !filtrosAtivos.status ||
+        normalizeString(item.Status || "") ===
+          normalizeString(filtrosAtivos.status);
 
       const matchesGrupoSolicitante =
-        !filtros.grupo_solicitante ||
+        !filtrosAtivos.grupo_solicitante ||
         normalizeString(item["Grupo Solicitante"] || "") ===
-          normalizeString(filtros.grupo_solicitante);
+          normalizeString(filtrosAtivos.grupo_solicitante);
 
       return (
         matchesArea &&
@@ -78,74 +85,184 @@ const DashProjetos: React.FC = () => {
         matchesGrupoSolicitante
       );
     });
+  };
+
+  // Dados filtrados finais (para a tabela)
+  const filteredData = useMemo(() => {
+    return aplicarFiltrosCascata(projetosData.rawData, filtros);
   }, [projetosData.rawData, filtros]);
 
+  // Dados filtrados para cada dropdown (cascata)
+  const dadosParaArea = useMemo(() => {
+    return projetosData.rawData;
+  }, [projetosData.rawData]);
+
+  const dadosParaProjeto = useMemo(() => {
+    const filtrosTemp = { ...filtros, projeto: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.solicitante,
+    filtros.prioridade,
+    filtros.status,
+    filtros.grupo_solicitante,
+  ]);
+
+  const dadosParaSolicitante = useMemo(() => {
+    const filtrosTemp = { ...filtros, solicitante: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.projeto,
+    filtros.prioridade,
+    filtros.status,
+    filtros.grupo_solicitante,
+  ]);
+
+  const dadosParaPrioridade = useMemo(() => {
+    const filtrosTemp = { ...filtros, prioridade: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.projeto,
+    filtros.solicitante,
+    filtros.status,
+    filtros.grupo_solicitante,
+  ]);
+
+  const dadosParaStatus = useMemo(() => {
+    const filtrosTemp = { ...filtros, status: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.projeto,
+    filtros.solicitante,
+    filtros.prioridade,
+    filtros.grupo_solicitante,
+  ]);
+
+  const dadosParaGrupoSolicitante = useMemo(() => {
+    const filtrosTemp = { ...filtros, grupo_solicitante: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.projeto,
+    filtros.solicitante,
+    filtros.prioridade,
+    filtros.status,
+  ]);
+
+  // Opções para cada dropdown baseadas nos dados filtrados
   const areaOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
+        dadosParaArea
           .map((i: EspacoDeProjetos) => i["Departamento Solicitante"])
-          .filter(Boolean)
+          .filter((value): value is string => Boolean(value))
       ),
     ],
-    [projetosData.rawData]
+    [dadosParaArea]
   );
 
   const projetoOptions = useMemo(
-    () =>
-      [
-        ...new Set(
-          projetosData.rawData
-            .map((i: EspacoDeProjetos) => i.Título)
-            .filter(Boolean)
-        ),
-      ] as string[],
-    [projetosData.rawData]
+    () => [
+      ...new Set(
+        dadosParaProjeto
+          .map((i: EspacoDeProjetos) => i.Título)
+          .filter((value): value is string => Boolean(value))
+      ),
+    ],
+    [dadosParaProjeto]
   );
 
   const solicitanteOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
+        dadosParaSolicitante
           .map((i: EspacoDeProjetos) => i.Solicitante)
-          .filter(Boolean)
+          .filter((value): value is string => Boolean(value))
       ),
     ],
-    [projetosData.rawData]
+    [dadosParaSolicitante]
   );
 
   const prioridadeOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
+        dadosParaPrioridade
           .map((i: EspacoDeProjetos) => i.Prioridade)
-          .filter(Boolean)
+          .filter((value): value is string => Boolean(value))
       ),
     ],
-    [projetosData.rawData]
+    [dadosParaPrioridade]
   );
+
+  // Opções de prioridade traduzidas para o dropdown
+  const prioridadeOptionsTraduzidas = useMemo(() => {
+    return prioridadeOptions.map((prioridade) => ({
+      valor: prioridade,
+      label: getPriorityConfig(prioridade).label,
+    }));
+  }, [prioridadeOptions]);
 
   const statusOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
+        dadosParaStatus
           .map((i: EspacoDeProjetos) => i.Status)
-          .filter(Boolean)
+          .filter((value): value is string => Boolean(value))
       ),
     ],
-    [projetosData.rawData]
+    [dadosParaStatus]
   );
 
   const grupoSolicitanteOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
+        dadosParaGrupoSolicitante
           .map((i: EspacoDeProjetos) => i["Grupo Solicitante"])
-          .filter(Boolean)
+          .filter((value): value is string => Boolean(value))
       ),
     ],
-    [projetosData.rawData]
+    [dadosParaGrupoSolicitante]
   );
+
+  // Função para limpar filtros dependentes quando um filtro é alterado
+  const handleFiltroChange = (campo: keyof typeof filtros, valor: string) => {
+    setFiltros((prev) => {
+      const novosFiltros = { ...prev, [campo]: valor };
+
+      // Limpar filtros dependentes baseado na hierarquia
+      if (campo === "area") {
+        novosFiltros.projeto = "";
+        novosFiltros.solicitante = "";
+        novosFiltros.prioridade = "";
+        novosFiltros.status = "";
+        novosFiltros.grupo_solicitante = "";
+      } else if (campo === "projeto") {
+        novosFiltros.solicitante = "";
+        novosFiltros.prioridade = "";
+        novosFiltros.status = "";
+        novosFiltros.grupo_solicitante = "";
+      } else if (campo === "solicitante") {
+        novosFiltros.prioridade = "";
+        novosFiltros.status = "";
+        novosFiltros.grupo_solicitante = "";
+      } else if (campo === "prioridade") {
+        novosFiltros.status = "";
+        novosFiltros.grupo_solicitante = "";
+      } else if (campo === "status") {
+        novosFiltros.grupo_solicitante = "";
+      }
+
+      return novosFiltros;
+    });
+  };
 
   if (projetosData.loading) {
     return (
@@ -174,8 +291,25 @@ const DashProjetos: React.FC = () => {
       </h1>
 
       {/* Seção de Filtros */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 mb-6">
+        <div className="flex justify-end items-center mb-3">
+          <button
+            onClick={() =>
+              setFiltros({
+                area: "",
+                projeto: "",
+                solicitante: "",
+                prioridade: "",
+                status: "",
+                grupo_solicitante: "",
+              })
+            }
+            className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          >
+            Limpar Filtros
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
           {/* Filtro de Área */}
           <div>
             <label
@@ -188,9 +322,7 @@ const DashProjetos: React.FC = () => {
               id="area-filter"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.area}
-              onChange={(e) =>
-                setFiltros((f) => ({ ...f, area: e.target.value }))
-              }
+              onChange={(e) => handleFiltroChange("area", e.target.value)}
             >
               <option value="">Todas</option>
               {areaOptions.map((area) => (
@@ -213,9 +345,7 @@ const DashProjetos: React.FC = () => {
               id="projeto-filter"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.projeto}
-              onChange={(e) =>
-                setFiltros((f) => ({ ...f, projeto: e.target.value }))
-              }
+              onChange={(e) => handleFiltroChange("projeto", e.target.value)}
             >
               <option value="">Todos</option>
               {projetoOptions.map((projeto) => (
@@ -238,9 +368,7 @@ const DashProjetos: React.FC = () => {
               id="status-filter"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.status}
-              onChange={(e) =>
-                setFiltros((f) => ({ ...f, status: e.target.value }))
-              }
+              onChange={(e) => handleFiltroChange("status", e.target.value)}
             >
               <option value="">Todos</option>
               {statusOptions.map((status) => (
@@ -263,14 +391,12 @@ const DashProjetos: React.FC = () => {
               id="prioridade-filter"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.prioridade}
-              onChange={(e) =>
-                setFiltros((f) => ({ ...f, prioridade: e.target.value }))
-              }
+              onChange={(e) => handleFiltroChange("prioridade", e.target.value)}
             >
               <option value="">Todas</option>
-              {prioridadeOptions.map((prio) => (
-                <option key={prio} value={prio}>
-                  {prio}
+              {prioridadeOptionsTraduzidas.map((prio) => (
+                <option key={prio.valor} value={prio.valor}>
+                  {prio.label}
                 </option>
               ))}
             </select>
@@ -289,7 +415,7 @@ const DashProjetos: React.FC = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.grupo_solicitante}
               onChange={(e) =>
-                setFiltros((f) => ({ ...f, grupo_solicitante: e.target.value }))
+                handleFiltroChange("grupo_solicitante", e.target.value)
               }
             >
               <option value="">Todos</option>
@@ -314,7 +440,7 @@ const DashProjetos: React.FC = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.solicitante}
               onChange={(e) =>
-                setFiltros((f) => ({ ...f, solicitante: e.target.value }))
+                handleFiltroChange("solicitante", e.target.value)
               }
             >
               <option value="">Todos</option>
