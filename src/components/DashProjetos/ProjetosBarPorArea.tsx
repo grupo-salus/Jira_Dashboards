@@ -36,9 +36,24 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
           layout="vertical"
           margin={{ left: 16, right: 16, top: 16, bottom: 16 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" allowDecimals={false} />
-          <YAxis dataKey="area" type="category" width={120} />
+          <YAxis
+            dataKey="area"
+            type="category"
+            width={120}
+            tick={({ x, y, payload, index }) => (
+              <text
+                x={x}
+                y={y + 6}
+                fill={themeColors.chart[index % themeColors.chart.length]}
+                fontSize={12}
+                textAnchor="end"
+                alignmentBaseline="middle"
+              >
+                {payload.value}
+              </text>
+            )}
+          />
           <Tooltip />
           <Bar dataKey="count">
             {areaCount.map((entry, index) => (

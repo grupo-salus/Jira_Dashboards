@@ -65,7 +65,7 @@ const AppContent: React.FC = () => {
         onViewChange={handleViewChange}
         showHomeLink={false}
       />
-      <main className="container mx-auto px-4 py-8">
+      <main className="w-full max-w-screen-2xl mx-auto px-8 py-6">
         <Routes>
           <Route path="/" element={<DashProjetos />} />
           <Route path="/sprint" element={<SprintDashboard />} />

@@ -306,7 +306,7 @@ const DashProjetos: React.FC = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 w-full max-w-none">
       {/* Seção de Filtros */}
       <div className="mb-6">
         <div className="flex flex-wrap items-end gap-3 w-full">
@@ -474,7 +474,7 @@ const DashProjetos: React.FC = () => {
       </div>
 
       {/* Gráficos do dashboard */}
-      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6 max-w-none">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
           <div className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-left">
             Projetos por Área
