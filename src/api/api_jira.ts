@@ -9,13 +9,18 @@
  * Principais funções:
  * - fetchBacklogTable: Busca a tabela de backlog com suporte a filtros
  * - fetchAcompanhamentoTI: Busca a tabela de acompanhamento TI com suporte a filtros
+ * - fetchEspacoDeProjetos: Busca a tabela de espaço de projetos com suporte a filtros
  *
  * O arquivo também lida com:
  * - Decodificação de caracteres especiais
  * - Tratamento de erros de rede
  * - Validação de respostas
  */
-import { ResultApi, AcompanhamentoTI } from "../types/Typesjira";
+import {
+  ResultApi,
+  AcompanhamentoTI,
+  EspacoDeProjetos,
+} from "../types/Typesjira";
 
 interface BacklogResponse {
   tabela_backlog: ResultApi[];
@@ -23,6 +28,10 @@ interface BacklogResponse {
 
 interface AcompanhamentoTIResponse {
   tabela_dashboard_ti: AcompanhamentoTI[];
+}
+
+interface EspacoDeProjetosResponse {
+  tabela_dashboard_ep: EspacoDeProjetos[];
 }
 
 const API_URL = "http://localhost:8000";
@@ -116,6 +125,63 @@ export async function fetchAcompanhamentoTI(filters?: {
     }));
   } catch (error) {
     console.error("Error fetching acompanhamento TI table:", error);
+    throw error;
+  }
+}
+
+export async function fetchEspacoDeProjetos(filters?: {
+  area?: string;
+  projeto?: string;
+  status?: string;
+  prioridade?: string;
+  grupo_solicitante?: string;
+  solicitante?: string;
+}): Promise<EspacoDeProjetos[]> {
+  try {
+    const queryParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+          // Decodifica o valor antes de adicionar aos parâmetros
+          const decodedValue = decodeURIComponent(value);
+          queryParams.append(key, decodedValue);
+        }
+      });
+    }
+
+    const url = `${API_URL}/api/espaco_de_projetos/tabela${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch espaco de projetos table");
+    }
+
+    const data: EspacoDeProjetosResponse = await response.json();
+
+    // Decodifica os caracteres especiais nos dados retornados
+    return (data.tabela_dashboard_ep ?? []).map((item: EspacoDeProjetos) => ({
+      ...item,
+      Título: decodeURIComponent(item.Título || ""),
+      Descrição: item.Descrição ? decodeURIComponent(item.Descrição) : null,
+      "Benefícios Esperados": item["Benefícios Esperados"]
+        ? decodeURIComponent(item["Benefícios Esperados"])
+        : null,
+      "Grupo Solicitante": decodeURIComponent(item["Grupo Solicitante"] || ""),
+      "Departamento Solicitante": decodeURIComponent(
+        item["Departamento Solicitante"] || ""
+      ),
+      Solicitante: item.Solicitante
+        ? decodeURIComponent(item.Solicitante)
+        : null,
+      Responsável: decodeURIComponent(item.Responsável || ""),
+      Relator: decodeURIComponent(item.Relator || ""),
+      Prioridade: decodeURIComponent(item.Prioridade || ""),
+      Categoria: item.Categoria ? decodeURIComponent(item.Categoria) : null,
+    }));
+  } catch (error) {
+    console.error("Error fetching espaco de projetos table:", error);
     throw error;
   }
 }

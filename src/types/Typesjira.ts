@@ -56,3 +56,37 @@ export interface AcompanhamentoTI {
   "Dias no Backlog": number;
   "Dias até Entrega (estimado)": number | null;
 }
+
+/**
+ * Interface para os dados do Espaço de Projetos
+ * Representa os dados retornados pela API de espaço de projetos
+ */
+export interface EspacoDeProjetos {
+  ID: string;
+  Tipo: string;
+  Chave: string;
+  Título: string;
+  Prioridade: string;
+  Descrição: string | null;
+  "Aprovador por (diretor)": string | null;
+  "Benefícios Esperados": string | null;
+  Status: string;
+  "Grupo Solicitante": string;
+  "Departamento Solicitante": string;
+  Solicitante: string | null;
+  "Telefone do Solicitante": string | null;
+  "Email do Solicitante": string | null;
+  Responsável: string;
+  Relator: string;
+  Categoria: string | null;
+  "Estimativa original (segundos)": number;
+  "Tempo Gasto (formatado)": string | null;
+  "Investimento Esperado": string | null;
+  "Data de criação": string;
+  "Data de atualização": string;
+  "Target start": string | null;
+  "Target end": string | null;
+  "Data de término": string | null;
+  "Dias no Backlog": number;
+  "Dias até Entrega (estimado)": number | null;
+}
