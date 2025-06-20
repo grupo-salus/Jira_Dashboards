@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../constants/priorities";
 import { themeColors } from "../../utils/themeColors";
@@ -10,6 +10,7 @@ import {
   capitalizeFirst,
 } from "./kanbanUtils";
 import { KanbanCardContent } from "./KanbanCards";
+import { getFontSizes } from "../../constants/styleConfig";
 
 import "./kanban-scrollbar.css";
 
@@ -77,16 +78,21 @@ const ColunaHeader: React.FC<{ status: JiraStatus; count: number }> = ({
   status,
   count,
 }) => {
+  const fontSizes = getFontSizes();
   const nomeColuna = STATUS_COLUMNS[status]
     ? capitalizeFirst(STATUS_COLUMNS[status])
     : capitalizeFirst(status);
 
   return (
     <div className="flex items-center justify-between mb-4">
-      <h3 className="font-semibold text-gray-900 dark:text-white text-xl">
+      <h3
+        className={`font-semibold text-gray-900 dark:text-white ${fontSizes.tituloColunaKanban}`}
+      >
         {nomeColuna}
       </h3>
-      <span className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs font-medium">
+      <span
+        className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full font-medium ${fontSizes.contadorColunaKanban}`}
+      >
         {count}
       </span>
     </div>
@@ -123,6 +129,20 @@ const KanbanColuna: React.FC<{
  * Componente principal do Kanban de Projetos
  */
 const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  // Listener para mudanças no tamanho global
+  useEffect(() => {
+    const handleTamanhoChange = () => {
+      setForceUpdate((prev) => prev + 1); // Força re-render
+    };
+
+    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    return () => {
+      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    };
+  }, []);
+
   // Agrupar projetos por status
   const projetosPorStatus = data.reduce((acc, projeto) => {
     const statusNormalizado = normalizarStatus(projeto.Status);

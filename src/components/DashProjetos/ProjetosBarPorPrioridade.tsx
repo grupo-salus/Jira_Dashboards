@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -12,6 +12,7 @@ import {
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../constants/priorities";
 import { themeColors } from "../../utils/themeColors";
+import { getFontSizes } from "../../constants/styleConfig";
 
 interface ProjetosBarPorPrioridadeProps {
   data: EspacoDeProjetos[];
@@ -31,6 +32,23 @@ const prioridadeCores = {
 const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   data,
 }) => {
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  // Obter configurações atuais
+  const fontSizes = getFontSizes();
+
+  // Listener para mudanças no tamanho global
+  useEffect(() => {
+    const handleTamanhoChange = () => {
+      setForceUpdate((prev) => prev + 1); // Força re-render
+    };
+
+    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    return () => {
+      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    };
+  }, []);
+
   // Agrupa projetos por prioridade traduzida
   const prioridadeCount = React.useMemo(() => {
     const counts: Record<string, number> = {};
@@ -53,7 +71,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
         >
           <XAxis
             dataKey="prioridade"
-            fontSize={12}
+            fontSize={fontSizes.eixoGrafico}
             tick={({ x, y, payload }) => (
               <text
                 x={x}
@@ -63,7 +81,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
                     payload.value as keyof typeof prioridadeCores
                   ] || themeColors.gray
                 }
-                fontSize={12}
+                fontSize={fontSizes.eixoGrafico}
                 textAnchor="middle"
                 fontWeight="500"
               >
@@ -74,7 +92,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
             tickLine={{ stroke: themeColors.neutral }}
           />
           <YAxis
-            fontSize={12}
+            fontSize={fontSizes.eixoGrafico}
             tick={{ fill: themeColors.gray }}
             axisLine={{ stroke: themeColors.neutral }}
             tickLine={{ stroke: themeColors.neutral }}
@@ -84,6 +102,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
               backgroundColor: themeColors.cardBg.light,
               border: `1px solid ${themeColors.neutral}`,
               borderRadius: "8px",
+              fontSize: fontSizes.tooltipGrafico,
             }}
           />
           <Bar dataKey="count" radius={[4, 4, 0, 0]}>
@@ -105,4 +124,3 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
 };
 
 export default ProjetosBarPorPrioridade;
- 

@@ -30,6 +30,25 @@ import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosPiePorStatus from "../components/DashProjetos/ProjetosPiePorStatus";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
+import CargaDeTrabalhoPorResponsavel from "../components/DashProjetos/CargaDeTrabalhoPorResponsavel";
+import IdeacoesPorTempoDeEspera from "../components/DashProjetos/IdeacoesPorTempoDeEspera";
+import ProjetosAbertosPorSemana from "../components/DashProjetos/ProjetosAbertosPorSemana";
+import InvestimentoPorArea from "../components/DashProjetos/InvestimentoPorArea";
+import AnaliseDemandasPorCategoria from "../components/DashProjetos/AnaliseDemandasPorCategoria";
+import IdeiasObsoletas from "../components/DashProjetos/IdeiasObsoletas";
+import {
+  getFontSizes,
+  setTamanhoGlobal,
+  getTamanhoGlobal,
+} from "../constants/styleConfig";
+import CustomDropdown from "../components/common/CustomDropdown";
+
+// Mapeamento de nomes de status para exibição
+const statusNameMap: Record<string, string> = {
+  Backlog: "Ideação",
+  "Em andamento": "Em Execução",
+  Concluído: "Entregue",
+};
 
 const DashProjetos: React.FC = () => {
   const { projetosData } = useJira();
@@ -37,6 +56,9 @@ const DashProjetos: React.FC = () => {
     "kanban"
   );
   const [menuAberto, setMenuAberto] = useState(false);
+  const [filtrosVisiveis, setFiltrosVisiveis] = useState(true);
+  const [tamanhoAtual, setTamanhoAtual] = useState(getTamanhoGlobal());
+  const [forceUpdate, setForceUpdate] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const [filtros, setFiltros] = useState({
     area: "",
@@ -47,6 +69,38 @@ const DashProjetos: React.FC = () => {
     grupo_solicitante: "",
     categoria: "",
   });
+
+  // Obter configurações de fonte atuais
+  const fontSizes = getFontSizes();
+
+  const tamanhoOptions = [
+    { value: "pequeno", label: "Pequeno" },
+    { value: "medio", label: "Médio" },
+    { value: "grande", label: "Grande" },
+    { value: "muitoGrande", label: "Muito Grande" },
+  ];
+
+  // Listener para mudanças no tamanho global
+  useEffect(() => {
+    const handleTamanhoChange = () => {
+      setTamanhoAtual(getTamanhoGlobal());
+      setForceUpdate((prev) => prev + 1); // Força re-render
+    };
+
+    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    return () => {
+      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    };
+  }, []);
+
+  // Função para alterar o tamanho
+  const handleTamanhoChange = (
+    novoTamanho: "pequeno" | "medio" | "grande" | "muitoGrande"
+  ) => {
+    setTamanhoGlobal(novoTamanho);
+    setTamanhoAtual(novoTamanho);
+    setForceUpdate((prev) => prev + 1); // Força re-render
+  };
 
   // Fechar menu quando clicar fora
   useEffect(() => {
@@ -240,20 +294,15 @@ const DashProjetos: React.FC = () => {
   // Opções de status padronizadas para o filtro
   const statusOptions = useMemo(() => {
     // Pega todos os status únicos dos dados filtrados
-    const statusSet = new Set<
-      keyof typeof STATUS_MAP | keyof typeof STATUS_COLUMNS
-    >(
-      dadosParaStatus.map((i: EspacoDeProjetos) => {
-        const rawStatus = (i.Status || "")
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/\p{Diacritic}/gu, "");
-        return STATUS_MAP[rawStatus] || "Backlog";
-      })
+    const statusSet = new Set<JiraStatus>(
+      dadosParaStatus.map((i: EspacoDeProjetos) => i.Status as JiraStatus)
     );
-    // Retorna na ordem do Kanban
-    return COLUMN_ORDER.filter((status) =>
-      statusSet.has(status as keyof typeof STATUS_COLUMNS)
+    // Retorna na ordem do Kanban e mapeia os nomes
+    return COLUMN_ORDER.filter((status) => statusSet.has(status)).map(
+      (status) => ({
+        value: status,
+        label: statusNameMap[status] || status,
+      })
     );
   }, [dadosParaStatus]);
 
@@ -345,193 +394,261 @@ const DashProjetos: React.FC = () => {
   }
 
   return (
-    <div className="p-6 w-full max-w-none">
+    <div className="p-6 w-full max-w-none relative">
+      {/* Botões de Controle - Lateral Superior Direita */}
+      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
+        {/* Dropdown de Tamanho */}
+        <CustomDropdown
+          options={tamanhoOptions}
+          value={tamanhoAtual}
+          onChange={(val) =>
+            handleTamanhoChange(
+              val as "pequeno" | "medio" | "grande" | "muitoGrande"
+            )
+          }
+          buttonClassName={`relative h-10 px-4 text-left bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
+        />
+
+        {/* Botão Toggle Filtros */}
+        <button
+          onClick={() => setFiltrosVisiveis(!filtrosVisiveis)}
+          className={`flex items-center justify-center gap-2 h-10 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
+        >
+          {filtrosVisiveis ? (
+            <>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+              Ocultar
+            </>
+          ) : (
+            <>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                />
+              </svg>
+              Filtros
+            </>
+          )}
+        </button>
+      </div>
+
       {/* Seção de Filtros */}
-      <div className="mb-6">
-        <div className="flex flex-wrap items-end gap-4 w-full">
-          {/* Filtro de Área */}
-          <div>
-            <label
-              htmlFor="area-filter"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Área
-            </label>
-            <select
-              id="area-filter"
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={filtros.area}
-              onChange={(e) => handleFiltroChange("area", e.target.value)}
-            >
-              <option value="">Todas</option>
-              {areaOptions.map((area) => (
-                <option key={area} value={area}>
-                  {area}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div
+        className={`mb-6 transition-all duration-300 ease-in-out overflow-hidden ${
+          filtrosVisiveis ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+        style={{ zIndex: filtrosVisiveis ? 10 : 1 }}
+      >
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            {/* Filtro de Área */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="area-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Área
+              </label>
+              <select
+                id="area-filter"
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                value={filtros.area}
+                onChange={(e) => handleFiltroChange("area", e.target.value)}
+              >
+                <option value="">Todas</option>
+                {areaOptions.map((area) => (
+                  <option key={area} value={area}>
+                    {area}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro de Projeto */}
-          <div>
-            <label
-              htmlFor="projeto-filter"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Projeto
-            </label>
-            <select
-              id="projeto-filter"
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={filtros.projeto}
-              onChange={(e) => handleFiltroChange("projeto", e.target.value)}
-            >
-              <option value="">Todos</option>
-              {projetoOptions.map((projeto) => (
-                <option key={projeto} value={projeto}>
-                  {projeto}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Filtro de Projeto */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="projeto-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Projeto
+              </label>
+              <select
+                id="projeto-filter"
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                value={filtros.projeto}
+                onChange={(e) => handleFiltroChange("projeto", e.target.value)}
+              >
+                <option value="">Todos</option>
+                {projetoOptions.map((projeto) => (
+                  <option key={projeto} value={projeto}>
+                    {projeto}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro de Status */}
-          <div>
-            <label
-              htmlFor="status-filter"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Status
-            </label>
-            <select
-              id="status-filter"
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={filtros.status}
-              onChange={(e) => handleFiltroChange("status", e.target.value)}
-            >
-              <option value="">Todos</option>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Filtro de Status */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="status-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Status
+              </label>
+              <select
+                id="status-filter"
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                value={filtros.status}
+                onChange={(e) => handleFiltroChange("status", e.target.value)}
+              >
+                <option value="">Todos</option>
+                {statusOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro de Prioridade */}
-          <div>
-            <label
-              htmlFor="prioridade-filter"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Prioridade
-            </label>
-            <select
-              id="prioridade-filter"
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={filtros.prioridade}
-              onChange={(e) => handleFiltroChange("prioridade", e.target.value)}
-            >
-              <option value="">Todas</option>
-              {prioridadeOptionsTraduzidas.map((prio) => (
-                <option key={prio.valor} value={prio.valor}>
-                  {prio.label}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Filtro de Prioridade */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="prioridade-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Prioridade
+              </label>
+              <select
+                id="prioridade-filter"
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                value={filtros.prioridade}
+                onChange={(e) =>
+                  handleFiltroChange("prioridade", e.target.value)
+                }
+              >
+                <option value="">Todas</option>
+                {prioridadeOptionsTraduzidas.map((prio) => (
+                  <option key={prio.valor} value={prio.valor}>
+                    {prio.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro de Grupo Solicitante */}
-          <div>
-            <label
-              htmlFor="grupo-solicitante-filter"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Grupo Solicitante
-            </label>
-            <select
-              id="grupo-solicitante-filter"
-              value={filtros.grupo_solicitante}
-              onChange={(e) =>
-                handleFiltroChange("grupo_solicitante", e.target.value)
-              }
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              <option value="">Todos os Grupos</option>
-              {opcoesFiltrosDependentes.gruposSolicitantes.map((grupo) => (
-                <option key={grupo} value={grupo}>
-                  {grupo}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Filtro de Grupo Solicitante */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="grupo-solicitante-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Grupo Solicitante
+              </label>
+              <select
+                id="grupo-solicitante-filter"
+                value={filtros.grupo_solicitante}
+                onChange={(e) =>
+                  handleFiltroChange("grupo_solicitante", e.target.value)
+                }
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+              >
+                <option value="">Todos os Grupos</option>
+                {opcoesFiltrosDependentes.gruposSolicitantes.map((grupo) => (
+                  <option key={grupo} value={grupo}>
+                    {grupo}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro de Categoria */}
-          <div>
-            <label
-              htmlFor="categoria-filter"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Categoria
-            </label>
-            <select
-              id="categoria-filter"
-              value={filtros.categoria}
-              onChange={(e) => handleFiltroChange("categoria", e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              <option value="">Todas as Categorias</option>
-              {opcoesFiltrosDependentes.categorias.map((categoria) => (
-                <option key={categoria} value={categoria || ""}>
-                  {categoria}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Filtro de Categoria */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="categoria-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Categoria
+              </label>
+              <select
+                id="categoria-filter"
+                value={filtros.categoria}
+                onChange={(e) =>
+                  handleFiltroChange("categoria", e.target.value)
+                }
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+              >
+                <option value="">Todas as Categorias</option>
+                {opcoesFiltrosDependentes.categorias.map((categoria) => (
+                  <option key={categoria} value={categoria || ""}>
+                    {categoria}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro de Solicitante */}
-          <div>
-            <label
-              htmlFor="solicitante-filter"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Solicitante
-            </label>
-            <select
-              id="solicitante-filter"
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={filtros.solicitante}
-              onChange={(e) =>
-                handleFiltroChange("solicitante", e.target.value)
-              }
-            >
-              <option value="">Todos</option>
-              {solicitanteOptions.map((sol) => (
-                <option key={sol} value={sol}>
-                  {sol}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Filtro de Solicitante */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="solicitante-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Solicitante
+              </label>
+              <select
+                id="solicitante-filter"
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                value={filtros.solicitante}
+                onChange={(e) =>
+                  handleFiltroChange("solicitante", e.target.value)
+                }
+              >
+                <option value="">Todos</option>
+                {solicitanteOptions.map((sol) => (
+                  <option key={sol} value={sol}>
+                    {sol}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Botão Limpar Filtros */}
-          <div className="flex justify-end">
-            <button
-              onClick={() =>
-                setFiltros({
-                  area: "",
-                  projeto: "",
-                  solicitante: "",
-                  prioridade: "",
-                  status: "" as JiraStatus | "",
-                  grupo_solicitante: "",
-                  categoria: "",
-                })
-              }
-              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-offset-gray-800 h-10"
-            >
-              Limpar Filtros
-            </button>
+            {/* Botão Limpar Filtros */}
+            <div className="flex flex-col justify-end">
+              <button
+                onClick={() =>
+                  setFiltros({
+                    area: "",
+                    projeto: "",
+                    solicitante: "",
+                    prioridade: "",
+                    status: "" as JiraStatus | "",
+                    grupo_solicitante: "",
+                    categoria: "",
+                  })
+                }
+                className={`px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-300 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 h-12 ${fontSizes.textoBotao}`}
+              >
+                Limpar
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -540,26 +657,75 @@ const DashProjetos: React.FC = () => {
       <ProjetosTotalizadores filteredData={filteredData} />
 
       {/* Gráficos do dashboard */}
-      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6 max-w-none">
+      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-none">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-left">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
             Projetos por Área
           </div>
           <ProjetosBarPorArea data={filteredData} />
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-left">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
             Projetos por Status
           </div>
           <ProjetosPiePorStatus data={filteredData} />
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div className="font-semibold text-gray-900 dark:text-white mb-2 text-lg text-left">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
             Projetos por Prioridade
           </div>
           <ProjetosBarPorPrioridade data={filteredData} />
         </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
+            Carga de Trabalho por Responsável
+          </div>
+          <CargaDeTrabalhoPorResponsavel data={filteredData} />
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
+            Ideações por Tempo de Espera
+          </div>
+          <IdeacoesPorTempoDeEspera data={filteredData} />
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
+            Projetos Abertos por Semana
+          </div>
+          <ProjetosAbertosPorSemana data={filteredData} />
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
+            Investimento por Área
+          </div>
+          <InvestimentoPorArea data={filteredData} />
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
+            Análise de Demandas por Categoria
+          </div>
+          <AnaliseDemandasPorCategoria data={filteredData} />
+        </div>
       </div>
+
+      {/* Seção de Ideias Obsoletas */}
+      <IdeiasObsoletas data={projetosData.rawData} />
 
       {/* Resultados */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative">
@@ -593,7 +759,7 @@ const DashProjetos: React.FC = () => {
                     visualizacao === "kanban"
                       ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                       : "text-gray-700 dark:text-gray-300"
-                  }`}
+                  } ${fontSizes.textoBotao}`}
                 >
                   <div className="flex items-center">
                     <svg
@@ -621,7 +787,7 @@ const DashProjetos: React.FC = () => {
                     visualizacao === "tabela"
                       ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                       : "text-gray-700 dark:text-gray-300"
-                  }`}
+                  } ${fontSizes.textoBotao}`}
                 >
                   <div className="flex items-center">
                     <svg

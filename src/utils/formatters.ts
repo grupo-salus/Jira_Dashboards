@@ -73,3 +73,27 @@ export const calcularDiferencaTempo = (
 export const formatPriority = (priority: string) => {
   return PRIORITIES[priority] || PRIORITIES["Medium"];
 };
+
+/**
+ * Formata um número como moeda brasileira (Real)
+ * @param value O número a ser formatado
+ * @param compact Se deve usar o formato compacto (ex: 1.5k, 2M)
+ * @returns String formatada como moeda (ex: R$ 1.500,00 ou R$ 1,5k)
+ */
+export const formatCurrency = (value: number, compact = false): string => {
+  if (isNaN(value)) return "R$ 0,00";
+
+  if (compact) {
+    if (Math.abs(value) >= 1000000) {
+      return `R$ ${(value / 1000000).toFixed(1).replace(".", ",")}M`;
+    }
+    if (Math.abs(value) >= 1000) {
+      return `R$ ${(value / 1000).toFixed(1).replace(".", ",")}k`;
+    }
+  }
+
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
+};

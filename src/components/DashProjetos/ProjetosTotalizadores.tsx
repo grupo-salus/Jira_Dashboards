@@ -1,49 +1,206 @@
-import React from "react";
-import { CardsIcon, CompassIcon } from "../icons/DashboardIcons";
+import React, { useState, useEffect } from "react";
+import { CardsIcon, CompassIcon, LightbulbIcon } from "../icons/DashboardIcons";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
+import {
+  getFontSizes,
+  getIconSizes,
+  getCardDimensions,
+} from "../../constants/styleConfig";
 
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
 }
 
+const TotalizadorCard: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  barColor: string;
+}> = ({ icon, label, value, barColor }) => {
+  const fontSizes = getFontSizes();
+  const cardDimensions = getCardDimensions();
+
+  return (
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex-grow ${cardDimensions.totalizador.width} relative overflow-hidden`}
+    >
+      <div className="flex items-center gap-4">
+        {icon}
+        <div>
+          <p
+            className={`text-gray-500 dark:text-gray-400 ${fontSizes.labelTotalizador}`}
+          >
+            {label}
+          </p>
+          <p
+            className={`font-bold text-gray-900 dark:text-white ${fontSizes.valorTotalizador}`}
+          >
+            {value}
+          </p>
+        </div>
+      </div>
+      <div className={`absolute bottom-0 left-0 h-1 w-full ${barColor}`}></div>
+    </div>
+  );
+};
+
 const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
 }) => {
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  const iconSizes = getIconSizes();
+
+  useEffect(() => {
+    const handleTamanhoChange = () => {
+      setForceUpdate((prev) => prev + 1); // Força re-render
+    };
+
+    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    return () => {
+      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
+    };
+  }, []);
+
+  // Métricas Chave
   const total = filteredData.length;
-  const totalProjetos = filteredData.filter((p) => {
-    return p.Status !== "Backlog";
-  }).length;
+  const totalIdeacao = filteredData.filter(
+    (p) => p.Status === "Backlog" || p.Status === "Backlog Priorizado"
+  ).length;
+  const totalProjetos = total - totalIdeacao;
+
+  // Saúde Geral dos Projetos e KPIs
+  const projetosAtivos = filteredData.filter(
+    (p) => p.Status !== "Concluído" && p.Status !== "Cancelado"
+  );
+
+  const projetosAtrasados = projetosAtivos.filter(
+    (p) => p["Status de prazo"] === "Fora do prazo"
+  ).length;
+
+  const estimativasEstouradas = projetosAtivos.filter(
+    (p) => p["Status de esforço"] === "Estourou a estimativa"
+  ).length;
+
+  const projetosEmRisco = projetosAtivos.filter(
+    (p) =>
+      p["Status de prazo"] === "Fora do prazo" ||
+      p["Status de esforço"] === "Estourou a estimativa"
+  ).length;
+
+  const projetosConcluidos = filteredData.filter(
+    (p) =>
+      p.Status === "Concluído" && p["Data de término"] && p["Data de criação"]
+  );
+
+  const tempoMedioEntrega =
+    projetosConcluidos.length > 0
+      ? Math.round(
+          projetosConcluidos.reduce((acc, p) => {
+            const dataInicio = new Date(p["Data de criação"]);
+            const dataFim = new Date(p["Data de término"]!);
+            const diffTime = Math.abs(dataFim.getTime() - dataInicio.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return acc + diffDays;
+          }, 0) / projetosConcluidos.length
+        )
+      : 0;
 
   return (
-    <div className="flex flex-wrap gap-6 mb-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow w-56 h-24 flex items-center px-6 py-3">
-        <div className="mr-4 flex-shrink-0">
-          <CardsIcon size={36} className="text-blue-500 dark:text-blue-400" />
-        </div>
-        <div className="flex flex-col items-start">
-          <span className="text-xs text-gray-500 dark:text-gray-300 font-medium">
-            Total
-          </span>
-          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {total}
-          </span>
-        </div>
+    <div>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
+          Métricas Chave
+        </h2>
+        <div className="w-full h-px mt-2 bg-gray-200 dark:bg-gray-700"></div>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow w-56 h-24 flex items-center px-6 py-3">
-        <div className="mr-4 flex-shrink-0">
-          <CompassIcon
-            size={36}
-            className="text-green-500 dark:text-green-400"
-          />
-        </div>
-        <div className="flex flex-col items-start">
-          <span className="text-xs text-gray-500 dark:text-gray-300 font-medium">
-            Total de Projetos
-          </span>
-          <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-            {totalProjetos}
-          </span>
-        </div>
+      <div className="flex flex-wrap gap-6 mb-6">
+        <TotalizadorCard
+          icon={
+            <CardsIcon
+              size={iconSizes.totalizador}
+              className="text-blue-500 dark:text-blue-400"
+            />
+          }
+          label="Total no Board"
+          value={total}
+          barColor="bg-blue-500"
+        />
+        <TotalizadorCard
+          icon={
+            <LightbulbIcon
+              size={iconSizes.totalizador}
+              className="text-purple-500 dark:text-purple-400"
+            />
+          }
+          label="Total de Ideação"
+          value={totalIdeacao}
+          barColor="bg-purple-500"
+        />
+        <TotalizadorCard
+          icon={
+            <CompassIcon
+              size={iconSizes.totalizador}
+              className="text-orange-500 dark:text-orange-400"
+            />
+          }
+          label="Total de Projetos"
+          value={totalProjetos}
+          barColor="bg-orange-500"
+        />
+      </div>
+
+      <div className="mt-8 mb-4">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
+          Saúde Geral dos Projetos e KPIs
+        </h2>
+        <div className="w-full h-px mt-2 bg-gray-200 dark:bg-gray-700"></div>
+      </div>
+      <div className="flex flex-wrap gap-6 mb-6">
+        <TotalizadorCard
+          icon={
+            <CardsIcon
+              size={iconSizes.totalizador}
+              className="text-red-500 dark:text-red-400"
+            />
+          }
+          label="Projetos Atrasados"
+          value={projetosAtrasados}
+          barColor="bg-red-500"
+        />
+        <TotalizadorCard
+          icon={
+            <LightbulbIcon
+              size={iconSizes.totalizador}
+              className="text-yellow-500 dark:text-yellow-400"
+            />
+          }
+          label="Estimativas Estouradas"
+          value={estimativasEstouradas}
+          barColor="bg-yellow-500"
+        />
+        <TotalizadorCard
+          icon={
+            <CardsIcon
+              size={iconSizes.totalizador}
+              className="text-pink-700 dark:text-pink-600"
+            />
+          }
+          label="Projetos em Risco"
+          value={projetosEmRisco}
+          barColor="bg-pink-700"
+        />
+        <TotalizadorCard
+          icon={
+            <LightbulbIcon
+              size={iconSizes.totalizador}
+              className="text-green-500 dark:text-green-400"
+            />
+          }
+          label="Tempo Médio de Entrega (dias)"
+          value={tempoMedioEntrega}
+          barColor="bg-green-500"
+        />
       </div>
     </div>
   );

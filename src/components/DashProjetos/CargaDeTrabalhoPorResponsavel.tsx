@@ -13,20 +13,20 @@ import { EspacoDeProjetos } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
 import { getFontSizes } from "../../constants/styleConfig";
 
-interface ProjetosBarPorAreaProps {
+interface CargaDeTrabalhoPorResponsavelProps {
   data: EspacoDeProjetos[];
 }
 
-const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
+const CargaDeTrabalhoPorResponsavel: React.FC<
+  CargaDeTrabalhoPorResponsavelProps
+> = ({ data }) => {
   const [forceUpdate, setForceUpdate] = useState(0);
 
-  // Obter configurações atuais
   const fontSizes = getFontSizes();
 
-  // Listener para mudanças no tamanho global
   useEffect(() => {
     const handleTamanhoChange = () => {
-      setForceUpdate((prev) => prev + 1); // Força re-render
+      setForceUpdate((prev) => prev + 1);
     };
 
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
@@ -35,11 +35,9 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
     };
   }, []);
 
-  // Componente customizado para o tick do eixo Y com quebra de linha
   const CustomYAxisTick = (props: any) => {
     const { x, y, payload } = props;
     const text = payload.value;
-    // Largura máxima para cada linha antes da quebra
     const maxCharsPerLine = 15;
     const words = text.split(" ");
     let lines: string[] = [];
@@ -55,13 +53,11 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
     });
     lines.push(currentLine);
 
-    // Função para determinar a cor do texto baseada no tema
     const getTextColor = () => {
       const isDark = document.documentElement.classList.contains("dark");
       return isDark ? "#ffffff" : "#111827";
     };
 
-    // Ajusta a posição vertical para centralizar o texto multi-linha
     const yOffset = (lines.length - 1) * (fontSizes.eixoGrafico / 2);
 
     return (
@@ -84,29 +80,30 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
     );
   };
 
-  // Agrupa projetos por área
-  const areaCount = React.useMemo(() => {
+  const responsavelCount = React.useMemo(() => {
     const counts: Record<string, number> = {};
     data.forEach((item) => {
-      const area = item["Departamento Solicitante"] || "Não informado";
-      counts[area] = (counts[area] || 0) + 1;
+      const responsavel = item["Responsável"] || "Não atribuído";
+      counts[responsavel] = (counts[responsavel] || 0) + 1;
     });
-    return Object.entries(counts).map(([area, count]) => ({ area, count }));
+    return Object.entries(counts)
+      .map(([responsavel, count]) => ({ responsavel, count }))
+      .sort((a, b) => b.count - a.count);
   }, [data]);
 
   return (
     <div className="w-full h-full flex-1 flex items-center justify-center min-h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={areaCount}
+          data={responsavelCount}
           layout="vertical"
           margin={{ left: 40, right: 20, top: 20, bottom: 20 }}
         >
           <XAxis type="number" allowDecimals={false} />
           <YAxis
-            dataKey="area"
+            dataKey="responsavel"
             type="category"
-            width={150} // Aumentado para dar espaço para a quebra de linha
+            width={150}
             tick={<CustomYAxisTick />}
             tickLine={false}
             axisLine={false}
@@ -120,7 +117,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
             }}
           />
           <Bar dataKey="count">
-            {areaCount.map((entry, index) => (
+            {responsavelCount.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={themeColors.chart[index % themeColors.chart.length]}
@@ -134,4 +131,4 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
   );
 };
 
-export default ProjetosBarPorArea;
+export default CargaDeTrabalhoPorResponsavel;
