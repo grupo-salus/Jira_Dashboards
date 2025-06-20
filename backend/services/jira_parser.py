@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 import numpy as np
+from datetime import timedelta
 
 
 def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
@@ -70,10 +71,17 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     - Análise de obsolescência (ideação)
     """
     from datetime import datetime
-    hoje = datetime.now()
+    hoje = datetime.now().date()
+
+    # Converter colunas de data se ainda não estiverem convertidas
+    date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]
+    for col in date_cols:
+        df[col] = pd.to_datetime(df[col], errors="coerce")
 
     # IDEIAÇÃO
-    df["Dias desde criação"] = (hoje - df["Data de criação"]).dt.days
+    df["Dias desde criação"] = df["Data de criação"].apply(
+        lambda x: (hoje - x.date()).days if pd.notnull(x) else None
+    )
 
     def classificar_status_ideacao(dias):
         if dias is None:
@@ -91,63 +99,42 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     # EXECUÇÃO
     df["Dias planejados"] = (df["Target end"] - df["Target start"]).dt.days
-    df["Dias desde o início"] = (hoje - df["Target start"]).dt.days
-    df["Dias restantes"] = (df["Target end"] - hoje).dt.days
+    df["Dias desde o início"] = df["Target start"].apply(
+        lambda x: (hoje - x.date()).days if pd.notnull(x) else None
+    )
+    df["Dias restantes"] = df["Target end"].apply(
+        lambda x: (x.date() - hoje).days if pd.notnull(x) else None
+    )
 
     def calcular_pct_tempo(row):
         total = row.get("Dias planejados")
         decorrido = row.get("Dias desde o início")
-        if total and total > 0:
+        if total and decorrido is not None and total > 0:
             return round((decorrido / total) * 100, 1)
         return None
 
     df["% do tempo decorrido"] = df.apply(calcular_pct_tempo, axis=1)
 
     def classificar_status_prazo(row):
-        import pandas as pd
-
         target_start = row.get("Target start")
         target_end = row.get("Target end")
         data_termino = row.get("Data de término")
-        pct = row.get("% do tempo decorrido", 0)
-        dias_restantes = row.get("Dias restantes", 0)
-        tempo_registrado = row.get("Tempo registrado (segundos)", 0)
-
-        print(f"🔎 Avaliando card '{row.get('Título')}'")
-        print(f" - Início planejado: {target_start}")
-        print(f" - Fim planejado: {target_end}")
-        print(f" - Data de término real: {data_termino}")
-        print(f" - % do tempo decorrido: {pct}")
-        print(f" - Dias restantes: {dias_restantes}")
-        print(f" - Tempo registrado: {tempo_registrado}")
 
         if pd.isnull(target_start) or pd.isnull(target_end):
-            print(" ⚠️ Sem datas suficientes para avaliação.")
+            print(f"⚠️ Sem datas suficientes para avaliação.")
             return None
 
-        if pd.notnull(data_termino):
-            if data_termino <= target_end:
-                print(" ✅ Projeto entregue dentro do prazo.")
-                return "No prazo"
-            else:
-                print(" ❌ Projeto entregue fora do prazo.")
-                return "Atrasado"
+        target_start = target_start.date()
+        target_end = target_end.date()
+        data_termino = data_termino.date() if pd.notnull(data_termino) else None
 
-        if pct <= 70 and dias_restantes > 3:
-            print(" ⏳ Ainda dentro do prazo.")
+        dias_restantes = (target_end - hoje).days
+        pct = row.get("% do tempo decorrido", 0)
+
+        if pct <= 100:
             return "No prazo"
-        elif pct <= 99 and dias_restantes <= 3:
-            print(" ⚠️ Próximo do fim do prazo.")
-            return "Próximo do fim"
-        elif pct >= 100 and tempo_registrado:
-            print(" ⌛ Tempo esgotado e projeto ainda em execução.")
-            return "Atrasado"
-        elif pct >= 100:
-            print(" ⌛ Tempo esgotado e sem tempo registrado.")
-            return "Vencido"
-
-        print(" ⚠️ Situação indefinida.")
-        return None
+        else:
+            return "Fora do prazo"
 
     df["Status de prazo"] = df.apply(classificar_status_prazo, axis=1)
 
@@ -165,11 +152,11 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
         if pct is None:
             return None
         elif pct <= 75:
-            return "Dentro do prazo"
+            return "Dentro do estimado"
         elif pct <= 99:
             return "Próximo do limite"
         elif pct == 100:
-            return "Dentro do prazo"
+            return "Dentro do estimado"
         else:
             return "Estourou a estimativa"
 

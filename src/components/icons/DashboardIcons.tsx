@@ -1,11 +1,14 @@
-import React from 'react';
+import React from "react";
 
 interface IconProps {
   className?: string;
   size?: number;
 }
 
-export const CardsIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => (
+export const CardsIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
   <svg
     width={size}
     height={size}
@@ -23,7 +26,10 @@ export const CardsIcon: React.FC<IconProps> = ({ className = '', size = 24 }) =>
   </svg>
 );
 
-export const EpicIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => (
+export const EpicIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
   <svg
     width={size}
     height={size}
@@ -41,7 +47,10 @@ export const EpicIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => 
   </svg>
 );
 
-export const NoEpicIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => (
+export const NoEpicIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
   <svg
     width={size}
     height={size}
@@ -59,7 +68,10 @@ export const NoEpicIcon: React.FC<IconProps> = ({ className = '', size = 24 }) =
   </svg>
 );
 
-export const CalendarIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => (
+export const CalendarIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
   <svg
     width={size}
     height={size}
@@ -78,7 +90,10 @@ export const CalendarIcon: React.FC<IconProps> = ({ className = '', size = 24 })
   </svg>
 );
 
-export const ClockIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => (
+export const ClockIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
   <svg
     width={size}
     height={size}
@@ -95,7 +110,10 @@ export const ClockIcon: React.FC<IconProps> = ({ className = '', size = 24 }) =>
   </svg>
 );
 
-export const FireIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => (
+export const FireIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
   <svg
     width={size}
     height={size}
@@ -113,7 +131,10 @@ export const FireIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => 
   </svg>
 );
 
-export const CompassIcon: React.FC<IconProps> = ({ className = '', size = 24 }) => (
+export const CompassIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
   <svg
     width={size}
     height={size}
@@ -128,4 +149,44 @@ export const CompassIcon: React.FC<IconProps> = ({ className = '', size = 24 }) 
     <circle cx="12" cy="12" r="10" />
     <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
   </svg>
-); 
+);
+
+export const LightbulbIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="1"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+    <path d="M12 2a7 7 0 0 0-7 7c0 3.03 1.05 4.78 2.2 6.3L8.8 18h6.4l1.6-2.7c1.15-1.52 2.2-3.27 2.2-6.3a7 7 0 0 0-7-7Z" />
+  </svg>
+);
+
+export const ExclamationTriangleIcon: React.FC<IconProps> = ({
+  className = "",
+  size = 24,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+  </svg>
+);

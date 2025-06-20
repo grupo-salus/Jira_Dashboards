@@ -89,14 +89,10 @@ export type JiraStatus =
 export type IdeacaoStatus = "Recente" | "Rever" | "Quase obsoleto" | "Obsoleto";
 
 // Status de prazo
-export type PrazoStatus =
-  | "No prazo"
-  | "Próximo do fim"
-  | "Atrasado"
-  | "Vencido";
+export type PrazoStatus = "No prazo" | "Fora do prazo";
 
 // Status de esforço
 export type EsforcoStatus =
-  | "Dentro do prazo"
+  | "Dentro do estimado"
   | "Próximo do limite"
   | "Estourou a estimativa";

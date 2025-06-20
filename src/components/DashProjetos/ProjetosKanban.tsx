@@ -83,7 +83,7 @@ const ColunaHeader: React.FC<{ status: JiraStatus; count: number }> = ({
 
   return (
     <div className="flex items-center justify-between mb-4">
-      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+      <h3 className="font-semibold text-gray-900 dark:text-white text-xl">
         {nomeColuna}
       </h3>
       <span className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs font-medium">

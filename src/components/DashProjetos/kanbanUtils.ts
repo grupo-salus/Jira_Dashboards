@@ -1,4 +1,9 @@
-import { JiraStatus, PrazoStatus, EsforcoStatus } from "../../types/Typesjira";
+import {
+  JiraStatus,
+  PrazoStatus,
+  EsforcoStatus,
+  IdeacaoStatus,
+} from "../../types/Typesjira";
 
 // ============================================================================
 // CONSTANTES
@@ -69,21 +74,34 @@ export const formatDate = (dateString: string | null): string => {
 /**
  * Obtém a cor CSS para um status de prazo ou esforço
  */
-export const getStatusColor = (status: PrazoStatus | EsforcoStatus): string => {
-  const statusColors: Record<PrazoStatus | EsforcoStatus, string> = {
+export const getStatusColor = (
+  status: PrazoStatus | EsforcoStatus | IdeacaoStatus
+): string => {
+  const statusColors: Record<
+    PrazoStatus | EsforcoStatus | IdeacaoStatus,
+    string
+  > = {
+    // Prazo
     "No prazo":
       "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    "Próximo do fim":
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-    Atrasado:
-      "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-    Vencido: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-    "Dentro do prazo":
+    "Fora do prazo":
+      "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+
+    // Esforço
+    "Dentro do estimado":
       "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
     "Próximo do limite":
       "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
     "Estourou a estimativa":
       "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+
+    // Ideação
+    Recente:
+      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+    Rever: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+    "Quase obsoleto":
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+    Obsoleto: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
   };
 
   return (
