@@ -105,3 +105,4 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
 };
 
 export default ProjetosBarPorPrioridade;
+ 

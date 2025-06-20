@@ -9,10 +9,10 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
   Backlog: "IDEAÇÃO",
   Bloqueado: "BLOQUEADO",
   "Backlog Priorizado": "BACKLOG PRIORIZADO",
-  Cancelado: "CANCELADO",
   "Em andamento": "EM EXECUÇÃO",
   ENCERRAMENTO: "ENCERRAMENTO",
-  Concluído: "CONCLUÍDO",
+  Concluído: "ENTREGUE",
+  Cancelado: "CANCELADO",
 } as const;
 
 // Ordem fixa das colunas do Kanban
@@ -20,10 +20,10 @@ export const COLUMN_ORDER: JiraStatus[] = [
   "Backlog",
   "Bloqueado",
   "Backlog Priorizado",
-  "Cancelado",
   "Em andamento",
   "ENCERRAMENTO",
   "Concluído",
+  "Cancelado",
 ];
 
 // Mapeamento de status para nomes das colunas (normalização)
@@ -31,11 +31,11 @@ export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
   backlog: "Backlog",
   "backlog priorizado": "Backlog Priorizado",
   bloqueado: "Bloqueado",
-  cancelado: "Cancelado",
   "em andamento": "Em andamento",
   encerramento: "ENCERRAMENTO",
   concluído: "Concluído",
   concluido: "Concluído",
+  cancelado: "Cancelado",
 };
 
 // ============================================================================

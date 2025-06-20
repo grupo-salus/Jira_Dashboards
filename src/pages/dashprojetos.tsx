@@ -25,7 +25,7 @@ import {
   STATUS_MAP,
   COLUMN_ORDER,
   STATUS_COLUMNS,
-} from "../components/DashProjetos/ProjetosKanban";
+} from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosPiePorStatus from "../components/DashProjetos/ProjetosPiePorStatus";
@@ -450,11 +450,12 @@ const DashProjetos: React.FC = () => {
               Grupo Solicitante
             </label>
             <select
+              id="grupo-solicitante-filter"
               value={filtros.grupo_solicitante}
               onChange={(e) =>
                 handleFiltroChange("grupo_solicitante", e.target.value)
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               <option value="">Todos os Grupos</option>
               {opcoesFiltrosDependentes.gruposSolicitantes.map((grupo) => (
@@ -465,14 +466,19 @@ const DashProjetos: React.FC = () => {
             </select>
           </div>
 
+          {/* Filtro de Categoria */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="categoria-filter"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Categoria
             </label>
             <select
+              id="categoria-filter"
               value={filtros.categoria}
               onChange={(e) => handleFiltroChange("categoria", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               <option value="">Todas as Categorias</option>
               {opcoesFiltrosDependentes.categorias.map((categoria) => (
@@ -509,7 +515,7 @@ const DashProjetos: React.FC = () => {
           </div>
 
           {/* Botão Limpar Filtros */}
-          <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-1 flex justify-end">
+          <div className="flex justify-end">
             <button
               onClick={() =>
                 setFiltros({
@@ -522,7 +528,7 @@ const DashProjetos: React.FC = () => {
                   categoria: "",
                 })
               }
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 h-10"
+              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-offset-gray-800 h-10"
             >
               Limpar Filtros
             </button>
@@ -561,7 +567,7 @@ const DashProjetos: React.FC = () => {
         <div className="absolute top-2 right-2 z-50" ref={menuRef}>
           <button
             onClick={() => setMenuAberto(!menuAberto)}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             aria-label="Opções de visualização"
           >
             <svg
@@ -576,7 +582,7 @@ const DashProjetos: React.FC = () => {
 
           {/* Dropdown menu */}
           {menuAberto && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-600">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-600">
               <div className="py-1">
                 <button
                   onClick={() => {
