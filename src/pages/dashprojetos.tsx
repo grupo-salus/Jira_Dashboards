@@ -18,7 +18,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useJira } from "../context/JiraContext";
-import { EspacoDeProjetos } from "../types/Typesjira";
+import { EspacoDeProjetos, JiraStatus } from "../types/Typesjira";
 import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
 import { getPriorityConfig } from "../constants/priorities";
 import {
@@ -43,8 +43,9 @@ const DashProjetos: React.FC = () => {
     projeto: "",
     solicitante: "",
     prioridade: "",
-    status: "",
+    status: "" as JiraStatus | "",
     grupo_solicitante: "",
+    categoria: "",
   });
 
   // Fechar menu quando clicar fora
@@ -108,13 +109,19 @@ const DashProjetos: React.FC = () => {
         normalizeString(item["Grupo Solicitante"] || "") ===
           normalizeString(filtrosAtivos.grupo_solicitante);
 
+      const matchesCategoria =
+        !filtrosAtivos.categoria ||
+        normalizeString(item.Categoria || "") ===
+          normalizeString(filtrosAtivos.categoria);
+
       return (
         matchesArea &&
         matchesProjeto &&
         matchesSolicitante &&
         matchesPrioridade &&
         matchesStatus &&
-        matchesGrupoSolicitante
+        matchesGrupoSolicitante &&
+        matchesCategoria
       );
     });
   };
@@ -166,7 +173,7 @@ const DashProjetos: React.FC = () => {
   ]);
 
   const dadosParaStatus = useMemo(() => {
-    const filtrosTemp = { ...filtros, status: "" };
+    const filtrosTemp = { ...filtros, status: "" as JiraStatus | "" };
     return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
   }, [
     projetosData.rawData,
@@ -175,18 +182,6 @@ const DashProjetos: React.FC = () => {
     filtros.solicitante,
     filtros.prioridade,
     filtros.grupo_solicitante,
-  ]);
-
-  const dadosParaGrupoSolicitante = useMemo(() => {
-    const filtrosTemp = { ...filtros, grupo_solicitante: "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.projeto,
-    filtros.solicitante,
-    filtros.prioridade,
-    filtros.status,
   ]);
 
   // Opções para cada dropdown baseadas nos dados filtrados
@@ -262,17 +257,6 @@ const DashProjetos: React.FC = () => {
     );
   }, [dadosParaStatus]);
 
-  const grupoSolicitanteOptions = useMemo(
-    () => [
-      ...new Set(
-        dadosParaGrupoSolicitante
-          .map((i: EspacoDeProjetos) => i["Grupo Solicitante"])
-          .filter((value): value is string => Boolean(value))
-      ),
-    ],
-    [dadosParaGrupoSolicitante]
-  );
-
   // Função para limpar filtros dependentes quando um filtro é alterado
   const handleFiltroChange = (campo: keyof typeof filtros, valor: string) => {
     setFiltros((prev) => {
@@ -283,27 +267,62 @@ const DashProjetos: React.FC = () => {
         novosFiltros.projeto = "";
         novosFiltros.solicitante = "";
         novosFiltros.prioridade = "";
-        novosFiltros.status = "";
+        novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
+        novosFiltros.categoria = "";
       } else if (campo === "projeto") {
         novosFiltros.solicitante = "";
         novosFiltros.prioridade = "";
-        novosFiltros.status = "";
+        novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
+        novosFiltros.categoria = "";
       } else if (campo === "solicitante") {
         novosFiltros.prioridade = "";
-        novosFiltros.status = "";
+        novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
+        novosFiltros.categoria = "";
       } else if (campo === "prioridade") {
-        novosFiltros.status = "";
+        novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
+        novosFiltros.categoria = "";
       } else if (campo === "status") {
         novosFiltros.grupo_solicitante = "";
+        novosFiltros.categoria = "";
+      } else if (campo === "grupo_solicitante") {
+        novosFiltros.categoria = "";
       }
 
       return novosFiltros;
     });
   };
+
+  const opcoesFiltrosDependentes = useMemo(() => {
+    const dadosFiltradosPorArea = filtros.area
+      ? projetosData.rawData.filter(
+          (p) => p["Departamento Solicitante"] === filtros.area
+        )
+      : projetosData.rawData;
+
+    const dadosFiltradosPorGrupo = filtros.grupo_solicitante
+      ? dadosFiltradosPorArea.filter(
+          (p) => p["Grupo Solicitante"] === filtros.grupo_solicitante
+        )
+      : dadosFiltradosPorArea;
+
+    const gruposSolicitantes = [
+      ...new Set(dadosFiltradosPorArea.map((p) => p["Grupo Solicitante"])),
+    ].sort();
+    const categorias = [
+      ...new Set(
+        dadosFiltradosPorGrupo.map((p) => p.Categoria).filter(Boolean)
+      ),
+    ].sort();
+
+    return {
+      gruposSolicitantes,
+      categorias,
+    };
+  }, [projetosData.rawData, filtros.area, filtros.grupo_solicitante]);
 
   if (projetosData.loading) {
     return (
@@ -431,17 +450,34 @@ const DashProjetos: React.FC = () => {
               Grupo Solicitante
             </label>
             <select
-              id="grupo-solicitante-filter"
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-44 h-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               value={filtros.grupo_solicitante}
               onChange={(e) =>
                 handleFiltroChange("grupo_solicitante", e.target.value)
               }
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Todos</option>
-              {grupoSolicitanteOptions.map((grupo) => (
+              <option value="">Todos os Grupos</option>
+              {opcoesFiltrosDependentes.gruposSolicitantes.map((grupo) => (
                 <option key={grupo} value={grupo}>
                   {grupo}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Categoria
+            </label>
+            <select
+              value={filtros.categoria}
+              onChange={(e) => handleFiltroChange("categoria", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todas as Categorias</option>
+              {opcoesFiltrosDependentes.categorias.map((categoria) => (
+                <option key={categoria} value={categoria || ""}>
+                  {categoria}
                 </option>
               ))}
             </select>
@@ -481,8 +517,9 @@ const DashProjetos: React.FC = () => {
                   projeto: "",
                   solicitante: "",
                   prioridade: "",
-                  status: "",
+                  status: "" as JiraStatus | "",
                   grupo_solicitante: "",
+                  categoria: "",
                 })
               }
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 h-10"
@@ -541,13 +578,13 @@ const DashProjetos: React.FC = () => {
           {menuAberto && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-600">
               <div className="py-1">
-            <button
+                <button
                   onClick={() => {
                     setVisualizacao("kanban");
                     setMenuAberto(false);
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                visualizacao === "kanban"
+                    visualizacao === "kanban"
                       ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                       : "text-gray-700 dark:text-gray-300"
                   }`}
@@ -566,16 +603,16 @@ const DashProjetos: React.FC = () => {
                         d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                       />
                     </svg>
-              Kanban
+                    Kanban
                   </div>
-            </button>
-            <button
+                </button>
+                <button
                   onClick={() => {
                     setVisualizacao("tabela");
                     setMenuAberto(false);
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                visualizacao === "tabela"
+                    visualizacao === "tabela"
                       ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
                       : "text-gray-700 dark:text-gray-300"
                   }`}
@@ -594,10 +631,10 @@ const DashProjetos: React.FC = () => {
                         d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-              Tabela
+                    Tabela
                   </div>
-            </button>
-          </div>
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -1,3 +1,5 @@
+import { JiraStatus } from "./Typesjira";
+
 /**
  * Interface para as métricas de visão geral (Top Cards Resumo)
  */
@@ -55,7 +57,7 @@ export interface AtividadeRecente {
 export interface KanbanCard {
   titulo: string;
   chave: string;
-  status: string;
+  status: JiraStatus;
   diasNoBacklog: number;
   tempoGasto: string;
   dataInicio: string | null;

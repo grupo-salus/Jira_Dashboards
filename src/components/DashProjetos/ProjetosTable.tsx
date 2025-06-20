@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { EspacoDeProjetos } from "../../types/Typesjira";
+import { EspacoDeProjetos, JiraStatus, PrazoStatus, EsforcoStatus, IdeacaoStatus } from "../../types/Typesjira";
 import {
   formatDate,
   formatSeconds,
@@ -36,12 +36,23 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     Relator: 150,
     Categoria: 120,
     "Estimativa original (segundos)": 180,
-    "Tempo Gasto (formatado)": 150,
+    "Tempo registrado (segundos)": 180,
+    "Tempo restante (segundos)": 180,
     "Investimento Esperado": 150,
     "Data de criação": 150,
     "Data de atualização": 150,
+    "Data de término": 150,
     "Target start": 150,
     "Target end": 150,
+    "Dias desde criação": 150,
+    "Status de ideação": 150,
+    "Dias planejados": 150,
+    "Dias desde o início": 150,
+    "Dias restantes": 150,
+    "% do tempo decorrido": 150,
+    "Status de prazo": 150,
+    "% da estimativa usada": 150,
+    "Status de esforço": 150,
   });
 
   const [isResizing, setIsResizing] = useState(false);
@@ -72,12 +83,23 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Relator",
     "Categoria",
     "Estimativa original (segundos)",
-    "Tempo Gasto (formatado)",
+    "Tempo registrado (segundos)",
+    "Tempo restante (segundos)",
     "Investimento Esperado",
     "Data de criação",
     "Data de atualização",
+    "Data de término",
     "Target start",
     "Target end",
+    "Dias desde criação",
+    "Status de ideação",
+    "Dias planejados",
+    "Dias desde o início",
+    "Dias restantes",
+    "% do tempo decorrido",
+    "Status de prazo",
+    "% da estimativa usada",
+    "Status de esforço",
   ];
 
   const handleMouseDown = (e: React.MouseEvent, column: string) => {
@@ -163,11 +185,13 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     switch (column) {
       case "Data de criação":
       case "Data de atualização":
+      case "Data de término":
       case "Target start":
       case "Target end":
-      case "Data de término":
         return formatDate(value);
       case "Estimativa original (segundos)":
+      case "Tempo registrado (segundos)":
+      case "Tempo restante (segundos)":
         return formatSeconds(Number(value));
       case "Prioridade":
         const priorityConfig = formatPriority(value);
@@ -181,6 +205,22 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
       case "Descrição":
       case "Benefícios Esperados":
         return value.length > 100 ? `${value.substring(0, 100)}...` : value;
+      case "Dias desde criação":
+      case "Dias planejados":
+      case "Dias desde o início":
+      case "Dias restantes":
+        return `${value} dias`;
+      case "% do tempo decorrido":
+      case "% da estimativa usada":
+        return `${value}%`;
+      case "Status de ideação":
+      case "Status de prazo":
+      case "Status de esforço":
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+            {value}
+          </span>
+        );
       default:
         return value;
     }

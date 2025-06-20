@@ -6,7 +6,7 @@ export interface AcompanhamentoTI {
   ID: string;
   Chave: string;
   Título: string;
-  Status: string;
+  Status: JiraStatus;
   Tipo: string;
   Prioridade: string;
   Responsável: string;
@@ -20,7 +20,7 @@ export interface AcompanhamentoTI {
   "Data Limite": string | null;
   "Data de Conclusão": string | null;
   "Tempo Gasto (segundos)": number;
-  "Tempo Gasto (formatado)": string | null;
+  "Controle de tempo": string | null;
   "Estimativa (segundos)": number;
   "Esforço Registrado Total": number;
   Labels: string | null;
@@ -33,29 +33,70 @@ export interface AcompanhamentoTI {
  * Representa os dados retornados pela API de espaço de projetos
  */
 export interface EspacoDeProjetos {
-  ID: string;
-  Tipo: string;
-  Chave: string;
-  Título: string;
-  Prioridade: string;
-  Descrição: string | null;
-  "Aprovador por (diretor)": string | null;
-  "Benefícios Esperados": string | null;
-  Status: string;
-  "Grupo Solicitante": string;
-  "Departamento Solicitante": string;
-  Solicitante: string | null;
-  "Telefone do Solicitante": string | null;
-  "Email do Solicitante": string | null;
-  Responsável: string;
-  Relator: string;
-  Categoria: string | null;
-  "Estimativa original (segundos)": number;
-  "Tempo Gasto (formatado)": string | null;
-  "Investimento Esperado": string | null;
-  "Data de criação": string;
-  "Data de atualização": string;
-  "Target start": string | null;
-  "Target end": string | null;
-  "Data de término": string | null;
+  ID: string; // ID interno da issue no Jira
+  Tipo: string; // Tipo da issue (ex: Tarefa, Bug, Épico)
+  Chave: string; // Chave da issue (ex: EP-123)
+  Título: string; // Título resumido da tarefa ou projeto
+  Prioridade: string; // Prioridade definida no Jira (Alta, Média, Baixa)
+  Descrição: string | null; // Descrição da issue (primeiro parágrafo do rich text)
+  "Aprovador por (diretor)": string | null; // Diretor responsável pela aprovação (campo customizado)
+  "Benefícios Esperados": string | null; // Texto inserido no campo de benefícios do projeto
+  Status: JiraStatus; // Status atual no fluxo do Jira (ex: Em andamento, Concluído)
+
+  "Grupo Solicitante": string; // Unidade, time ou grupo que solicitou o projeto
+  "Departamento Solicitante": string; // Área ou diretoria à qual o grupo pertence
+  Solicitante: string | null; // Nome da pessoa que abriu o chamado
+  "Telefone do Solicitante": string | null; // Telefone de contato
+  "Email do Solicitante": string | null; // E-mail para retorno
+
+  Responsável: string; // Pessoa atribuída à execução da tarefa
+  Relator: string; // Pessoa que criou o card no Jira
+  Categoria: string | null; // Categoria do projeto (vinda das labels do Jira)
+
+  "Estimativa original (segundos)": number; // Tempo inicialmente estimado no Jira, em segundos
+  "Tempo registrado (segundos)": number | null; // Tempo total já registrado via controle (ex: Clockify), em segundos
+  "Tempo restante (segundos)": number | null; // Tempo restante estimado, em segundos
+  "Investimento Esperado": string | null; // Valor estimado para o projeto (R$ ou outro), se aplicável
+
+  "Data de criação": string; // Data em que o card foi criado no Jira
+  "Data de atualização": string; // Última modificação registrada no card
+  "Target start": string | null; // Data planejada de início do projeto
+  "Target end": string | null; // Data planejada de término do projeto
+  "Data de término": string | null; // Data em que a issue foi finalizada no Jira
+
+  // Estratégias de execução e ideação
+  "Dias desde criação": number | null;
+  "Status de ideação": IdeacaoStatus | null;
+  "Dias planejados": number | null;
+  "Dias desde o início": number | null;
+  "Dias restantes": number | null;
+  "% do tempo decorrido": number | null;
+  "Status de prazo": PrazoStatus | null;
+  "% da estimativa usada": number | null;
+  "Status de esforço": EsforcoStatus | null;
 }
+
+export type JiraStatus =
+  | "Backlog"
+  | "Bloqueado"
+  | "Backlog Priorizado"
+  | "Cancelado"
+  | "Em andamento"
+  | "ENCERRAMENTO"
+  | "Concluído";
+
+// Status de ideação
+export type IdeacaoStatus = "Recente" | "Rever" | "Quase obsoleto" | "Obsoleto";
+
+// Status de prazo
+export type PrazoStatus =
+  | "No prazo"
+  | "Próximo do fim"
+  | "Atrasado"
+  | "Vencido";
+
+// Status de esforço
+export type EsforcoStatus =
+  | "Dentro do prazo"
+  | "Próximo do limite"
+  | "Estourou a estimativa";

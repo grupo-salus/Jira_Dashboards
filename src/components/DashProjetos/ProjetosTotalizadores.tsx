@@ -1,6 +1,6 @@
 import React from "react";
 import { CardsIcon, CompassIcon } from "../icons/DashboardIcons";
-import { EspacoDeProjetos } from "../../types/Typesjira";
+import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
@@ -11,11 +11,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
 }) => {
   const total = filteredData.length;
   const totalProjetos = filteredData.filter((p) => {
-    const status = (p.Status || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "");
-    return status !== "backlog";
+    return p.Status !== "Backlog";
   }).length;
 
   return (

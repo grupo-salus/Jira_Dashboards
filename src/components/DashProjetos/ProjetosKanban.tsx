@@ -1,180 +1,324 @@
 import React from "react";
-import { EspacoDeProjetos } from "../../types/Typesjira";
+import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../constants/priorities";
 import { themeColors } from "../../utils/themeColors";
+import {
+  STATUS_COLUMNS,
+  COLUMN_ORDER,
+  STATUS_MAP,
+  formatarSegundos,
+  formatDate,
+  getStatusColor,
+  normalizarStatus,
+  capitalizeFirst,
+  isProjetoEmExecucao,
+} from "./kanbanUtils";
+
 import "./kanban-scrollbar.css";
+
+// ============================================================================
+// CONSTANTES E CONFIGURAÇÕES
+// ============================================================================
 
 interface ProjetosKanbanProps {
   data: EspacoDeProjetos[];
 }
 
-// Mapeamento de status para nomes das colunas
-const STATUS_COLUMNS = {
-  Backlog: "IDEAÇÃO",
-  Bloqueado: "BLOQUEADO",
-  "Backlog Priorizado": "BACKLOG PRIORIZADO",
-  Cancelado: "CANCELADO",
-  "Em andamento": "EM EXECUÇÃO",
-  ENCERRAMENTO: "ENCERRAMENTO",
-  Concluído: "CONCLUÍDO",
+// Configurações visuais
+const KANBAN_CONFIG = {
+  COLUMN_COLOR: "bg-gray-100 dark:bg-gray-800",
+  COLUMN_WIDTH: "350px",
+  COLUMN_MIN_HEIGHT: "min-h-96",
+  CARD_MAX_HEIGHT: "max-h-[500px]",
 } as const;
 
-// Ordem fixa das colunas do Kanban
-const COLUMN_ORDER = [
-  "Backlog",
-  "Bloqueado",
-  "Backlog Priorizado",
-  "Cancelado",
-  "Em andamento",
-  "ENCERRAMENTO",
-  "Concluído",
-];
-
-// Todas as colunas com cor cinza claro
-const COLUMN_COLOR = "bg-gray-100 dark:bg-gray-800";
-
-// Mapeamento de status para nomes das colunas (normalização)
-const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
-  backlog: "Backlog",
-  "backlog priorizado": "Backlog Priorizado",
-  bloqueado: "Bloqueado",
-  cancelado: "Cancelado",
-  "em andamento": "Em andamento",
-  encerramento: "ENCERRAMENTO",
-  concluído: "Concluído",
-  concluido: "Concluído",
+// Mapeamento de prioridade para cor do tema
+const PRIORITY_COLORS: Record<string, string> = {
+  "Muito Alta": themeColors.error,
+  Alta: themeColors.warning,
+  Média: themeColors.primary[400],
+  Baixa: themeColors.success,
+  Mínima: themeColors.primary[100],
+  "Não definida": themeColors.gray,
 };
 
-function KanbanCard({ projeto }: { projeto: EspacoDeProjetos }) {
+// ============================================================================
+// COMPONENTES MENORES
+// ============================================================================
+
+/**
+ * Componente para exibir informações de período do projeto
+ */
+const PeriodoProjeto: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => {
+  if (!projeto["Target start"] || !projeto["Target end"]) return null;
+
+  return (
+    <div className="text-gray-600 dark:text-gray-400">
+      📅 {formatDate(projeto["Target start"])} →{" "}
+      {formatDate(projeto["Target end"])}
+    </div>
+  );
+};
+
+/**
+ * Componente para exibir progresso do prazo
+ */
+const ProgressoPrazo: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => {
+  if (
+    projeto["Dias desde o início"] === null ||
+    projeto["Dias restantes"] === null
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="text-gray-600 dark:text-gray-400">
+      🗓️ {projeto["Dias desde o início"]} dias passados •{" "}
+      {projeto["Dias restantes"]} restantes
+    </div>
+  );
+};
+
+/**
+ * Componente para exibir status de prazo
+ */
+const StatusPrazo: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
+  if (projeto["% do tempo decorrido"] === null) return null;
+
+  return (
+    <div className="text-gray-600 dark:text-gray-400">
+      ⏳ {projeto["% do tempo decorrido"]}% do tempo
+      {projeto["Status de prazo"] && (
+        <span
+          className={`ml-1 px-1 py-0.5 rounded text-xs font-medium ${getStatusColor(
+            projeto["Status de prazo"]
+          )}`}
+        >
+          ({projeto["Status de prazo"]})
+        </span>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Componente para exibir controle de esforço
+ */
+const ControleEsforco: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => {
+  if (
+    !projeto["Estimativa original (segundos)"] ||
+    projeto["Tempo registrado (segundos)"] === null
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="text-gray-600 dark:text-gray-400">
+      🕐 Estimativa:{" "}
+      {formatarSegundos(projeto["Estimativa original (segundos)"])} •
+      Registrado: {formatarSegundos(projeto["Tempo registrado (segundos)"])}
+    </div>
+  );
+};
+
+/**
+ * Componente para exibir status de esforço
+ */
+const StatusEsforco: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => {
+  if (projeto["% da estimativa usada"] === null) return null;
+
+  return (
+    <div className="text-gray-600 dark:text-gray-400">
+      📊 Esforço: {projeto["% da estimativa usada"]}%
+      {projeto["Status de esforço"] && (
+        <span
+          className={`ml-1 px-1 py-0.5 rounded text-xs font-medium ${getStatusColor(
+            projeto["Status de esforço"]
+          )}`}
+        >
+          ({projeto["Status de esforço"]})
+        </span>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Componente para exibir informações básicas do projeto
+ */
+const InformacoesBasicas: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => (
+  <>
+    {projeto.Categoria && (
+      <div className="text-gray-600 dark:text-gray-400">
+        🔖 Categoria: {projeto.Categoria}
+      </div>
+    )}
+    {projeto.Responsável && (
+      <div className="text-gray-600 dark:text-gray-400">
+        👤 Responsável: {projeto.Responsável}
+      </div>
+    )}
+  </>
+);
+
+/**
+ * Componente para exibir tag do departamento
+ */
+const TagDepartamento: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => {
+  const departamento = projeto["Departamento Solicitante"];
+  if (!departamento || departamento.trim() === "" || departamento === "-") {
+    return null;
+  }
+
+  return (
+    <div className="inline-block text-xs px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-medium mt-3 break-words">
+      {departamento}
+    </div>
+  );
+};
+
+/**
+ * Componente principal do card do Kanban
+ */
+const KanbanCard: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
   const prioridadeConfig = getPriorityConfig(projeto.Prioridade || "");
-  // Mapeamento de prioridade para cor do tema
-  const corBarraTema: Record<string, string> = {
-    "Muito Alta": themeColors.error, // vermelho
-    Alta: themeColors.warning, // laranja
-    Média: themeColors.primary[400], // azul claro
-    Baixa: themeColors.success, // verde
-    Mínima: themeColors.primary[100], // azul bem claro
-    "Não definida": themeColors.gray, // cinza
-  };
-  const corBarra = corBarraTema[prioridadeConfig.label] || themeColors.gray;
+  const corBarra = PRIORITY_COLORS[prioridadeConfig.label] || themeColors.gray;
+  const isEmExecucao = isProjetoEmExecucao(projeto.Status);
+
   return (
     <div
-      className={`group relative flex w-full bg-gray-50 dark:bg-gray-700 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-shadow cursor-pointer items-start`}
+      className="group relative flex w-full bg-gray-50 dark:bg-gray-700 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-shadow cursor-pointer items-start"
       tabIndex={0}
     >
-      {/* Barra de prioridade com cor do tema */}
+      {/* Barra de prioridade */}
       <div
         className="absolute left-0 top-0 h-full w-1 rounded-l-lg"
         style={{ background: corBarra }}
       />
+
       {/* Conteúdo do card */}
       <div className="pl-3 w-full text-left">
-        <div className="font-medium text-gray-900 dark:text-white text-xs mb-1 break-words text-left">
+        {/* Título do projeto */}
+        <div className="font-medium text-gray-900 dark:text-white text-xs mb-3 break-words">
           {projeto.Título}
         </div>
-        {projeto["Departamento Solicitante"] &&
-          projeto["Departamento Solicitante"].trim() !== "" &&
-          projeto["Departamento Solicitante"] !== "-" && (
-            <div className="inline-block text-xs mb-1 px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-medium text-left">
-              {projeto["Departamento Solicitante"]}
-            </div>
-          )}
+
+        {/* Informações estratégicas para projetos em execução */}
+        {isEmExecucao && (
+          <div className="space-y-2 text-xs">
+            <PeriodoProjeto projeto={projeto} />
+            <ProgressoPrazo projeto={projeto} />
+            <StatusPrazo projeto={projeto} />
+            <ControleEsforco projeto={projeto} />
+            <StatusEsforco projeto={projeto} />
+            <InformacoesBasicas projeto={projeto} />
+          </div>
+        )}
+
+        <TagDepartamento projeto={projeto} />
       </div>
     </div>
   );
-}
+};
 
-// Função para normalizar status (remove acentos, deixa capitalizado igual ao nome da coluna)
-function normalizarStatus(status: string): string {
-  if (!status) return "Backlog";
-  // Remove acentos e deixa só a primeira letra maiúscula
-  const s = status.normalize("NFD").replace(/\p{Diacritic}/gu, "");
-  // Procura na lista de colunas por similaridade
-  const match = COLUMN_ORDER.find(
-    (col) => col.toLowerCase() === s.toLowerCase()
+/**
+ * Componente do cabeçalho da coluna
+ */
+const ColunaHeader: React.FC<{ status: JiraStatus; count: number }> = ({
+  status,
+  count,
+}) => {
+  const nomeColuna = STATUS_COLUMNS[status]
+    ? capitalizeFirst(STATUS_COLUMNS[status])
+    : capitalizeFirst(status);
+
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+        {nomeColuna}
+      </h3>
+      <span className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs font-medium">
+        {count}
+      </span>
+    </div>
   );
-  return match || status;
-}
+};
+
+/**
+ * Componente de uma coluna do Kanban
+ */
+const KanbanColuna: React.FC<{
+  status: JiraStatus;
+  projetos: EspacoDeProjetos[];
+}> = ({ status, projetos }) => (
+  <div
+    className={`${KANBAN_CONFIG.COLUMN_COLOR} border border-gray-200 dark:border-gray-700 rounded-lg ${KANBAN_CONFIG.COLUMN_MIN_HEIGHT} p-4 flex-shrink-0`}
+    style={{ width: KANBAN_CONFIG.COLUMN_WIDTH }}
+  >
+    <ColunaHeader status={status} count={projetos.length} />
+
+    <div
+      className={`space-y-3 ${KANBAN_CONFIG.CARD_MAX_HEIGHT} overflow-y-auto hide-scrollbar`}
+    >
+      {projetos.map((projeto) => (
+        <KanbanCard key={projeto.ID} projeto={projeto} />
+      ))}
+    </div>
+  </div>
+);
+
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
 
 const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
-  // Para cada coluna, filtrar os cards mantendo a ordem original da API
+  // Agrupa projetos por status
   const projetosPorStatus = React.useMemo(() => {
     const grupos: Record<string, EspacoDeProjetos[]> = {};
-    COLUMN_ORDER.forEach((status) => {
+    COLUMN_ORDER.forEach((status: JiraStatus) => {
       grupos[status] = [];
     });
+
     data.forEach((projeto) => {
       const statusNormalizado = normalizarStatus(projeto.Status || "Backlog");
       if (grupos[statusNormalizado]) {
         grupos[statusNormalizado].push(projeto);
       }
     });
+
     return grupos;
   }, [data]);
 
-  const formatarData = (dataString: string | null) => {
-    if (!dataString) return "Não definida";
-    try {
-      const data = new Date(dataString);
-      return data.toLocaleDateString("pt-BR");
-    } catch {
-      return "Data inválida";
-    }
-  };
-
-  const formatarTempo = (segundos: number | null) => {
-    if (!segundos) return "0h";
-    const horas = Math.floor(segundos / 3600);
-    return `${horas}h`;
-  };
-
-  function capitalizeFirst(str: string) {
-    if (!str) return str;
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  }
-
   return (
-    <div className="w-full">
-      <div
-        className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-4`}
-      >
-        {COLUMN_ORDER.map((status) => {
-          const projetos = projetosPorStatus[status] || [];
-          // Nome da coluna: label traduzido se existir, senão o status, sempre com primeira maiúscula
-          const nomeColuna = STATUS_COLUMNS[
-            status as keyof typeof STATUS_COLUMNS
-          ]
-            ? capitalizeFirst(
-                STATUS_COLUMNS[status as keyof typeof STATUS_COLUMNS]
-              )
-            : capitalizeFirst(status);
-          return (
-            <div
-              key={status}
-              className={`${COLUMN_COLOR} border border-gray-200 dark:border-gray-700 rounded-lg min-h-96 p-1`}
-            >
-              {/* Cabeçalho da coluna */}
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                  {nomeColuna}
-                </h3>
-                <span className="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs font-medium">
-                  {projetos.length}
-                </span>
-              </div>
-              {/* Cards dos projetos */}
-              <div className="space-y-2 max-h-96 overflow-y-auto hide-scrollbar">
-                {projetos.map((projeto) => (
-                  <KanbanCard key={projeto.ID} projeto={projeto} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+    <div className="w-full overflow-x-auto">
+      <div className="flex gap-6 p-4 min-w-max">
+        {COLUMN_ORDER.map((status: JiraStatus) => (
+          <KanbanColuna
+            key={status}
+            status={status}
+            projetos={projetosPorStatus[status] || []}
+          />
+        ))}
       </div>
     </div>
   );
 };
+
+// ============================================================================
+// EXPORTS
+// ============================================================================
 
 export { STATUS_MAP, COLUMN_ORDER, STATUS_COLUMNS };
 

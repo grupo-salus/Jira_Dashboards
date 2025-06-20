@@ -4,7 +4,6 @@ import {
   StatusMetrics,
   PrioridadeMetrics,
   AcompanhamentoTIFilters,
-  AtividadeRecente,
   KanbanCard,
   AcompanhamentoTIMetrics,
 } from "../types/TypesMetrics";
@@ -42,7 +41,7 @@ export function calcularVisaoGeral(
   }
 
   return {
-    concluidos: dadosFiltrados.filter((d) => d.Status === "CONCLUÍDO").length,
+    concluidos: dadosFiltrados.filter((d) => d.Status === "Concluído").length,
     atualizados7d: dadosFiltrados.filter(
       (d) => new Date(d["Atualizado em"]) >= seteDiasAtras
     ).length,
@@ -53,7 +52,7 @@ export function calcularVisaoGeral(
       (d) =>
         d["Data Prevista de Término"] &&
         new Date(d["Data Prevista de Término"]) <= amanha &&
-        d.Status !== "CONCLUÍDO"
+        d.Status !== "Concluído"
     ).length,
   };
 }
@@ -65,10 +64,10 @@ export function calcularStatusMetrics(
   dados: AcompanhamentoTI[]
 ): StatusMetrics {
   const statusCounts = {
-    pendentes: dados.filter((d) => d.Status === "PENDENTE").length,
-    emAndamento: dados.filter((d) => d.Status === "EM ANDAMENTO").length,
-    bloqueados: dados.filter((d) => d.Status === "BLOQUEADO").length,
-    concluidos: dados.filter((d) => d.Status === "CONCLUÍDO").length,
+    pendentes: dados.filter((d) => d.Status === "Backlog").length,
+    emAndamento: dados.filter((d) => d.Status === "Em andamento").length,
+    bloqueados: dados.filter((d) => d.Status === "Bloqueado").length,
+    concluidos: dados.filter((d) => d.Status === "Concluído").length,
     total: dados.length,
   };
 
@@ -116,7 +115,7 @@ export function converterParaKanbanCards(
     chave: d.Chave,
     status: d.Status,
     diasNoBacklog: d["Dias no Backlog"],
-    tempoGasto: d["Tempo Gasto (formatado)"] || "0h",
+    tempoGasto: d["Controle de tempo"] || "0h",
     dataInicio: d["Data de Início"],
     dataPrevistaTermino: d["Data Prevista de Término"],
     dataLimite: d["Data Limite"],

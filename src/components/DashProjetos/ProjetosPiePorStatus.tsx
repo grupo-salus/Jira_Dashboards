@@ -7,14 +7,14 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { EspacoDeProjetos } from "../../types/Typesjira";
+import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
 
 interface ProjetosPiePorStatusProps {
   data: EspacoDeProjetos[];
 }
 
-const statusOrdem = [
+const statusOrdem: JiraStatus[] = [
   "Backlog",
   "Bloqueado",
   "Backlog Priorizado",
