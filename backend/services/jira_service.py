@@ -117,15 +117,14 @@ class JiraService:
 
     def get_all_issues_from_project(self, project_key: str) -> dict:
         """
-        Retorna todas as issues do projeto com todos os campos disponíveis.
-        Ideal para mapear todos os campos utilizados no formulário do Jira.
+        Retorna todas as issues do projeto com a ordenação visual (Rank do board Kanban).
         """
-        print(f"🔄 Buscando todas as issues completas do projeto '{project_key}'...")
-        jql_query = f"project={project_key}"
+        print(f"🔄 Buscando todas as issues ordenadas por Rank do projeto '{project_key}'...")
+        jql_query = f"project={project_key} ORDER BY Rank ASC"
         url = f"{self.jira_url}/rest/api/3/search?jql={jql_query}&fields=*all"
         
         issues = self._fetch_paginated_issues(url)
         print(f"✅ {len(issues)} issues encontradas no projeto '{project_key}'.")
         return {"issues": issues}
 
-    
+        
