@@ -72,17 +72,7 @@ filteredData.filter(
 
 ---
 
-### 4. Carga de Trabalho por Responsável (Gráfico de Barras Horizontais)
-
-**O que mostra:** Número de projetos atribuídos a cada responsável.
-
-**Dados utilizados:** Campo "Responsável".
-
-**Significado:** Ajuda a gerenciar a distribuição de tarefas, identificar sobrecarga de trabalho e balancear a alocação de recursos humanos.
-
----
-
-### 5. Ideações por Tempo de Espera (Gráfico de Barras Horizontais)
+### 4. Ideações por Tempo de Espera (Gráfico de Barras Horizontais)
 
 **O que mostra:** Projetos em ideação agrupados por faixas de tempo desde a criação.
 
@@ -101,17 +91,25 @@ filteredData.filter(
 
 ---
 
-### 6. Projetos Abertos por Semana (Gráfico de Linha)
+### 5. Projetos Abertos por Data (Gráfico de Linha)
 
-**O que mostra:** Tendência de novos projetos criados ao longo do tempo.
+**O que mostra:** Tendência de novos projetos criados ao longo do tempo, separados por status.
 
-**Dados utilizados:** Campo "Data de criação" agrupado por semana.
+**Dados utilizados:**
 
-**Significado:** Identifica tendências de entrada de demanda, períodos de maior carga de trabalho (sazonalidades) e ajuda no planejamento de capacidade futura.
+- Campo "Data de criação" por data individual
+- Campo "Status" para separar "Backlog" (ideação) e "Backlog Priorizado"
+
+**Linhas do gráfico:**
+
+- **Backlog (Ideação)**: Projetos com status "Backlog" criados por data
+- **Backlog Priorizado**: Projetos com status "Backlog Priorizado" criados por data
+
+**Significado:** Identifica tendências de entrada de demanda por tipo de projeto ao longo do tempo, mostrando exatamente quando cada projeto foi criado. Permite visualizar se há mais ideias sendo criadas ou se o foco está na priorização, com precisão diária.
 
 ---
 
-### 7. Investimento por Área (Gráfico de Barras Horizontais)
+### 6. Investimento por Área (Gráfico de Barras Horizontais)
 
 **O que mostra:** Soma do investimento esperado por departamento solicitante.
 
@@ -124,7 +122,7 @@ filteredData.filter(
 
 ---
 
-### 8. Análise de Demandas por Categoria (Gráfico de Barras Horizontais)
+### 7. Análise de Demandas por Categoria (Gráfico de Barras Horizontais)
 
 **O que mostra:** Contagem de projetos agrupados por categoria.
 

@@ -1,14 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  LabelList,
-  Cell,
-} from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
 import { getFontSizes } from "../../constants/styleConfig";
@@ -34,64 +24,122 @@ const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
     };
   }, []);
 
-  const ideationTimeCount = React.useMemo(() => {
-    const counts = {
-      "0-7 dias": 0,
-      "8-30 dias": 0,
-      "Mais de 30 dias": 0,
-    };
+  const timePhases = React.useMemo(() => {
+    const phases = [
+      {
+        name: "Recente",
+        range: "0-90 dias",
+        min: 0,
+        max: 90,
+        color: "#10B981",
+        icon: "🌱",
+        description: "Ideias novas",
+      },
+      {
+        name: "Em Análise",
+        range: "91-180 dias",
+        min: 91,
+        max: 180,
+        color: "#F59E0B",
+        icon: "🔍",
+        description: "Precisa revisão",
+      },
+      {
+        name: "Quase Obsoleto",
+        range: "181-365 dias",
+        min: 181,
+        max: 365,
+        color: "#EF4444",
+        icon: "⚠️",
+        description: "Ação necessária",
+      },
+      {
+        name: "Obsoleto",
+        range: "365+ dias",
+        min: 366,
+        max: Infinity,
+        color: "#6B7280",
+        icon: "💀",
+        description: "Arquivar",
+      },
+    ];
 
-    data.forEach((item) => {
-      if (item.Status === "Backlog" || item.Status === "Backlog Priorizado") {
-        const dias = item["Dias desde criação"];
-        if (dias !== null && dias !== undefined) {
-          if (dias <= 7) {
-            counts["0-7 dias"]++;
-          } else if (dias <= 30) {
-            counts["8-30 dias"]++;
-          } else {
-            counts["Mais de 30 dias"]++;
+    return phases.map((phase) => {
+      const count = data.filter((item) => {
+        if (item.Status === "Backlog" || item.Status === "Backlog Priorizado") {
+          const dias = item["Dias desde criação"];
+          if (dias !== null && dias !== undefined) {
+            if (phase.max === Infinity) {
+              return dias > phase.min;
+            }
+            return dias >= phase.min && dias <= phase.max;
           }
         }
-      }
-    });
+        return false;
+      }).length;
 
-    return [
-      { range: "0-7 dias", count: counts["0-7 dias"] },
-      { range: "8-30 dias", count: counts["8-30 dias"] },
-      { range: "Mais de 30 dias", count: counts["Mais de 30 dias"] },
-    ];
+      return { ...phase, count };
+    });
   }, [data]);
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={ideationTimeCount}
-          layout="horizontal"
-          margin={{ left: 20, right: 20, top: 20, bottom: 20 }}
-        >
-          <XAxis dataKey="range" type="category" />
-          <YAxis type="number" allowDecimals={false} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: themeColors.cardBg.light,
-              border: `1px solid ${themeColors.neutral}`,
-              borderRadius: "8px",
-              fontSize: fontSizes.tooltipGrafico,
-            }}
-          />
-          <Bar dataKey="count">
-            {ideationTimeCount.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={themeColors.chart[index % themeColors.chart.length]}
-              />
+    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[250px] p-6">
+      <div className="w-full">
+        {/* Linha do tempo principal */}
+        <div className="relative">
+          {/* Linha horizontal base */}
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300 dark:bg-gray-600 transform -translate-y-1/2 rounded-full"></div>
+
+          {/* Fases da linha do tempo */}
+          <div className="relative flex justify-between items-center">
+            {timePhases.map((phase, index) => (
+              <div
+                key={phase.name}
+                className="flex flex-col items-center relative z-10 flex-1"
+              >
+                {/* Quadrado da fase */}
+                <div
+                  className="w-14 h-14 rounded-lg flex items-center justify-center text-xl mb-3 shadow-md border-2 border-white dark:border-gray-800 mx-auto relative z-20"
+                  style={{ backgroundColor: phase.color }}
+                >
+                  {phase.icon}
+                </div>
+
+                {/* Conector para próxima fase */}
+                {index < timePhases.length - 1 && (
+                  <div
+                    className="absolute top-7 left-1/2 w-full h-1 transform -translate-y-1/2 rounded-full z-0"
+                    style={{ backgroundColor: phase.color }}
+                  ></div>
+                )}
+
+                {/* Informações da fase */}
+                <div className="text-center w-full px-2 relative z-10">
+                  <div className={`font-bold mb-1 ${fontSizes.legendaGrafico}`}>
+                    {phase.name}
+                  </div>
+                  <div
+                    className={`text-gray-600 dark:text-gray-400 mb-1 ${fontSizes.legendaGrafico}`}
+                  >
+                    {phase.range}
+                  </div>
+                  <div
+                    className={`font-bold rounded-full px-2 py-1 text-white ${fontSizes.valorTotalizador} inline-block text-sm mb-2`}
+                    style={{ backgroundColor: phase.color }}
+                  >
+                    {phase.count}
+                  </div>
+                  <div
+                    className={`text-gray-500 dark:text-gray-500 ${fontSizes.legendaGrafico} leading-tight`}
+                  >
+                    {phase.description}
+                  </div>
+                </div>
+              </div>
             ))}
-            <LabelList dataKey="count" position="top" />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

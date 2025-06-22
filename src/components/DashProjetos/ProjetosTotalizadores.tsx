@@ -65,7 +65,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   // Métricas Chave
   const total = filteredData.length;
   const totalIdeacao = filteredData.filter(
-    (p) => p.Status === "Backlog" || p.Status === "Backlog Priorizado"
+    (p) => p.Status === "Backlog"
   ).length;
   const totalProjetos = total - totalIdeacao;
 
@@ -111,7 +111,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         />
         <TotalizadorCard
           icon={
-            <CompassIcon
+            <LightbulbIcon
               size={iconSizes.totalizador}
               className="text-orange-500 dark:text-orange-400"
             />

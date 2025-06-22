@@ -35,6 +35,18 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
     };
   }, []);
 
+  // Listener para mudanças de tema (dark/light)
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setForceUpdate((prev) => prev + 1);
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   // Componente customizado para o tick do eixo Y com quebra de linha
   const CustomYAxisTick = (props: any) => {
     const { x, y, payload } = props;

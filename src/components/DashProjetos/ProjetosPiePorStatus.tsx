@@ -97,10 +97,15 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
     );
   };
 
+  // Ajustar dimensões do gráfico de pizza para maior destaque
+  const pieOuterRadius = chartDimensions.pie.outerRadius * 1.35;
+  const pieInnerRadius = 0; // Pizza sem buraco no meio
+
   return (
-    <div className="w-full h-full flex-1 flex flex-col items-center justify-center min-h-[300px]">
-      <div className="w-full flex-1 flex items-center justify-center">
-        <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full h-full flex-1 flex flex-row items-center justify-center min-h-[260px]">
+      {/* Gráfico de pizza maior */}
+      <div className="flex-1 flex items-center justify-center min-w-[220px] min-h-[220px] h-full">
+        <ResponsiveContainer width="100%" height="90%">
           <PieChart margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
             <Pie
               data={statusCount}
@@ -108,10 +113,11 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
               nameKey="status"
               cx="50%"
               cy="50%"
-              outerRadius={chartDimensions.pie.outerRadius}
-              innerRadius={chartDimensions.pie.innerRadius}
+              outerRadius={pieOuterRadius}
+              innerRadius={pieInnerRadius}
               labelLine={false}
               label={renderCustomizedLabel}
+              paddingAngle={2} // Separação entre as fatias
             >
               {statusCount.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
@@ -128,10 +134,16 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
           </PieChart>
         </ResponsiveContainer>
       </div>
-      {/* Legenda dos status abaixo do gráfico */}
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4 w-full">
+      {/* Legenda dos status ao lado direito em 2 colunas */}
+      <div
+        className="flex flex-col flex-wrap justify-center items-start gap-y-2 gap-x-6 ml-6 h-full max-h-full min-w-[180px]"
+        style={{ columnCount: 2 }}
+      >
         {statusCount.map((entry) => (
-          <div key={entry.status} className="flex items-center gap-2">
+          <div
+            key={entry.status}
+            className="flex items-center gap-2 mb-2 break-inside-avoid-column"
+          >
             <span
               className="inline-block w-4 h-2 rounded-sm"
               style={{ background: entry.color }}

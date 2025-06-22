@@ -31,10 +31,7 @@ import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosPiePorStatus from "../components/DashProjetos/ProjetosPiePorStatus";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
-import CargaDeTrabalhoPorResponsavel from "../components/DashProjetos/CargaDeTrabalhoPorResponsavel";
 import IdeacoesPorTempoDeEspera from "../components/DashProjetos/IdeacoesPorTempoDeEspera";
-import ProjetosAbertosPorSemana from "../components/DashProjetos/ProjetosAbertosPorSemana";
-import InvestimentoPorArea from "../components/DashProjetos/InvestimentoPorArea";
 import AnaliseDemandasPorCategoria from "../components/DashProjetos/AnaliseDemandasPorCategoria";
 import IdeiasObsoletas from "../components/DashProjetos/IdeiasObsoletas";
 import {
@@ -69,7 +66,6 @@ const DashProjetos: React.FC = () => {
     status: "" as JiraStatus | "",
     grupo_solicitante: "",
     categoria: "",
-    posicao_backlog: "",
   });
 
   // Obter configurações de fonte atuais
@@ -170,11 +166,6 @@ const DashProjetos: React.FC = () => {
         normalizeString(item.Categoria || "") ===
           normalizeString(filtrosAtivos.categoria);
 
-      const matchesPosicaoBacklog =
-        !filtrosAtivos.posicao_backlog ||
-        (item.PosicaoBacklog !== null &&
-          item.PosicaoBacklog.toString() === filtrosAtivos.posicao_backlog);
-
       return (
         matchesArea &&
         matchesProjeto &&
@@ -182,8 +173,7 @@ const DashProjetos: React.FC = () => {
         matchesPrioridade &&
         matchesStatus &&
         matchesGrupoSolicitante &&
-        matchesCategoria &&
-        matchesPosicaoBacklog
+        matchesCategoria
       );
     });
   };
@@ -257,32 +247,6 @@ const DashProjetos: React.FC = () => {
     filtros.prioridade,
     filtros.status,
     filtros.grupo_solicitante,
-  ]);
-
-  const dadosParaPosicaoBacklog = useMemo(() => {
-    const filtrosTemp = { ...filtros, posicao_backlog: "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.projeto,
-    filtros.solicitante,
-    filtros.prioridade,
-    filtros.status,
-    filtros.grupo_solicitante,
-    filtros.categoria,
-  ]);
-
-  const dadosParaGrupoSolicitante = useMemo(() => {
-    const filtrosTemp = { ...filtros, grupo_solicitante: "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.projeto,
-    filtros.solicitante,
-    filtros.prioridade,
-    filtros.status,
   ]);
 
   // Opções para cada dropdown baseadas nos dados filtrados
@@ -364,30 +328,6 @@ const DashProjetos: React.FC = () => {
     [dadosParaCategoria]
   );
 
-  const posicaoBacklogOptions = useMemo(
-    () =>
-      [
-        ...new Set(
-          dadosParaPosicaoBacklog
-            .filter((i: EspacoDeProjetos) => i.PosicaoBacklog !== null)
-            .map((i: EspacoDeProjetos) => i.PosicaoBacklog?.toString())
-            .filter((value): value is string => Boolean(value))
-        ),
-      ].sort((a, b) => parseInt(a) - parseInt(b)),
-    [dadosParaPosicaoBacklog]
-  );
-
-  const grupoSolicitanteOptions = useMemo(
-    () => [
-      ...new Set(
-        dadosParaGrupoSolicitante
-          .map((i: EspacoDeProjetos) => i["Grupo Solicitante"])
-          .filter((value): value is string => Boolean(value))
-      ),
-    ],
-    [dadosParaGrupoSolicitante]
-  );
-
   // Função para limpar filtros dependentes quando um filtro é alterado
   const handleFiltroChange = (campo: keyof typeof filtros, valor: string) => {
     setFiltros((prev) => {
@@ -401,34 +341,26 @@ const DashProjetos: React.FC = () => {
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
-        novosFiltros.posicao_backlog = "";
       } else if (campo === "projeto") {
         novosFiltros.solicitante = "";
         novosFiltros.prioridade = "";
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
-        novosFiltros.posicao_backlog = "";
       } else if (campo === "solicitante") {
         novosFiltros.prioridade = "";
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
-        novosFiltros.posicao_backlog = "";
       } else if (campo === "prioridade") {
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
-        novosFiltros.posicao_backlog = "";
       } else if (campo === "status") {
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
-        novosFiltros.posicao_backlog = "";
       } else if (campo === "grupo_solicitante") {
         novosFiltros.categoria = "";
-        novosFiltros.posicao_backlog = "";
-      } else if (campo === "categoria") {
-        novosFiltros.posicao_backlog = "";
       }
 
       return novosFiltros;
@@ -457,8 +389,8 @@ const DashProjetos: React.FC = () => {
 
   return (
     <div className="p-6 w-full max-w-none relative">
-      {/* Botões de Controle - Lateral Superior Direita */}
-      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
+      {/* Botões de Controle - Linha acima dos totalizadores */}
+      <div className="flex items-center justify-end gap-2">
         {/* Dropdown de Tamanho */}
         <CustomDropdown
           options={tamanhoOptions}
@@ -634,9 +566,9 @@ const DashProjetos: React.FC = () => {
                 className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
               >
                 <option value="">Todos os Grupos</option>
-                {grupoSolicitanteOptions.map((grupo) => (
-                  <option key={grupo} value={grupo}>
-                    {grupo}
+                {areaOptions.map((area) => (
+                  <option key={area} value={area}>
+                    {area}
                   </option>
                 ))}
               </select>
@@ -667,56 +599,6 @@ const DashProjetos: React.FC = () => {
               </select>
             </div>
 
-            {/* Filtro de Posição no Backlog */}
-            <div className="flex flex-col">
-              <label
-                htmlFor="posicao-backlog-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
-              >
-                Posição no Backlog
-              </label>
-              <select
-                id="posicao-backlog-filter"
-                value={filtros.posicao_backlog}
-                onChange={(e) =>
-                  handleFiltroChange("posicao_backlog", e.target.value)
-                }
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-              >
-                <option value="">Todas as Posições</option>
-                {posicaoBacklogOptions.map((posicao) => (
-                  <option key={posicao} value={posicao}>
-                    #{posicao}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Filtro de Solicitante */}
-            <div className="flex flex-col">
-              <label
-                htmlFor="solicitante-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
-              >
-                Solicitante
-              </label>
-              <select
-                id="solicitante-filter"
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-                value={filtros.solicitante}
-                onChange={(e) =>
-                  handleFiltroChange("solicitante", e.target.value)
-                }
-              >
-                <option value="">Todos</option>
-                {solicitanteOptions.map((sol) => (
-                  <option key={sol} value={sol}>
-                    {sol}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Botão Limpar Filtros */}
             <div className="flex flex-col justify-end">
               <button
@@ -729,7 +611,6 @@ const DashProjetos: React.FC = () => {
                     status: "" as JiraStatus | "",
                     grupo_solicitante: "",
                     categoria: "",
-                    posicao_backlog: "",
                   })
                 }
                 className={`px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-300 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 h-12 ${fontSizes.textoBotao}`}
@@ -745,7 +626,8 @@ const DashProjetos: React.FC = () => {
       <ProjetosTotalizadores filteredData={filteredData} />
 
       {/* Gráficos do dashboard */}
-      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-none">
+      {/* Primeira linha - 2 gráficos */}
+      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
@@ -758,26 +640,14 @@ const DashProjetos: React.FC = () => {
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
-            Projetos por Status
-          </div>
-          <ProjetosPiePorStatus data={filteredData} />
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
-          >
             Projetos por Prioridade
           </div>
           <ProjetosBarPorPrioridade data={filteredData} />
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
-          >
-            Carga de Trabalho por Responsável
-          </div>
-          <CargaDeTrabalhoPorResponsavel data={filteredData} />
-        </div>
+      </div>
+
+      {/* Segunda linha - 3 gráficos */}
+      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
@@ -790,17 +660,9 @@ const DashProjetos: React.FC = () => {
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
-            Projetos Abertos por Semana
+            Projetos por Status
           </div>
-          <ProjetosAbertosPorSemana data={filteredData} />
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
-          >
-            Investimento por Área
-          </div>
-          <InvestimentoPorArea data={filteredData} />
+          <ProjetosPiePorStatus data={filteredData} />
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
           <div
