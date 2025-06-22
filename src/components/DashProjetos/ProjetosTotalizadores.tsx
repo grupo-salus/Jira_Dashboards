@@ -69,6 +69,21 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   ).length;
   const totalProjetos = total - totalIdeacao;
 
+  // Métricas do Backlog Priorizado
+  const backlogPriorizado = filteredData.filter(
+    (p) => p.Status === "Backlog Priorizado"
+  );
+  const totalBacklogPriorizado = backlogPriorizado.length;
+
+  // Encontrar o próximo a ser executado (primeiro da fila original)
+  // Usar a posição original, não baseada nos dados filtrados
+  const proximoExecucao =
+    backlogPriorizado.length > 0
+      ? backlogPriorizado
+          .filter((p) => p.PosicaoBacklog !== null)
+          .sort((a, b) => (a.PosicaoBacklog || 0) - (b.PosicaoBacklog || 0))[0]
+      : null;
+
   // Saúde Geral dos Projetos e KPIs
   const projetosAtivos = filteredData.filter(
     (p) => p.Status !== "Concluído" && p.Status !== "Cancelado"
@@ -148,6 +163,36 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           value={totalProjetos}
           barColor="bg-orange-500"
         />
+        <TotalizadorCard
+          icon={
+            <LightbulbIcon
+              size={iconSizes.totalizador}
+              className="text-green-500 dark:text-green-400"
+            />
+          }
+          label="Total na Fila Backlog Priorizado"
+          value={totalBacklogPriorizado}
+          barColor="bg-green-500"
+        />
+        {proximoExecucao && (
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 border border-green-200 dark:border-green-700 rounded-lg p-4 flex-grow min-w-[300px]">
+            <div className="flex items-center gap-3">
+              <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                #{proximoExecucao.PosicaoBacklog}
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                  Próximo: {proximoExecucao.Título}
+                </h4>
+                {proximoExecucao["Departamento Solicitante"] && (
+                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
+                    {proximoExecucao["Departamento Solicitante"]}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mt-8 mb-4">

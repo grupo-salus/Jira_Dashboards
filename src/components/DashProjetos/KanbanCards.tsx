@@ -41,11 +41,13 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 
       {/* Informações Gerais */}
       {projeto["Departamento Solicitante"] && (
-        <span
-          className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-        >
-          {projeto["Departamento Solicitante"]}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+          >
+            {projeto["Departamento Solicitante"]}
+          </span>
+        </div>
       )}
       {projeto.Categoria && (
         <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
@@ -110,11 +112,13 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       </div>
       {/* Informações Gerais */}
       {projeto["Departamento Solicitante"] && (
-        <span
-          className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-        >
-          {projeto["Departamento Solicitante"]}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+          >
+            {projeto["Departamento Solicitante"]}
+          </span>
+        </div>
       )}
       {projeto.Categoria && (
         <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
@@ -163,13 +167,29 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
         <span>{projeto.Título}</span>
       </div>
+
       {/* Informações Gerais */}
-      {projeto["Departamento Solicitante"] && (
-        <span
-          className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-        >
-          {projeto["Departamento Solicitante"]}
-        </span>
+      {projeto["Departamento Solicitante"] ? (
+        <div className="flex items-center gap-2">
+          {projeto.PosicaoBacklog && (
+            <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">
+              #{projeto.PosicaoBacklog}
+            </span>
+          )}
+          <span
+            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+          >
+            {projeto["Departamento Solicitante"]}
+          </span>
+        </div>
+      ) : (
+        projeto.PosicaoBacklog && (
+          <div className="flex items-center gap-2">
+            <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">
+              #{projeto.PosicaoBacklog}
+            </span>
+          </div>
+        )
       )}
       {projeto.Categoria && (
         <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
@@ -343,11 +363,13 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       </div>
       {/* Informações Gerais */}
       {projeto["Departamento Solicitante"] && (
-        <span
-          className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-        >
-          {projeto["Departamento Solicitante"]}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+          >
+            {projeto["Departamento Solicitante"]}
+          </span>
+        </div>
       )}
       {projeto.Categoria && (
         <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
@@ -386,11 +408,13 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       </div>
       {/* Informações Gerais */}
       {projeto["Departamento Solicitante"] && (
-        <span
-          className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-        >
-          {projeto["Departamento Solicitante"]}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+          >
+            {projeto["Departamento Solicitante"]}
+          </span>
+        </div>
       )}
       {projeto.Categoria && (
         <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
@@ -434,11 +458,13 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       </div>
       {/* Informações Gerais */}
       {projeto["Departamento Solicitante"] && (
-        <span
-          className={`inline-block bg-blue-100 text-blue-800 font-medium px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 ${fontSizes.tagCardKanban}`}
-        >
-          {projeto["Departamento Solicitante"]}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block bg-blue-100 text-blue-800 font-medium px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 ${fontSizes.tagCardKanban}`}
+          >
+            {projeto["Departamento Solicitante"]}
+          </span>
+        </div>
       )}
       {projeto.Categoria && (
         <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
@@ -483,11 +509,13 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       </div>
       {/* Informações Gerais */}
       {projeto["Departamento Solicitante"] && (
-        <span
-          className={`inline-block bg-blue-100 text-blue-800 font-medium px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 ${fontSizes.tagCardKanban}`}
-        >
-          {projeto["Departamento Solicitante"]}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block bg-blue-100 text-blue-800 font-medium px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 ${fontSizes.tagCardKanban}`}
+          >
+            {projeto["Departamento Solicitante"]}
+          </span>
+        </div>
       )}
       {projeto.Categoria && (
         <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
@@ -554,11 +582,13 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </div>
           {/* Informações Gerais */}
           {projeto["Departamento Solicitante"] && (
-            <span
-              className={`inline-block bg-blue-100 text-blue-800 font-medium px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 ${fontSizes.tagCardKanban}`}
-            >
-              {projeto["Departamento Solicitante"]}
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                className={`inline-block bg-blue-100 text-blue-800 font-medium px-2 py-1 rounded-md dark:bg-blue-900 dark:text-blue-300 ${fontSizes.tagCardKanban}`}
+              >
+                {projeto["Departamento Solicitante"]}
+              </span>
+            </div>
           )}
           {projeto.Categoria && (
             <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">

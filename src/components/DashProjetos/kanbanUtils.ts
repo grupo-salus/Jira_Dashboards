@@ -35,6 +35,7 @@ export const COLUMN_ORDER: JiraStatus[] = [
 export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
   backlog: "Backlog",
   "backlog priorizado": "Backlog Priorizado",
+  "tarefas pendentes": "Backlog Priorizado",
   bloqueado: "Bloqueado",
   "em andamento": "Em andamento",
   encerramento: "ENCERRAMENTO",

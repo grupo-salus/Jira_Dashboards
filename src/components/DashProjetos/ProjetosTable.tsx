@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { EspacoDeProjetos, JiraStatus, PrazoStatus, EsforcoStatus, IdeacaoStatus } from "../../types/Typesjira";
+import {
+  EspacoDeProjetos,
+  JiraStatus,
+  PrazoStatus,
+  EsforcoStatus,
+  IdeacaoStatus,
+} from "../../types/Typesjira";
 import {
   formatDate,
   formatSeconds,
@@ -23,6 +29,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     Chave: 100,
     Título: 200,
     Prioridade: 100,
+    PosicaoBacklog: 120,
     Descrição: 200,
     "Aprovador por (diretor)": 150,
     "Benefícios Esperados": 200,
@@ -70,6 +77,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Chave",
     "Título",
     "Prioridade",
+    "PosicaoBacklog",
     "Descrição",
     "Aprovador por (diretor)",
     "Benefícios Esperados",
@@ -183,6 +191,12 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     if (!value) return "-";
 
     switch (column) {
+      case "PosicaoBacklog":
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+            #{value}
+          </span>
+        );
       case "Data de criação":
       case "Data de atualização":
       case "Data de término":

@@ -25,6 +25,7 @@ import {
   STATUS_MAP,
   COLUMN_ORDER,
   STATUS_COLUMNS,
+  normalizarStatus,
 } from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
@@ -68,6 +69,7 @@ const DashProjetos: React.FC = () => {
     status: "" as JiraStatus | "",
     grupo_solicitante: "",
     categoria: "",
+    posicao_backlog: "",
   });
 
   // Obter configurações de fonte atuais
@@ -168,6 +170,11 @@ const DashProjetos: React.FC = () => {
         normalizeString(item.Categoria || "") ===
           normalizeString(filtrosAtivos.categoria);
 
+      const matchesPosicaoBacklog =
+        !filtrosAtivos.posicao_backlog ||
+        (item.PosicaoBacklog !== null &&
+          item.PosicaoBacklog.toString() === filtrosAtivos.posicao_backlog);
+
       return (
         matchesArea &&
         matchesProjeto &&
@@ -175,7 +182,8 @@ const DashProjetos: React.FC = () => {
         matchesPrioridade &&
         matchesStatus &&
         matchesGrupoSolicitante &&
-        matchesCategoria
+        matchesCategoria &&
+        matchesPosicaoBacklog
       );
     });
   };
@@ -236,6 +244,45 @@ const DashProjetos: React.FC = () => {
     filtros.solicitante,
     filtros.prioridade,
     filtros.grupo_solicitante,
+  ]);
+
+  const dadosParaCategoria = useMemo(() => {
+    const filtrosTemp = { ...filtros, categoria: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.projeto,
+    filtros.solicitante,
+    filtros.prioridade,
+    filtros.status,
+    filtros.grupo_solicitante,
+  ]);
+
+  const dadosParaPosicaoBacklog = useMemo(() => {
+    const filtrosTemp = { ...filtros, posicao_backlog: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.projeto,
+    filtros.solicitante,
+    filtros.prioridade,
+    filtros.status,
+    filtros.grupo_solicitante,
+    filtros.categoria,
+  ]);
+
+  const dadosParaGrupoSolicitante = useMemo(() => {
+    const filtrosTemp = { ...filtros, grupo_solicitante: "" };
+    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
+  }, [
+    projetosData.rawData,
+    filtros.area,
+    filtros.projeto,
+    filtros.solicitante,
+    filtros.prioridade,
+    filtros.status,
   ]);
 
   // Opções para cada dropdown baseadas nos dados filtrados
@@ -306,6 +353,41 @@ const DashProjetos: React.FC = () => {
     );
   }, [dadosParaStatus]);
 
+  const categoriaOptions = useMemo(
+    () => [
+      ...new Set(
+        dadosParaCategoria
+          .map((i: EspacoDeProjetos) => i.Categoria)
+          .filter((value): value is string => Boolean(value))
+      ),
+    ],
+    [dadosParaCategoria]
+  );
+
+  const posicaoBacklogOptions = useMemo(
+    () =>
+      [
+        ...new Set(
+          dadosParaPosicaoBacklog
+            .filter((i: EspacoDeProjetos) => i.PosicaoBacklog !== null)
+            .map((i: EspacoDeProjetos) => i.PosicaoBacklog?.toString())
+            .filter((value): value is string => Boolean(value))
+        ),
+      ].sort((a, b) => parseInt(a) - parseInt(b)),
+    [dadosParaPosicaoBacklog]
+  );
+
+  const grupoSolicitanteOptions = useMemo(
+    () => [
+      ...new Set(
+        dadosParaGrupoSolicitante
+          .map((i: EspacoDeProjetos) => i["Grupo Solicitante"])
+          .filter((value): value is string => Boolean(value))
+      ),
+    ],
+    [dadosParaGrupoSolicitante]
+  );
+
   // Função para limpar filtros dependentes quando um filtro é alterado
   const handleFiltroChange = (campo: keyof typeof filtros, valor: string) => {
     setFiltros((prev) => {
@@ -319,59 +401,39 @@ const DashProjetos: React.FC = () => {
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
+        novosFiltros.posicao_backlog = "";
       } else if (campo === "projeto") {
         novosFiltros.solicitante = "";
         novosFiltros.prioridade = "";
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
+        novosFiltros.posicao_backlog = "";
       } else if (campo === "solicitante") {
         novosFiltros.prioridade = "";
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
+        novosFiltros.posicao_backlog = "";
       } else if (campo === "prioridade") {
         novosFiltros.status = "" as JiraStatus | "";
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
+        novosFiltros.posicao_backlog = "";
       } else if (campo === "status") {
         novosFiltros.grupo_solicitante = "";
         novosFiltros.categoria = "";
+        novosFiltros.posicao_backlog = "";
       } else if (campo === "grupo_solicitante") {
         novosFiltros.categoria = "";
+        novosFiltros.posicao_backlog = "";
+      } else if (campo === "categoria") {
+        novosFiltros.posicao_backlog = "";
       }
 
       return novosFiltros;
     });
   };
-
-  const opcoesFiltrosDependentes = useMemo(() => {
-    const dadosFiltradosPorArea = filtros.area
-      ? projetosData.rawData.filter(
-          (p) => p["Departamento Solicitante"] === filtros.area
-        )
-      : projetosData.rawData;
-
-    const dadosFiltradosPorGrupo = filtros.grupo_solicitante
-      ? dadosFiltradosPorArea.filter(
-          (p) => p["Grupo Solicitante"] === filtros.grupo_solicitante
-        )
-      : dadosFiltradosPorArea;
-
-    const gruposSolicitantes = [
-      ...new Set(dadosFiltradosPorArea.map((p) => p["Grupo Solicitante"])),
-    ].sort();
-    const categorias = [
-      ...new Set(
-        dadosFiltradosPorGrupo.map((p) => p.Categoria).filter(Boolean)
-      ),
-    ].sort();
-
-    return {
-      gruposSolicitantes,
-      categorias,
-    };
-  }, [projetosData.rawData, filtros.area, filtros.grupo_solicitante]);
 
   if (projetosData.loading) {
     return (
@@ -572,7 +634,7 @@ const DashProjetos: React.FC = () => {
                 className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
               >
                 <option value="">Todos os Grupos</option>
-                {opcoesFiltrosDependentes.gruposSolicitantes.map((grupo) => (
+                {grupoSolicitanteOptions.map((grupo) => (
                   <option key={grupo} value={grupo}>
                     {grupo}
                   </option>
@@ -597,9 +659,34 @@ const DashProjetos: React.FC = () => {
                 className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
               >
                 <option value="">Todas as Categorias</option>
-                {opcoesFiltrosDependentes.categorias.map((categoria) => (
+                {categoriaOptions.map((categoria) => (
                   <option key={categoria} value={categoria || ""}>
                     {categoria}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filtro de Posição no Backlog */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="posicao-backlog-filter"
+                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+              >
+                Posição no Backlog
+              </label>
+              <select
+                id="posicao-backlog-filter"
+                value={filtros.posicao_backlog}
+                onChange={(e) =>
+                  handleFiltroChange("posicao_backlog", e.target.value)
+                }
+                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+              >
+                <option value="">Todas as Posições</option>
+                {posicaoBacklogOptions.map((posicao) => (
+                  <option key={posicao} value={posicao}>
+                    #{posicao}
                   </option>
                 ))}
               </select>
@@ -642,6 +729,7 @@ const DashProjetos: React.FC = () => {
                     status: "" as JiraStatus | "",
                     grupo_solicitante: "",
                     categoria: "",
+                    posicao_backlog: "",
                   })
                 }
                 className={`px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-300 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 h-12 ${fontSizes.textoBotao}`}

@@ -164,6 +164,20 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+def position_in_backlog(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Adiciona coluna de posição apenas para issues com status 'Backlog Priorizado',
+    numerando conforme a ordem em que aparecem no DataFrame.
+    """
+    # Manter as posições existentes, mas sobrescrever apenas para backlog priorizado
+    backlog_priorizado_issues = df[df["Status"] == "Backlog Priorizado"]
+    
+    for pos, (index, _) in enumerate(backlog_priorizado_issues.iterrows(), start=1):
+        df.at[index, "PosicaoBacklog"] = pos
+
+    print(f"Posição no backlog adicionada para {len(backlog_priorizado_issues)} issues")
+    return df
+
 def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     """
     Converte uma lista de issues do Jira em um DataFrame com foco em campos de tempo, datas e equipe,
@@ -171,7 +185,7 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     As colunas de data/hora serão do tipo datetime64[ns] do Pandas.
     """
     rows = []
-    for issue in issues:
+    for index, issue in enumerate(issues):
         fields = issue.get("fields", {})
 
         row = {
@@ -180,6 +194,9 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Chave": issue.get("key"),
             "Título": issue.get("fields", {}).get("summary"),
             "Prioridade": issue.get("fields", {}).get("priority", {}).get("name"),
+
+            # Posição no backlog (baseada no Rank do Jira)
+            "PosicaoBacklog": index + 1,
 
             # Campos descritivos
             "Descrição": (
@@ -248,7 +265,8 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     for col in date_cols:
         df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
 
-    df = project_specific_columns(df)
+    df = position_in_backlog(df)
+    df = project_specific_columns(df)   
     return df
 
 def prepare_dataframe_for_json_export(df: pd.DataFrame, numeric_or_object_cols_with_nan: list = None) -> pd.DataFrame:

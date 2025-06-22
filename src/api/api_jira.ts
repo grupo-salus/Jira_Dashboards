@@ -122,6 +122,7 @@ export async function fetchEspacoDeProjetos(filters?: {
       Relator: decodeURIComponent(item.Relator || ""),
       Prioridade: decodeURIComponent(item.Prioridade || ""),
       Categoria: item.Categoria ? decodeURIComponent(item.Categoria) : null,
+      PosicaoBacklog: item.PosicaoBacklog,
     }));
   } catch (error) {
     console.error("Error fetching espaco de projetos table:", error);
