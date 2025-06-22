@@ -84,51 +84,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           .sort((a, b) => (a.PosicaoBacklog || 0) - (b.PosicaoBacklog || 0))[0]
       : null;
 
-  // Saúde Geral dos Projetos e KPIs
-  const projetosAtivos = filteredData.filter(
-    (p) => p.Status !== "Concluído" && p.Status !== "Cancelado"
-  );
-
-  const projetosAtrasados = projetosAtivos.filter(
-    (p) => p["Status de prazo"] === "Fora do prazo"
-  ).length;
-
-  const estimativasEstouradas = projetosAtivos.filter(
-    (p) => p["Status de esforço"] === "Estourou a estimativa"
-  ).length;
-
-  const projetosEmRisco = projetosAtivos.filter(
-    (p) =>
-      p["Status de prazo"] === "Fora do prazo" ||
-      p["Status de esforço"] === "Estourou a estimativa"
-  ).length;
-
-  const projetosConcluidos = filteredData.filter(
-    (p) =>
-      p.Status === "Concluído" && p["Data de término"] && p["Data de criação"]
-  );
-
-  const tempoMedioEntrega =
-    projetosConcluidos.length > 0
-      ? Math.round(
-          projetosConcluidos.reduce((acc, p) => {
-            const dataInicio = new Date(p["Data de criação"]);
-            const dataFim = new Date(p["Data de término"]!);
-            const diffTime = Math.abs(dataFim.getTime() - dataInicio.getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return acc + diffDays;
-          }, 0) / projetosConcluidos.length
-        )
-      : 0;
-
   return (
     <div>
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          Métricas Chave
-        </h2>
-        <div className="w-full h-px mt-2 bg-gray-200 dark:bg-gray-700"></div>
-      </div>
       <div className="flex flex-wrap gap-6 mb-6">
         <TotalizadorCard
           icon={
@@ -193,59 +150,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             </div>
           </div>
         )}
-      </div>
-
-      <div className="mt-8 mb-4">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          Saúde Geral dos Projetos e KPIs
-        </h2>
-        <div className="w-full h-px mt-2 bg-gray-200 dark:bg-gray-700"></div>
-      </div>
-      <div className="flex flex-wrap gap-6 mb-6">
-        <TotalizadorCard
-          icon={
-            <CardsIcon
-              size={iconSizes.totalizador}
-              className="text-red-500 dark:text-red-400"
-            />
-          }
-          label="Projetos Atrasados"
-          value={projetosAtrasados}
-          barColor="bg-red-500"
-        />
-        <TotalizadorCard
-          icon={
-            <LightbulbIcon
-              size={iconSizes.totalizador}
-              className="text-yellow-500 dark:text-yellow-400"
-            />
-          }
-          label="Estimativas Estouradas"
-          value={estimativasEstouradas}
-          barColor="bg-yellow-500"
-        />
-        <TotalizadorCard
-          icon={
-            <CardsIcon
-              size={iconSizes.totalizador}
-              className="text-pink-700 dark:text-pink-600"
-            />
-          }
-          label="Projetos em Risco"
-          value={projetosEmRisco}
-          barColor="bg-pink-700"
-        />
-        <TotalizadorCard
-          icon={
-            <LightbulbIcon
-              size={iconSizes.totalizador}
-              className="text-green-500 dark:text-green-400"
-            />
-          }
-          label="Tempo Médio de Entrega (dias)"
-          value={tempoMedioEntrega}
-          barColor="bg-green-500"
-        />
       </div>
     </div>
   );

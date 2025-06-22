@@ -40,66 +40,6 @@ filteredData.filter(
 
 ---
 
-## 🏥 Seção: Saúde Geral dos Projetos e KPIs
-
-### 1. Projetos Atrasados
-
-**O que mede:** Quantidade de projetos ativos que estão fora do prazo planejado.
-
-**Como é calculado:**
-
-1. Filtra projetos ativos (excluindo "Concluído" e "Cancelado")
-2. Conta aqueles com "Status de prazo" = "Fora do prazo"
-
-**Significado:** Alerta crítico sobre projetos que estão atrasados em relação ao cronograma. Indica problemas de planejamento ou execução.
-
----
-
-### 2. Estimativas Estouradas
-
-**O que mede:** Quantidade de projetos que já consumiram mais tempo/esforço do que o inicialmente estimado.
-
-**Como é calculado:**
-
-1. Filtra projetos ativos (excluindo "Concluído" e "Cancelado")
-2. Conta aqueles com "Status de esforço" = "Estourou a estimativa"
-
-**Significado:** Indica problemas na estimativa inicial ou mudanças de escopo. Ajuda a melhorar a precisão das estimativas futuras.
-
----
-
-### 3. Projetos em Risco
-
-**O que mede:** Total de projetos que apresentam algum tipo de risco significativo.
-
-**Como é calculado:** Conta projetos ativos que são "Atrasados" OU têm "Estimativas Estouradas":
-
-```javascript
-projetosAtivos.filter(
-  (p) =>
-    p["Status de prazo"] === "Fora do prazo" ||
-    p["Status de esforço"] === "Estourou a estimativa"
-).length;
-```
-
-**Significado:** Visão consolidada de todos os projetos que precisam de atenção imediata da gestão.
-
----
-
-### 4. Tempo Médio de Entrega (dias)
-
-**O que mede:** Média de dias que os projetos levaram desde a criação até a conclusão.
-
-**Como é calculado:**
-
-1. Filtra projetos concluídos que têm "Data de criação" e "Data de término"
-2. Calcula a diferença em dias para cada projeto
-3. Faz a média aritmética de todos os valores
-
-**Significado:** KPI crucial de eficiência. Mostra a velocidade média do ciclo de vida de um projeto na equipe. Valores menores indicam maior eficiência.
-
----
-
 ## 📈 Seção: Gráficos
 
 ### 1. Projetos por Status (Gráfico de Pizza)
@@ -237,14 +177,14 @@ O dashboard implementa um sistema de filtros em cascata que permite:
 
 ### Para Gestores de Projeto:
 
-1. **Monitore os KPIs de saúde** diariamente para identificar problemas
-2. **Use os gráficos de tendência** para planejamento de capacidade
-3. **Analise a distribuição de carga** para balancear o trabalho da equipe
+1. **Use os gráficos de tendência** para planejamento de capacidade
+2. **Analise a distribuição de carga** para balancear o trabalho da equipe
+3. **Monitore o pipeline de ideias** para otimizar o fluxo de inovação
 
 ### Para Líderes de Equipe:
 
-1. **Acompanhe o tempo médio de entrega** para medir eficiência
-2. **Monitore projetos em risco** para intervenção precoce
+1. **Acompanhe a evolução dos projetos** através dos gráficos de status
+2. **Monitore a distribuição de responsabilidades** para balancear a carga
 3. **Use os filtros** para análises específicas por área ou categoria
 
 ### Para Stakeholders:
@@ -259,9 +199,9 @@ O dashboard implementa um sistema de filtros em cascata que permite:
 
 ### Eficiência Operacional:
 
-- Reduzir tempo médio de entrega
-- Diminuir projetos atrasados
-- Melhorar precisão das estimativas
+- Otimizar o fluxo de projetos
+- Melhorar a distribuição de recursos
+- Acelerar o pipeline de ideias
 
 ### Gestão de Recursos:
 
@@ -273,6 +213,6 @@ O dashboard implementa um sistema de filtros em cascata que permite:
 
 - Identificar gargalos no fluxo
 - Melhorar pipeline de ideias
-- Manter projetos em dia
+- Manter projetos organizados
 
 Este dashboard foi projetado para fornecer insights acionáveis que ajudem na tomada de decisões estratégicas e operacionais relacionadas à gestão de projetos de TI.
