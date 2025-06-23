@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LabelList,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../constants/priorities";
@@ -63,11 +64,11 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   }, [data]);
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[300px]">
+    <div className="w-full h-full flex-1 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={prioridadeCount}
-          margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+          margin={{ left: 20, right: 20, top: 25, bottom: 20 }}
         >
           <XAxis
             dataKey="prioridade"
@@ -116,6 +117,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
                 }
               />
             ))}
+            <LabelList dataKey="count" position="top" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

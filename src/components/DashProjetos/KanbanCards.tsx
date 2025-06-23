@@ -7,7 +7,10 @@ import {
   normalizarStatus,
 } from "./kanbanUtils";
 import { LightbulbIcon } from "../icons/DashboardIcons";
-import { getFontSizes } from "../../constants/styleConfig";
+import { getFontSizes, getKanbanConfig } from "../../constants/styleConfig";
+
+const KANBAN_CONFIG = getKanbanConfig();
+const fontSizes = getFontSizes();
 
 // ============================================================================
 // COMPONENTES DE CARDS ESPECÍFICOS POR STATUS
@@ -17,16 +20,11 @@ import { getFontSizes } from "../../constants/styleConfig";
  * Card para projetos em IDEAÇÃO (Backlog)
  */
 const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
-  const fontSizes = getFontSizes();
-
   return (
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
-        className={`flex items-center gap-3 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
-        <div className="bg-purple-400 rounded-md p-0.5 flex items-center justify-center">
-          <LightbulbIcon size={20} className="text-white" />
-        </div>
         <span>{projeto.Título}</span>
       </div>
 
@@ -77,16 +75,11 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  const fontSizes = getFontSizes();
-
   return (
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
-        className={`flex items-center gap-3 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
-        <div className="bg-orange-400 rounded-md p-0.5 flex items-center justify-center">
-          <LightbulbIcon size={20} className="text-white" />
-        </div>
         <span>{projeto.Título}</span>
       </div>
       {/* Informações Gerais */}
@@ -129,16 +122,11 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  const fontSizes = getFontSizes();
-
   return (
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
-        className={`flex items-center gap-3 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
-        <div className="bg-orange-400 rounded-md p-0.5 flex items-center justify-center">
-          <LightbulbIcon size={20} className="text-white" />
-        </div>
         <span>{projeto.Título}</span>
       </div>
 
@@ -206,17 +194,12 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  const fontSizes = getFontSizes();
-
   return (
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
       <div
-        className={`flex items-start gap-2 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
-        <div className="bg-orange-400 rounded-md p-0.5 flex items-center justify-center">
-          <LightbulbIcon size={20} className="text-white" />
-        </div>
         <span>{projeto.Título}</span>
       </div>
 
@@ -390,17 +373,12 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  const fontSizes = getFontSizes();
-
   return (
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
       <div
-        className={`flex items-start gap-2 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
-        <div className="bg-orange-400 rounded-md p-0.5 flex items-center justify-center">
-          <LightbulbIcon size={20} className="text-white" />
-        </div>
         <span>{projeto.Título}</span>
       </div>
       {/* Informações Gerais */}
@@ -574,17 +552,12 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
  * Card para projetos ENTREGUE (Concluído)
  */
 const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
-  const fontSizes = getFontSizes();
-
   return (
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
       <div
-        className={`flex items-start gap-2 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
-        <div className="bg-orange-400 rounded-md p-0.5 flex items-center justify-center">
-          <LightbulbIcon size={20} className="text-white" />
-        </div>
         <span>{projeto.Título}</span>
       </div>
       {/* Informações Gerais */}
@@ -738,16 +711,11 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  const fontSizes = getFontSizes();
-
   return (
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
-        className={`flex items-center gap-3 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
-        <div className="bg-orange-400 rounded-md p-0.5 flex items-center justify-center">
-          <LightbulbIcon size={20} className="text-white" />
-        </div>
         <span>{projeto.Título}</span>
       </div>
       {/* Informações Gerais */}
@@ -789,7 +757,6 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  const fontSizes = getFontSizes();
   const statusNormalizado = normalizarStatus(projeto.Status);
 
   switch (statusNormalizado) {
@@ -812,11 +779,8 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
       return (
         <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
           <div
-            className={`flex items-center gap-3 font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+            className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
           >
-            <div className="bg-orange-400 rounded-md p-0.5 flex items-center justify-center">
-              <LightbulbIcon size={20} className="text-white" />
-            </div>
             <span>{projeto.Título}</span>
           </div>
           {/* Informações Gerais */}

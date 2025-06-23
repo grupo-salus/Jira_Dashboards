@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { CardsIcon, CompassIcon, LightbulbIcon } from "../icons/DashboardIcons";
-import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
-import {
-  getFontSizes,
-  getIconSizes,
-  getCardDimensions,
-} from "../../constants/styleConfig";
+import React, { useEffect } from "react";
+import { CardsIcon, LightbulbIcon } from "../icons/DashboardIcons";
+import { EspacoDeProjetos } from "../../types/Typesjira";
+import { getTotalizadoresConfig } from "../../constants/styleConfig";
 
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
@@ -17,23 +13,20 @@ const TotalizadorCard: React.FC<{
   value: number;
   barColor: string;
 }> = ({ icon, label, value, barColor }) => {
-  const fontSizes = getFontSizes();
-  const cardDimensions = getCardDimensions();
+  const config = getTotalizadoresConfig();
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex-grow ${cardDimensions.totalizador.width} relative overflow-hidden`}
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md ${config.padding} flex-grow ${config.largura} ${config.altura} relative overflow-hidden`}
     >
       <div className="flex items-center gap-4">
         {icon}
         <div>
-          <p
-            className={`text-gray-500 dark:text-gray-400 ${fontSizes.labelTotalizador}`}
-          >
+          <p className={`text-gray-500 dark:text-gray-400 ${config.label}`}>
             {label}
           </p>
           <p
-            className={`font-bold text-gray-900 dark:text-white ${fontSizes.valorTotalizador}`}
+            className={`font-bold text-gray-900 dark:text-white ${config.valor}`}
           >
             {value}
           </p>
@@ -47,15 +40,12 @@ const TotalizadorCard: React.FC<{
 const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
 }) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
-
-  const iconSizes = getIconSizes();
+  const config = getTotalizadoresConfig();
 
   useEffect(() => {
     const handleTamanhoChange = () => {
-      setForceUpdate((prev) => prev + 1); // Força re-render
+      // Força re-render quando o tamanho global muda
     };
-
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
     return () => {
       window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
@@ -76,7 +66,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   const totalBacklogPriorizado = backlogPriorizado.length;
 
   // Encontrar o próximo a ser executado (primeiro da fila original)
-  // Usar a posição original, não baseada nos dados filtrados
   const proximoExecucao =
     backlogPriorizado.length > 0
       ? backlogPriorizado
@@ -90,7 +79,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         <TotalizadorCard
           icon={
             <CardsIcon
-              size={iconSizes.totalizador}
+              size={config.icone}
               className="text-blue-500 dark:text-blue-400"
             />
           }
@@ -101,7 +90,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         <TotalizadorCard
           icon={
             <LightbulbIcon
-              size={iconSizes.totalizador}
+              size={config.icone}
               className="text-purple-500 dark:text-purple-400"
             />
           }
@@ -112,7 +101,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         <TotalizadorCard
           icon={
             <LightbulbIcon
-              size={iconSizes.totalizador}
+              size={config.icone}
               className="text-orange-500 dark:text-orange-400"
             />
           }
@@ -123,7 +112,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         <TotalizadorCard
           icon={
             <LightbulbIcon
-              size={iconSizes.totalizador}
+              size={config.icone}
               className="text-green-500 dark:text-green-400"
             />
           }
@@ -131,26 +120,35 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           value={totalBacklogPriorizado}
           barColor="bg-green-500"
         />
-        {proximoExecucao && (
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 border border-green-200 dark:border-green-700 rounded-lg p-4 flex-grow min-w-[300px]">
-            <div className="flex items-center gap-3">
-              <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+      </div>
+      {proximoExecucao && (
+        <div
+          className={`bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 border border-green-200 dark:border-green-700 rounded-lg w-full ${config.altura} ${config.padding} relative overflow-hidden flex items-center mb-6`}
+        >
+          <div className="flex items-center gap-3 w-full">
+            <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+              <span className={config.label}>
                 #{proximoExecucao.PosicaoBacklog}
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-                  Próximo: {proximoExecucao.Título}
-                </h4>
-                {proximoExecucao["Departamento Solicitante"] && (
-                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
-                    {proximoExecucao["Departamento Solicitante"]}
-                  </p>
-                )}
-              </div>
+              </span>
+            </div>
+            <div className="flex-1">
+              <h4
+                className={`font-semibold text-gray-900 dark:text-white ${config.titulo}`}
+              >
+                Próximo: {proximoExecucao.Título}
+              </h4>
+              {proximoExecucao["Departamento Solicitante"] && (
+                <p
+                  className={`text-gray-600 dark:text-gray-400 mt-1 ${config.label}`}
+                >
+                  {proximoExecucao["Departamento Solicitante"]}
+                </p>
+              )}
             </div>
           </div>
-        )}
-      </div>
+          <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-green-400 to-blue-400"></div>
+        </div>
+      )}
     </div>
   );
 };

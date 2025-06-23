@@ -626,9 +626,9 @@ const DashProjetos: React.FC = () => {
       <ProjetosTotalizadores filteredData={filteredData} />
 
       {/* Gráficos do dashboard */}
-      {/* Primeira linha - 2 gráficos */}
-      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+      {/* Primeira linha - 3 gráficos */}
+      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
@@ -636,7 +636,7 @@ const DashProjetos: React.FC = () => {
           </div>
           <ProjetosBarPorArea data={filteredData} />
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
@@ -644,27 +644,7 @@ const DashProjetos: React.FC = () => {
           </div>
           <ProjetosBarPorPrioridade data={filteredData} />
         </div>
-      </div>
-
-      {/* Segunda linha - 3 gráficos */}
-      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
-          >
-            Ideações por Tempo de Espera
-          </div>
-          <IdeacoesPorTempoDeEspera data={filteredData} />
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
-          >
-            Projetos por Status
-          </div>
-          <ProjetosPiePorStatus data={filteredData} />
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
@@ -674,11 +654,23 @@ const DashProjetos: React.FC = () => {
         </div>
       </div>
 
+      {/* Segunda linha - 1 gráfico */}
+      {/* <div className="mb-6 w-full grid grid-cols-1 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          <div
+            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+          >
+            Ideações por Tempo de Espera
+          </div>
+          <IdeacoesPorTempoDeEspera data={filteredData} />
+        </div>
+      </div> */}
+
       {/* Seção de Ideias Obsoletas */}
       <IdeiasObsoletas data={projetosData.rawData} />
 
       {/* Resultados */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-1 relative">
         {/* Menu de três pontos flutuante */}
         <div className="absolute top-2 right-2 z-50" ref={menuRef}>
           <button

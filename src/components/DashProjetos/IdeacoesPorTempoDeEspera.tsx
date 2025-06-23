@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
+import {
+  getGraficosConfig,
+  getChartDimensions,
+} from "../../constants/styleConfig";
 import { themeColors } from "../../utils/themeColors";
-import { getFontSizes } from "../../constants/styleConfig";
 
 interface IdeacoesPorTempoDeEsperaProps {
   data: EspacoDeProjetos[];
@@ -11,134 +22,160 @@ const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
   data,
 }) => {
   const [forceUpdate, setForceUpdate] = useState(0);
-  const fontSizes = getFontSizes();
+  const config = getGraficosConfig();
+  const chartDimensions = getChartDimensions();
 
   useEffect(() => {
     const handleTamanhoChange = () => {
       setForceUpdate((prev) => prev + 1);
     };
-
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
     return () => {
       window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
     };
   }, []);
 
-  const timePhases = React.useMemo(() => {
-    const phases = [
-      {
-        name: "Recente",
-        range: "0-90 dias",
-        min: 0,
-        max: 90,
-        color: "#10B981",
-        icon: "🌱",
-        description: "Ideias novas",
-      },
-      {
-        name: "Em Análise",
-        range: "91-180 dias",
-        min: 91,
-        max: 180,
-        color: "#F59E0B",
-        icon: "🔍",
-        description: "Precisa revisão",
-      },
-      {
-        name: "Quase Obsoleto",
-        range: "181-365 dias",
-        min: 181,
-        max: 365,
-        color: "#EF4444",
-        icon: "⚠️",
-        description: "Ação necessária",
-      },
-      {
-        name: "Obsoleto",
-        range: "365+ dias",
-        min: 366,
-        max: Infinity,
-        color: "#6B7280",
-        icon: "💀",
-        description: "Arquivar",
-      },
-    ];
+  const timePhases = [
+    {
+      name: "Recente",
+      color: "#10B981",
+      description: "Ideias novas",
+      min: 0,
+      max: 90,
+    },
+    {
+      name: "Em Análise",
+      color: "#F59E0B",
+      description: "Precisa revisão",
+      min: 91,
+      max: 180,
+    },
+    {
+      name: "Quase Obsoleto",
+      color: "#EF4444",
+      description: "Ação necessária",
+      min: 181,
+      max: 365,
+    },
+    {
+      name: "Obsoleto",
+      color: "#6B7280",
+      description: "Arquivar",
+      min: 366,
+      max: Infinity,
+    },
+  ];
 
-    return phases.map((phase) => {
-      const count = data.filter((item) => {
-        if (item.Status === "Backlog" || item.Status === "Backlog Priorizado") {
-          const dias = item["Dias desde criação"];
-          if (dias !== null && dias !== undefined) {
-            if (phase.max === Infinity) {
-              return dias > phase.min;
-            }
-            return dias >= phase.min && dias <= phase.max;
+  // Conta quantos projetos em cada fase
+  const phaseCounts = timePhases.map((phase) => {
+    const count = data.filter((item) => {
+      if (item.Status === "Backlog" || item.Status === "Backlog Priorizado") {
+        const dias = item["Dias desde criação"];
+        if (dias !== null && dias !== undefined) {
+          if (phase.max === Infinity) {
+            return dias > phase.min;
           }
+          return dias >= phase.min && dias <= phase.max;
         }
-        return false;
-      }).length;
+      }
+      return false;
+    }).length;
+    return { ...phase, count };
+  });
 
-      return { ...phase, count };
-    });
-  }, [data]);
+  // Pie chart config
+  const pieOuterRadius = chartDimensions.pie.outerRadius;
+  const pieInnerRadius = 0;
+
+  // Renderiza o label dentro da fatia
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+  }: any) => {
+    if (percent === 0) return null;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={config.valor}
+        fontWeight="bold"
+      >
+        {phaseCounts.find((p) => p.count && percent > 0)?.count}
+      </text>
+    );
+  };
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[250px] p-6">
-      <div className="w-full">
-        {/* Linha do tempo principal */}
-        <div className="relative">
-          {/* Linha horizontal base */}
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300 dark:bg-gray-600 transform -translate-y-1/2 rounded-full"></div>
-
-          {/* Fases da linha do tempo */}
-          <div className="relative flex justify-between items-center">
-            {timePhases.map((phase, index) => (
-              <div
-                key={phase.name}
-                className="flex flex-col items-center relative z-10 flex-1"
-              >
-                {/* Quadrado da fase */}
-                <div
-                  className="w-20 h-20 rounded-lg flex items-center justify-center text-3xl mb-3 shadow-md border-2 border-white dark:border-gray-800 mx-auto relative z-20"
-                  style={{ backgroundColor: phase.color }}
-                >
-                  {phase.icon}
-                </div>
-
-                {/* Conector para próxima fase */}
-                {index < timePhases.length - 1 && (
-                  <div
-                    className="absolute top-7 left-1/2 w-full h-1 transform -translate-y-1/2 rounded-full z-0"
-                    style={{ backgroundColor: phase.color }}
-                  ></div>
-                )}
-
-                {/* Informações da fase */}
-                <div className="text-center w-full px-2 relative z-10">
-                  <div className={`font-bold mb-1 ${fontSizes.legendaGrafico}`}>
-                    {phase.name}
-                  </div>
-                  <div
-                    className={`text-gray-600 dark:text-gray-400 mb-1 ${fontSizes.legendaGrafico}`}
-                  >
-                    {phase.range}
-                  </div>
-                  <div
-                    className={`font-bold rounded-full px-3 py-1.5 text-white ${fontSizes.valorTotalizador} inline-block text-lg mb-2`}
-                    style={{ backgroundColor: phase.color }}
-                  >
-                    {phase.count}
-                  </div>
-                  <div
-                    className={`text-gray-500 dark:text-gray-500 ${fontSizes.legendaGrafico} leading-tight`}
-                  >
-                    {phase.description}
-                  </div>
-                </div>
-              </div>
-            ))}
+    <div
+      className={`w-full h-full flex-1 flex flex-row items-center justify-center min-h-[180px] ${config.altura}`}
+    >
+      {/* Gráfico de pizza */}
+      <div className="flex-1 flex items-center justify-center min-w-[180px] min-h-[180px] h-full">
+        <ResponsiveContainer width="100%" height="90%">
+          <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+            <Pie
+              data={phaseCounts}
+              dataKey="count"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={pieOuterRadius}
+              innerRadius={pieInnerRadius}
+              labelLine={false}
+              label={renderCustomizedLabel}
+              paddingAngle={2}
+            >
+              {phaseCounts.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#22223b",
+                border: `1px solid #888`,
+                borderRadius: "8px",
+                fontSize: config.label,
+                color: "#fff",
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Legenda das fases ao lado */}
+      <div
+        className="flex flex-col flex-wrap justify-center items-start gap-y-2 gap-x-6 ml-6 h-full max-h-full min-w-[140px]"
+        style={{ columnCount: 1 }}
+      >
+        {phaseCounts.map((entry) => (
+          <div
+            key={entry.name}
+            className="flex items-center gap-2 mb-2 break-inside-avoid-column"
+          >
+            <span
+              className="inline-block w-4 h-2 rounded-sm"
+              style={{ background: entry.color }}
+            />
+            <span
+              className={`text-gray-800 dark:text-gray-200 font-medium ${config.label}`}
+            >
+              {entry.name}
+            </span>
+            <span className={`ml-2 text-gray-500 ${config.label}`}>
+              {entry.count}
+            </span>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

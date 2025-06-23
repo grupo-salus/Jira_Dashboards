@@ -60,9 +60,9 @@ const AnaliseDemandasPorCategoria: React.FC<
   }, [countByCategoria]);
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[400px]">
-      <ResponsiveContainer width="100%" height={400}>
-        <RadarChart data={radarData} outerRadius={160}>
+    <div className="w-full h-full flex-1 flex items-center justify-center">
+      <ResponsiveContainer width="100%" height="100%">
+        <RadarChart data={radarData} outerRadius="165%">
           <PolarGrid />
           <PolarAngleAxis
             dataKey="categoria"
@@ -129,9 +129,9 @@ const AnaliseDemandasPorCategoria: React.FC<
                           themeColors.chart[index % themeColors.chart.length],
                       }}
                     />
-                    <span className="text-sm font-medium">
+                    <span className="text-xs font-medium">
                       {cat.categoria}:{" "}
-                      <span className="font-bold text-green-600">
+                      <span className="font-bold text-green-600 text-xs">
                         {cat.count}
                       </span>
                     </span>

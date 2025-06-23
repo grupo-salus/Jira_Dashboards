@@ -96,6 +96,54 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
     );
   };
 
+  // Componente customizado para o tick do eixo X com quebra de linha, centralizado e colorido
+  const CustomXAxisTick = (props: any) => {
+    const { x, y, payload } = props;
+    const text = payload.value;
+    // Largura máxima para cada linha antes da quebra
+    const maxCharsPerLine = 12;
+    const words = text.split(" ");
+    let lines: string[] = [];
+    let currentLine = "";
+
+    words.forEach((word: string) => {
+      if ((currentLine + " " + word).length > maxCharsPerLine && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = currentLine ? `${currentLine} ${word}` : word;
+      }
+    });
+    lines.push(currentLine);
+
+    // Descobrir a cor da barra correspondente
+    const areaIndex = areaCountFiltered.findIndex((a) => a.area === text);
+    const color = themeColors.chart[areaIndex % themeColors.chart.length];
+
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          x={0}
+          y={20} // margin para afastar do gráfico
+          textAnchor="middle"
+          fill={color}
+          fontSize={fontSizes.eixoGrafico}
+          fontWeight="bold"
+        >
+          {lines.map((line, index) => (
+            <tspan
+              x={0}
+              dy={index === 0 ? 0 : fontSizes.eixoGrafico}
+              key={index}
+            >
+              {line}
+            </tspan>
+          ))}
+        </text>
+      </g>
+    );
+  };
+
   // Agrupa projetos por área
   const areaCount = React.useMemo(() => {
     const counts: Record<string, number> = {};
@@ -106,23 +154,23 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
     return Object.entries(counts).map(([area, count]) => ({ area, count }));
   }, [data]);
 
+  // Filtrar "Não informado" das barras
+  const areaCountFiltered = areaCount.filter((a) => a.area !== "Não informado");
+
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[300px]">
+    <div className="w-full h-full flex-1 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={areaCount}
-          layout="vertical"
-          margin={{ left: 40, right: 20, top: 20, bottom: 20 }}
+          data={areaCountFiltered}
+          margin={{ left: 20, right: 20, top: 25, bottom: 20 }}
         >
-          <XAxis type="number" allowDecimals={false} />
-          <YAxis
+          <XAxis
             dataKey="area"
             type="category"
-            width={150} // Aumentado para dar espaço para a quebra de linha
-            tick={<CustomYAxisTick />}
-            tickLine={false}
-            axisLine={false}
+            tick={<CustomXAxisTick />}
+            interval={0}
           />
+          <YAxis type="number" allowDecimals={false} />
           <Tooltip
             contentStyle={{
               backgroundColor: themeColors.cardBg.light,
@@ -132,13 +180,13 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
             }}
           />
           <Bar dataKey="count">
-            {areaCount.map((entry, index) => (
+            {areaCountFiltered.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={themeColors.chart[index % themeColors.chart.length]}
               />
             ))}
-            <LabelList dataKey="count" position="right" />
+            <LabelList dataKey="count" position="top" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

@@ -107,7 +107,7 @@ const KanbanColuna: React.FC<{
   projetos: EspacoDeProjetos[];
 }> = ({ status, projetos }) => (
   <div
-    className={`${KANBAN_CONFIG.COLUMN_COLOR} border border-gray-200 dark:border-gray-700 rounded-lg ${KANBAN_CONFIG.COLUMN_MIN_HEIGHT} p-4 ${KANBAN_CONFIG.COLUMN_WIDTH}`}
+    className={`${KANBAN_CONFIG.COLUMN_COLOR} border border-gray-200 dark:border-gray-700 rounded-lg ${KANBAN_CONFIG.COLUMN_MIN_HEIGHT} p-1 ${KANBAN_CONFIG.COLUMN_WIDTH}`}
   >
     <ColunaHeader status={status} count={projetos.length} />
 
@@ -155,7 +155,7 @@ const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
 
   return (
     <div className="w-full">
-      <div className="flex gap-4 p-4 h-full">
+      <div className="flex gap-4 p-2 h-full">
         {COLUMN_ORDER.map((status) => {
           const projetos = projetosPorStatus[status] || [];
           return (
