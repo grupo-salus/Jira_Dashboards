@@ -98,12 +98,27 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     df["Status de ideação"] = df["Dias desde criação"].apply(classificar_status_ideacao)
 
     # EXECUÇÃO
+    def get_ref_date(row):
+        status = str(row.get("Status", "")).strip().lower()
+        if status in ["encerramento", "concluído", "concluido", "entregue", "cancelado"]:
+            # Usa a data de término se existir, senão data de atualização, senão hoje
+            if pd.notnull(row.get("Data de término")):
+                return row["Data de término"].date()
+            elif pd.notnull(row.get("Data de atualização")):
+                return row["Data de atualização"].date()
+            else:
+                return hoje
+        else:
+            return hoje
+
     df["Dias planejados"] = (df["Target end"] - df["Target start"]).dt.days
-    df["Dias desde o início"] = df["Target start"].apply(
-        lambda x: (hoje - x.date()).days if pd.notnull(x) else None
+    df["Dias desde o início"] = df.apply(
+        lambda row: (get_ref_date(row) - row["Target start"].date()).days if pd.notnull(row["Target start"]) else None,
+        axis=1
     )
-    df["Dias restantes"] = df["Target end"].apply(
-        lambda x: (x.date() - hoje).days if pd.notnull(x) else None
+    df["Dias restantes"] = df.apply(
+        lambda row: (row["Target end"].date() - get_ref_date(row)).days if pd.notnull(row["Target end"]) else None,
+        axis=1
     )
 
     def calcular_pct_tempo(row):
@@ -126,7 +141,7 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
 
         target_start = target_start.date()
         target_end = target_end.date()
-        data_termino = data_termino.date() if pd.notnull(data_termino) else None
+        data_termino = data_termino if pd.notnull(data_termino) else target_end
 
         dias_restantes = (target_end - hoje).days
         pct = row.get("% do tempo decorrido", 0)

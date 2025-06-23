@@ -259,8 +259,44 @@ const ExecutionMetrics: React.FC<{ projeto: EspacoDeProjetos }> = ({
           projeto["Dias restantes"] !== null && (
             <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
               <ClockIcon size={iconSizes.card} className="text-white" />
-              {projeto["Dias desde o início"]} dias passados •{" "}
-              {projeto["Dias restantes"]} dias restantes
+              {projeto["Dias desde o início"]} dias passados
+              {/* Lógica de exibição para dias restantes */}
+              {(() => {
+                const status = normalizarStatus(projeto.Status);
+                const finalizado = [
+                  "ENCERRAMENTO",
+                  "Concluído",
+                  "Cancelado",
+                ].includes(status);
+                const diasRestantes = projeto["Dias restantes"];
+                if (finalizado) {
+                  if (diasRestantes < 0) {
+                    return (
+                      <span>
+                        • {Math.abs(diasRestantes)} dia
+                        {Math.abs(diasRestantes) > 1 ? "s" : ""} de atraso
+                      </span>
+                    );
+                  } else if (diasRestantes === 0) {
+                    return <span>• Entregue no prazo</span>;
+                  } else {
+                    return (
+                      <span>
+                        • {diasRestantes} dia{diasRestantes > 1 ? "s" : ""}{" "}
+                        restantes
+                      </span>
+                    );
+                  }
+                } else {
+                  return (
+                    <span>
+                      • {diasRestantes} dia
+                      {diasRestantes > 1 || diasRestantes < -1 ? "s" : ""}{" "}
+                      restantes
+                    </span>
+                  );
+                }
+              })()}
             </div>
           )}
         {projeto["% do tempo decorrido"] !== null && (
