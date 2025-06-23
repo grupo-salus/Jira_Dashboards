@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../constants/priorities";
 import { themeColors } from "../../utils/themeColors";
 import {
   STATUS_COLUMNS,
   COLUMN_ORDER,
-  STATUS_MAP,
   normalizarStatus,
   capitalizeFirst,
 } from "./kanbanUtils";
@@ -130,12 +129,12 @@ const KanbanColuna: React.FC<{
  * Componente principal do Kanban de Projetos
  */
 const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
+  // const [forceUpdate, setForceUpdate] = useState(0); // Removido pois não é utilizado
 
   // Listener para mudanças no tamanho global
   useEffect(() => {
     const handleTamanhoChange = () => {
-      setForceUpdate((prev) => prev + 1); // Força re-render
+      // setForceUpdate((prev) => prev + 1); // Força re-render
     };
 
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
