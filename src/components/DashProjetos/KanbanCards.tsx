@@ -50,8 +50,7 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CardsIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -59,13 +58,11 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       {projeto["Dias desde criação"] !== null && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <ClockIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Em espera há: {projeto["Dias desde criação"]} dias
         </div>
       )}
@@ -74,16 +71,8 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       {projeto["Status de ideação"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-            <EpicIcon size={iconSizes.card} className="text-white" />
-            <span>Status de ideação:</span>
-            <span
-              className={`ml-1 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                projeto["Status de ideação"]
-              )} ${fontSizes.statusCardKanban}`}
-            >
-              {projeto["Status de ideação"]}
-            </span>
+          <div className="text-gray-600 dark:text-gray-400">
+            Status de ideação: {projeto["Status de ideação"]}
           </div>
         </>
       )}
@@ -121,8 +110,7 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CardsIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -130,18 +118,15 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       {projeto["Dias desde criação"] !== null && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <ClockIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Em espera há: {projeto["Dias desde criação"]} dias
         </div>
       )}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Última atualização: {formatDate(projeto["Data de atualização"])}
       </div>
     </div>
@@ -192,27 +177,23 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         )
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CardsIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Categoria: {projeto.Categoria}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       {projeto["Dias desde criação"] !== null && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <ClockIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Em espera há: {projeto["Dias desde criação"]} dias
         </div>
       )}
       {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CalendarIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Início previsto: {formatDate(projeto["Target start"])}
         </div>
       )}
@@ -221,11 +202,7 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {projeto["Investimento Esperado"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-            <ExclamationTriangleIcon
-              size={iconSizes.card}
-              className="text-white"
-            />
+          <div className="text-gray-600 dark:text-gray-400">
             Investimento esperado: {projeto["Investimento Esperado"]}
           </div>
         </>
@@ -249,16 +226,14 @@ const ExecutionMetrics: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Métricas de Tempo */}
       <div className="space-y-2">
         {projeto["Target start"] && projeto["Target end"] && (
-          <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-            <CalendarIcon size={iconSizes.card} className="text-white" />
+          <div className="text-gray-600 dark:text-gray-400">
             {formatDate(projeto["Target start"])} →{" "}
             {formatDate(projeto["Target end"])}
           </div>
         )}
         {projeto["Dias desde o início"] !== null &&
           projeto["Dias restantes"] !== null && (
-            <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-              <ClockIcon size={iconSizes.card} className="text-white" />
+            <div className="text-gray-600 dark:text-gray-400">
               {projeto["Dias desde o início"]} dias passados
               {/* Lógica de exibição para dias restantes */}
               {(() => {
@@ -302,7 +277,6 @@ const ExecutionMetrics: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {projeto["% do tempo decorrido"] !== null && (
           <div className="text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-3">
-              <ClockIcon size={iconSizes.card} className="text-white" />
               <span>{projeto["% do tempo decorrido"]}% do tempo</span>
               {projeto["Status de prazo"] && (
                 <span
@@ -334,8 +308,7 @@ const ExecutionMetrics: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <div className="space-y-2">
         {projeto["Estimativa original (segundos)"] &&
           projeto["Tempo registrado (segundos)"] !== null && (
-            <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-              <ClockIcon size={iconSizes.card} className="text-white" />
+            <div className="text-gray-600 dark:text-gray-400">
               Estimativa:{" "}
               {formatarSegundos(projeto["Estimativa original (segundos)"])} •
               Registrado:{" "}
@@ -345,10 +318,6 @@ const ExecutionMetrics: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {projeto["% da estimativa usada"] !== null && (
           <div>
             <div className="flex items-center text-gray-600 dark:text-gray-400 gap-3">
-              <ExclamationTriangleIcon
-                size={iconSizes.card}
-                className="text-white"
-              />
               <span>Esforço: {projeto["% da estimativa usada"]}%</span>
               {projeto["Status de esforço"] && (
                 <span
@@ -408,14 +377,12 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CardsIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Categoria: {projeto.Categoria}
         </div>
       )}
       {/* Criado em */}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       <ExecutionMetrics projeto={projeto} />
@@ -453,8 +420,7 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CardsIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -462,12 +428,10 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Resolvido em: {formatDate(projeto["Data de atualização"])}
       </div>
       <ExecutionMetrics projeto={projeto} />
@@ -503,20 +467,17 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CardsIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Categoria: {projeto.Categoria}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Entregue em: {formatDate(projeto["Data de término"])}
       </div>
       <ExecutionMetrics projeto={projeto} />
@@ -554,8 +515,7 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-          <CardsIcon size={iconSizes.card} className="text-white" />
+        <div className="text-gray-600 dark:text-gray-400">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -563,12 +523,10 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
-      <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-        <CalendarIcon size={iconSizes.card} className="text-white" />
+      <div className="text-gray-600 dark:text-gray-400">
         Cancelado em: {formatDate(projeto["Data de atualização"])}
       </div>
     </div>
@@ -627,14 +585,12 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
             </div>
           )}
           {projeto.Categoria && (
-            <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-              <CardsIcon size={iconSizes.card} className="text-white" />
+            <div className="text-gray-600 dark:text-gray-400">
               Categoria: {projeto.Categoria}
             </div>
           )}
           {projeto.Responsável && (
-            <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-              <EpicIcon size={iconSizes.card} className="text-indigo-500" />
+            <div className="text-gray-600 dark:text-gray-400">
               Responsável: {projeto.Responsável}
             </div>
           )}
@@ -642,8 +598,7 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
           {/* Datas */}
-          <div className="text-gray-600 dark:text-gray-400 flex items-center gap-3">
-            <CalendarIcon size={iconSizes.card} className="text-white" />
+          <div className="text-gray-600 dark:text-gray-400">
             Criado em: {formatDate(projeto["Data de criação"])}
           </div>
         </div>
