@@ -191,12 +191,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     if (!value) return "-";
 
     switch (column) {
-      case "PosicaoBacklog":
-        return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-            #{value}
-          </span>
-        );
       case "Data de criação":
       case "Data de atualização":
       case "Data de término":

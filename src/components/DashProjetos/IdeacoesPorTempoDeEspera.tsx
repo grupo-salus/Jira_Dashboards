@@ -99,7 +99,7 @@ const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
               >
                 {/* Quadrado da fase */}
                 <div
-                  className="w-14 h-14 rounded-lg flex items-center justify-center text-xl mb-3 shadow-md border-2 border-white dark:border-gray-800 mx-auto relative z-20"
+                  className="w-20 h-20 rounded-lg flex items-center justify-center text-3xl mb-3 shadow-md border-2 border-white dark:border-gray-800 mx-auto relative z-20"
                   style={{ backgroundColor: phase.color }}
                 >
                   {phase.icon}
@@ -124,7 +124,7 @@ const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
                     {phase.range}
                   </div>
                   <div
-                    className={`font-bold rounded-full px-2 py-1 text-white ${fontSizes.valorTotalizador} inline-block text-sm mb-2`}
+                    className={`font-bold rounded-full px-3 py-1.5 text-white ${fontSizes.valorTotalizador} inline-block text-lg mb-2`}
                     style={{ backgroundColor: phase.color }}
                   >
                     {phase.count}
