@@ -22,7 +22,7 @@ const TotalizadorCard: React.FC<{
       <div className="flex items-center gap-4">
         {icon}
         <div>
-          <p className={`text-gray-500 dark:text-gray-400 ${config.label}`}>
+          <p className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${config.label}`}>
             {label}
           </p>
           <p

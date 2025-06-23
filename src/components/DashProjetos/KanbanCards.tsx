@@ -39,7 +39,7 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-100">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -47,11 +47,11 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       {projeto["Dias desde criação"] !== null && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Em espera há: {projeto["Dias desde criação"]} dias
         </div>
       )}
@@ -60,7 +60,7 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       {projeto["Status de ideação"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="text-gray-600 dark:text-gray-400">
+          <div className="text-gray-600 dark:text-gray-200">
             Status de ideação: {projeto["Status de ideação"]}
           </div>
         </>
@@ -93,7 +93,7 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -101,15 +101,15 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       {projeto["Dias desde criação"] !== null && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Em espera há: {projeto["Dias desde criação"]} dias
         </div>
       )}
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Última atualização: {formatDate(projeto["Data de atualização"])}
       </div>
     </div>
@@ -154,23 +154,23 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         )
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Categoria: {projeto.Categoria}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       {projeto["Dias desde criação"] !== null && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Em espera há: {projeto["Dias desde criação"]} dias
         </div>
       )}
       {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Início previsto: {formatDate(projeto["Target start"])}
         </div>
       )}
@@ -179,7 +179,7 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {projeto["Investimento Esperado"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="text-gray-600 dark:text-gray-400">
+          <div className="text-gray-600 dark:text-gray-200">
             Investimento esperado: {projeto["Investimento Esperado"]}
           </div>
         </>
@@ -214,17 +214,17 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Categoria: {projeto.Categoria}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
       {projeto["Target start"] && projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Período planejado: <br />
           {formatDate(projeto["Target start"])} →{" "}
           {formatDate(projeto["Target end"])} <br />
@@ -240,7 +240,7 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <div className="pt-2">
             {projeto["Dias desde o início"] !== null &&
               projeto["Dias restantes"] !== null && (
-                <div className="text-gray-600 dark:text-gray-400">
+                <div className="text-gray-600 dark:text-gray-200">
                   Dias desde o início: {projeto["Dias desde o início"]}
                   {(() => {
                     const status = normalizarStatus(projeto.Status);
@@ -326,7 +326,7 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
             <div className="font-medium">Estimativa vs. Registrado:</div>
             {projeto["Estimativa original (segundos)"] &&
               projeto["Tempo registrado (segundos)"] !== null && (
-                <div className="text-gray-600 dark:text-gray-400">
+                <div className="text-gray-600 dark:text-gray-200">
                   Estimativa:{" "}
                   {formatarSegundos(projeto["Estimativa original (segundos)"])}{" "}
                   • Registrado:{" "}
@@ -382,9 +382,6 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <span>{projeto.Título}</span>
       </div>
       {/* Informações Gerais */}
-      {(projeto["Departamento Solicitante"] || projeto.Categoria) && (
-        <hr className="my-1 border-gray-300 dark:border-gray-600" />
-      )}
       {projeto["Departamento Solicitante"] && (
         <div className="flex items-center gap-2">
           <span
@@ -395,7 +392,7 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -406,17 +403,17 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       )}
       {/* Datas */}
       {projeto["Data de criação"] && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Criado em: {formatDate(projeto["Data de criação"])}
         </div>
       )}
       {projeto["Data de atualização"] && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Resolvido em: {formatDate(projeto["Data de atualização"])}
         </div>
       )}
       {projeto["Target start"] && projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Período planejado: <br />
           {formatDate(projeto["Target start"])} →{" "}
           {formatDate(projeto["Target end"])} <br />
@@ -431,7 +428,7 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <div className="pt-2">
         {projeto["Dias desde o início"] !== null &&
           projeto["Dias restantes"] !== null && (
-            <div className="text-gray-600 dark:text-gray-400">
+            <div className="text-gray-600 dark:text-gray-200">
               Dias desde o início: {projeto["Dias desde o início"]}
               {(() => {
                 const status = normalizarStatus(projeto.Status);
@@ -509,7 +506,7 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <div className="font-medium">Estimativa vs. Registrado:</div>
         {projeto["Estimativa original (segundos)"] &&
           projeto["Tempo registrado (segundos)"] !== null && (
-            <div className="text-gray-600 dark:text-gray-400">
+            <div className="text-gray-600 dark:text-gray-200">
               Estimativa:{" "}
               {formatarSegundos(projeto["Estimativa original (segundos)"])} •
               Registrado:{" "}
@@ -571,16 +568,16 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Categoria: {projeto.Categoria}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Entregue em: {formatDate(projeto["Data de término"])}
       </div>
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -588,7 +585,7 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       <div className="pt-2">
         {projeto["Dias desde o início"] !== null &&
           projeto["Dias restantes"] !== null && (
-            <div className="text-gray-600 dark:text-gray-400">
+            <div className="text-gray-600 dark:text-gray-200">
               Dias desde o início: {projeto["Dias desde o início"]}
               {(() => {
                 const status = normalizarStatus(projeto.Status);
@@ -666,7 +663,7 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         <div className="font-medium">Estimativa vs. Registrado:</div>
         {projeto["Estimativa original (segundos)"] &&
           projeto["Tempo registrado (segundos)"] !== null && (
-            <div className="text-gray-600 dark:text-gray-400">
+            <div className="text-gray-600 dark:text-gray-200">
               Estimativa:{" "}
               {formatarSegundos(projeto["Estimativa original (segundos)"])} •
               Registrado:{" "}
@@ -729,7 +726,7 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
       {projeto.Categoria && (
-        <div className="text-gray-600 dark:text-gray-400">
+        <div className="text-gray-600 dark:text-gray-200">
           Categoria: {projeto.Categoria}
         </div>
       )}
@@ -737,10 +734,10 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
       {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
-      <div className="text-gray-600 dark:text-gray-400">
+      <div className="text-gray-600 dark:text-gray-200">
         Cancelado em: {formatDate(projeto["Data de atualização"])}
       </div>
     </div>
@@ -794,12 +791,12 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
             </div>
           )}
           {projeto.Categoria && (
-            <div className="text-gray-600 dark:text-gray-400">
+            <div className="text-gray-600 dark:text-gray-200">
               Categoria: {projeto.Categoria}
             </div>
           )}
           {projeto.Responsável && (
-            <div className="text-gray-600 dark:text-gray-400">
+            <div className="text-gray-600 dark:text-gray-200">
               Responsável: {projeto.Responsável}
             </div>
           )}
@@ -807,7 +804,7 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
           {/* Datas */}
-          <div className="text-gray-600 dark:text-gray-400">
+          <div className="text-gray-600 dark:text-gray-200">
             Criado em: {formatDate(projeto["Data de criação"])}
           </div>
         </div>

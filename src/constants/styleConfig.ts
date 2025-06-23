@@ -19,7 +19,7 @@
 
 // Estado global para o tamanho
 let tamanhoGlobalAtual: "pequeno" | "medio" | "grande" | "muitoGrande" =
-  "medio";
+  "pequeno";
 
 // Função para alterar o tamanho global
 export const setTamanhoGlobal = (
@@ -41,13 +41,15 @@ export const getTamanhoGlobal = () => tamanhoGlobalAtual;
 // SEÇÃO: TOTALIZADORES
 const totalizadoresConfig = {
   pequeno: {
-    titulo: "text-lg",
+    titulo: "text-lg font-bold",
     valor: "text-2xl",
     label: "text-base",
     icone: 28,
     largura: "w-56",
     altura: "h-24",
     padding: "p-5",
+    filtroLabel: "text-xs",
+    filtroInput: "text-xs px-2 py-1 h-7",
   },
   medio: {
     titulo: "text-xl",
@@ -57,6 +59,8 @@ const totalizadoresConfig = {
     largura: "w-72",
     altura: "h-28",
     padding: "p-6",
+    filtroLabel: "text-sm",
+    filtroInput: "text-sm px-3 py-2 h-8",
   },
   grande: {
     titulo: "text-2xl",
@@ -66,6 +70,8 @@ const totalizadoresConfig = {
     largura: "w-96",
     altura: "h-32",
     padding: "p-7",
+    filtroLabel: "text-base",
+    filtroInput: "text-base px-4 py-2 h-10",
   },
   muitoGrande: {
     titulo: "text-3xl",
@@ -75,13 +81,15 @@ const totalizadoresConfig = {
     largura: "w-[32rem]",
     altura: "h-40",
     padding: "p-8",
+    filtroLabel: "text-lg",
+    filtroInput: "text-lg px-5 py-3 h-12",
   },
 };
 
 // SEÇÃO: GRÁFICOS
 const graficosConfig = {
   pequeno: {
-    titulo: "text-xs",
+    titulo: "text-sm",
     label: "text-xs",
     valor: "text-xs",
     eixo: 10,
@@ -141,12 +149,12 @@ const graficosConfig = {
 // SEÇÃO: KANBAN
 const kanbanConfig = {
   pequeno: {
-    tituloColuna: "text-[8px]",
-    contador: "text-[6px]", 
-    tituloCard: "text-[9px]",
-    corpoCard: "text-[7px]",
-    tag: "text-[6px]",
-    status: "text-[6px]",
+    tituloColuna: "text-[14px]",
+    contador: "text-[15px]",
+    tituloCard: "text-[13px]",
+    corpoCard: "text-[10px]",
+    tag: "text-[9px]",
+    status: "text-[11px]",
     icone: 8,
     larguraCard: "w-16",
     alturaCard: "h-6",
@@ -156,7 +164,7 @@ const kanbanConfig = {
   medio: {
     tituloColuna: "text-[10px]",
     contador: "text-[8px]",
-    tituloCard: "text-[10px]", 
+    tituloCard: "text-[10px]",
     corpoCard: "text-[8px]",
     tag: "text-[8px]",
     status: "text-[8px]",
@@ -184,13 +192,33 @@ const kanbanConfig = {
     contador: "text-xs",
     tituloCard: "text-sm",
     corpoCard: "text-xs",
-    tag: "text-xs", 
+    tag: "text-xs",
     status: "text-xs",
     icone: 20,
     larguraCard: "w-56",
     alturaCard: "h-24",
     paddingCard: "p-4",
     gapColunas: "gap-4",
+  },
+};
+
+// SEÇÃO: FILTROS
+const filtrosConfig = {
+  pequeno: {
+    label: "text-xs",
+    input: "text-xs px-2 py-1 h-7",
+  },
+  medio: {
+    label: "text-sm",
+    input: "text-sm px-3 py-2 h-8",
+  },
+  grande: {
+    label: "text-base",
+    input: "text-base px-4 py-2 h-10",
+  },
+  muitoGrande: {
+    label: "text-lg",
+    input: "text-lg px-5 py-3 h-12",
   },
 };
 
@@ -213,6 +241,11 @@ export const getKanbanConfig = () => {
   return kanbanConfig[tamanhoGlobalAtual];
 };
 
+// Função para obter configurações dos Filtros
+export const getFiltrosConfig = () => {
+  return filtrosConfig[tamanhoGlobalAtual];
+};
+
 // ============================================================================
 // FUNÇÕES DE COMPATIBILIDADE (para componentes existentes)
 // ============================================================================
@@ -222,6 +255,7 @@ export const getFontSizes = () => {
   const totalizadores = getTotalizadoresConfig();
   const graficos = getGraficosConfig();
   const kanban = getKanbanConfig();
+  const filtros = getFiltrosConfig();
 
   return {
     // Títulos das páginas e seções principais
@@ -247,8 +281,8 @@ export const getFontSizes = () => {
     valorTotalizador: totalizadores.valor,
 
     // Filtros
-    labelFiltro: totalizadores.titulo,
-    inputFiltro: totalizadores.titulo,
+    labelFiltro: filtros.label,
+    inputFiltro: filtros.input,
 
     // Botões
     textoBotao: totalizadores.titulo,
