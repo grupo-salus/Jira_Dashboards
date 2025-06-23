@@ -54,7 +54,7 @@ const KanbanCard: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
   return (
     // essa div é o card do kanban
     <div
-      className="group relative flex w-full bg-white dark:bg-gray-900 rounded-lg p-2 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-shadow cursor-pointer items-start"
+      className="group relative flex w-full bg-white dark:bg-gray-900 rounded-lg p-2 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-white/90 dark:hover:bg-gray-900/90 transition-shadow cursor-pointer items-start"
       tabIndex={0}
     >
       {/* Barra de prioridade */}
