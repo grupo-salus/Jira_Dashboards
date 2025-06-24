@@ -18,7 +18,7 @@ import { useJira } from "../context/JiraContext";
 import AcompanhamentoTITable from "../components/DashAcompanhamentoTI/AcompanhamentoTITable";
 
 const TIDashboard: React.FC = () => {
-  const { acompanhamentoTIData, refreshAcompanhamentoTIData } = useJira();
+  const { acompanhamentoTIData } = useJira();
   const [filtros, setFiltros] = useState({
     responsavel: "",
     prioridade: "",

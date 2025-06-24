@@ -22,16 +22,11 @@ import { EspacoDeProjetos, JiraStatus } from "../types/Typesjira";
 import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
 import { getPriorityConfig } from "../constants/priorities";
 import {
-  STATUS_MAP,
   COLUMN_ORDER,
-  STATUS_COLUMNS,
-  normalizarStatus,
 } from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
-import ProjetosPiePorStatus from "../components/DashProjetos/ProjetosPiePorStatus";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
-import IdeacoesPorTempoDeEspera from "../components/DashProjetos/IdeacoesPorTempoDeEspera";
 import AnaliseDemandasPorCategoria from "../components/DashProjetos/AnaliseDemandasPorCategoria";
 import IdeiasObsoletas from "../components/DashProjetos/IdeiasObsoletas";
 import {
@@ -56,7 +51,7 @@ const DashProjetos: React.FC = () => {
   const [menuAberto, setMenuAberto] = useState(false);
   const [filtrosVisiveis, setFiltrosVisiveis] = useState(true);
   const [tamanhoAtual, setTamanhoAtual] = useState(getTamanhoGlobal());
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [, setForceUpdate] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const [filtros, setFiltros] = useState({
     area: "",
@@ -200,17 +195,6 @@ const DashProjetos: React.FC = () => {
     filtros.grupo_solicitante,
   ]);
 
-  const dadosParaSolicitante = useMemo(() => {
-    const filtrosTemp = { ...filtros, solicitante: "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.projeto,
-    filtros.prioridade,
-    filtros.status,
-    filtros.grupo_solicitante,
-  ]);
 
   const dadosParaPrioridade = useMemo(() => {
     const filtrosTemp = { ...filtros, prioridade: "" };
@@ -272,16 +256,6 @@ const DashProjetos: React.FC = () => {
     [dadosParaProjeto]
   );
 
-  const solicitanteOptions = useMemo(
-    () => [
-      ...new Set(
-        dadosParaSolicitante
-          .map((i: EspacoDeProjetos) => i.Solicitante)
-          .filter((value): value is string => Boolean(value))
-      ),
-    ],
-    [dadosParaSolicitante]
-  );
 
   const prioridadeOptions = useMemo(
     () => [

@@ -4,7 +4,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   Cell,
@@ -33,7 +32,7 @@ const prioridadeCores = {
 const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   data,
 }) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [, setForceUpdate] = useState(0);
 
   // Obter configurações atuais
   const fontSizes = getFontSizes();

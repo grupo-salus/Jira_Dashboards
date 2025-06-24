@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   EspacoDeProjetos,
-  JiraStatus,
-  PrazoStatus,
-  EsforcoStatus,
-  IdeacaoStatus,
 } from "../../types/Typesjira";
 import {
   formatDate,

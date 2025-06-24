@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   RadarChart,
   Radar,
@@ -8,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Label,
   LabelList,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
@@ -22,12 +21,11 @@ interface AnaliseDemandasPorCategoriaProps {
 const AnaliseDemandasPorCategoria: React.FC<
   AnaliseDemandasPorCategoriaProps
 > = ({ data }) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
   const fontSizes = getFontSizes();
 
   useEffect(() => {
     const handleTamanhoChange = () => {
-      setForceUpdate((prev) => prev + 1);
+      // Nenhuma ação necessária, pois forceUpdate foi removido
     };
 
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
@@ -66,13 +64,13 @@ const AnaliseDemandasPorCategoria: React.FC<
           <PolarGrid />
           <PolarAngleAxis
             dataKey="categoria"
-            tick={({ payload, x, y, textAnchor, ...props }) => {
-              const index = countByCategoria.findIndex(
+            tick={({ payload, x, y, textAnchor }) => {
+              const idx = countByCategoria.findIndex(
                 (cat) => cat.categoria === payload.value
               );
               const color =
-                index >= 0
-                  ? themeColors.chart[index % themeColors.chart.length]
+                idx >= 0
+                  ? themeColors.chart[idx % themeColors.chart.length]
                   : "#000";
               return (
                 <text
@@ -104,7 +102,7 @@ const AnaliseDemandasPorCategoria: React.FC<
               fontSize: fontSizes.tooltipGrafico,
             }}
           />
-          {countByCategoria.map((cat, index) => (
+          {countByCategoria.map((cat) => (
             <Radar
               key={cat.categoria}
               name={cat.categoria}
@@ -118,15 +116,15 @@ const AnaliseDemandasPorCategoria: React.FC<
             </Radar>
           ))}
           <Legend
-            content={({ payload }) => (
+            content={() => (
               <div className="flex flex-col gap-2 mt-4">
-                {countByCategoria.map((cat, index) => (
+                {countByCategoria.map((cat, idx) => (
                   <div key={cat.categoria} className="flex items-center gap-2">
                     <div
                       className="w-4 h-4 rounded"
                       style={{
                         backgroundColor:
-                          themeColors.chart[index % themeColors.chart.length],
+                          themeColors.chart[idx % themeColors.chart.length],
                       }}
                     />
                     <span className="text-xs font-medium">

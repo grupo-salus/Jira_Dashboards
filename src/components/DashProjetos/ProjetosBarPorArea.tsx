@@ -18,7 +18,7 @@ interface ProjetosBarPorAreaProps {
 }
 
 const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [, setForceUpdate] = useState(0);
 
   // Obter configurações atuais
   const fontSizes = getFontSizes();
@@ -48,53 +48,6 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
   }, []);
 
   // Componente customizado para o tick do eixo Y com quebra de linha
-  const CustomYAxisTick = (props: any) => {
-    const { x, y, payload } = props;
-    const text = payload.value;
-    // Largura máxima para cada linha antes da quebra
-    const maxCharsPerLine = 15;
-    const words = text.split(" ");
-    let lines: string[] = [];
-    let currentLine = "";
-
-    words.forEach((word: string) => {
-      if ((currentLine + " " + word).length > maxCharsPerLine && currentLine) {
-        lines.push(currentLine);
-        currentLine = word;
-      } else {
-        currentLine = currentLine ? `${currentLine} ${word}` : word;
-      }
-    });
-    lines.push(currentLine);
-
-    // Função para determinar a cor do texto baseada no tema
-    const getTextColor = () => {
-      const isDark = document.documentElement.classList.contains("dark");
-      return isDark ? "#ffffff" : "#111827";
-    };
-
-    // Ajusta a posição vertical para centralizar o texto multi-linha
-    const yOffset = (lines.length - 1) * (fontSizes.eixoGrafico / 2);
-
-    return (
-      <g transform={`translate(${x},${y})`}>
-        <text
-          x={0}
-          y={-yOffset}
-          textAnchor="end"
-          fill={getTextColor()}
-          fontSize={fontSizes.eixoGrafico}
-          fontWeight="500"
-        >
-          {lines.map((line, index) => (
-            <tspan x={0} dy={index > 0 ? fontSizes.eixoGrafico : 0} key={index}>
-              {line}
-            </tspan>
-          ))}
-        </text>
-      </g>
-    );
-  };
 
   // Componente customizado para o tick do eixo X com quebra de linha, centralizado e colorido
   const CustomXAxisTick = (props: any) => {
@@ -180,7 +133,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
             }}
           />
           <Bar dataKey="count">
-            {areaCountFiltered.map((entry, index) => (
+            {areaCountFiltered.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={themeColors.chart[index % themeColors.chart.length]}

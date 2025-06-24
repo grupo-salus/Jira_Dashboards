@@ -6,10 +6,8 @@ import {
   getStatusColor,
   normalizarStatus,
 } from "./kanbanUtils";
-import { LightbulbIcon } from "../icons/DashboardIcons";
-import { getFontSizes, getKanbanConfig } from "../../constants/styleConfig";
+import { getFontSizes } from "../../constants/styleConfig";
 
-const KANBAN_CONFIG = getKanbanConfig();
 const fontSizes = getFontSizes();
 
 // ============================================================================

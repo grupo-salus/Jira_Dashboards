@@ -5,7 +5,6 @@ import {
   Cell,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
@@ -35,7 +34,7 @@ const statusNameMap: Record<string, string> = {
 const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
   data,
 }) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [, setForceUpdate] = useState(0);
 
   // Obter configurações atuais
   const fontSizes = getFontSizes();

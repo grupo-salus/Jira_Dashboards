@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   PieChart,
   Pie,
   Cell,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   getGraficosConfig,
   getChartDimensions,
 } from "../../constants/styleConfig";
-import { themeColors } from "../../utils/themeColors";
 
 interface IdeacoesPorTempoDeEsperaProps {
   data: EspacoDeProjetos[];
@@ -21,19 +19,8 @@ interface IdeacoesPorTempoDeEsperaProps {
 const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
   data,
 }) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
   const config = getGraficosConfig();
   const chartDimensions = getChartDimensions();
-
-  useEffect(() => {
-    const handleTamanhoChange = () => {
-      setForceUpdate((prev) => prev + 1);
-    };
-    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    return () => {
-      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    };
-  }, []);
 
   const timePhases = [
     {
