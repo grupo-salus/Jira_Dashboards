@@ -27,17 +27,17 @@ app = dash.Dash(__name__)
 
 # --- Layout principal
 app.layout = html.Div([
-    html.H1("📊 SQUAD SALUS", style={
+    html.H1("SQUAD SALUS", style={
         "textAlign": "center", "color": "#0052CC", "marginBottom": "10px"
     }),
 
     html.Div([
         html.Div([
-            html.Label("👨‍💻 Desenvolvedor:", style={"fontWeight": "bold"}),
+            html.Label("Desenvolvedor:", style={"fontWeight": "bold"}),
             dcc.Dropdown(id="filtro-dev", style={"width": "280px"})
         ]),
         html.Div([
-            html.Label("⏱ Status Estimativa:", style={"fontWeight": "bold"}),
+            html.Label("Status Estimativa:", style={"fontWeight": "bold"}),
             dcc.Dropdown(
                 id="filtro-status",
                 options=[
@@ -136,12 +136,12 @@ def atualizar_dashboard(status, dev, _):
     # --- Cards de resumo
     cards = html.Div([
         html.Div([
-            html.Div("🧾 Total de Cards", style={"fontWeight": "bold", "color": "#172B4D"}),
+            html.Div("Total de Cards", style={"fontWeight": "bold", "color": "#172B4D"}),
             html.Div(f"{len(df_filtrado)}", style={"fontSize": "24px", "color": "#0052CC"})
         ], style=card_style),
 
         html.Div([
-            html.Div("👨‍💻 Devs Ativos", style={"fontWeight": "bold", "color": "#172B4D"}),
+            html.Div("Devs Ativos", style={"fontWeight": "bold", "color": "#172B4D"}),
             html.Div(f"{df_filtrado['Responsável (Dev)'].nunique()}", style={"fontSize": "24px", "color": "#0052CC"})
         ], style=card_style)
     ], style={"display": "flex", "justifyContent": "center", "gap": "40px"})

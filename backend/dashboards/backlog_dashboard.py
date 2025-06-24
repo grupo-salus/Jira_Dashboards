@@ -35,7 +35,7 @@ tipos = sorted(df["Tipo"].dropna().unique())
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    html.H1("📂 Backlog - Jira", style={
+    html.H1("Backlog - Jira", style={
         "textAlign": "center", "color": "#0747A6", "marginBottom": "20px"
     }),
 
@@ -111,15 +111,15 @@ def atualizar_tela(depto, grupo, prioridade, tipo, _):
     
     cards = html.Div([
         html.Div([
-            html.Div("📌 Total no Backlog", style={"fontWeight": "bold"}),
+            html.Div("Total no Backlog", style={"fontWeight": "bold"}),
             html.Div(f"{len(df)}", style={"fontSize": "24px", "color": "#0747A6"})
         ], style=card_style),
         html.Div([
-            html.Div("⏱ Tempo médio (dias)", style={"fontWeight": "bold"}),
+            html.Div("Tempo medio (dias)", style={"fontWeight": "bold"}),
             html.Div(f"{tempo_medio}", style={"fontSize": "24px", "color": "#0747A6"})
         ], style=card_style),
         html.Div([
-            html.Div("⏳ Mais antigo", style={"fontWeight": "bold"}),
+            html.Div("Mais antigo", style={"fontWeight": "bold"}),
             html.Div(df.loc[df['Dias no Backlog'].idxmax()]['Chave'] if not df.empty else "-", style={"fontSize": "20px", "color": "#DE350B"})
         ], style=card_style)
     ], style={"display": "flex", "justifyContent": "center", "gap": "30px"})

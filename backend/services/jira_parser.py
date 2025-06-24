@@ -136,7 +136,7 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
         data_termino = row.get("Data de término")
 
         if pd.isnull(target_start) or pd.isnull(target_end):
-            print(f"⚠️ Sem datas suficientes para avaliação.")
+            print(f"Sem datas suficientes para avaliação.")
             return None
 
         target_start = target_start.date()
