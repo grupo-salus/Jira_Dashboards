@@ -1,255 +1,217 @@
-# JiraDashoards
+# Jira Dashboards
 
-Este repositório contém dashboards para acompanhamento do backlog e do quadro Kanban do squad Salus. Os dashboards facilitam a visualização do progresso das tarefas, priorização e gestão do fluxo de trabalho, promovendo maior transparência e eficiência para a equipe.
+Sistema de dashboards para visualização e análise de dados do Jira, desenvolvido com React/TypeScript no frontend e Python/FastAPI no backend.
 
-## Configuração de Ambiente
+## 📋 Pré-requisitos
 
-### Para Desenvolvimento Local
+- Node.js (versão 16 ou superior)
+- Python 3.8 ou superior
+- Git
 
-1. **Clone o repositório e instale as dependências:**
+## 🚀 Instalação
 
-   ```bash
-   git clone <url-do-repositorio>
-   cd Jira_Dashboards
-   npm install
-   ```
-
-2. **Configure o backend:**
-
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   ```
-
-3. **Configure a URL da API:**
-
-   Crie um arquivo `.env` na raiz do projeto:
-
-   ```bash
-   # Para desenvolvimento local
-   VITE_API_URL=http://localhost:8000
-   ```
-
-### Para Acesso em Rede Local
-
-Quando outros computadores precisarem acessar a aplicação:
-
-1. **Configure o IP da máquina servidor:**
-
-   Edite o arquivo `.env`:
-
-   ```bash
-   # Use o IP da sua máquina na rede local
-   VITE_API_URL=http://192.168.0.146:8000
-   ```
-
-2. **Inicie o backend:**
-
-   ```bash
-   cd backend
-   uvicorn api_main:app --reload --host 0.0.0.0 --port 8000
-   ```
-
-3. **Inicie o frontend:**
-
-   ```bash
-   npm run dev -- --host
-   ```
-
-4. **Acesse a aplicação:**
-   - Local: `http://localhost:5173`
-   - Rede: `http://192.168.0.146:5173`
-
-### Detecção Automática
-
-O sistema também possui detecção automática da URL da API baseada na URL atual do navegador. Se não houver arquivo `.env` configurado, o frontend automaticamente usará o mesmo host da URL atual com a porta 8000 para a API.
-
-### Inicialização Rápida
-
-Para facilitar o desenvolvimento, você pode usar os scripts de inicialização:
-
-**Windows:**
+### 1. Clone o repositório
 
 ```bash
-start-dev.bat
+git clone https://github.com/seu-usuario/Jira_Dashboards.git
+cd Jira_Dashboards
 ```
 
-**Linux/Mac:**
+### 2. Configuração do Backend
 
 ```bash
-./start-dev.sh
+# Navegue para a pasta backend
+cd backend
+
+# Instale as dependências Python
+pip install -r requirements.txt
+
+# Ou se preferir usar um ambiente virtual
+python -m venv venv
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
+pip install -r requirements.txt
 ```
 
-Estes scripts iniciam automaticamente tanto o backend quanto o frontend com as configurações corretas para acesso em rede local.
+### 3. Configuração do Frontend
 
-## Estrutura do Projeto
+```bash
+# Volte para a pasta raiz do projeto
+cd ..
 
-```
-.
-├── .gitignore
-├── README.md
-├── backend/          # Backend em Python
-│   ├── config/
-│   ├── controllers/
-│   ├── main.py
-│   ├── services/
-│   └── utils/
-└── src/             # Frontend em React/TypeScript
-    ├── api/         # Serviços de API
-    │   └── api_jira.ts
-    ├── components/  # Componentes React
-    │   ├── dashboard/  # Componentes do Dashboard
-    │   │   ├── BacklogCharts.tsx
-    │   │   ├── BacklogKPICards.tsx
-    │   │   └── BacklogQueues.tsx
-    │   ├── layout/    # Componentes de Layout
-    │   └── icons/     # Ícones personalizados
-    ├── context/     # Contextos React
-    │   └── JiraContext.tsx
-    ├── pages/       # Páginas da aplicação
-    │   ├── dashbacklog.tsx
-    │   ├── SprintDashboard.tsx
-    │   └── Home.tsx
-    ├── types/       # Definições de tipos
-    │   └── backlog.ts
-    ├── utils/       # Funções utilitárias
-    │   ├── backlogMetrics.ts
-    │   ├── formatters.ts
-    │   └── themeColors.ts
-    ├── constants/   # Constantes e configurações
-    ├── App.tsx      # Componente principal
-    ├── main.tsx     # Ponto de entrada
-    └── index.css    # Estilos globais
+# Instale as dependências Node.js
+npm install
+
+# Build do projeto para produção
+npm run build
 ```
 
-## Fluxo do Frontend
+## 🏃‍♂️ Executando o Projeto
 
-### 1. Estrutura de Arquivos
+### Modo Produção
 
-#### API e Dados
+1. **Inicie o backend:**
 
-- `src/api/api_jira.ts`: Contém as funções que fazem as chamadas à API do backend
-  - `fetchBacklogTable`: Busca dados do backlog com filtros
+```bash
+cd backend
+uvicorn api_main:app --reload --host 0.0.0.0 --port 8001
+```
 
-#### Tipos e Interfaces
+2. **Acesse a aplicação:**
+   - O frontend será servido automaticamente pelo backend na rota principal
+   - Acesse: `http://localhost:8001`
 
-- `src/types/backlog.ts`: Define todas as interfaces e tipos do sistema
-  - `Card`: Interfaces para cards do Jira (Base, Backlog, Project, etc.)
-  - `Metrics`: Interfaces para métricas (Basic, BacklogHealth, etc.)
-  - `Project`: Interfaces para projetos
-  - `Department`: Interfaces para departamentos
-  - `Analysis`: Interfaces para análises
-  - `Response`: Interfaces para respostas da API
-  - `Summary`: Interfaces para resumos
+### Modo Desenvolvimento
 
-#### Componentes
+Para desenvolvimento, você pode rodar o frontend separadamente:
 
-- `src/components/dashboard/`: Componentes específicos do dashboard
-  - `BacklogKPICards.tsx`: Cards com métricas principais
-  - `BacklogCharts.tsx`: Gráficos do backlog
-  - `BacklogQueues.tsx`: Visualização das filas do backlog
+```bash
+npm run dev
+```
 
-#### Páginas
+Isso iniciará o servidor de desenvolvimento do Vite na porta padrão (geralmente 3000).
 
-- `src/pages/dashbacklog.tsx`: Página principal do dashboard de backlog
-  - Gerencia o estado global dos filtros
-  - Coordena a busca e atualização dos dados
-  - Renderiza os componentes do dashboard
-- `src/pages/SprintDashboard.tsx`: Dashboard da sprint atual (em desenvolvimento)
-- `src/pages/Home.tsx`: Página inicial com navegação
+## 🛠️ Configuração como Serviço Windows
 
-#### Utilitários
+### Usando NSSM (Non-Sucking Service Manager)
 
-- `src/utils/backlogMetrics.ts`: Funções para cálculo de métricas
-- `src/utils/formatters.ts`: Funções para formatação de dados
-- `src/utils/themeColors.ts`: Definições de cores e estilos
+Para configurar o backend como um serviço Windows que inicia automaticamente:
 
-### 2. Fluxo de Dados
+#### 1. Instale o NSSM
 
-1. **Inicialização**:
+Baixe o NSSM de: https://nssm.cc/download
 
-   - A página `dashbacklog.tsx` é carregada
-   - O contexto `JiraContext` é inicializado
-   - Os filtros padrão são aplicados
+#### 2. Crie o serviço
 
-2. **Busca de Dados**:
+```bash
+# Abra o PowerShell como Administrador
+nssm install JiraBackend
 
-   - `dashbacklog.tsx` chama `fetchBacklogTable` do `api_jira.ts`
-   - A API faz requisição ao backend
-   - Os dados são processados e tipados conforme interfaces em `backlog.ts`
+# Configure o caminho do executável
+nssm set JiraBackend Application "C:\Users\luis.gfonseca\Documents\aplicações\Jira_Dashboards\venv\Scripts\python.exe"
 
-3. **Processamento**:
+# Configure o diretório de trabalho
+nssm set JiraBackend AppDirectory "C:\Users\luis.gfonseca\Documents\aplicações\Jira_Dashboards\backend"
 
-   - Os dados brutos são processados por funções em `backlogMetrics.ts`
-   - Métricas são calculadas (idade média, distribuição, etc.)
-   - Dados são formatados usando funções de `formatters.ts`
+# Configure os argumentos
+nssm set JiraBackend AppParameters "-m uvicorn api_main:app --host 0.0.0.0 --port 8001"
 
-4. **Renderização**:
-   - `BacklogKPICards` exibe métricas principais
-   - `BacklogCharts` gera gráficos usando os dados processados
-   - `BacklogQueues` mostra a distribuição por filas
+# Configure o diretório de saída (stdout)
+nssm set JiraBackend AppStdout "C:\Logs\jira_backend_output.log"
 
-### 3. Componentes Principais
+# Configure o diretório de erro (stderr)
+nssm set JiraBackend AppStderr "C:\Logs\jira_backend_error.log"
 
-#### BacklogKPICards
+# Configure o tipo de inicialização (Automático)
+nssm set JiraBackend Start SERVICE_AUTO_START
 
-- Exibe métricas principais do backlog
-- Mostra total de cards, projetos, idade média e card mais antigo
-- Atualiza automaticamente com mudanças nos filtros
+# Inicie o serviço
+nssm start JiraBackend
+```
 
-#### BacklogCharts
+#### 3. Comandos úteis do NSSM
 
-- Renderiza gráficos usando a biblioteca Recharts
-- Inclui gráficos de:
-  - Distribuição por idade
-  - Distribuição por prioridade
-  - Distribuição por área
-  - Distribuição por solicitante
+```bash
+# Verificar status do serviço
+nssm status JiraBackend
 
-#### BacklogQueues
+# Parar o serviço
+nssm stop JiraBackend
 
-- Visualiza a distribuição de cards por fila
-- Mostra métricas específicas de cada fila
-- Permite análise do fluxo de trabalho
+# Reiniciar o serviço
+nssm restart JiraBackend
 
-### 4. Gerenciamento de Estado
+# Remover o serviço
+nssm remove JiraBackend confirm
 
-- **JiraContext**: Gerencia o estado global da aplicação
+# Editar configurações do serviço
+nssm set JiraBackend [parâmetro] [valor]
 
-  - Dados do backlog
-  - Estado de carregamento
-  - Erros
-  - Funções de atualização
+# Ver configurações do serviço
+nssm dump JiraBackend
+```
 
-- **Filtros**: Gerenciados localmente em `dashbacklog.tsx`
-  - Estado dos filtros
-  - Funções de atualização
-  - Efeitos para buscar dados quando filtros mudam
+## 📁 Estrutura do Projeto
 
-### 5. Estilização
+```
+Jira_Dashboards/
+├── backend/                 # Backend Python/FastAPI
+│   ├── api_main.py         # Arquivo principal da API
+│   ├── services/           # Serviços de integração com Jira
+│   ├── dashboards/         # Lógica dos dashboards
+│   └── requirements.txt    # Dependências Python
+├── src/                    # Frontend React/TypeScript
+│   ├── components/         # Componentes React
+│   ├── pages/             # Páginas da aplicação
+│   ├── api/               # Cliente da API
+│   └── types/             # Definições de tipos TypeScript
+├── package.json           # Dependências Node.js
+└── README.md             # Este arquivo
+```
 
-- Usa Tailwind CSS para estilização
-- Tema personalizado definido em `themeColors.ts`
-- Componentes estilizados com classes utilitárias
-- Layout responsivo para diferentes tamanhos de tela
+## 🔧 Configuração
 
-## Dependências Principais
+### Variáveis de Ambiente
 
-### Backend
+Crie um arquivo `.env` na raiz do projeto baseado no `env.example`:
 
-Este projeto depende das seguintes bibliotecas Python:
+```bash
+cp env.example .env
+```
 
-- `requests`: Para chamadas HTTP à API do Jira
-- `python-dotenv`: Para variáveis de ambiente
-- `pandas`: Para manipulação de dados
-- `openpyxl`: Para exportação Excel
+Configure as seguintes variáveis:
 
-### Frontend
+```env
+JIRA_URL=sua_url_do_jira
+JIRA_USERNAME=seu_usuario
+JIRA_API_TOKEN=seu_token_api
+```
 
-Este projeto depende das seguintes bibliotecas JavaScript/TypeScript:
+## 📊 Dashboards Disponíveis
 
-- `react`: Biblioteca principal para UI
-- `recharts`: Para criação de gráficos
-- `tailwindcss`: Para estilização
-- `date-fns`: Para manipulação de datas
-- `axios`: Para chamadas HTTP
+- **Dashboard de Projetos**: Visualização geral dos projetos
+- **Dashboard de Sprint**: Acompanhamento de sprints
+- **Dashboard de TI**: Métricas específicas de TI
+
+## 🐛 Solução de Problemas
+
+### Problemas Comuns
+
+1. **Erro de porta em uso:**
+
+   - Verifique se a porta 8001 está livre
+   - Use `netstat -ano | findstr :8001` para verificar
+
+2. **Erro de dependências:**
+
+   - Delete `node_modules` e `package-lock.json`
+   - Execute `npm install` novamente
+
+3. **Erro de ambiente virtual:**
+   - Certifique-se de que o ambiente virtual está ativado
+   - Reinstale as dependências: `pip install -r requirements.txt`
+
+### Logs
+
+- **Backend (produção):** `C:\Logs\jira_backend_output.log`
+- **Backend (erros):** `C:\Logs\jira_backend_error.log`
+- **Frontend (desenvolvimento):** Console do navegador
+
+## 🤝 Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 📞 Suporte
+
+Para suporte, entre em contato através de:
+
+- Email: seu-email@exemplo.com
+- Issues do GitHub: [Criar Issue](https://github.com/seu-usuario/Jira_Dashboards/issues)
