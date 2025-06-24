@@ -162,38 +162,38 @@ const kanbanConfig = {
     gapColunas: "gap-0.5",
   },
   medio: {
-    tituloColuna: "text-[10px]",
-    contador: "text-[8px]",
-    tituloCard: "text-[10px]",
-    corpoCard: "text-[8px]",
-    tag: "text-[8px]",
-    status: "text-[8px]",
+    tituloColuna: "text-[15px]",
+    contador: "text-[14px]",
+    tituloCard: "text-[13px]",
+    corpoCard: "text-[12px]",
+    tag: "text-[11px]",
+    status: "text-[12px]",
     icone: 12,
     larguraCard: "w-24",
-    alturaCard: "h-10",
+    alturaCard: "h-12",
     paddingCard: "p-1",
     gapColunas: "gap-1",
   },
   grande: {
-    tituloColuna: "text-xs",
-    contador: "text-[10px]",
-    tituloCard: "text-xs",
-    corpoCard: "text-[10px]",
-    tag: "text-[10px]",
-    status: "text-[10px]",
+    tituloColuna: "text-[16px]",
+    contador: "text-[16px]",
+    tituloCard: "text-[15px]",
+    corpoCard: "text-[14px]",
+    tag: "text-[13px]",
+    status: "text-[14px]",
     icone: 16,
     larguraCard: "w-40",
     alturaCard: "h-16",
     paddingCard: "p-2",
-    gapColunas: "gap-3",
+    gapColunas: "gap-2",
   },
   muitoGrande: {
-    tituloColuna: "text-sm",
-    contador: "text-xs",
-    tituloCard: "text-sm",
-    corpoCard: "text-xs",
-    tag: "text-xs",
-    status: "text-xs",
+    tituloColuna: "text-[18px]",
+    contador: "text-[18px]",
+    tituloCard: "text-[17px]",
+    corpoCard: "text-[16px]",
+    tag: "text-[15px]",
+    status: "text-[16px]",
     icone: 20,
     larguraCard: "w-56",
     alturaCard: "h-24",
@@ -285,7 +285,7 @@ export const getFontSizes = () => {
     inputFiltro: filtros.input,
 
     // Botões
-    textoBotao: totalizadores.titulo,
+    textoBotao: totalizadores.titulo, // Exemplo, pode ser ajustado
   };
 };
 
@@ -327,6 +327,9 @@ export const getCardDimensions = () => {
 // ============================================================================
 // EXPORTAÇÕES PARA COMPATIBILIDADE
 // ============================================================================
+// As exportações abaixo são úteis para componentes que precisam de acesso direto
+// a conjuntos de tamanhos, mas o ideal é usar as funções de `get...Config()`
+// para garantir que o tamanho global atual seja sempre respeitado.
 export const fontSizes = getFontSizes();
 export const iconSizes = getIconSizes();
 export const chartDimensions = getChartDimensions();
