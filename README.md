@@ -2,6 +2,86 @@
 
 Este repositório contém dashboards para acompanhamento do backlog e do quadro Kanban do squad Salus. Os dashboards facilitam a visualização do progresso das tarefas, priorização e gestão do fluxo de trabalho, promovendo maior transparência e eficiência para a equipe.
 
+## Configuração de Ambiente
+
+### Para Desenvolvimento Local
+
+1. **Clone o repositório e instale as dependências:**
+
+   ```bash
+   git clone <url-do-repositorio>
+   cd Jira_Dashboards
+   npm install
+   ```
+
+2. **Configure o backend:**
+
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   ```
+
+3. **Configure a URL da API:**
+
+   Crie um arquivo `.env` na raiz do projeto:
+
+   ```bash
+   # Para desenvolvimento local
+   VITE_API_URL=http://localhost:8000
+   ```
+
+### Para Acesso em Rede Local
+
+Quando outros computadores precisarem acessar a aplicação:
+
+1. **Configure o IP da máquina servidor:**
+
+   Edite o arquivo `.env`:
+
+   ```bash
+   # Use o IP da sua máquina na rede local
+   VITE_API_URL=http://192.168.0.146:8000
+   ```
+
+2. **Inicie o backend:**
+
+   ```bash
+   cd backend
+   uvicorn api_main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+3. **Inicie o frontend:**
+
+   ```bash
+   npm run dev -- --host
+   ```
+
+4. **Acesse a aplicação:**
+   - Local: `http://localhost:5173`
+   - Rede: `http://192.168.0.146:5173`
+
+### Detecção Automática
+
+O sistema também possui detecção automática da URL da API baseada na URL atual do navegador. Se não houver arquivo `.env` configurado, o frontend automaticamente usará o mesmo host da URL atual com a porta 8000 para a API.
+
+### Inicialização Rápida
+
+Para facilitar o desenvolvimento, você pode usar os scripts de inicialização:
+
+**Windows:**
+
+```bash
+start-dev.bat
+```
+
+**Linux/Mac:**
+
+```bash
+./start-dev.sh
+```
+
+Estes scripts iniciam automaticamente tanto o backend quanto o frontend com as configurações corretas para acesso em rede local.
+
 ## Estrutura do Projeto
 
 ```

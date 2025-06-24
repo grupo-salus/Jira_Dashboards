@@ -26,7 +26,7 @@ interface EspacoDeProjetosResponse {
   tabela_dashboard_ep: EspacoDeProjetos[];
 }
 
-const API_URL = "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchAcompanhamentoTI(filters?: {
   responsavel?: string;
