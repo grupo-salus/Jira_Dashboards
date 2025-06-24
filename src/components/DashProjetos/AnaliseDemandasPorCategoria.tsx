@@ -1,14 +1,11 @@
 import React, { useEffect } from "react";
 import {
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
+  PieChart,
+  Pie,
+  Cell,
   Tooltip,
   ResponsiveContainer,
   Legend,
-  LabelList,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
@@ -50,50 +47,39 @@ const AnaliseDemandasPorCategoria: React.FC<
       .sort((a, b) => b.count - a.count);
   }, [data]);
 
-  const radarData = React.useMemo(() => {
+  const pieData = React.useMemo(() => {
     return countByCategoria.map((cat) => ({
-      categoria: cat.categoria,
-      count: cat.count,
+      name: cat.categoria,
+      value: cat.count,
     }));
   }, [countByCategoria]);
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center">
-      <ResponsiveContainer width="100%" height="100%">
-        <RadarChart data={radarData} outerRadius="165%">
-          <PolarGrid />
-          <PolarAngleAxis
-            dataKey="categoria"
-            tick={({ payload, x, y, textAnchor }) => {
-              const idx = countByCategoria.findIndex(
-                (cat) => cat.categoria === payload.value
-              );
-              const color =
-                idx >= 0
-                  ? themeColors.chart[idx % themeColors.chart.length]
-                  : "#000";
-              return (
-                <text
-                  x={x}
-                  y={y}
-                  textAnchor={textAnchor}
-                  fill={color}
-                  fontSize={13}
-                  fontWeight="bold"
-                >
-                  {payload.value}
-                </text>
-              );
-            }}
-          />
-          <PolarRadiusAxis
-            angle={30}
-            domain={[0, Math.max(...countByCategoria.map((c) => c.count), 1)]}
-            tickCount={6}
-            tick={{ fill: "#10B981", fontSize: 18, fontWeight: "bold" }}
-            axisLine={false}
-            tickLine={false}
-          />
+    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[250px] min-w-[250px]">
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        minHeight={250}
+        minWidth={250}
+      >
+        <PieChart width={400} height={400}>
+          <Pie
+            data={pieData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={"70%"}
+            label={({ name, value }) => `${name}: ${value}`}
+            isAnimationActive={false}
+          >
+            {pieData.map((entry, idx) => (
+              <Cell
+                key={`cell-${entry.name}`}
+                fill={themeColors.chart[idx % themeColors.chart.length]}
+              />
+            ))}
+          </Pie>
           <Tooltip
             contentStyle={{
               backgroundColor: themeColors.cardBg.light,
@@ -102,43 +88,12 @@ const AnaliseDemandasPorCategoria: React.FC<
               fontSize: fontSizes.tooltipGrafico,
             }}
           />
-          {countByCategoria.map((cat) => (
-            <Radar
-              key={cat.categoria}
-              name={cat.categoria}
-              dataKey="count"
-              stroke="#10B981"
-              fill="#10B981"
-              fillOpacity={0.3}
-              label={({ value }: { value: number }) => (value > 0 ? value : "")}
-            >
-              <LabelList dataKey="count" position="top" />
-            </Radar>
-          ))}
           <Legend
-            content={() => (
-              <div className="flex flex-col gap-2 mt-4">
-                {countByCategoria.map((cat, idx) => (
-                  <div key={cat.categoria} className="flex items-center gap-2">
-                    <div
-                      className="w-4 h-4 rounded"
-                      style={{
-                        backgroundColor:
-                          themeColors.chart[idx % themeColors.chart.length],
-                      }}
-                    />
-                    <span className="text-xs font-medium">
-                      {cat.categoria}:{" "}
-                      <span className="font-bold text-green-600 text-xs">
-                        {cat.count}
-                      </span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+            verticalAlign="bottom"
+            align="center"
+            wrapperStyle={{ marginBottom: 15 }}
           />
-        </RadarChart>
+        </PieChart>
       </ResponsiveContainer>
     </div>
   );
