@@ -21,9 +21,7 @@ import { useJira } from "../context/JiraContext";
 import { EspacoDeProjetos, JiraStatus } from "../types/Typesjira";
 import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
 import { getPriorityConfig } from "../constants/priorities";
-import {
-  COLUMN_ORDER,
-} from "../components/DashProjetos/kanbanUtils";
+import { COLUMN_ORDER } from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
@@ -195,7 +193,6 @@ const DashProjetos: React.FC = () => {
     filtros.grupo_solicitante,
   ]);
 
-
   const dadosParaPrioridade = useMemo(() => {
     const filtrosTemp = { ...filtros, prioridade: "" };
     return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
@@ -255,7 +252,6 @@ const DashProjetos: React.FC = () => {
     ],
     [dadosParaProjeto]
   );
-
 
   const prioridadeOptions = useMemo(
     () => [
@@ -609,7 +605,10 @@ const DashProjetos: React.FC = () => {
           >
             Projetos por Área
           </div>
-          <ProjetosBarPorArea data={filteredData} />
+          <ProjetosBarPorArea
+            data={filteredData}
+            onAreaClick={(area) => handleFiltroChange("area", area)}
+          />
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
           <div
@@ -617,7 +616,12 @@ const DashProjetos: React.FC = () => {
           >
             Projetos por Prioridade
           </div>
-          <ProjetosBarPorPrioridade data={filteredData} />
+          <ProjetosBarPorPrioridade
+            data={filteredData}
+            onPrioridadeClick={(prioridade) =>
+              handleFiltroChange("prioridade", prioridade)
+            }
+          />
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
           <div
@@ -625,7 +629,12 @@ const DashProjetos: React.FC = () => {
           >
             Análise de Demandas por Categoria
           </div>
-          <AnaliseDemandasPorCategoria data={filteredData} />
+          <AnaliseDemandasPorCategoria
+            data={filteredData}
+            onCategoriaClick={(categoria) =>
+              handleFiltroChange("categoria", categoria)
+            }
+          />
         </div>
       </div>
 

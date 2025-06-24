@@ -12,12 +12,30 @@ import {
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
 import { getFontSizes } from "../../constants/styleConfig";
+import TooltipProjetos from "./TooltipProjetos";
+
+// Tooltip customizado para mostrar apenas os títulos dos projetos da área ao passar o mouse
+const CustomTooltip = ({ active, payload, label, projetosData }: any) => {
+  if (active && payload && payload.length && projetosData) {
+    const area = label;
+    const projetos = projetosData.filter(
+      (item: EspacoDeProjetos) =>
+        (item["Departamento Solicitante"] || "Não informado") === area
+    );
+    return <TooltipProjetos areaLabel={area} projetos={projetos} />;
+  }
+  return null;
+};
 
 interface ProjetosBarPorAreaProps {
   data: EspacoDeProjetos[];
+  onAreaClick?: (area: string) => void;
 }
 
-const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
+const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
+  data,
+  onAreaClick,
+}) => {
   const [, setForceUpdate] = useState(0);
 
   // Obter configurações atuais
@@ -124,19 +142,21 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({ data }) => {
             interval={0}
           />
           <YAxis type="number" allowDecimals={false} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: themeColors.cardBg.light,
-              border: `1px solid ${themeColors.neutral}`,
-              borderRadius: "8px",
-              fontSize: fontSizes.tooltipGrafico,
+          <Tooltip content={<CustomTooltip projetosData={data} />} />
+          <Bar
+            dataKey="count"
+            onClick={(data, index) => {
+              if (onAreaClick && data && data.area) {
+                onAreaClick(data.area);
+              }
             }}
-          />
-          <Bar dataKey="count">
+            style={{ cursor: onAreaClick ? "pointer" : "default" }}
+          >
             {areaCountFiltered.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={themeColors.chart[index % themeColors.chart.length]}
+                cursor={onAreaClick ? "pointer" : "default"}
               />
             ))}
             <LabelList dataKey="count" position="top" />

@@ -92,3 +92,11 @@ export const getPriorityConfig = (priority: string): PriorityConfig => {
     }
   );
 };
+
+// Função para obter o valor original da prioridade a partir do label
+export const getPriorityValueByLabel = (label: string): string | undefined => {
+  const entry = Object.entries(PRIORITIES).find(
+    ([, config]) => config.label === label
+  );
+  return entry ? entry[0] : undefined;
+};
