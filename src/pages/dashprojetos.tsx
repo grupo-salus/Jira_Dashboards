@@ -599,22 +599,72 @@ const DashProjetos: React.FC = () => {
       {/* Gráficos do dashboard */}
       {/* Primeira linha - 3 gráficos */}
       <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72 relative">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
             Projetos por Área
+            {filtros.area && (
+              <button
+                onClick={() => handleFiltroChange("area", "")}
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                title="Limpar filtro de área"
+              >
+                <span className="text-xs text-red-600 font-semibold">
+                  Limpar filtro
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
           <ProjetosBarPorArea
             data={filteredData}
             onAreaClick={(area) => handleFiltroChange("area", area)}
           />
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72 relative">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
             Projetos por Prioridade
+            {filtros.prioridade && (
+              <button
+                onClick={() => handleFiltroChange("prioridade", "")}
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                title="Limpar filtro de prioridade"
+              >
+                <span className="text-xs text-red-600 font-semibold">
+                  Limpar filtro
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
           <ProjetosBarPorPrioridade
             data={filteredData}
@@ -623,11 +673,36 @@ const DashProjetos: React.FC = () => {
             }
           />
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72 relative">
           <div
             className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
           >
             Análise de Demandas por Categoria
+            {filtros.categoria && (
+              <button
+                onClick={() => handleFiltroChange("categoria", "")}
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                title="Limpar filtro de categoria"
+              >
+                <span className="text-xs text-red-600 font-semibold">
+                  Limpar filtro
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
           <AnaliseDemandasPorCategoria
             data={filteredData}
