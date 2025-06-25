@@ -10,6 +10,11 @@ import {
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useJira } from "../../context/JiraContext";
+import {
+  getTextColor,
+  getBackgroundColor,
+  getBorderColor,
+} from "../../utils/themeColors";
 
 interface NavbarProps {
   currentView: "home" | "projetos" | "sprint" | "ti";
@@ -22,6 +27,28 @@ const Navbar: React.FC<NavbarProps> = ({
   onViewChange,
   showHomeLink,
 }) => {
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const { theme, toggleTheme } = useTheme();
   const {
     refreshProjetosData,
@@ -40,7 +67,13 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <nav
+      className="border-b shadow-sm"
+      style={{
+        backgroundColor: getBackgroundColor("card", currentTheme),
+        borderBottom: `1px solid ${getBorderColor("primary", currentTheme)}`,
+      }}
+    >
       <div className="w-full px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -50,18 +83,29 @@ const Navbar: React.FC<NavbarProps> = ({
                 alt="Jira Logo"
                 className="h-8 w-8 mr-2"
               />
-              <span className="ml-2 text-xl font-semibold">JIRA Dashboard</span>
+              <span
+                className="ml-2 text-xl font-semibold"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                JIRA Dashboard
+              </span>
             </div>
 
             <div className="flex space-x-2">
               {showHomeLink && (
                 <button
                   onClick={() => onViewChange("home")}
-                  className={`px-4 py-2 rounded-md transition-colors font-semibold ${
-                    currentView === "home"
-                      ? "bg-primary-600 text-white shadow-md"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
+                  className="px-4 py-2 rounded-md transition-colors font-semibold"
+                  style={{
+                    backgroundColor:
+                      currentView === "home"
+                        ? getBackgroundColor("active", currentTheme)
+                        : "transparent",
+                    color:
+                      currentView === "home"
+                        ? getTextColor("primary", currentTheme)
+                        : getTextColor("secondary", currentTheme),
+                  }}
                 >
                   <span className="flex items-center gap-2">
                     <HomeIcon className="h-4 w-4" />
@@ -71,11 +115,17 @@ const Navbar: React.FC<NavbarProps> = ({
               )}
               <button
                 onClick={() => onViewChange("projetos")}
-                className={`px-4 py-2 rounded-md transition-colors font-semibold ${
-                  currentView === "projetos"
-                    ? "bg-primary-600 text-white shadow-md"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className="px-4 py-2 rounded-md transition-colors font-semibold"
+                style={{
+                  backgroundColor:
+                    currentView === "projetos"
+                      ? getBackgroundColor("active", currentTheme)
+                      : "transparent",
+                  color:
+                    currentView === "projetos"
+                      ? getTextColor("primary", currentTheme)
+                      : getTextColor("secondary", currentTheme),
+                }}
               >
                 <span className="flex items-center gap-2">
                   <Kanban className="h-4 w-4" />
@@ -85,11 +135,17 @@ const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onViewChange("sprint")}
-                className={`px-4 py-2 rounded-md transition-colors font-semibold ${
-                  currentView === "sprint"
-                    ? "bg-primary-600 text-white shadow-md"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className="px-4 py-2 rounded-md transition-colors font-semibold"
+                style={{
+                  backgroundColor:
+                    currentView === "sprint"
+                      ? getBackgroundColor("active", currentTheme)
+                      : "transparent",
+                  color:
+                    currentView === "sprint"
+                      ? getTextColor("primary", currentTheme)
+                      : getTextColor("secondary", currentTheme),
+                }}
               >
                 <span className="flex items-center gap-2">
                   <Sprint className="h-4 w-4" />
@@ -99,11 +155,17 @@ const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onViewChange("ti")}
-                className={`px-4 py-2 rounded-md transition-colors font-semibold ${
-                  currentView === "ti"
-                    ? "bg-primary-600 text-white shadow-md"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className="px-4 py-2 rounded-md transition-colors font-semibold"
+                style={{
+                  backgroundColor:
+                    currentView === "ti"
+                      ? getBackgroundColor("active", currentTheme)
+                      : "transparent",
+                  color:
+                    currentView === "ti"
+                      ? getTextColor("primary", currentTheme)
+                      : getTextColor("secondary", currentTheme),
+                }}
               >
                 <span className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
@@ -117,6 +179,10 @@ const Navbar: React.FC<NavbarProps> = ({
             <button
               className="btn btn-secondary flex items-center gap-1"
               onClick={handleRefresh}
+              style={{
+                backgroundColor: getBackgroundColor("hover", currentTheme),
+                color: getTextColor("secondary", currentTheme),
+              }}
             >
               <RefreshCw className="h-4 w-4" />
               <span className="hidden sm:inline">Refresh</span>
@@ -124,7 +190,11 @@ const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="p-2 rounded-md"
+              style={{
+                color: getTextColor("secondary", currentTheme),
+                backgroundColor: "transparent",
+              }}
               aria-label="Toggle theme"
             >
               {theme === "dark" ? (
