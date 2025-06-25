@@ -58,6 +58,28 @@ const CustomTooltip = ({ active, payload, projetosData }: any) => {
 const AnaliseDemandasPorCategoria: React.FC<
   AnaliseDemandasPorCategoriaProps
 > = ({ data, onCategoriaClick }) => {
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const handleTamanhoChange = () => {
       // Nenhuma ação necessária, pois forceUpdate foi removido
@@ -130,7 +152,11 @@ const AnaliseDemandasPorCategoria: React.FC<
             {pieData.map((entry, idx) => (
               <Cell
                 key={`cell-${entry.name}`}
-                fill={themeColors.chart[idx % themeColors.chart.length]}
+                fill={
+                  themeColors.components.graficos.palette[
+                    idx % themeColors.components.graficos.palette.length
+                  ]
+                }
               />
             ))}
           </Pie>

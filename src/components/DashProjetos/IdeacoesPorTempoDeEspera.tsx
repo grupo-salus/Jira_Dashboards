@@ -1,16 +1,15 @@
 import React from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   getGraficosConfig,
   getChartDimensions,
 } from "../../constants/styleConfig";
+import {
+  themeColors,
+  getTextColor,
+  getBackgroundColor,
+} from "../../utils/themeColors";
 
 interface IdeacoesPorTempoDeEsperaProps {
   data: EspacoDeProjetos[];
@@ -19,34 +18,56 @@ interface IdeacoesPorTempoDeEsperaProps {
 const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
   data,
 }) => {
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const config = getGraficosConfig();
   const chartDimensions = getChartDimensions();
 
   const timePhases = [
     {
       name: "Recente",
-      color: "#10B981",
+      color: themeColors.success[500],
       description: "Ideias novas",
       min: 0,
       max: 90,
     },
     {
       name: "Em Análise",
-      color: "#F59E0B",
+      color: themeColors.warning[500],
       description: "Precisa revisão",
       min: 91,
       max: 180,
     },
     {
       name: "Quase Obsoleto",
-      color: "#EF4444",
+      color: themeColors.error[500],
       description: "Ação necessária",
       min: 181,
       max: 365,
     },
     {
       name: "Obsoleto",
-      color: "#6B7280",
+      color: themeColors.secondary[400],
       description: "Arquivar",
       min: 366,
       max: Infinity,
@@ -129,11 +150,11 @@ const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: "#22223b",
-                border: `1px solid #888`,
+                backgroundColor: getBackgroundColor("card", currentTheme),
+                border: `1px solid ${themeColors.border.primary[currentTheme]}`,
                 borderRadius: "8px",
                 fontSize: config.label,
-                color: "#fff",
+                color: getTextColor("primary", currentTheme),
               }}
             />
           </PieChart>
@@ -154,11 +175,15 @@ const IdeacoesPorTempoDeEspera: React.FC<IdeacoesPorTempoDeEsperaProps> = ({
               style={{ background: entry.color }}
             />
             <span
-              className={`text-gray-800 dark:text-gray-200 font-medium ${config.label}`}
+              className={`font-medium ${config.label}`}
+              style={{ color: getTextColor("primary", currentTheme) }}
             >
               {entry.name}
             </span>
-            <span className={`ml-2 text-gray-500 ${config.label}`}>
+            <span
+              className={`ml-2 ${config.label}`}
+              style={{ color: getTextColor("secondary", currentTheme) }}
+            >
               {entry.count}
             </span>
           </div>

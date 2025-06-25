@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../constants/priorities";
-import { themeColors } from "../../utils/themeColors";
+import {
+  themeColors,
+  getBackgroundColor,
+  getTextColor,
+  getBorderColor,
+} from "../../utils/themeColors";
 import {
   STATUS_COLUMNS,
   COLUMN_ORDER,
@@ -23,21 +28,10 @@ interface ProjetosKanbanProps {
 
 // Configurações visuais
 const KANBAN_CONFIG = {
-  COLUMN_COLOR: "bg-gray-100 dark:bg-gray-800",
   COLUMN_WIDTH: "min-w-[200px] max-w-[230px] flex-shrink-0",
   COLUMN_MIN_HEIGHT: "min-h-96",
   CARD_MAX_HEIGHT: "max-h-[500px]",
 } as const;
-
-// Mapeamento de prioridade para cor do tema
-const PRIORITY_COLORS: Record<string, string> = {
-  "Muito Alta": themeColors.error,
-  Alta: themeColors.warning,
-  Média: themeColors.primary[400],
-  Baixa: themeColors.success,
-  Mínima: themeColors.primary[100],
-  "Não definida": themeColors.gray,
-};
 
 // ============================================================================
 // COMPONENTES MENORES
@@ -46,14 +40,40 @@ const PRIORITY_COLORS: Record<string, string> = {
 /**
  * Componente principal do card do Kanban
  */
-const KanbanCard: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
+const KanbanCard: React.FC<{
+  projeto: EspacoDeProjetos;
+  currentTheme: "light" | "dark";
+}> = ({ projeto, currentTheme }) => {
   const prioridadeConfig = getPriorityConfig(projeto.Prioridade || "");
-  const corBarra = PRIORITY_COLORS[prioridadeConfig.label] || themeColors.gray;
+
+  // Mapeamento de prioridade para cor usando as cores semânticas
+  const getPriorityColor = (label: string) => {
+    switch (label) {
+      case "Muito Alta":
+        return themeColors.error[600];
+      case "Alta":
+        return themeColors.warning[600];
+      case "Média":
+        return themeColors.primary[400];
+      case "Baixa":
+        return themeColors.success[600];
+      case "Mínima":
+        return themeColors.primary[100];
+      default:
+        return themeColors.secondary[400];
+    }
+  };
+
+  const corBarra = getPriorityColor(prioridadeConfig.label);
 
   return (
-    // essa div é o card do kanban#242425
+    // essa div é o card do kanban
     <div
-      className="group relative flex w-full bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-white/90 dark:hover:bg-gray-900/90 transition-shadow cursor-pointer items-start"
+      className="group relative flex w-full rounded-lg p-2 shadow-sm transition-shadow cursor-pointer items-start"
+      style={{
+        backgroundColor: getBackgroundColor("card", currentTheme),
+        border: `1px solid ${getBorderColor("primary", currentTheme)}`,
+      }}
       tabIndex={0}
     >
       {/* Barra de prioridade */}
@@ -74,10 +94,11 @@ const KanbanCard: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 /**
  * Componente do cabeçalho da coluna
  */
-const ColunaHeader: React.FC<{ status: JiraStatus; count: number }> = ({
-  status,
-  count,
-}) => {
+const ColunaHeader: React.FC<{
+  status: JiraStatus;
+  count: number;
+  currentTheme: "light" | "dark";
+}> = ({ status, count, currentTheme }) => {
   const fontSizes = getFontSizes();
   const nomeColuna = STATUS_COLUMNS[status]
     ? capitalizeFirst(STATUS_COLUMNS[status])
@@ -86,12 +107,17 @@ const ColunaHeader: React.FC<{ status: JiraStatus; count: number }> = ({
   return (
     <div className="flex items-center justify-between mb-4">
       <h3
-        className={`font-semibold text-gray-900 dark:text-white ${fontSizes.tituloColunaKanban}`}
+        className={`font-semibold ${fontSizes.tituloColunaKanban}`}
+        style={{ color: getTextColor("primary", currentTheme) }}
       >
         {nomeColuna}
       </h3>
       <span
-        className={`bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full font-medium ${fontSizes.contadorColunaKanban}`}
+        className={`px-2 py-1 rounded-full font-medium ${fontSizes.contadorColunaKanban}`}
+        style={{
+          backgroundColor: getBackgroundColor("card", currentTheme),
+          color: getTextColor("secondary", currentTheme),
+        }}
       >
         {count}
       </span>
@@ -105,17 +131,30 @@ const ColunaHeader: React.FC<{ status: JiraStatus; count: number }> = ({
 const KanbanColuna: React.FC<{
   status: JiraStatus;
   projetos: EspacoDeProjetos[];
-}> = ({ status, projetos }) => (
+  currentTheme: "light" | "dark";
+}> = ({ status, projetos, currentTheme }) => (
   <div
-    className={`${KANBAN_CONFIG.COLUMN_COLOR} border border-gray-200 dark:border-gray-700 rounded-lg ${KANBAN_CONFIG.COLUMN_MIN_HEIGHT} p-1 ${KANBAN_CONFIG.COLUMN_WIDTH}`}
+    className={`border rounded-lg ${KANBAN_CONFIG.COLUMN_MIN_HEIGHT} p-1 ${KANBAN_CONFIG.COLUMN_WIDTH}`}
+    style={{
+      backgroundColor: getBackgroundColor("hover", currentTheme),
+      border: `1px solid ${getBorderColor("primary", currentTheme)}`,
+    }}
   >
-    <ColunaHeader status={status} count={projetos.length} />
+    <ColunaHeader
+      status={status}
+      count={projetos.length}
+      currentTheme={currentTheme}
+    />
 
     <div
       className={`space-y-3 ${KANBAN_CONFIG.CARD_MAX_HEIGHT} overflow-y-auto hide-scrollbar`}
     >
       {projetos.map((projeto) => (
-        <KanbanCard key={projeto.ID} projeto={projeto} />
+        <KanbanCard
+          key={projeto.ID}
+          projeto={projeto}
+          currentTheme={currentTheme}
+        />
       ))}
     </div>
   </div>
@@ -129,12 +168,32 @@ const KanbanColuna: React.FC<{
  * Componente principal do Kanban de Projetos
  */
 const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
-  // const [forceUpdate, setForceUpdate] = useState(0); // Removido pois não é utilizado
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Listener para mudanças no tamanho global
   useEffect(() => {
     const handleTamanhoChange = () => {
-      // setForceUpdate((prev) => prev + 1); // Força re-render
+      // Força re-render quando o tamanho global muda
     };
 
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
@@ -160,7 +219,12 @@ const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
         {COLUMN_ORDER.map((status) => {
           const projetos = projetosPorStatus[status] || [];
           return (
-            <KanbanColuna key={status} status={status} projetos={projetos} />
+            <KanbanColuna
+              key={status}
+              status={status}
+              projetos={projetos}
+              currentTheme={currentTheme}
+            />
           );
         })}
       </div>

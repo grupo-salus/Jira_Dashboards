@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import {
-  EspacoDeProjetos,
-} from "../../types/Typesjira";
+import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   formatDate,
   formatSeconds,
   formatPriority,
 } from "../../utils/formatters";
+import {
+  getTextColor,
+  getBackgroundColor,
+  getBorderColor,
+} from "../../utils/themeColors";
 
 interface ProjetosTableProps {
   data: EspacoDeProjetos[];
@@ -19,6 +22,28 @@ interface ColumnWidth {
 type SortDirection = "asc" | "desc" | null;
 
 const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const [columnWidths, setColumnWidths] = useState<ColumnWidth>({
     ID: 80,
     Tipo: 100,
@@ -221,7 +246,13 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
       case "Status de prazo":
       case "Status de esforço":
         return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+          <span
+            className="px-2 py-1 rounded-full text-xs font-medium"
+            style={{
+              backgroundColor: getBackgroundColor("hover", currentTheme),
+              color: getTextColor("info", currentTheme),
+            }}
+          >
             {value}
           </span>
         );
@@ -234,10 +265,20 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     <div className="relative h-[600px] flex flex-col">
       <div className="overflow-x-auto flex-1">
         <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5">
+          <div
+            className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5"
+            style={{
+              border: `1px solid ${getBorderColor("primary", currentTheme)}`,
+            }}
+          >
             <div className="overflow-y-auto max-h-[calc(600px-40px)]">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
+              <table className="min-w-full divide-y">
+                <thead
+                  className="sticky top-0 z-10"
+                  style={{
+                    backgroundColor: getBackgroundColor("hover", currentTheme),
+                  }}
+                >
                   <tr>
                     {columns.map((column) => (
                       <th
@@ -246,8 +287,13 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                         style={{
                           width: columnWidths[column],
                           minWidth: columnWidths[column],
+                          color: getTextColor("secondary", currentTheme),
+                          borderBottom: `1px solid ${getBorderColor(
+                            "primary",
+                            currentTheme
+                          )}`,
                         }}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap relative group cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap relative group cursor-pointer"
                         onClick={() => handleSort(column)}
                       >
                         <div className="flex items-center justify-between">
@@ -255,7 +301,13 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                             {column} {getSortIcon(column)}
                           </span>
                           <div
-                            className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 opacity-0 group-hover:opacity-100"
+                            className="absolute right-0 top-0 h-full w-1 cursor-col-resize opacity-0 group-hover:opacity-100"
+                            style={{
+                              backgroundColor: getBorderColor(
+                                "focus",
+                                currentTheme
+                              ),
+                            }}
                             onMouseDown={(e) => handleMouseDown(e, column)}
                           />
                         </div>
@@ -263,11 +315,25 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody
+                  style={{
+                    backgroundColor: getBackgroundColor("card", currentTheme),
+                  }}
+                >
                   {sortedData.map((item, index) => (
                     <tr
                       key={index}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                      style={{
+                        borderBottom: `1px solid ${getBorderColor(
+                          "secondary",
+                          currentTheme
+                        )}`,
+                        backgroundColor:
+                          index % 2 === 0
+                            ? getBackgroundColor("card", currentTheme)
+                            : getBackgroundColor("hover", currentTheme),
+                      }}
                     >
                       {columns.map((column) => (
                         <td
@@ -275,8 +341,9 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                           style={{
                             width: columnWidths[column],
                             minWidth: columnWidths[column],
+                            color: getTextColor("primary", currentTheme),
                           }}
-                          className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300"
+                          className="px-6 py-4 text-sm"
                         >
                           <div
                             className="truncate"
