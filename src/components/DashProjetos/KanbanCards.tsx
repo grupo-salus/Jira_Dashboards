@@ -243,7 +243,7 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
                   {(() => {
                     const status = normalizarStatus(projeto.Status);
                     const finalizado = [
-                      "ENCERRAMENTO",
+                      "OPERAÇÃO ASSISTIDA",
                       "Concluído",
                       "Cancelado",
                     ].includes(status);
@@ -366,9 +366,9 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 };
 
 /**
- * Card para projetos em ENCERRAMENTO
+ * Card para projetos em OPERAÇÃO ASSISTIDA
  */
-const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
+const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
   return (
@@ -431,7 +431,7 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
               {(() => {
                 const status = normalizarStatus(projeto.Status);
                 const finalizado = [
-                  "ENCERRAMENTO",
+                  "OPERAÇÃO ASSISTIDA",
                   "Concluído",
                   "Cancelado",
                 ].includes(status);
@@ -500,45 +500,49 @@ const CardEncerramento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       </div>
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
       {/* Esforço */}
-      <div className="pt-2">
-        <div className="font-medium">Estimativa vs. Registrado:</div>
-        {projeto["Estimativa original (segundos)"] &&
-          projeto["Tempo registrado (segundos)"] !== null && (
-            <div className="text-gray-600 dark:text-gray-200">
-              Estimativa:{" "}
-              {formatarSegundos(projeto["Estimativa original (segundos)"])} •
-              Registrado:{" "}
-              {formatarSegundos(projeto["Tempo registrado (segundos)"])}
+      {(projeto["Estimativa original (segundos)"] &&
+        projeto["Tempo registrado (segundos)"] !== null) ||
+      projeto["% da estimativa usada"] !== null ? (
+        <div className="pt-2">
+          <div className="font-medium">Estimativa vs. Registrado:</div>
+          {projeto["Estimativa original (segundos)"] &&
+            projeto["Tempo registrado (segundos)"] !== null && (
+              <div className="text-gray-600 dark:text-gray-200">
+                Estimativa:{" "}
+                {formatarSegundos(projeto["Estimativa original (segundos)"])} •
+                Registrado:{" "}
+                {formatarSegundos(projeto["Tempo registrado (segundos)"])}
+              </div>
+            )}
+          {projeto["% da estimativa usada"] !== null && (
+            <div className="mt-1">
+              <div className="flex items-center gap-2">
+                <span>{projeto["% da estimativa usada"]}%</span>
+                {projeto["Status de esforço"] && (
+                  <span
+                    className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                      projeto["Status de esforço"]
+                    )} ${fontSizes.statusCardKanban}`}
+                  >
+                    {projeto["Status de esforço"]}
+                  </span>
+                )}
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
+                <div
+                  className="bg-green-600 h-1.5 rounded-full"
+                  style={{
+                    width: `${Math.min(
+                      projeto["% da estimativa usada"] || 0,
+                      100
+                    )}%`,
+                  }}
+                ></div>
+              </div>
             </div>
           )}
-        {projeto["% da estimativa usada"] !== null && (
-          <div className="mt-1">
-            <div className="flex items-center gap-2">
-              <span>{projeto["% da estimativa usada"]}%</span>
-              {projeto["Status de esforço"] && (
-                <span
-                  className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                    projeto["Status de esforço"]
-                  )} ${fontSizes.statusCardKanban}`}
-                >
-                  {projeto["Status de esforço"]}
-                </span>
-              )}
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
-              <div
-                className="bg-green-600 h-1.5 rounded-full"
-                style={{
-                  width: `${Math.min(
-                    projeto["% da estimativa usada"] || 0,
-                    100
-                  )}%`,
-                }}
-              ></div>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -588,7 +592,7 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
               {(() => {
                 const status = normalizarStatus(projeto.Status);
                 const finalizado = [
-                  "ENCERRAMENTO",
+                  "OPERAÇÃO ASSISTIDA",
                   "Concluído",
                   "Cancelado",
                 ].includes(status);
@@ -763,8 +767,8 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
       return <CardBacklogPriorizado projeto={projeto} />;
     case "Em andamento":
       return <CardEmExecucao projeto={projeto} />;
-    case "ENCERRAMENTO":
-      return <CardEncerramento projeto={projeto} />;
+    case "OPERAÇÃO ASSISTIDA":
+      return <CardOperacaoAssistida projeto={projeto} />;
     case "Concluído":
       return <CardEntregue projeto={projeto} />;
     case "Cancelado":

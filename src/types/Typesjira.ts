@@ -83,7 +83,7 @@ export type JiraStatus =
   | "Backlog Priorizado"
   | "Cancelado"
   | "Em andamento"
-  | "ENCERRAMENTO"
+  | "OPERAÇÃO ASSISTIDA"
   | "Concluído";
 
 // Status de ideação

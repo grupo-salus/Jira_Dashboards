@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
 import { getFontSizes, getChartDimensions } from "../../constants/styleConfig";
@@ -20,7 +14,7 @@ const statusOrdem: JiraStatus[] = [
   "Backlog Priorizado",
   "Cancelado",
   "Em andamento",
-  "ENCERRAMENTO",
+  "OPERAÇÃO ASSISTIDA",
   "Concluído",
 ];
 
