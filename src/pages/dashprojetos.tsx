@@ -38,6 +38,11 @@ import {
   getBackgroundColor,
   getBorderColor,
 } from "../utils/themeColors";
+import {
+  FilterIcon,
+  XIcon,
+  DotsVerticalIcon,
+} from "../components/icons/DashboardIcons";
 
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
@@ -309,36 +314,12 @@ const DashProjetos: React.FC = () => {
         >
           {filtrosVisiveis ? (
             <>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <XIcon className="w-5 h-5" />
               Ocultar
             </>
           ) : (
             <>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                />
-              </svg>
+              <FilterIcon className="w-5 h-5" />
               Filtros
             </>
           )}
@@ -500,21 +481,7 @@ const DashProjetos: React.FC = () => {
                 >
                   Limpar filtro
                 </span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  style={{ color: themeColors.text.error[currentTheme] }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <XIcon className="h-4 w-4" />
               </button>
             )}
           </div>
@@ -556,21 +523,7 @@ const DashProjetos: React.FC = () => {
                 >
                   Limpar filtro
                 </span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  style={{ color: themeColors.text.error[currentTheme] }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <XIcon className="h-4 w-4" />
               </button>
             )}
           </div>
@@ -614,21 +567,7 @@ const DashProjetos: React.FC = () => {
                 >
                   Limpar filtro
                 </span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  style={{ color: themeColors.text.error[currentTheme] }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <XIcon className="h-4 w-4" />
               </button>
             )}
           </div>
@@ -663,14 +602,7 @@ const DashProjetos: React.FC = () => {
           }}
           aria-label="Opções de visualização"
         >
-          <svg
-            className="w-5 h-5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-          </svg>
+          <DotsVerticalIcon className="w-5 h-5" />
         </button>
 
         {/* Dropdown menu */}

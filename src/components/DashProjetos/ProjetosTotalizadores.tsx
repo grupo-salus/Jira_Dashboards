@@ -113,55 +113,28 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     <div>
       <div className="flex flex-wrap gap-6 mb-6">
         <TotalizadorCard
-          icon={
-            <CardsIcon
-              size={config.icone}
-              style={{ color: themeColors.components.totalizadores.total.icon }}
-            />
-          }
+          icon={<CardsIcon size={config.icone} className="text-current" />}
           label="Total no Board"
           value={total}
           barColor={themeColors.components.totalizadores.total.bar}
           currentTheme={currentTheme}
         />
         <TotalizadorCard
-          icon={
-            <LightbulbIcon
-              size={config.icone}
-              style={{
-                color: themeColors.components.totalizadores.ideacao.icon,
-              }}
-            />
-          }
+          icon={<LightbulbIcon size={config.icone} className="text-current" />}
           label="Total de Ideação"
           value={totalIdeacao}
           barColor={themeColors.components.totalizadores.ideacao.bar}
           currentTheme={currentTheme}
         />
         <TotalizadorCard
-          icon={
-            <LightbulbIcon
-              size={config.icone}
-              style={{
-                color: themeColors.components.totalizadores.projetos.icon,
-              }}
-            />
-          }
+          icon={<LightbulbIcon size={config.icone} className="text-current" />}
           label="Total de Projetos"
           value={totalProjetos}
           barColor={themeColors.components.totalizadores.projetos.bar}
           currentTheme={currentTheme}
         />
         <TotalizadorCard
-          icon={
-            <LightbulbIcon
-              size={config.icone}
-              style={{
-                color:
-                  themeColors.components.totalizadores.backlogPriorizado.icon,
-              }}
-            />
-          }
+          icon={<LightbulbIcon size={config.icone} className="text-current" />}
           label="Total na Fila Backlog Priorizado"
           value={totalBacklogPriorizado}
           barColor={themeColors.components.totalizadores.backlogPriorizado.bar}
