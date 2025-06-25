@@ -15,6 +15,7 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
   Bloqueado: "BLOQUEADO",
   "Backlog Priorizado": "BACKLOG PRIORIZADO",
   "Em andamento": "EM EXECUÇÃO",
+  "Em Homologação": "EM HOMOLOGAÇÃO",
   "OPERAÇÃO ASSISTIDA": "OPERAÇÃO ASSISTIDA",
   Concluído: "ENTREGUE",
   Cancelado: "CANCELADO",
@@ -26,6 +27,7 @@ export const COLUMN_ORDER: JiraStatus[] = [
   "Bloqueado",
   "Backlog Priorizado",
   "Em andamento",
+  "Em Homologação",
   "OPERAÇÃO ASSISTIDA",
   "Concluído",
   "Cancelado",
@@ -38,6 +40,7 @@ export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
   "tarefas pendentes": "Backlog Priorizado",
   bloqueado: "Bloqueado",
   "em andamento": "Em andamento",
+  "em homologação": "Em Homologação",
   "operação assistida": "OPERAÇÃO ASSISTIDA",
   concluído: "Concluído",
   concluido: "Concluído",
@@ -135,5 +138,9 @@ export const capitalizeFirst = (str: string): string => {
  * Verifica se um projeto está em execução
  */
 export const isProjetoEmExecucao = (status: JiraStatus): boolean => {
-  return status === "Em andamento" || status === "OPERAÇÃO ASSISTIDA";
+  return (
+    status === "Em andamento" ||
+    status === "Em Homologação" ||
+    status === "OPERAÇÃO ASSISTIDA"
+  );
 };

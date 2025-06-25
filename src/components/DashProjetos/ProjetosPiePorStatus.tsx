@@ -14,6 +14,7 @@ const statusOrdem: JiraStatus[] = [
   "Backlog Priorizado",
   "Cancelado",
   "Em andamento",
+  "Em Homologação",
   "OPERAÇÃO ASSISTIDA",
   "Concluído",
 ];

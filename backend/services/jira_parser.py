@@ -100,7 +100,7 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     # EXECUÇÃO
     def get_ref_date(row):
         status = str(row.get("Status", "")).strip().lower()
-        if status in ["operação assistida", "concluído", "concluido", "entregue", "cancelado"]:
+        if status in ["em homologação", "operação assistida", "concluído", "concluido", "entregue", "cancelado"]:
             # Usa a data de término se existir, senão data de atualização, senão hoje
             if pd.notnull(row.get("Data de término")):
                 return row["Data de término"].date()
