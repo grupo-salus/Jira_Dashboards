@@ -46,21 +46,21 @@ const KanbanCard: React.FC<{
 }> = ({ projeto, currentTheme }) => {
   const prioridadeConfig = getPriorityConfig(projeto.Prioridade || "");
 
-  // Mapeamento de prioridade para cor usando as cores semânticas
+  // Mapeamento de prioridade para cor usando o sistema centralizado
   const getPriorityColor = (label: string) => {
     switch (label) {
-      case "Muito Alta":
-        return themeColors.error[600];
+      case "Estratégico":
+        return themeColors.components.prioridades.estrategico.hex;
       case "Alta":
-        return themeColors.warning[600];
+        return themeColors.components.prioridades.alta.hex;
       case "Média":
-        return themeColors.primary[400];
+        return themeColors.components.prioridades.media.hex;
       case "Baixa":
-        return themeColors.success[600];
-      case "Mínima":
-        return themeColors.primary[100];
+        return themeColors.components.prioridades.baixa.hex;
+      case "Muito Baixa":
+        return themeColors.components.prioridades.muitoBaixa.hex;
       default:
-        return themeColors.secondary[400];
+        return themeColors.components.prioridades.naoDefinida.hex;
     }
   };
 
