@@ -47,7 +47,7 @@ const DashProjetos: React.FC = () => {
     "kanban"
   );
   const [menuAberto, setMenuAberto] = useState(false);
-  const [filtrosVisiveis, setFiltrosVisiveis] = useState(true);
+  const [filtrosVisiveis, setFiltrosVisiveis] = useState(false);
   const [tamanhoAtual, setTamanhoAtual] = useState(getTamanhoGlobal());
   const [, setForceUpdate] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
