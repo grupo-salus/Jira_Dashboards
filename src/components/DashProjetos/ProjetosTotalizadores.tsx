@@ -10,6 +10,7 @@ import {
 
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
+  originalData: EspacoDeProjetos[];
 }
 
 const TotalizadorCard: React.FC<{
@@ -53,6 +54,7 @@ const TotalizadorCard: React.FC<{
 
 const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
+  originalData,
 }) => {
   const config = getTotalizadoresConfig();
 
@@ -89,11 +91,15 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   }, []);
 
   // Métricas Chave
-  const total = filteredData.length;
+  const total = originalData.length; // Total no Board: todos os dados originais
   const totalIdeacao = filteredData.filter(
     (p) => p.Status === "Backlog"
   ).length;
-  const totalProjetos = total - totalIdeacao;
+
+  // Total de Projetos: todos os status exceto "Backlog" (ideação), "Cancelado" e "Concluído" (entregue)
+  const totalProjetos = filteredData.filter(
+    (p) => !["Backlog", "Cancelado", "Concluído"].includes(p.Status)
+  ).length;
 
   // Métricas do Backlog Priorizado
   const backlogPriorizado = filteredData.filter(

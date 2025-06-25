@@ -40,6 +40,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
   }, []);
 
   const [columnWidths, setColumnWidths] = useState<ColumnWidth>({
+    "#": 60,
     ID: 80,
     Tipo: 100,
     Chave: 100,
@@ -144,6 +145,9 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Status de esforço",
   ];
 
+  // Adicionar coluna de numeração
+  const columnsWithNumbering = ["#", ...columns];
+
   const handleMouseDown = (e: React.MouseEvent, column: string) => {
     e.preventDefault();
     setIsResizing(true);
@@ -168,7 +172,9 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     setCurrentColumn(null);
   };
 
-  const handleSort = (column: keyof EspacoDeProjetos) => {
+  const handleSort = (column: keyof EspacoDeProjetos | "#") => {
+    if (column === "#") return; // Não ordenar pela coluna de numeração
+
     if (sortColumn === column) {
       setSortDirection((prev) => {
         if (prev === "asc") return "desc";
@@ -192,12 +198,22 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     };
   }, [isResizing]);
 
-  const getSortIcon = (column: keyof EspacoDeProjetos) => {
+  const getSortIcon = (column: keyof EspacoDeProjetos | "#") => {
+    if (column === "#") return ""; // Sem ícone para coluna de numeração
     if (sortColumn !== column) return "↕";
     return sortDirection === "asc" ? "↑" : "↓";
   };
 
-  const formatCellValue = (column: keyof EspacoDeProjetos, value: any) => {
+  const formatCellValue = (
+    column: keyof EspacoDeProjetos | "#",
+    value: any,
+    rowIndex?: number
+  ) => {
+    // Para coluna de numeração
+    if (column === "#") {
+      return rowIndex !== undefined ? rowIndex + 1 : "-";
+    }
+
     if (value === null || value === undefined) return "-";
 
     // Para campos de tempo em segundos
@@ -251,7 +267,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                   }}
                 >
                   <tr>
-                    {columns.map((column) => (
+                    {columnsWithNumbering.map((column) => (
                       <th
                         key={column}
                         scope="col"
@@ -264,23 +280,35 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                             currentTheme
                           )}`,
                         }}
-                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap relative group cursor-pointer"
-                        onClick={() => handleSort(column)}
+                        className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap relative group ${
+                          column === "#" ? "" : "cursor-pointer"
+                        }`}
+                        onClick={() =>
+                          column !== "#" &&
+                          handleSort(column as keyof EspacoDeProjetos)
+                        }
                       >
                         <div className="flex items-center justify-between">
                           <span className="truncate flex items-center gap-1">
-                            {column} {getSortIcon(column)}
+                            {column}{" "}
+                            {getSortIcon(
+                              column as keyof EspacoDeProjetos | "#"
+                            )}
                           </span>
-                          <div
-                            className="absolute right-0 top-0 h-full w-1 cursor-col-resize opacity-0 group-hover:opacity-100"
-                            style={{
-                              backgroundColor: getBorderColor(
-                                "focus",
-                                currentTheme
-                              ),
-                            }}
-                            onMouseDown={(e) => handleMouseDown(e, column)}
-                          />
+                          {column !== "#" && (
+                            <div
+                              className="absolute right-0 top-0 h-full w-1 cursor-col-resize opacity-0 group-hover:opacity-100"
+                              style={{
+                                backgroundColor: getBorderColor(
+                                  "focus",
+                                  currentTheme
+                                ),
+                              }}
+                              onMouseDown={(e) =>
+                                handleMouseDown(e, column as string)
+                              }
+                            />
+                          )}
                         </div>
                       </th>
                     ))}
@@ -306,7 +334,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                             : getBackgroundColor("hover", currentTheme),
                       }}
                     >
-                      {columns.map((column) => (
+                      {columnsWithNumbering.map((column) => (
                         <td
                           key={`${index}-${column}`}
                           style={{
@@ -318,9 +346,22 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                         >
                           <div
                             className="truncate"
-                            title={String(item[column] || "-")}
+                            title={
+                              column === "#"
+                                ? String(index + 1)
+                                : String(
+                                    item[column as keyof EspacoDeProjetos] ||
+                                      "-"
+                                  )
+                            }
                           >
-                            {formatCellValue(column, item[column])}
+                            {formatCellValue(
+                              column as keyof EspacoDeProjetos | "#",
+                              column === "#"
+                                ? null
+                                : item[column as keyof EspacoDeProjetos],
+                              index
+                            )}
                           </div>
                         </td>
                       ))}

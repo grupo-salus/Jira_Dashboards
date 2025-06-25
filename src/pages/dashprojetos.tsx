@@ -540,7 +540,10 @@ const DashProjetos: React.FC = () => {
       </div>
 
       {/* Totalizadores */}
-      <ProjetosTotalizadores filteredData={filteredData} />
+      <ProjetosTotalizadores
+        filteredData={filteredData}
+        originalData={projetosData.rawData}
+      />
 
       {/* Gráficos do dashboard - 3 gráficos em linha */}
       <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
