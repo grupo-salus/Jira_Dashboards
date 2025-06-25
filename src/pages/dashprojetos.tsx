@@ -20,7 +20,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useJira } from "../context/JiraContext";
 import { EspacoDeProjetos, JiraStatus } from "../types/Typesjira";
 import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
-import { getPriorityConfig } from "../constants/priorities";
+import { getPriorityConfig } from "../utils/themeColors";
 import { COLUMN_ORDER } from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";

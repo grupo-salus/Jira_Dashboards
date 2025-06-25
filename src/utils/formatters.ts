@@ -1,4 +1,4 @@
-import { PRIORITIES } from "../constants/priorities";
+import { getPriorityConfig } from "./themeColors";
 
 /**
  * Formata uma data ISO para o formato brasileiro
@@ -71,7 +71,7 @@ export const calcularDiferencaTempo = (
  * @returns Objeto com label e configurações de cor
  */
 export const formatPriority = (priority: string) => {
-  return PRIORITIES[priority] || PRIORITIES["Média"];
+  return getPriorityConfig(priority) || getPriorityConfig("Média");
 };
 
 /**

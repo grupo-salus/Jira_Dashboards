@@ -10,7 +10,7 @@ import {
   LabelList,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
-import { getPriorityConfig } from "../../constants/priorities";
+import { getPriorityConfig } from "../../utils/themeColors";
 import { themeColors } from "../../utils/themeColors";
 import { getFontSizes } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";

@@ -285,6 +285,82 @@ export const themeColors = {
   // CORES POR COMPONENTE
   // ============================================================================
   components: {
+    // Prioridades
+    prioridades: {
+      estrategico: {
+        label: "Estratégico",
+        color: {
+          bg: "bg-red-100",
+          text: "text-red-800",
+          dark: {
+            bg: "dark:bg-red-900",
+            text: "dark:text-red-300",
+          },
+        },
+        hex: "#ef4444", // red-500
+      },
+      alta: {
+        label: "Alta",
+        color: {
+          bg: "bg-orange-100",
+          text: "text-orange-800",
+          dark: {
+            bg: "dark:bg-orange-900",
+            text: "dark:text-orange-300",
+          },
+        },
+        hex: "#f97316", // orange-500
+      },
+      media: {
+        label: "Média",
+        color: {
+          bg: "bg-yellow-100",
+          text: "text-yellow-800",
+          dark: {
+            bg: "dark:bg-yellow-900",
+            text: "dark:text-yellow-300",
+          },
+        },
+        hex: "#f59e0b", // amber-500
+      },
+      baixa: {
+        label: "Baixa",
+        color: {
+          bg: "bg-green-100",
+          text: "text-green-800",
+          dark: {
+            bg: "dark:bg-green-900",
+            text: "dark:text-green-300",
+          },
+        },
+        hex: "#10b981", // emerald-500
+      },
+      muitoBaixa: {
+        label: "Muito Baixa",
+        color: {
+          bg: "bg-blue-100",
+          text: "text-blue-800",
+          dark: {
+            bg: "dark:bg-blue-900",
+            text: "dark:text-blue-300",
+          },
+        },
+        hex: "#3b82f6", // blue-500
+      },
+      naoDefinida: {
+        label: "Não definida",
+        color: {
+          bg: "bg-gray-100",
+          text: "text-gray-800",
+          dark: {
+            bg: "dark:bg-gray-900",
+            text: "dark:text-gray-300",
+          },
+        },
+        hex: "#6b7280", // gray-500
+      },
+    },
+
     // Totalizadores
     totalizadores: {
       total: {
@@ -599,6 +675,43 @@ export const getComponentColor = (
   return (
     variantConfig[theme] || variantConfig || themeColors.text.primary[theme]
   );
+};
+
+/**
+ * Obtém a configuração de prioridade baseada no valor
+ */
+export const getPriorityConfig = (priority: string) => {
+  const priorityMap: Record<
+    string,
+    keyof typeof themeColors.components.prioridades
+  > = {
+    Estratégico: "estrategico",
+    Alta: "alta",
+    Média: "media",
+    Baixa: "baixa",
+    "Muito Baixa": "muitoBaixa",
+  };
+
+  const priorityKey = priorityMap[priority];
+  return (
+    themeColors.components.prioridades[priorityKey] ||
+    themeColors.components.prioridades.naoDefinida
+  );
+};
+
+/**
+ * Obtém o valor da prioridade a partir do label
+ */
+export const getPriorityValueByLabel = (label: string): string | undefined => {
+  const priorityMap: Record<string, string> = {
+    Estratégico: "Estratégico",
+    Alta: "Alta",
+    Média: "Média",
+    Baixa: "Baixa",
+    "Muito Baixa": "Muito Baixa",
+  };
+
+  return priorityMap[label];
 };
 
 // ============================================================================

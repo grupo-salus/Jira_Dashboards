@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
-import { getPriorityConfig } from "../../constants/priorities";
+import { getPriorityConfig } from "../../utils/themeColors";
 import {
   themeColors,
   getBackgroundColor,

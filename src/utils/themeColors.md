@@ -112,6 +112,17 @@ themeColors.components.buttons.secondary.bg / hover / text.light / dark;
 themeColors.components.buttons.danger.bg / hover / text.light / dark;
 ```
 
+#### Prioridades
+
+```typescript
+themeColors.components.prioridades.estrategico.label / color / hex;
+themeColors.components.prioridades.alta.label / color / hex;
+themeColors.components.prioridades.media.label / color / hex;
+themeColors.components.prioridades.baixa.label / color / hex;
+themeColors.components.prioridades.muitoBaixa.label / color / hex;
+themeColors.components.prioridades.naoDefinida.label / color / hex;
+```
+
 #### Filtros
 
 ```typescript
@@ -176,6 +187,27 @@ import { getComponentColor } from "../utils/themeColors";
 
 const kanbanColor = getComponentColor("kanban", "colunas", "light", "ideacao"); // '#8b5cf6'
 const buttonColor = getComponentColor("buttons", "primary", "dark", "bg"); // 'linear-gradient(...)'
+```
+
+### getPriorityConfig()
+
+```typescript
+import { getPriorityConfig } from "../utils/themeColors";
+
+const priorityConfig = getPriorityConfig("Alta");
+// Retorna: { label: "Alta", color: { bg: "bg-orange-100", ... }, hex: "#f97316" }
+
+const priorityConfig = getPriorityConfig("Não existe");
+// Retorna: { label: "Não definida", color: { bg: "bg-gray-100", ... }, hex: "#6b7280" }
+```
+
+### getPriorityValueByLabel()
+
+```typescript
+import { getPriorityValueByLabel } from "../utils/themeColors";
+
+const priorityValue = getPriorityValueByLabel("Alta"); // "Alta"
+const priorityValue = getPriorityValueByLabel("Não existe"); // undefined
 ```
 
 ## 📝 Exemplos de Uso
@@ -255,6 +287,26 @@ const KanbanCard: React.FC = ({ status }) => {
     >
       {/* Conteúdo do card */}
     </div>
+  );
+};
+```
+
+### 4. Em um Badge de Prioridade
+
+```typescript
+import { getPriorityConfig } from "../utils/themeColors";
+
+const PriorityBadge: React.FC = ({ priority }) => {
+  const priorityConfig = getPriorityConfig(priority);
+  const isDark = document.documentElement.classList.contains("dark");
+  const theme = isDark ? "dark" : "light";
+
+  return (
+    <span
+      className={`px-2 py-1 rounded-full text-xs font-medium ${priorityConfig.color.bg} ${priorityConfig.color.text} ${priorityConfig.color.dark.bg} ${priorityConfig.color.dark.text}`}
+    >
+      {priorityConfig.label}
+    </span>
   );
 };
 ```
