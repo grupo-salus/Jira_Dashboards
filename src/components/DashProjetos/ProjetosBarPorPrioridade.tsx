@@ -28,13 +28,13 @@ const prioridadeOrdem = [
   { value: "Lowest", label: "Mínima" },
 ];
 
-// Cores específicas para cada prioridade
+// Cores específicas para cada prioridade usando o novo sistema
 const prioridadeCores = {
-  "Muito Alta": themeColors.error, // Vermelho para prioridade muito alta
-  Alta: themeColors.warning, // Amarelo para prioridade alta
+  "Muito Alta": themeColors.error[500], // Vermelho para prioridade muito alta
+  Alta: themeColors.warning[500], // Amarelo para prioridade alta
   Média: themeColors.primary[500], // Azul para prioridade média
-  Baixa: themeColors.success, // Verde para prioridade baixa
-  Mínima: themeColors.neutral, // Cinza para prioridade mínima
+  Baixa: themeColors.success[500], // Verde para prioridade baixa
+  Mínima: themeColors.secondary[500], // Cinza para prioridade mínima
 };
 
 const CustomTooltip = ({ active, payload, label, projetosData }: any) => {
@@ -109,7 +109,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
                 fill={
                   prioridadeCores[
                     payload.value as keyof typeof prioridadeCores
-                  ] || themeColors.gray
+                  ] || themeColors.secondary[500]
                 }
                 fontSize={fontSizes.eixoGrafico}
                 textAnchor="middle"
@@ -118,14 +118,14 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
                 {payload.value}
               </text>
             )}
-            axisLine={{ stroke: themeColors.neutral }}
-            tickLine={{ stroke: themeColors.neutral }}
+            axisLine={{ stroke: themeColors.secondary[400] }}
+            tickLine={{ stroke: themeColors.secondary[400] }}
           />
           <YAxis
             fontSize={fontSizes.eixoGrafico}
-            tick={{ fill: themeColors.gray }}
-            axisLine={{ stroke: themeColors.neutral }}
-            tickLine={{ stroke: themeColors.neutral }}
+            tick={{ fill: themeColors.secondary[500] }}
+            axisLine={{ stroke: themeColors.secondary[400] }}
+            tickLine={{ stroke: themeColors.secondary[400] }}
           />
           <Tooltip
             content={<CustomTooltip projetosData={data} />}

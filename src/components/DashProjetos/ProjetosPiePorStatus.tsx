@@ -57,7 +57,10 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
     return statusOrdem.map((status, i) => ({
       status: statusNameMap[status] || status, // Usa o nome mapeado ou o original
       count: counts[status] || 0,
-      color: themeColors.chart[i % themeColors.chart.length],
+      color:
+        themeColors.components.graficos.palette[
+          i % themeColors.components.graficos.palette.length
+        ],
     }));
   }, [data]);
 
@@ -119,8 +122,8 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: themeColors.cardBg.light,
-                border: `1px solid ${themeColors.neutral}`,
+                backgroundColor: themeColors.background.card.light,
+                border: `1px solid ${themeColors.border.primary.light}`,
                 borderRadius: "8px",
                 fontSize: fontSizes.tooltipGrafico,
               }}
@@ -143,7 +146,8 @@ const ProjetosPiePorStatus: React.FC<ProjetosPiePorStatusProps> = ({
               style={{ background: entry.color }}
             />
             <span
-              className={`text-gray-800 dark:text-gray-200 font-medium ${fontSizes.legendaGrafico}`}
+              className={`font-medium ${fontSizes.legendaGrafico}`}
+              style={{ color: themeColors.text.primary.light }}
             >
               {entry.status}
             </span>

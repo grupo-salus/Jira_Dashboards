@@ -2,6 +2,11 @@ import React, { useEffect } from "react";
 import { CardsIcon, LightbulbIcon } from "../icons/DashboardIcons";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getTotalizadoresConfig } from "../../constants/styleConfig";
+import {
+  themeColors,
+  getTextColor,
+  getBackgroundColor,
+} from "../../utils/themeColors";
 
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
@@ -12,27 +17,36 @@ const TotalizadorCard: React.FC<{
   label: string;
   value: number;
   barColor: string;
-}> = ({ icon, label, value, barColor }) => {
+  currentTheme: "light" | "dark";
+}> = ({ icon, label, value, barColor, currentTheme }) => {
   const config = getTotalizadoresConfig();
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md ${config.padding} flex-grow ${config.largura} ${config.altura} relative overflow-hidden`}
+      className={`rounded-lg shadow-md ${config.padding} flex-grow ${config.largura} ${config.altura} relative overflow-hidden`}
+      style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
     >
       <div className="flex items-center gap-4">
         {icon}
         <div>
-          <p className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${config.label}`}>
+          <p
+            className={`font-semibold mb-2 break-words ${config.label}`}
+            style={{ color: getTextColor("primary", currentTheme) }}
+          >
             {label}
           </p>
           <p
-            className={`font-bold text-gray-900 dark:text-white ${config.valor}`}
+            className={`font-bold ${config.valor}`}
+            style={{ color: getTextColor("primary", currentTheme) }}
           >
             {value}
           </p>
         </div>
       </div>
-      <div className={`absolute bottom-0 left-0 h-1 w-full ${barColor}`}></div>
+      <div
+        className={`absolute bottom-0 left-0 h-1 w-full`}
+        style={{ backgroundColor: barColor }}
+      ></div>
     </div>
   );
 };
@@ -41,6 +55,28 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
 }) => {
   const config = getTotalizadoresConfig();
+
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const handleTamanhoChange = () => {
@@ -80,73 +116,105 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           icon={
             <CardsIcon
               size={config.icone}
-              className="text-blue-500 dark:text-blue-400"
+              style={{ color: themeColors.components.totalizadores.total.icon }}
             />
           }
           label="Total no Board"
           value={total}
-          barColor="bg-blue-500"
+          barColor={themeColors.components.totalizadores.total.bar}
+          currentTheme={currentTheme}
         />
         <TotalizadorCard
           icon={
             <LightbulbIcon
               size={config.icone}
-              className="text-purple-500 dark:text-purple-400"
+              style={{
+                color: themeColors.components.totalizadores.ideacao.icon,
+              }}
             />
           }
           label="Total de Ideação"
           value={totalIdeacao}
-          barColor="bg-purple-500"
+          barColor={themeColors.components.totalizadores.ideacao.bar}
+          currentTheme={currentTheme}
         />
         <TotalizadorCard
           icon={
             <LightbulbIcon
               size={config.icone}
-              className="text-orange-500 dark:text-orange-400"
+              style={{
+                color: themeColors.components.totalizadores.projetos.icon,
+              }}
             />
           }
           label="Total de Projetos"
           value={totalProjetos}
-          barColor="bg-orange-500"
+          barColor={themeColors.components.totalizadores.projetos.bar}
+          currentTheme={currentTheme}
         />
         <TotalizadorCard
           icon={
             <LightbulbIcon
               size={config.icone}
-              className="text-green-500 dark:text-green-400"
+              style={{
+                color:
+                  themeColors.components.totalizadores.backlogPriorizado.icon,
+              }}
             />
           }
           label="Total na Fila Backlog Priorizado"
           value={totalBacklogPriorizado}
-          barColor="bg-green-500"
+          barColor={themeColors.components.totalizadores.backlogPriorizado.bar}
+          currentTheme={currentTheme}
         />
       </div>
       {proximoExecucao && (
         <div
-          className={`bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 border border-green-200 dark:border-green-700 rounded-lg w-full ${config.altura} ${config.padding} relative overflow-hidden flex items-center mb-6`}
+          className={`rounded-lg w-full ${config.altura} ${config.padding} relative overflow-hidden flex items-center mb-6`}
+          style={{
+            background:
+              themeColors.components.totalizadores.proximoExecucao.bg[
+                currentTheme
+              ],
+            border: `1px solid ${themeColors.components.totalizadores.proximoExecucao.border[currentTheme]}`,
+          }}
         >
           <div className="flex items-center gap-3 w-full">
-            <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
-              <span className={config.label}>
+            <div
+              className="text-white rounded-full w-8 h-8 flex items-center justify-center font-bold"
+              style={{ backgroundColor: themeColors.success[500] }}
+            >
+              <span
+                className={config.label}
+                style={{ color: themeColors.utility.white }}
+              >
                 #{proximoExecucao.PosicaoBacklog}
               </span>
             </div>
             <div className="flex-1">
               <h4
-                className={`font-semibold text-gray-900 dark:text-white ${config.titulo}`}
+                className={`font-semibold ${config.titulo}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Próximo: {proximoExecucao.Título}
               </h4>
               {proximoExecucao["Departamento Solicitante"] && (
                 <p
-                  className={`text-gray-600 dark:text-gray-400 mt-1 ${config.label}`}
+                  className={`mt-1 ${config.label}`}
+                  style={{ color: getTextColor("secondary", currentTheme) }}
                 >
                   {proximoExecucao["Departamento Solicitante"]}
                 </p>
               )}
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-green-400 to-blue-400"></div>
+          <div
+            className="absolute bottom-0 left-0 h-1 w-full"
+            style={{
+              background:
+                themeColors.components.totalizadores.proximoExecucao.bar,
+            }}
+          ></div>
         </div>
       )}
     </div>

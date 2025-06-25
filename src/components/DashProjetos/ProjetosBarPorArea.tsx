@@ -89,7 +89,10 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
 
     // Descobrir a cor da barra correspondente
     const areaIndex = areaCountFiltered.findIndex((a) => a.area === text);
-    const color = themeColors.chart[areaIndex % themeColors.chart.length];
+    const color =
+      themeColors.components.graficos.palette[
+        areaIndex % themeColors.components.graficos.palette.length
+      ];
 
     return (
       <g transform={`translate(${x},${y})`}>
@@ -159,7 +162,11 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             {areaCountFiltered.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={themeColors.chart[index % themeColors.chart.length]}
+                fill={
+                  themeColors.components.graficos.palette[
+                    index % themeColors.components.graficos.palette.length
+                  ]
+                }
                 cursor={onAreaClick ? "pointer" : "default"}
               />
             ))}

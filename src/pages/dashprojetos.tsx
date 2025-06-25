@@ -33,6 +33,12 @@ import {
   getTamanhoGlobal,
 } from "../constants/styleConfig";
 import CustomDropdown from "../components/common/CustomDropdown";
+import {
+  themeColors,
+  getTextColor,
+  getBackgroundColor,
+  getBorderColor,
+} from "../utils/themeColors";
 
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
@@ -63,6 +69,27 @@ const DashProjetos: React.FC = () => {
 
   // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
+
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    // Observer para mudanças no tema
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const tamanhoOptions = [
     { value: "pequeno", label: "Pequeno" },
@@ -370,13 +397,25 @@ const DashProjetos: React.FC = () => {
               val as "pequeno" | "medio" | "grande" | "muitoGrande"
             )
           }
-          buttonClassName={`relative h-10 px-4 text-left bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
+          buttonClassName={`relative h-10 px-4 text-left font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
         />
 
         {/* Botão Toggle Filtros */}
         <button
           onClick={() => setFiltrosVisiveis(!filtrosVisiveis)}
-          className={`flex items-center justify-center gap-2 h-10 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
+          className={`flex items-center justify-center gap-2 h-10 px-4 font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
+          style={{
+            background: themeColors.components.buttons.primary.bg[currentTheme],
+            color: themeColors.components.buttons.primary.text,
+          }}
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.currentTarget.style.background =
+              themeColors.components.buttons.primary.hover[currentTheme];
+          }}
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.currentTarget.style.background =
+              themeColors.components.buttons.primary.bg[currentTheme];
+          }}
         >
           {filtrosVisiveis ? (
             <>
@@ -423,13 +462,20 @@ const DashProjetos: React.FC = () => {
         }`}
         style={{ zIndex: filtrosVisiveis ? 10 : 1 }}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div
+          className="rounded-xl shadow-lg p-6"
+          style={{
+            backgroundColor: themeColors.components.filtros.bg[currentTheme],
+            border: `1px solid ${themeColors.components.filtros.border[currentTheme]}`,
+          }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
             {/* Filtro de Área */}
             <div className="flex flex-col">
               <label
                 htmlFor="area-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Área
               </label>
@@ -453,7 +499,8 @@ const DashProjetos: React.FC = () => {
             <div className="flex flex-col">
               <label
                 htmlFor="projeto-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Projeto
               </label>
@@ -476,7 +523,8 @@ const DashProjetos: React.FC = () => {
             <div className="flex flex-col">
               <label
                 htmlFor="status-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Status
               </label>
@@ -499,7 +547,8 @@ const DashProjetos: React.FC = () => {
             <div className="flex flex-col">
               <label
                 htmlFor="prioridade-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Prioridade
               </label>
@@ -524,7 +573,8 @@ const DashProjetos: React.FC = () => {
             <div className="flex flex-col">
               <label
                 htmlFor="grupo-solicitante-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Grupo Solicitante
               </label>
@@ -549,7 +599,8 @@ const DashProjetos: React.FC = () => {
             <div className="flex flex-col">
               <label
                 htmlFor="categoria-filter"
-                className={`block mb-3 font-semibold text-gray-700 dark:text-gray-200 ${fontSizes.labelFiltro}`}
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Categoria
               </label>
@@ -584,7 +635,23 @@ const DashProjetos: React.FC = () => {
                     categoria: "",
                   })
                 }
-                className={`px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-300 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 h-12 ${fontSizes.textoBotao}`}
+                className={`px-4 py-2 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 h-12 ${fontSizes.textoBotao}`}
+                style={{
+                  backgroundColor:
+                    themeColors.components.buttons.secondary.bg[currentTheme],
+                  color:
+                    themeColors.components.buttons.secondary.text[currentTheme],
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor =
+                    themeColors.components.buttons.secondary.hover[
+                      currentTheme
+                    ];
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor =
+                    themeColors.components.buttons.secondary.bg[currentTheme];
+                }}
               >
                 Limpar
               </button>
@@ -599,27 +666,47 @@ const DashProjetos: React.FC = () => {
       {/* Gráficos do dashboard */}
       {/* Primeira linha - 3 gráficos */}
       <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72 relative">
+        <div
+          className="rounded-lg shadow p-4 flex flex-col h-72 relative"
+          style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
+        >
           <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
+            style={{ color: getTextColor("primary", currentTheme) }}
           >
             Projetos por Área
             {filtros.area && (
               <button
                 onClick={() => handleFiltroChange("area", "")}
-                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
+                style={{
+                  color: themeColors.text.error[currentTheme],
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = getBackgroundColor(
+                    "hover",
+                    currentTheme
+                  );
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
                 title="Limpar filtro de área"
               >
-                <span className="text-xs text-red-600 font-semibold">
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: themeColors.text.error[currentTheme] }}
+                >
                   Limpar filtro
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-red-600"
+                  className="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   strokeWidth={2}
+                  style={{ color: themeColors.text.error[currentTheme] }}
                 >
                   <path
                     strokeLinecap="round"
@@ -635,27 +722,47 @@ const DashProjetos: React.FC = () => {
             onAreaClick={(area) => handleFiltroChange("area", area)}
           />
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72 relative">
+        <div
+          className="rounded-lg shadow p-4 flex flex-col h-72 relative"
+          style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
+        >
           <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
+            style={{ color: getTextColor("primary", currentTheme) }}
           >
             Projetos por Prioridade
             {filtros.prioridade && (
               <button
                 onClick={() => handleFiltroChange("prioridade", "")}
-                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
+                style={{
+                  color: themeColors.text.error[currentTheme],
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = getBackgroundColor(
+                    "hover",
+                    currentTheme
+                  );
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
                 title="Limpar filtro de prioridade"
               >
-                <span className="text-xs text-red-600 font-semibold">
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: themeColors.text.error[currentTheme] }}
+                >
                   Limpar filtro
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-red-600"
+                  className="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   strokeWidth={2}
+                  style={{ color: themeColors.text.error[currentTheme] }}
                 >
                   <path
                     strokeLinecap="round"
@@ -673,27 +780,47 @@ const DashProjetos: React.FC = () => {
             }
           />
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-72 relative">
+        <div
+          className="rounded-lg shadow p-4 flex flex-col h-72 relative"
+          style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
+        >
           <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
+            style={{ color: getTextColor("primary", currentTheme) }}
           >
             Análise de Demandas por Categoria
             {filtros.categoria && (
               <button
                 onClick={() => handleFiltroChange("categoria", "")}
-                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
+                style={{
+                  color: themeColors.text.error[currentTheme],
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = getBackgroundColor(
+                    "hover",
+                    currentTheme
+                  );
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
                 title="Limpar filtro de categoria"
               >
-                <span className="text-xs text-red-600 font-semibold">
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: themeColors.text.error[currentTheme] }}
+                >
                   Limpar filtro
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-red-600"
+                  className="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   strokeWidth={2}
+                  style={{ color: themeColors.text.error[currentTheme] }}
                 >
                   <path
                     strokeLinecap="round"
@@ -732,7 +859,24 @@ const DashProjetos: React.FC = () => {
       <div className="flex justify-end mb-4" ref={menuRef}>
         <button
           onClick={() => setMenuAberto(!menuAberto)}
-          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="p-2 transition-colors rounded-lg"
+          style={{
+            color: getTextColor("secondary", currentTheme),
+          }}
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.currentTarget.style.color = getTextColor("primary", currentTheme);
+            e.currentTarget.style.backgroundColor = getBackgroundColor(
+              "hover",
+              currentTheme
+            );
+          }}
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.currentTarget.style.color = getTextColor(
+              "secondary",
+              currentTheme
+            );
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
           aria-label="Opções de visualização"
         >
           <svg
@@ -747,18 +891,43 @@ const DashProjetos: React.FC = () => {
 
         {/* Dropdown menu */}
         {menuAberto && (
-          <div className="absolute mt-10 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-600">
+          <div
+            className="absolute mt-10 w-48 rounded-lg shadow-lg z-50"
+            style={{
+              backgroundColor: getBackgroundColor("card", currentTheme),
+              border: `1px solid ${getBorderColor("primary", currentTheme)}`,
+            }}
+          >
             <div className="py-1">
               <button
                 onClick={() => {
                   setVisualizacao("kanban");
                   setMenuAberto(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                  visualizacao === "kanban"
-                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                    : "text-gray-700 dark:text-gray-300"
-                } ${fontSizes.textoBotao}`}
+                className={`w-full text-left px-4 py-2 text-sm transition-colors ${fontSizes.textoBotao}`}
+                style={{
+                  color:
+                    visualizacao === "kanban"
+                      ? themeColors.text.info[currentTheme]
+                      : getTextColor("primary", currentTheme),
+                  backgroundColor:
+                    visualizacao === "kanban"
+                      ? themeColors.info[50]
+                      : "transparent",
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  if (visualizacao !== "kanban") {
+                    e.currentTarget.style.backgroundColor = getBackgroundColor(
+                      "hover",
+                      currentTheme
+                    );
+                  }
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  if (visualizacao !== "kanban") {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
               >
                 <div className="flex items-center">
                   <svg
@@ -782,11 +951,30 @@ const DashProjetos: React.FC = () => {
                   setVisualizacao("tabela");
                   setMenuAberto(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                  visualizacao === "tabela"
-                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                    : "text-gray-700 dark:text-gray-300"
-                } ${fontSizes.textoBotao}`}
+                className={`w-full text-left px-4 py-2 text-sm transition-colors ${fontSizes.textoBotao}`}
+                style={{
+                  color:
+                    visualizacao === "tabela"
+                      ? themeColors.text.info[currentTheme]
+                      : getTextColor("primary", currentTheme),
+                  backgroundColor:
+                    visualizacao === "tabela"
+                      ? themeColors.info[50]
+                      : "transparent",
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  if (visualizacao !== "tabela") {
+                    e.currentTarget.style.backgroundColor = getBackgroundColor(
+                      "hover",
+                      currentTheme
+                    );
+                  }
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  if (visualizacao !== "tabela") {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
               >
                 <div className="flex items-center">
                   <svg
@@ -811,7 +999,10 @@ const DashProjetos: React.FC = () => {
       </div>
 
       {/* Resultados */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-1 relative">
+      <div
+        className="rounded-lg shadow p-1 relative"
+        style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
+      >
         {/* Renderização condicional */}
         {visualizacao === "kanban" ? (
           <ProjetosKanban data={filteredData} />
