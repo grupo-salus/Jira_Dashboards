@@ -29,8 +29,8 @@ export const COLUMN_ORDER: JiraStatus[] = [
   "Em Homologação",
   "OPERAÇÃO ASSISTIDA",
   "Concluído",
-  "Cancelado",
   "Bloqueado",
+  "Cancelado",
 ];
 
 // Mapeamento de status para nomes das colunas (normalização)
