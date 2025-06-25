@@ -24,13 +24,13 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
 // Ordem fixa das colunas do Kanban
 export const COLUMN_ORDER: JiraStatus[] = [
   "Backlog",
-  "Bloqueado",
   "Backlog Priorizado",
   "Em andamento",
   "Em Homologação",
   "OPERAÇÃO ASSISTIDA",
   "Concluído",
   "Cancelado",
+  "Bloqueado",
 ];
 
 // Mapeamento de status para nomes das colunas (normalização)

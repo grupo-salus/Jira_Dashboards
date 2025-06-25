@@ -10,13 +10,13 @@ interface ProjetosPiePorStatusProps {
 
 const statusOrdem: JiraStatus[] = [
   "Backlog",
-  "Bloqueado",
   "Backlog Priorizado",
-  "Cancelado",
   "Em andamento",
   "Em Homologação",
   "OPERAÇÃO ASSISTIDA",
   "Concluído",
+  "Cancelado",
+  "Bloqueado",
 ];
 
 // Mapeamento de nomes de status para o gráfico
