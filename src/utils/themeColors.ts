@@ -364,31 +364,32 @@ export const themeColors = {
     // Totalizadores
     totalizadores: {
       total: {
-        icon: "#3b82f6", // blue-500
-        bar: "#3b82f6", // blue-500
+        icon: "#0052cc", // Jira blue
+        bar: "#0052cc", // Jira blue
       },
       ideacao: {
-        icon: "#8b5cf6", // purple-500
-        bar: "#8b5cf6", // purple-500
+        icon: "#0052cc", // Jira blue
+        bar: "#0052cc", // Jira blue
       },
       projetos: {
-        icon: "#f97316", // orange-500
-        bar: "#f97316", // orange-500
+        icon: "#0052cc", // Jira blue
+        bar: "#0052cc", // Jira blue
       },
       backlogPriorizado: {
-        icon: "#10b981", // green-500
-        bar: "#10b981", // green-500
+        icon: "#0052cc", // Jira blue
+        bar: "#0052cc", // Jira blue
       },
       proximoExecucao: {
         bg: {
-          light: "linear-gradient(to right, #ecfdf5, #eff6ff)", // green-50 to blue-50
-          dark: "linear-gradient(to right, #064e3b, #1e3a8a)", // green-900 to blue-900
+          light:
+            "linear-gradient(to right, #DEEBFF, #0052CC)", // Jira blue gradient light
+          dark: "linear-gradient(to right, #172B4D, #0747A6)", // Jira blue gradient dark
         },
         border: {
-          light: "#bbf7d0", // green-200
-          dark: "#065f46", // green-700
+          light: "#DEEBFF", // Jira blue border light
+          dark: "#172B4D", // Jira blue border dark
         },
-        bar: "linear-gradient(to right, #34d399, #60a5fa)", // green-400 to blue-400
+        bar: "linear-gradient(to right, #0052CC, #0747A6)", // Jira blue gradient bar
       },
     },
 
@@ -422,35 +423,32 @@ export const themeColors = {
 
     // Gráficos
     graficos: {
-      // Paleta principal para gráficos
+      // Paleta principal para gráficos - cores neutras que não confundem com prioridades
       palette: [
-        "#2563eb", // blue-600
-        "#7c3aed", // purple-600
-        "#ec4899", // pink-500
-        "#ef4444", // red-500
-        "#f59e0b", // amber-500
-        "#10b981", // emerald-500
-        "#06b6d4", // cyan-500
         "#8b5cf6", // violet-500
-        "#f97316", // orange-500
+        "#ec4899", // pink-500
+        "#06b6d4", // cyan-500
         "#14b8a6", // teal-500
+        "#a855f7", // purple-500
+        "#0ea5e9", // sky-500
+        "#22c55e", // green-500
         "#94a3b8", // gray-400
       ],
       // Cores específicas por tipo de gráfico
       bar: {
-        primary: "#2563eb",
-        secondary: "#7c3aed",
-        accent: "#ec4899",
+        primary: "#8b5cf6", // violet-500
+        secondary: "#ec4899", // pink-500
+        accent: "#06b6d4", // cyan-500
       },
       pie: {
-        primary: "#2563eb",
-        secondary: "#7c3aed",
-        accent: "#ec4899",
+        primary: "#8b5cf6", // violet-500
+        secondary: "#ec4899", // pink-500
+        accent: "#06b6d4", // cyan-500
       },
       line: {
-        primary: "#2563eb",
-        secondary: "#10b981",
-        accent: "#f59e0b",
+        primary: "#8b5cf6", // violet-500
+        secondary: "#14b8a6", // teal-500
+        accent: "#f97316", // orange-500
       },
     },
 

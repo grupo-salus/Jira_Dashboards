@@ -42,6 +42,9 @@ import {
   FilterIcon,
   XIcon,
   DotsVerticalIcon,
+  CompassIcon,
+  FireIcon,
+  DepartmentIcon,
 } from "../components/icons/DashboardIcons";
 
 // Mapeamento de nomes de status para exibição
@@ -547,9 +550,13 @@ const DashProjetos: React.FC = () => {
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
-            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico} flex items-center gap-2`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
+            <CompassIcon
+              size={20}
+              style={{ color: themeColors.components.totalizadores.total.bar }}
+            />
             Projetos por Área
             {filtros.area && (
               <button
@@ -589,9 +596,13 @@ const DashProjetos: React.FC = () => {
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
-            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico} flex items-center gap-2`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
+            <FireIcon
+              size={20}
+              style={{ color: themeColors.components.totalizadores.total.bar }}
+            />
             Projetos por Prioridade
             {filtros.prioridade && (
               <button
@@ -633,9 +644,13 @@ const DashProjetos: React.FC = () => {
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
-            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico} flex items-center gap-2`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
+            <DepartmentIcon
+              size={20}
+              style={{ color: themeColors.components.totalizadores.total.bar }}
+            />
             Projetos por Squad
             {filtros.squad && (
               <button

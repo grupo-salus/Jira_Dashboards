@@ -115,8 +115,8 @@ const ColunaHeader: React.FC<{
       <span
         className={`px-2 py-1 rounded-full font-medium ${fontSizes.contadorColunaKanban}`}
         style={{
-          backgroundColor: getBackgroundColor("card", currentTheme),
-          color: getTextColor("secondary", currentTheme),
+          backgroundColor: themeColors.components.totalizadores.total.bar,
+          color: themeColors.utility.white,
         }}
       >
         {count}

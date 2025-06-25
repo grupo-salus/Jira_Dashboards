@@ -113,28 +113,59 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     <div>
       <div className="flex flex-wrap gap-6 mb-6">
         <TotalizadorCard
-          icon={<CardsIcon size={config.icone} className="text-current" />}
+          icon={
+            <CardsIcon
+              size={config.icone}
+              className="text-current"
+              style={{ color: themeColors.components.totalizadores.total.icon }}
+            />
+          }
           label="Total no Board"
           value={total}
           barColor={themeColors.components.totalizadores.total.bar}
           currentTheme={currentTheme}
         />
         <TotalizadorCard
-          icon={<LightbulbIcon size={config.icone} className="text-current" />}
+          icon={
+            <LightbulbIcon
+              size={config.icone}
+              className="text-current"
+              style={{
+                color: themeColors.components.totalizadores.ideacao.icon,
+              }}
+            />
+          }
           label="Total de Ideação"
           value={totalIdeacao}
           barColor={themeColors.components.totalizadores.ideacao.bar}
           currentTheme={currentTheme}
         />
         <TotalizadorCard
-          icon={<LightbulbIcon size={config.icone} className="text-current" />}
+          icon={
+            <LightbulbIcon
+              size={config.icone}
+              className="text-current"
+              style={{
+                color: themeColors.components.totalizadores.projetos.icon,
+              }}
+            />
+          }
           label="Total de Projetos"
           value={totalProjetos}
           barColor={themeColors.components.totalizadores.projetos.bar}
           currentTheme={currentTheme}
         />
         <TotalizadorCard
-          icon={<LightbulbIcon size={config.icone} className="text-current" />}
+          icon={
+            <LightbulbIcon
+              size={config.icone}
+              className="text-current"
+              style={{
+                color:
+                  themeColors.components.totalizadores.backlogPriorizado.icon,
+              }}
+            />
+          }
           label="Total na Fila Backlog Priorizado"
           value={totalBacklogPriorizado}
           barColor={themeColors.components.totalizadores.backlogPriorizado.bar}
@@ -155,7 +186,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           <div className="flex items-center gap-3 w-full">
             <div
               className="text-white rounded-full w-8 h-8 flex items-center justify-center font-bold"
-              style={{ backgroundColor: themeColors.success[500] }}
+              style={{
+                backgroundColor: themeColors.components.totalizadores.total.bar,
+              }}
             >
               <span
                 className={config.label}
@@ -169,7 +202,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className={`font-semibold ${config.titulo}`}
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Próximo: {proximoExecucao.Título}
+                Próximo Projeto: <i>{proximoExecucao.Título}</i>
               </h4>
               {proximoExecucao["Departamento Solicitante"] && (
                 <p
