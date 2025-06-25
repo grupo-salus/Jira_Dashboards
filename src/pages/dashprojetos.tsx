@@ -173,9 +173,7 @@ const DashProjetos: React.FC = () => {
         normalizeString(item.Squad || "") ===
           normalizeString(filtrosAtivos.squad);
 
-      return (
-        matchesArea && matchesPrioridade && matchesStatus && matchesSquad
-      );
+      return matchesArea && matchesPrioridade && matchesStatus && matchesSquad;
     });
   };
 
@@ -516,8 +514,10 @@ const DashProjetos: React.FC = () => {
                 onClick={limparFiltros}
                 className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200"
                 style={{
-                  background: themeColors.components.buttons.danger.bg[currentTheme],
-                  color: themeColors.components.buttons.danger.text[currentTheme],
+                  background:
+                    themeColors.components.buttons.danger.bg[currentTheme],
+                  color:
+                    themeColors.components.buttons.danger.text[currentTheme],
                 }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.background =
@@ -627,7 +627,7 @@ const DashProjetos: React.FC = () => {
           />
         </div>
 
-        {/* Gráfico 3: Análise de Demandas por Squad */}
+        {/* Gráfico 3: Projetos por Squad */}
         <div
           className="rounded-lg shadow p-4 flex flex-col h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
@@ -636,7 +636,7 @@ const DashProjetos: React.FC = () => {
             className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
-            Análise de Demandas por Squad
+            Projetos por Squad
             {filtros.squad && (
               <button
                 onClick={() => handleFiltroChange("squad", "")}

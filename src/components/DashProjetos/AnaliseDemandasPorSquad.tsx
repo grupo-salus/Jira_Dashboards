@@ -1,15 +1,9 @@
 import React, { useEffect } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
+import { getFontSizes } from "../../constants/styleConfig";
 
 interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
@@ -125,6 +119,8 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
     }
   };
 
+  const fontSizes = getFontSizes();
+
   return (
     <div className="w-full h-full flex-1 flex items-center justify-center min-h-[250px] min-w-[250px]">
       <ResponsiveContainer
@@ -142,7 +138,31 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
             cx="50%"
             cy="50%"
             outerRadius={"70%"}
-            label={({ name, value }) => `${name}: ${value}`}
+            label={({ value, cx, cy, midAngle, innerRadius, outerRadius }) => {
+              // Cálculo da posição central da fatia
+              const RADIAN = Math.PI / 180;
+              const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+              const x = cx + radius * Math.cos(-midAngle * RADIAN);
+              const y = cy + radius * Math.sin(-midAngle * RADIAN);
+              return (
+                <text
+                  x={x}
+                  y={y}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className={
+                    typeof fontSizes.labelGraficoRosca === "string"
+                      ? fontSizes.labelGraficoRosca
+                      : String(fontSizes.labelGraficoRosca)
+                  }
+                  fill={String(themeColors.text.primary[currentTheme])}
+                  fontWeight={600}
+                >
+                  {String(value)}
+                </text>
+              );
+            }}
+            labelLine={false}
             isAnimationActive={false}
             onClick={handlePieClick}
             style={{ cursor: "pointer" }}
@@ -165,13 +185,45 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
             cursor={false}
             isAnimationActive={false}
           />
-          <Legend
-            verticalAlign="bottom"
-            align="center"
-            wrapperStyle={{ marginBottom: 15 }}
-          />
         </PieChart>
       </ResponsiveContainer>
+      <div className="w-full flex flex-col items-start mt-4">
+        {pieData.length > 0 && (
+          <ul className="flex flex-wrap justify-start gap-x-8 gap-y-2 w-full">
+            {pieData
+              .slice()
+              .sort((a, b) => b.value - a.value)
+              .map((item, idx) => (
+                <li
+                  key={item.label}
+                  className={`flex items-center gap-2 ${fontSizes.legendaGrafico} font-medium`}
+                >
+                  <span
+                    className="inline-block rounded-full"
+                    style={{
+                      width: 14,
+                      height: 14,
+                      backgroundColor:
+                        themeColors.components.graficos.palette[
+                          idx % themeColors.components.graficos.palette.length
+                        ],
+                    }}
+                  ></span>
+                  <span
+                    style={{ color: themeColors.text.primary[currentTheme] }}
+                  >
+                    {item.label}
+                  </span>
+                  <span
+                    style={{ color: themeColors.text.secondary[currentTheme] }}
+                  >
+                    ({item.value})
+                  </span>
+                </li>
+              ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
