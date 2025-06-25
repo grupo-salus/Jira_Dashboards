@@ -95,3 +95,11 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Webkit */
 }
+
+/* Adicione isso ao seu CSS global */
+.recharts-tooltip-wrapper {
+  pointer-events: auto !important;
+  transition: opacity 0.2s;
+  background: none !important;
+  box-shadow: none !important;
+}
