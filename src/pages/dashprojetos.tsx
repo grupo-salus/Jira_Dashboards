@@ -244,6 +244,16 @@ const DashProjetos: React.FC = () => {
     setFiltros((prev) => ({ ...prev, [campo]: valor }));
   };
 
+  // Função para limpar todos os filtros
+  const limparFiltros = () => {
+    setFiltros({
+      area: "",
+      status: "",
+      prioridade: "",
+      categoria: "",
+    });
+  };
+
   if (projetosData.loading) {
     return (
       <div
@@ -292,13 +302,13 @@ const DashProjetos: React.FC = () => {
               val as "pequeno" | "medio" | "grande" | "muitoGrande"
             )
           }
-          buttonClassName={`relative h-10 px-4 text-left font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
+          buttonClassName={`relative h-10 px-4 text-left font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg ${fontSizes.textoBotao}`}
         />
 
         {/* Botão Toggle Filtros */}
         <button
           onClick={() => setFiltrosVisiveis(!filtrosVisiveis)}
-          className={`flex items-center justify-center gap-2 h-10 px-4 font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg transform hover:scale-105 ${fontSizes.textoBotao}`}
+          className={`flex items-center justify-center gap-2 h-10 px-4 font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg ${fontSizes.textoBotao}`}
           style={{
             background: themeColors.components.buttons.primary.bg[currentTheme],
             color: themeColors.components.buttons.primary.text,
@@ -352,9 +362,23 @@ const DashProjetos: React.FC = () => {
               </label>
               <select
                 id="area-filter"
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                style={{
+                  backgroundColor:
+                    themeColors.components.filtros.input.bg[currentTheme],
+                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
+                  color: getTextColor("primary", currentTheme),
+                }}
                 value={filtros.area}
                 onChange={(e) => handleFiltroChange("area", e.target.value)}
+                onFocus={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.focus[currentTheme];
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.border[currentTheme];
+                }}
               >
                 <option value="">Todas</option>
                 {areaOptions.map((area) => (
@@ -376,9 +400,23 @@ const DashProjetos: React.FC = () => {
               </label>
               <select
                 id="status-filter"
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                style={{
+                  backgroundColor:
+                    themeColors.components.filtros.input.bg[currentTheme],
+                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
+                  color: getTextColor("primary", currentTheme),
+                }}
                 value={filtros.status}
                 onChange={(e) => handleFiltroChange("status", e.target.value)}
+                onFocus={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.focus[currentTheme];
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.border[currentTheme];
+                }}
               >
                 <option value="">Todos</option>
                 {statusOptions.map((option) => (
@@ -400,11 +438,25 @@ const DashProjetos: React.FC = () => {
               </label>
               <select
                 id="prioridade-filter"
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                style={{
+                  backgroundColor:
+                    themeColors.components.filtros.input.bg[currentTheme],
+                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
+                  color: getTextColor("primary", currentTheme),
+                }}
                 value={filtros.prioridade}
                 onChange={(e) =>
                   handleFiltroChange("prioridade", e.target.value)
                 }
+                onFocus={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.focus[currentTheme];
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.border[currentTheme];
+                }}
               >
                 <option value="">Todas</option>
                 {prioridadeOptionsTraduzidas.map((prio) => (
@@ -426,11 +478,25 @@ const DashProjetos: React.FC = () => {
               </label>
               <select
                 id="categoria-filter"
+                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                style={{
+                  backgroundColor:
+                    themeColors.components.filtros.input.bg[currentTheme],
+                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
+                  color: getTextColor("primary", currentTheme),
+                }}
                 value={filtros.categoria}
                 onChange={(e) =>
                   handleFiltroChange("categoria", e.target.value)
                 }
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
+                onFocus={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.focus[currentTheme];
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor =
+                    themeColors.components.filtros.input.border[currentTheme];
+                }}
               >
                 <option value="">Todas as Categorias</option>
                 {categoriaOptions.map((categoria) => (
@@ -440,6 +506,34 @@ const DashProjetos: React.FC = () => {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Botão Limpar Filtros */}
+          <div className="flex justify-end mt-6">
+            {(filtros.area ||
+              filtros.status ||
+              filtros.prioridade ||
+              filtros.categoria) && (
+              <button
+                onClick={limparFiltros}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                style={{
+                  background: themeColors.components.buttons.danger.bg[currentTheme],
+                  color: themeColors.components.buttons.danger.text[currentTheme],
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.background =
+                    themeColors.components.buttons.danger.hover[currentTheme];
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.background =
+                    themeColors.components.buttons.danger.bg[currentTheme];
+                }}
+              >
+                <XIcon className="w-4 h-4" />
+                Limpar
+              </button>
+            )}
           </div>
         </div>
       </div>
