@@ -24,7 +24,7 @@ interface ProjetosKanbanProps {
 // Configurações visuais
 const KANBAN_CONFIG = {
   COLUMN_COLOR: "bg-gray-100 dark:bg-gray-800",
-  COLUMN_WIDTH: "min-w-0 flex-1",
+  COLUMN_WIDTH: "min-w-[200px] max-w-[230px] flex-shrink-0",
   COLUMN_MIN_HEIGHT: "min-h-96",
   CARD_MAX_HEIGHT: "max-h-[500px]",
 } as const;
@@ -155,7 +155,8 @@ const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
 
   return (
     <div className="w-full">
-      <div className="flex gap-4 p-2 h-full">
+      {/* Container com scroll horizontal */}
+      <div className="flex gap-4 p-2 h-full overflow-x-auto">
         {COLUMN_ORDER.map((status) => {
           const projetos = projetosPorStatus[status] || [];
           return (
