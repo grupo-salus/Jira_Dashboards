@@ -2,18 +2,18 @@
  * dashprojetos.tsx
  *
  * Este é o componente principal do dashboard de Espaço de Projetos que:
- * 1. Exibe métricas e gráficos dos projetos
- * 2. Gerencia filtros (área, projeto, solicitante, prioridade, status, grupo solicitante)
- * 3. Renderiza diferentes visualizações dos dados
+ * 1. Exibe totalizadores dos projetos
+ * 2. Exibe 3 gráficos principais (área, prioridade, categoria)
+ * 3. Gerencia filtros (área, prioridade, status, categoria)
+ * 4. Renderiza visualização Kanban ou Tabela
  *
  * Componentes utilizados:
+ * - ProjetosTotalizadores: Cards com totais
+ * - ProjetosBarPorArea: Gráfico de barras por área
+ * - ProjetosBarPorPrioridade: Gráfico de barras por prioridade
+ * - AnaliseDemandasPorCategoria: Gráfico de pizza por categoria
  * - ProjetosTable: Exibe a tabela de projetos
  * - ProjetosKanban: Exibe o quadro de tarefas (Kanban)
- *
- * O componente também:
- * - Gerencia o estado dos filtros
- * - Calcula dados filtrados em tempo real
- * - Trata estados de loading e erro
  */
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
@@ -26,7 +26,6 @@ import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
 import AnaliseDemandasPorCategoria from "../components/DashProjetos/AnaliseDemandasPorCategoria";
-import IdeiasObsoletas from "../components/DashProjetos/IdeiasObsoletas";
 import {
   getFontSizes,
   setTamanhoGlobal,
@@ -57,13 +56,12 @@ const DashProjetos: React.FC = () => {
   const [tamanhoAtual, setTamanhoAtual] = useState(getTamanhoGlobal());
   const [, setForceUpdate] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Filtros simplificados - apenas os essenciais
   const [filtros, setFiltros] = useState({
     area: "",
-    projeto: "",
-    solicitante: "",
     prioridade: "",
     status: "" as JiraStatus | "",
-    grupo_solicitante: "",
     categoria: "",
   });
 
@@ -81,7 +79,6 @@ const DashProjetos: React.FC = () => {
 
     updateTheme();
 
-    // Observer para mudanças no tema
     const observer = new MutationObserver(updateTheme);
     observer.observe(document.documentElement, {
       attributes: true,
@@ -102,7 +99,7 @@ const DashProjetos: React.FC = () => {
   useEffect(() => {
     const handleTamanhoChange = () => {
       setTamanhoAtual(getTamanhoGlobal());
-      setForceUpdate((prev) => prev + 1); // Força re-render
+      setForceUpdate((prev) => prev + 1);
     };
 
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
@@ -117,7 +114,7 @@ const DashProjetos: React.FC = () => {
   ) => {
     setTamanhoGlobal(novoTamanho);
     setTamanhoAtual(novoTamanho);
-    setForceUpdate((prev) => prev + 1); // Força re-render
+    setForceUpdate((prev) => prev + 1);
   };
 
   // Fechar menu quando clicar fora
@@ -145,8 +142,8 @@ const DashProjetos: React.FC = () => {
       .replace(/[\u0300-\u036f]/g, "");
   };
 
-  // Função para aplicar filtros em cascata
-  const aplicarFiltrosCascata = (
+  // Função para aplicar filtros
+  const aplicarFiltros = (
     dados: EspacoDeProjetos[],
     filtrosAtivos: typeof filtros
   ) => {
@@ -155,16 +152,6 @@ const DashProjetos: React.FC = () => {
         !filtrosAtivos.area ||
         normalizeString(item["Departamento Solicitante"] || "") ===
           normalizeString(filtrosAtivos.area);
-
-      const matchesProjeto =
-        !filtrosAtivos.projeto ||
-        normalizeString(item.Título || "") ===
-          normalizeString(filtrosAtivos.projeto);
-
-      const matchesSolicitante =
-        !filtrosAtivos.solicitante ||
-        normalizeString(item.Solicitante || "") ===
-          normalizeString(filtrosAtivos.solicitante);
 
       const matchesPrioridade =
         !filtrosAtivos.prioridade ||
@@ -176,119 +163,43 @@ const DashProjetos: React.FC = () => {
         normalizeString(item.Status || "") ===
           normalizeString(filtrosAtivos.status);
 
-      const matchesGrupoSolicitante =
-        !filtrosAtivos.grupo_solicitante ||
-        normalizeString(item["Grupo Solicitante"] || "") ===
-          normalizeString(filtrosAtivos.grupo_solicitante);
-
       const matchesCategoria =
         !filtrosAtivos.categoria ||
         normalizeString(item.Categoria || "") ===
           normalizeString(filtrosAtivos.categoria);
 
       return (
-        matchesArea &&
-        matchesProjeto &&
-        matchesSolicitante &&
-        matchesPrioridade &&
-        matchesStatus &&
-        matchesGrupoSolicitante &&
-        matchesCategoria
+        matchesArea && matchesPrioridade && matchesStatus && matchesCategoria
       );
     });
   };
 
-  // Dados filtrados finais (para a tabela)
+  // Dados filtrados finais
   const filteredData = useMemo(() => {
-    return aplicarFiltrosCascata(projetosData.rawData, filtros);
+    return aplicarFiltros(projetosData.rawData, filtros);
   }, [projetosData.rawData, filtros]);
 
-  // Dados filtrados para cada dropdown (cascata)
-  const dadosParaArea = useMemo(() => {
-    return projetosData.rawData;
-  }, [projetosData.rawData]);
-
-  const dadosParaProjeto = useMemo(() => {
-    const filtrosTemp = { ...filtros, projeto: "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.solicitante,
-    filtros.prioridade,
-    filtros.status,
-    filtros.grupo_solicitante,
-  ]);
-
-  const dadosParaPrioridade = useMemo(() => {
-    const filtrosTemp = { ...filtros, prioridade: "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.projeto,
-    filtros.solicitante,
-    filtros.status,
-    filtros.grupo_solicitante,
-  ]);
-
-  const dadosParaStatus = useMemo(() => {
-    const filtrosTemp = { ...filtros, status: "" as JiraStatus | "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.projeto,
-    filtros.solicitante,
-    filtros.prioridade,
-    filtros.grupo_solicitante,
-  ]);
-
-  const dadosParaCategoria = useMemo(() => {
-    const filtrosTemp = { ...filtros, categoria: "" };
-    return aplicarFiltrosCascata(projetosData.rawData, filtrosTemp);
-  }, [
-    projetosData.rawData,
-    filtros.area,
-    filtros.projeto,
-    filtros.solicitante,
-    filtros.prioridade,
-    filtros.status,
-    filtros.grupo_solicitante,
-  ]);
-
-  // Opções para cada dropdown baseadas nos dados filtrados
+  // Opções para dropdowns baseadas nos dados
   const areaOptions = useMemo(
     () => [
       ...new Set(
-        dadosParaArea
+        projetosData.rawData
           .map((i: EspacoDeProjetos) => i["Departamento Solicitante"])
           .filter((value): value is string => Boolean(value))
       ),
     ],
-    [dadosParaArea]
-  );
-
-  const projetoOptions = useMemo(
-    () => [
-      ...new Set(
-        dadosParaProjeto
-          .map((i: EspacoDeProjetos) => i.Título)
-          .filter((value): value is string => Boolean(value))
-      ),
-    ],
-    [dadosParaProjeto]
+    [projetosData.rawData]
   );
 
   const prioridadeOptions = useMemo(
     () => [
       ...new Set(
-        dadosParaPrioridade
+        projetosData.rawData
           .map((i: EspacoDeProjetos) => i.Prioridade)
           .filter((value): value is string => Boolean(value))
       ),
     ],
-    [dadosParaPrioridade]
+    [projetosData.rawData]
   );
 
   // Opções de prioridade traduzidas para o dropdown
@@ -301,73 +212,43 @@ const DashProjetos: React.FC = () => {
 
   // Opções de status padronizadas para o filtro
   const statusOptions = useMemo(() => {
-    // Pega todos os status únicos dos dados filtrados
     const statusSet = new Set<JiraStatus>(
-      dadosParaStatus.map((i: EspacoDeProjetos) => i.Status as JiraStatus)
+      projetosData.rawData.map((i: EspacoDeProjetos) => i.Status as JiraStatus)
     );
-    // Retorna na ordem do Kanban e mapeia os nomes
     return COLUMN_ORDER.filter((status) => statusSet.has(status)).map(
       (status) => ({
         value: status,
         label: statusNameMap[status] || status,
       })
     );
-  }, [dadosParaStatus]);
+  }, [projetosData.rawData]);
 
   const categoriaOptions = useMemo(
     () => [
       ...new Set(
-        dadosParaCategoria
+        projetosData.rawData
           .map((i: EspacoDeProjetos) => i.Categoria)
           .filter((value): value is string => Boolean(value))
       ),
     ],
-    [dadosParaCategoria]
+    [projetosData.rawData]
   );
 
-  // Função para limpar filtros dependentes quando um filtro é alterado
+  // Função para alterar filtros
   const handleFiltroChange = (campo: keyof typeof filtros, valor: string) => {
-    setFiltros((prev) => {
-      const novosFiltros = { ...prev, [campo]: valor };
-
-      // Limpar filtros dependentes baseado na hierarquia
-      if (campo === "area") {
-        novosFiltros.projeto = "";
-        novosFiltros.solicitante = "";
-        novosFiltros.prioridade = "";
-        novosFiltros.status = "" as JiraStatus | "";
-        novosFiltros.grupo_solicitante = "";
-        novosFiltros.categoria = "";
-      } else if (campo === "projeto") {
-        novosFiltros.solicitante = "";
-        novosFiltros.prioridade = "";
-        novosFiltros.status = "" as JiraStatus | "";
-        novosFiltros.grupo_solicitante = "";
-        novosFiltros.categoria = "";
-      } else if (campo === "solicitante") {
-        novosFiltros.prioridade = "";
-        novosFiltros.status = "" as JiraStatus | "";
-        novosFiltros.grupo_solicitante = "";
-        novosFiltros.categoria = "";
-      } else if (campo === "prioridade") {
-        novosFiltros.status = "" as JiraStatus | "";
-        novosFiltros.grupo_solicitante = "";
-        novosFiltros.categoria = "";
-      } else if (campo === "status") {
-        novosFiltros.grupo_solicitante = "";
-        novosFiltros.categoria = "";
-      } else if (campo === "grupo_solicitante") {
-        novosFiltros.categoria = "";
-      }
-
-      return novosFiltros;
-    });
+    setFiltros((prev) => ({ ...prev, [campo]: valor }));
   };
 
   if (projetosData.loading) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-xl text-gray-500">
+      <div
+        className="h-screen flex items-center justify-center"
+        style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
+      >
+        <div
+          className="text-xl"
+          style={{ color: getTextColor("secondary", currentTheme) }}
+        >
           Carregando dados dos projetos...
         </div>
       </div>
@@ -376,8 +257,14 @@ const DashProjetos: React.FC = () => {
 
   if (projetosData.error) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-xl text-red-500">
+      <div
+        className="h-screen flex items-center justify-center"
+        style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
+      >
+        <div
+          className="text-xl"
+          style={{ color: getTextColor("error", currentTheme) }}
+        >
           Erro ao carregar dados: {projetosData.error}
         </div>
       </div>
@@ -385,9 +272,12 @@ const DashProjetos: React.FC = () => {
   }
 
   return (
-    <div className="p-6 w-full max-w-none relative">
-      {/* Botões de Controle - Linha acima dos totalizadores */}
-      <div className="flex items-center justify-end gap-2">
+    <div
+      className="p-6 w-full max-w-none relative"
+      style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
+    >
+      {/* Botões de Controle */}
+      <div className="flex items-center justify-end gap-2 mb-4">
         {/* Dropdown de Tamanho */}
         <CustomDropdown
           options={tamanhoOptions}
@@ -465,8 +355,8 @@ const DashProjetos: React.FC = () => {
         <div
           className="rounded-xl shadow-lg p-6"
           style={{
-            backgroundColor: themeColors.components.filtros.bg[currentTheme],
-            border: `1px solid ${themeColors.components.filtros.border[currentTheme]}`,
+            backgroundColor: getBackgroundColor("card", currentTheme),
+            border: `1px solid ${getBorderColor("primary", currentTheme)}`,
           }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
@@ -484,36 +374,11 @@ const DashProjetos: React.FC = () => {
                 className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
                 value={filtros.area}
                 onChange={(e) => handleFiltroChange("area", e.target.value)}
-                style={{ height: undefined }}
               >
                 <option value="">Todas</option>
                 {areaOptions.map((area) => (
                   <option key={area} value={area}>
                     {area}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Filtro de Projeto */}
-            <div className="flex flex-col">
-              <label
-                htmlFor="projeto-filter"
-                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projeto
-              </label>
-              <select
-                id="projeto-filter"
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-                value={filtros.projeto}
-                onChange={(e) => handleFiltroChange("projeto", e.target.value)}
-              >
-                <option value="">Todos</option>
-                {projetoOptions.map((projeto) => (
-                  <option key={projeto} value={projeto}>
-                    {projeto}
                   </option>
                 ))}
               </select>
@@ -569,32 +434,6 @@ const DashProjetos: React.FC = () => {
               </select>
             </div>
 
-            {/* Filtro de Grupo Solicitante */}
-            <div className="flex flex-col">
-              <label
-                htmlFor="grupo-solicitante-filter"
-                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Grupo Solicitante
-              </label>
-              <select
-                id="grupo-solicitante-filter"
-                value={filtros.grupo_solicitante}
-                onChange={(e) =>
-                  handleFiltroChange("grupo_solicitante", e.target.value)
-                }
-                className={`bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-              >
-                <option value="">Todos os Grupos</option>
-                {areaOptions.map((area) => (
-                  <option key={area} value={area}>
-                    {area}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Filtro de Categoria */}
             <div className="flex flex-col">
               <label
@@ -620,42 +459,6 @@ const DashProjetos: React.FC = () => {
                 ))}
               </select>
             </div>
-
-            {/* Botão Limpar Filtros */}
-            <div className="flex flex-col justify-end">
-              <button
-                onClick={() =>
-                  setFiltros({
-                    area: "",
-                    projeto: "",
-                    solicitante: "",
-                    prioridade: "",
-                    status: "" as JiraStatus | "",
-                    grupo_solicitante: "",
-                    categoria: "",
-                  })
-                }
-                className={`px-4 py-2 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 h-12 ${fontSizes.textoBotao}`}
-                style={{
-                  backgroundColor:
-                    themeColors.components.buttons.secondary.bg[currentTheme],
-                  color:
-                    themeColors.components.buttons.secondary.text[currentTheme],
-                }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor =
-                    themeColors.components.buttons.secondary.hover[
-                      currentTheme
-                    ];
-                }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor =
-                    themeColors.components.buttons.secondary.bg[currentTheme];
-                }}
-              >
-                Limpar
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -663,9 +466,9 @@ const DashProjetos: React.FC = () => {
       {/* Totalizadores */}
       <ProjetosTotalizadores filteredData={filteredData} />
 
-      {/* Gráficos do dashboard */}
-      {/* Primeira linha - 3 gráficos */}
+      {/* Gráficos do dashboard - 3 gráficos em linha */}
       <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Gráfico 1: Projetos por Área */}
         <div
           className="rounded-lg shadow p-4 flex flex-col h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
@@ -679,9 +482,7 @@ const DashProjetos: React.FC = () => {
               <button
                 onClick={() => handleFiltroChange("area", "")}
                 className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
-                style={{
-                  color: themeColors.text.error[currentTheme],
-                }}
+                style={{ color: themeColors.text.error[currentTheme] }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = getBackgroundColor(
                     "hover",
@@ -722,6 +523,8 @@ const DashProjetos: React.FC = () => {
             onAreaClick={(area) => handleFiltroChange("area", area)}
           />
         </div>
+
+        {/* Gráfico 2: Projetos por Prioridade */}
         <div
           className="rounded-lg shadow p-4 flex flex-col h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
@@ -735,9 +538,7 @@ const DashProjetos: React.FC = () => {
               <button
                 onClick={() => handleFiltroChange("prioridade", "")}
                 className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
-                style={{
-                  color: themeColors.text.error[currentTheme],
-                }}
+                style={{ color: themeColors.text.error[currentTheme] }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = getBackgroundColor(
                     "hover",
@@ -780,6 +581,8 @@ const DashProjetos: React.FC = () => {
             }
           />
         </div>
+
+        {/* Gráfico 3: Análise de Demandas por Categoria */}
         <div
           className="rounded-lg shadow p-4 flex flex-col h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
@@ -793,9 +596,7 @@ const DashProjetos: React.FC = () => {
               <button
                 onClick={() => handleFiltroChange("categoria", "")}
                 className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
-                style={{
-                  color: themeColors.text.error[currentTheme],
-                }}
+                style={{ color: themeColors.text.error[currentTheme] }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = getBackgroundColor(
                     "hover",
@@ -840,29 +641,12 @@ const DashProjetos: React.FC = () => {
         </div>
       </div>
 
-      {/* Segunda linha - 1 gráfico */}
-      {/* <div className="mb-6 w-full grid grid-cols-1 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-          <div
-            className={`font-semibold text-gray-900 dark:text-white mb-2 text-left ${fontSizes.tituloGrafico}`}
-          >
-            Ideações por Tempo de Espera
-          </div>
-          <IdeacoesPorTempoDeEspera data={filteredData} />
-        </div>
-      </div> */}
-
-      {/* Seção de Ideias Obsoletas */}
-      <IdeiasObsoletas data={projetosData.rawData} />
-
       {/* Controles de visualização */}
       <div className="flex justify-end mb-4" ref={menuRef}>
         <button
           onClick={() => setMenuAberto(!menuAberto)}
           className="p-2 transition-colors rounded-lg"
-          style={{
-            color: getTextColor("secondary", currentTheme),
-          }}
+          style={{ color: getTextColor("secondary", currentTheme) }}
           onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.currentTarget.style.color = getTextColor("primary", currentTheme);
             e.currentTarget.style.backgroundColor = getBackgroundColor(
@@ -998,12 +782,11 @@ const DashProjetos: React.FC = () => {
         )}
       </div>
 
-      {/* Resultados */}
+      {/* Resultados - Kanban ou Tabela */}
       <div
         className="rounded-lg shadow p-1 relative"
         style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
       >
-        {/* Renderização condicional */}
         {visualizacao === "kanban" ? (
           <ProjetosKanban data={filteredData} />
         ) : (
