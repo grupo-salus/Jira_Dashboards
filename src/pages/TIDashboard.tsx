@@ -16,8 +16,31 @@
 import React, { useState } from "react";
 import { useJira } from "../context/JiraContext";
 import AcompanhamentoTITable from "../components/DashAcompanhamentoTI/AcompanhamentoTITable";
+import { getTextColor, getBackgroundColor } from "../utils/themeColors";
 
 const TIDashboard: React.FC = () => {
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const { acompanhamentoTIData } = useJira();
   const [filtros, setFiltros] = useState({
     responsavel: "",
@@ -34,8 +57,14 @@ const TIDashboard: React.FC = () => {
 
   if (acompanhamentoTIData.loading) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-xl text-gray-500">
+      <div
+        className="h-screen flex items-center justify-center"
+        style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
+      >
+        <div
+          className="text-xl"
+          style={{ color: getTextColor("secondary", currentTheme) }}
+        >
           Carregando dados do acompanhamento TI...
         </div>
       </div>
@@ -44,8 +73,14 @@ const TIDashboard: React.FC = () => {
 
   if (acompanhamentoTIData.error) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-xl text-red-500">
+      <div
+        className="h-screen flex items-center justify-center"
+        style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
+      >
+        <div
+          className="text-xl"
+          style={{ color: getTextColor("error", currentTheme) }}
+        >
           Erro ao carregar dados: {acompanhamentoTIData.error}
         </div>
       </div>
@@ -53,9 +88,17 @@ const TIDashboard: React.FC = () => {
   }
 
   return (
-    <div className="p-6">
+    <div
+      className="p-6"
+      style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
+    >
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Dashboard de Acompanhamento TI</h1>
+        <h1
+          className="text-2xl font-bold"
+          style={{ color: getTextColor("primary", currentTheme) }}
+        >
+          Dashboard de Acompanhamento TI
+        </h1>
       </div>
       <AcompanhamentoTITable
         data={acompanhamentoTIData.rawData}
