@@ -12,7 +12,10 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
 }) => (
   <div
     className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2 max-h-[220px] overflow-y-auto min-w-[180px] max-w-[260px] text-gray-900 dark:text-gray-100 shadow-lg text-xs"
-    style={{ opacity: 1 }}
+    style={{
+      zIndex: 1000,
+      position: "relative",
+    }}
   >
     <div className="font-bold mb-2">
       {areaLabel} ({projetos.length} projetos)

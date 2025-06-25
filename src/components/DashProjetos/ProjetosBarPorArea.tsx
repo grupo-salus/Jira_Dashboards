@@ -142,10 +142,14 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             interval={0}
           />
           <YAxis type="number" allowDecimals={false} />
-          <Tooltip content={<CustomTooltip projetosData={data} />} />
+          <Tooltip
+            content={<CustomTooltip projetosData={data} />}
+            cursor={false}
+            isAnimationActive={false}
+          />
           <Bar
             dataKey="count"
-            onClick={(data, index) => {
+            onClick={(data) => {
               if (onAreaClick && data && data.area) {
                 onAreaClick(data.area);
               }

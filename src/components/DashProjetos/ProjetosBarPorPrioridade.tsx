@@ -127,7 +127,11 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
             axisLine={{ stroke: themeColors.neutral }}
             tickLine={{ stroke: themeColors.neutral }}
           />
-          <Tooltip content={<CustomTooltip projetosData={data} />} />
+          <Tooltip
+            content={<CustomTooltip projetosData={data} />}
+            cursor={false}
+            isAnimationActive={false}
+          />
           <Bar dataKey="count" radius={[4, 4, 0, 0]} cursor="pointer">
             {prioridadeCount.map((entry, index) => (
               <Cell
