@@ -10,7 +10,7 @@ import {
   Cell,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
-import { themeColors } from "../../utils/themeColors";
+import { themeColors, getTextColor } from "../../utils/themeColors";
 import { getFontSizes } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
 
@@ -38,6 +38,28 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
 }) => {
   const [, setForceUpdate] = useState(0);
 
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
+    "light"
+  );
+
+  React.useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   // Obter configurações atuais
   const fontSizes = getFontSizes();
 
@@ -53,21 +75,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
     };
   }, []);
 
-  // Listener para mudanças de tema (dark/light)
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setForceUpdate((prev) => prev + 1);
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  // Componente customizado para o tick do eixo Y com quebra de linha
-
-  // Componente customizado para o tick do eixo X com quebra de linha, centralizado e colorido
+  // Componente customizado para o tick do eixo X com quebra de linha, centralizado e usando tema light/dark
   const CustomXAxisTick = (props: any) => {
     const { x, y, payload } = props;
     const text = payload.value;
@@ -87,20 +95,13 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
     });
     lines.push(currentLine);
 
-    // Descobrir a cor da barra correspondente
-    const areaIndex = areaCountFiltered.findIndex((a) => a.area === text);
-    const color =
-      themeColors.components.graficos.palette[
-        areaIndex % themeColors.components.graficos.palette.length
-      ];
-
     return (
       <g transform={`translate(${x},${y})`}>
         <text
           x={0}
           y={20} // margin para afastar do gráfico
           textAnchor="middle"
-          fill={color}
+          fill={getTextColor("primary", currentTheme)}
           fontSize={fontSizes.eixoGrafico}
           fontWeight="bold"
         >

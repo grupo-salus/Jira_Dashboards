@@ -381,8 +381,7 @@ export const themeColors = {
       },
       proximoExecucao: {
         bg: {
-          light:
-            "linear-gradient(to right, #DEEBFF, #0052CC)", // Jira blue gradient light
+          light: "linear-gradient(to right, #DEEBFF, #0052CC)", // Jira blue gradient light
           dark: "linear-gradient(to right, #172B4D, #0747A6)", // Jira blue gradient dark
         },
         border: {
@@ -423,32 +422,34 @@ export const themeColors = {
 
     // Gráficos
     graficos: {
-      // Paleta principal para gráficos - cores neutras que não confundem com prioridades
+      // Paleta principal para gráficos - vibrante e distinta das prioridades
       palette: [
         "#8b5cf6", // violet-500
-        "#ec4899", // pink-500
+        "#d946ef", // fuchsia-500
         "#06b6d4", // cyan-500
-        "#14b8a6", // teal-500
-        "#a855f7", // purple-500
-        "#0ea5e9", // sky-500
-        "#22c55e", // green-500
-        "#94a3b8", // gray-400
+        "#2dd4bf", // teal-400
+        "#6366f1", // indigo-500
+        "#ec4899", // pink-500
+        "#a78bfa", // violet-400
+        "#5eead4", // cyan-300
       ],
-      // Cores específicas por tipo de gráfico
+      // Cores específicas por tipo de gráfico (sugestão)
       bar: {
         primary: "#8b5cf6", // violet-500
-        secondary: "#ec4899", // pink-500
+        secondary: "#d946ef", // fuchsia-500
         accent: "#06b6d4", // cyan-500
       },
       pie: {
+        // Para gráficos de pizza, é bom usar a paleta inteira
+        // As cores abaixo são apenas um ponto de partida
         primary: "#8b5cf6", // violet-500
-        secondary: "#ec4899", // pink-500
-        accent: "#06b6d4", // cyan-500
+        secondary: "#d946ef", // fuchsia-500
+        accent: "#ec4899", // pink-500
       },
       line: {
-        primary: "#8b5cf6", // violet-500
-        secondary: "#14b8a6", // teal-500
-        accent: "#f97316", // orange-500
+        primary: "#6366f1", // indigo-500
+        secondary: "#2dd4bf", // teal-400
+        accent: "#d946ef", // fuchsia-500
       },
     },
 
