@@ -21,20 +21,20 @@ interface ProjetosBarPorPrioridadeProps {
 }
 
 const prioridadeOrdem = [
-  { value: "Highest", label: "Muito Alta" },
-  { value: "High", label: "Alta" },
-  { value: "Medium", label: "Média" },
-  { value: "Low", label: "Baixa" },
-  { value: "Lowest", label: "Mínima" },
+  { value: "Estratégico", label: "Estratégico" },
+  { value: "Alta", label: "Alta" },
+  { value: "Média", label: "Média" },
+  { value: "Baixa", label: "Baixa" },
+  { value: "Muito Baixa", label: "Muito Baixa" },
 ];
 
 // Cores específicas para cada prioridade usando o novo sistema
 const prioridadeCores = {
-  "Muito Alta": themeColors.error[500], // Vermelho para prioridade muito alta
+  Estratégico: themeColors.error[500], // Vermelho para prioridade estratégica
   Alta: themeColors.warning[500], // Amarelo para prioridade alta
   Média: themeColors.primary[500], // Azul para prioridade média
   Baixa: themeColors.success[500], // Verde para prioridade baixa
-  Mínima: themeColors.secondary[500], // Cinza para prioridade mínima
+  "Muito Baixa": themeColors.secondary[500], // Cinza para prioridade muito baixa
 };
 
 const CustomTooltip = ({ active, payload, label, projetosData }: any) => {

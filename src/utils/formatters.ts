@@ -66,12 +66,12 @@ export const calcularDiferencaTempo = (
 };
 
 /**
- * Traduz e formata a prioridade do Jira
- * @param priority Prioridade do Jira (ex: Highest, High, Medium, etc)
- * @returns Objeto com label traduzido e configurações de cor
+ * Formata a prioridade do Jira (já vem em português brasileiro)
+ * @param priority Prioridade do Jira (ex: Estratégico, Alta, Média, etc)
+ * @returns Objeto com label e configurações de cor
  */
 export const formatPriority = (priority: string) => {
-  return PRIORITIES[priority] || PRIORITIES["Medium"];
+  return PRIORITIES[priority] || PRIORITIES["Média"];
 };
 
 /**

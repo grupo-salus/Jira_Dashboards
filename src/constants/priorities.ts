@@ -16,8 +16,8 @@ export interface PriorityConfig {
 }
 
 export const PRIORITIES: Record<string, PriorityConfig> = {
-  Highest: {
-    label: "Muito Alta",
+  Estratégico: {
+    label: "Estratégico",
     color: {
       bg: "bg-red-100",
       text: "text-red-800",
@@ -27,7 +27,7 @@ export const PRIORITIES: Record<string, PriorityConfig> = {
       },
     },
   },
-  High: {
+  Alta: {
     label: "Alta",
     color: {
       bg: "bg-orange-100",
@@ -38,7 +38,7 @@ export const PRIORITIES: Record<string, PriorityConfig> = {
       },
     },
   },
-  Medium: {
+  Média: {
     label: "Média",
     color: {
       bg: "bg-yellow-100",
@@ -49,7 +49,7 @@ export const PRIORITIES: Record<string, PriorityConfig> = {
       },
     },
   },
-  Low: {
+  Baixa: {
     label: "Baixa",
     color: {
       bg: "bg-green-100",
@@ -60,8 +60,8 @@ export const PRIORITIES: Record<string, PriorityConfig> = {
       },
     },
   },
-  Lowest: {
-    label: "Mínima",
+  "Muito Baixa": {
+    label: "Muito Baixa",
     color: {
       bg: "bg-blue-100",
       text: "text-blue-800",

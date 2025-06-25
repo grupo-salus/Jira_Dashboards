@@ -103,7 +103,7 @@ if __name__ == "__main__":
     # print("\nTeste 2 - Resumo backlog (com filtros):")
     # filtros = {
     #     "departamento": "Financeiro",
-    #     "prioridade": "Highest",
+    #     "prioridade": "Estratégico",
     #     "status": "Tarefas pendentes"
     # }
     # testar_resumo_backlog(filtros, nome_arquivo="backlog_summary_filtrado.json")
