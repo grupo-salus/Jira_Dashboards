@@ -90,23 +90,110 @@ const Navbar: React.FC<NavbarProps> = ({
     >
       <div className="w-full px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo e Título */}
-          <div className="flex items-center">
-            <img
-              src="https://cdn.worldvectorlogo.com/logos/jira-1.svg"
-              alt="Jira Logo"
-              className="h-8 w-8 mr-2"
-            />
-            <span
-              className="ml-2 text-lg md:text-xl font-semibold"
-              style={{ color: getTextColor("primary", currentTheme) }}
-            >
-              JIRA Dashboard
-            </span>
+          {/* Esquerda: Logo, Título e Menus */}
+          <div className="flex items-center gap-6">
+            {/* Logo e Título */}
+            <div className="flex items-center">
+              <img
+                src="https://cdn.worldvectorlogo.com/logos/jira-1.svg"
+                alt="Jira Logo"
+                className="h-8 w-8 mr-2"
+              />
+              <span
+                className="ml-2 text-lg md:text-xl font-semibold"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                JIRA Dashboard
+              </span>
+            </div>
+
+            {/* Menus de Navegação - Desktop */}
+            <div className="hidden md:flex items-center space-x-2">
+              {showHomeLink && (
+                <button
+                  onClick={() => handleViewChange("home")}
+                  className="px-4 py-2 rounded-md transition-colors font-semibold"
+                  style={{
+                    backgroundColor:
+                      currentView === "home"
+                        ? getBackgroundColor("active", currentTheme)
+                        : "transparent",
+                    color:
+                      currentView === "home"
+                        ? getTextColor("primary", currentTheme)
+                        : getTextColor("secondary", currentTheme),
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    <HomeIcon className="h-4 w-4" />
+                    Home
+                  </span>
+                </button>
+              )}
+              <button
+                onClick={() => handleViewChange("projetos")}
+                className="px-4 py-2 rounded-md transition-colors font-semibold"
+                style={{
+                  backgroundColor:
+                    currentView === "projetos"
+                      ? getBackgroundColor("active", currentTheme)
+                      : "transparent",
+                  color:
+                    currentView === "projetos"
+                      ? getTextColor("primary", currentTheme)
+                      : getTextColor("secondary", currentTheme),
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <Kanban className="h-4 w-4" />
+                  Espaço de Projetos
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleViewChange("sprint")}
+                className="px-4 py-2 rounded-md transition-colors font-semibold"
+                style={{
+                  backgroundColor:
+                    currentView === "sprint"
+                      ? getBackgroundColor("active", currentTheme)
+                      : "transparent",
+                  color:
+                    currentView === "sprint"
+                      ? getTextColor("primary", currentTheme)
+                      : getTextColor("secondary", currentTheme),
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <Sprint className="h-4 w-4" />
+                  Sprint Ativa
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleViewChange("ti")}
+                className="px-4 py-2 rounded-md transition-colors font-semibold"
+                style={{
+                  backgroundColor:
+                    currentView === "ti"
+                      ? getBackgroundColor("active", currentTheme)
+                      : "transparent",
+                  color:
+                    currentView === "ti"
+                      ? getTextColor("primary", currentTheme)
+                      : getTextColor("secondary", currentTheme),
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Acompanhamento TI
+                </span>
+              </button>
+            </div>
           </div>
 
-          {/* Botões de Ação - Desktop */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Direita: Botões de Ação */}
+          <div className="flex items-center space-x-2 md:space-x-4">
             <button
               className="btn btn-secondary flex items-center gap-1"
               onClick={handleRefresh}
@@ -116,37 +203,7 @@ const Navbar: React.FC<NavbarProps> = ({
               }}
             >
               <RefreshCw className="h-4 w-4" />
-              <span>Refresh</span>
-            </button>
-
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-md"
-              style={{
-                color: getTextColor("secondary", currentTheme),
-                backgroundColor: "transparent",
-              }}
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {/* Botão Menu Mobile */}
-          <div className="md:hidden flex items-center space-x-2">
-            <button
-              onClick={handleRefresh}
-              className="p-2 rounded-md"
-              style={{
-                backgroundColor: getBackgroundColor("hover", currentTheme),
-                color: getTextColor("secondary", currentTheme),
-              }}
-            >
-              <RefreshCw className="h-4 w-4" />
+              <span className="hidden sm:inline">Refresh</span>
             </button>
 
             <button
@@ -165,107 +222,24 @@ const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            <button
-              onClick={toggleMobileMenu}
-              className="p-2 rounded-md"
-              style={{
-                color: getTextColor("secondary", currentTheme),
-                backgroundColor: "transparent",
-              }}
-              aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Menu de Navegação - Desktop */}
-        <div className="hidden md:block mt-4">
-          <div className="flex space-x-2">
-            {showHomeLink && (
+            {/* Botão Menu Mobile */}
+            <div className="md:hidden flex items-center">
               <button
-                onClick={() => handleViewChange("home")}
-                className="px-4 py-2 rounded-md transition-colors font-semibold"
+                onClick={toggleMobileMenu}
+                className="p-2 rounded-md"
                 style={{
-                  backgroundColor:
-                    currentView === "home"
-                      ? getBackgroundColor("active", currentTheme)
-                      : "transparent",
-                  color:
-                    currentView === "home"
-                      ? getTextColor("primary", currentTheme)
-                      : getTextColor("secondary", currentTheme),
+                  color: getTextColor("secondary", currentTheme),
+                  backgroundColor: "transparent",
                 }}
+                aria-label="Toggle mobile menu"
               >
-                <span className="flex items-center gap-2">
-                  <HomeIcon className="h-4 w-4" />
-                  Home
-                </span>
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
               </button>
-            )}
-            <button
-              onClick={() => handleViewChange("projetos")}
-              className="px-4 py-2 rounded-md transition-colors font-semibold"
-              style={{
-                backgroundColor:
-                  currentView === "projetos"
-                    ? getBackgroundColor("active", currentTheme)
-                    : "transparent",
-                color:
-                  currentView === "projetos"
-                    ? getTextColor("primary", currentTheme)
-                    : getTextColor("secondary", currentTheme),
-              }}
-            >
-              <span className="flex items-center gap-2">
-                <Kanban className="h-4 w-4" />
-                Espaço de Projetos
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleViewChange("sprint")}
-              className="px-4 py-2 rounded-md transition-colors font-semibold"
-              style={{
-                backgroundColor:
-                  currentView === "sprint"
-                    ? getBackgroundColor("active", currentTheme)
-                    : "transparent",
-                color:
-                  currentView === "sprint"
-                    ? getTextColor("primary", currentTheme)
-                    : getTextColor("secondary", currentTheme),
-              }}
-            >
-              <span className="flex items-center gap-2">
-                <Sprint className="h-4 w-4" />
-                Sprint Ativa
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleViewChange("ti")}
-              className="px-4 py-2 rounded-md transition-colors font-semibold"
-              style={{
-                backgroundColor:
-                  currentView === "ti"
-                    ? getBackgroundColor("active", currentTheme)
-                    : "transparent",
-                color:
-                  currentView === "ti"
-                    ? getTextColor("primary", currentTheme)
-                    : getTextColor("secondary", currentTheme),
-              }}
-            >
-              <span className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Acompanhamento TI
-              </span>
-            </button>
+            </div>
           </div>
         </div>
 
