@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
-  formatDate,
-  formatSeconds,
-  formatPriority,
-} from "../../utils/formatters";
-import {
   getTextColor,
   getBackgroundColor,
   getBorderColor,
@@ -69,9 +64,9 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Investimento Esperado": 150,
     "Data de criação": 150,
     "Data de atualização": 150,
-    "Data de término": 150,
     "Target start": 150,
     "Target end": 150,
+    "Data de término": 150,
     "Dias desde criação": 150,
     "Status de ideação": 150,
     "Dias planejados": 150,
@@ -92,6 +87,24 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
   );
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
+  // Ordenar dados
+  const sortedData = React.useMemo(() => {
+    if (!sortColumn) return data;
+
+    return [...data].sort((a, b) => {
+      const aValue = a[sortColumn];
+      const bValue = b[sortColumn];
+
+      if (aValue === bValue) return 0;
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      const comparison = aValue < bValue ? -1 : 1;
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
+  }, [data, sortColumn, sortDirection]);
+
+  // Colunas exatamente como vêm da API
   const columns: (keyof EspacoDeProjetos)[] = [
     "ID",
     "Tipo",
@@ -117,9 +130,9 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Investimento Esperado",
     "Data de criação",
     "Data de atualização",
-    "Data de término",
     "Target start",
     "Target end",
+    "Data de término",
     "Dias desde criação",
     "Status de ideação",
     "Dias planejados",
@@ -168,28 +181,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     }
   };
 
-  const sortedData = React.useMemo(() => {
-    if (!sortColumn || !sortDirection) return data;
-
-    return [...data].sort((a, b) => {
-      const aValue = a[sortColumn];
-      const bValue = b[sortColumn];
-
-      if (!aValue && !bValue) return 0;
-      if (!aValue) return 1;
-      if (!bValue) return -1;
-
-      const aStr = String(aValue).toLowerCase();
-      const bStr = String(bValue).toLowerCase();
-
-      if (sortDirection === "asc") {
-        return aStr.localeCompare(bStr);
-      } else {
-        return bStr.localeCompare(aStr);
-      }
-    });
-  }, [data, sortColumn, sortDirection]);
-
   useEffect(() => {
     if (isResizing) {
       document.addEventListener("mousemove", handleMouseMove);
@@ -199,66 +190,46 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isResizing, currentColumn, startX, startWidth]);
+  }, [isResizing]);
 
   const getSortIcon = (column: keyof EspacoDeProjetos) => {
-    if (sortColumn !== column) return "↕️";
-    if (sortDirection === "asc") return "↑";
-    if (sortDirection === "desc") return "↓";
-    return "↕️";
+    if (sortColumn !== column) return "↕";
+    return sortDirection === "asc" ? "↑" : "↓";
   };
 
   const formatCellValue = (column: keyof EspacoDeProjetos, value: any) => {
-    if (!value) return "-";
+    if (value === null || value === undefined) return "-";
 
-    switch (column) {
-      case "Data de criação":
-      case "Data de atualização":
-      case "Data de término":
-      case "Target start":
-      case "Target end":
-        return formatDate(value);
-      case "Estimativa original (segundos)":
-      case "Tempo registrado (segundos)":
-      case "Tempo restante (segundos)":
-        return formatSeconds(Number(value));
-      case "Prioridade":
-        const priorityConfig = formatPriority(value);
-        return (
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${priorityConfig.color.bg} ${priorityConfig.color.text} ${priorityConfig.color.dark.bg} ${priorityConfig.color.dark.text}`}
-          >
-            {priorityConfig.label}
-          </span>
-        );
-      case "Descrição":
-      case "Benefícios Esperados":
-        return value.length > 100 ? `${value.substring(0, 100)}...` : value;
-      case "Dias desde criação":
-      case "Dias planejados":
-      case "Dias desde o início":
-      case "Dias restantes":
-        return `${value} dias`;
-      case "% do tempo decorrido":
-      case "% da estimativa usada":
-        return `${value}%`;
-      case "Status de ideação":
-      case "Status de prazo":
-      case "Status de esforço":
-        return (
-          <span
-            className="px-2 py-1 rounded-full text-xs font-medium"
-            style={{
-              backgroundColor: getBackgroundColor("hover", currentTheme),
-              color: getTextColor("info", currentTheme),
-            }}
-          >
-            {value}
-          </span>
-        );
-      default:
-        return value;
+    // Para campos de tempo em segundos
+    if (column.includes("segundos") && typeof value === "number") {
+      const hours = Math.floor(value / 3600);
+      const minutes = Math.floor((value % 3600) / 60);
+      return `${hours}h ${minutes}m`;
     }
+
+    // Para campos de porcentagem
+    if (column.includes("%") && typeof value === "number") {
+      return `${value.toFixed(1)}%`;
+    }
+
+    // Para campos de data
+    if (
+      column.includes("Data") ||
+      column.includes("Target") ||
+      column.includes("Criado") ||
+      column.includes("Atualizado")
+    ) {
+      if (typeof value === "string" && value) {
+        return new Date(value).toLocaleDateString("pt-BR");
+      }
+    }
+
+    // Para PosicaoBacklog - mostrar apenas se há valor
+    if (column === "PosicaoBacklog") {
+      return value ? `#${value}` : "-";
+    }
+
+    return String(value);
   };
 
   return (

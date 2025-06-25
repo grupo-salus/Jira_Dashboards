@@ -184,13 +184,17 @@ def position_in_backlog(df: pd.DataFrame) -> pd.DataFrame:
     Adiciona coluna de posição apenas para issues com status 'Backlog Priorizado',
     numerando conforme a ordem em que aparecem no DataFrame.
     """
-    # Manter as posições existentes, mas sobrescrever apenas para backlog priorizado
+    # Primeiro, limpar todas as posições existentes
+    df["PosicaoBacklog"] = None
+    
+    # Filtrar apenas issues com status 'Backlog Priorizado'
     backlog_priorizado_issues = df[df["Status"] == "Backlog Priorizado"]
     
+    # Numerar apenas as issues do backlog priorizado
     for pos, (index, _) in enumerate(backlog_priorizado_issues.iterrows(), start=1):
         df.at[index, "PosicaoBacklog"] = pos
 
-    print(f"Posição no backlog adicionada para {len(backlog_priorizado_issues)} issues")
+    print(f"Posição no backlog adicionada para {len(backlog_priorizado_issues)} issues com status 'Backlog Priorizado'")
     return df
 
 def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
@@ -210,8 +214,8 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Título": issue.get("fields", {}).get("summary"),
             "Prioridade": issue.get("fields", {}).get("priority", {}).get("name"),
 
-            # Posição no backlog (baseada no Rank do Jira)
-            "PosicaoBacklog": index + 1,
+            # Posição no backlog (será definida apenas para 'Backlog Priorizado')
+            "PosicaoBacklog": None,
 
             # Campos descritivos
             "Descrição": (

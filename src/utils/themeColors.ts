@@ -723,4 +723,4 @@ export const themeFonts = {
     semibold: 600,
     bold: 700,
   },
-};
+}; 
