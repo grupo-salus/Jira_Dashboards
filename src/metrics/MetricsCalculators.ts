@@ -122,7 +122,7 @@ export function converterParaKanbanCards(
     prioridade: d.Prioridade,
     responsavel: d.Responsável,
     time: d.Time,
-    categoria: d.Categoria,
+    squad: d.Squad,
   }));
 }
 

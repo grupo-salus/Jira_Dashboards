@@ -11,53 +11,53 @@ import { EspacoDeProjetos } from "../../types/Typesjira";
 import { themeColors } from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
 
-interface AnaliseDemandasPorCategoriaProps {
+interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
-  onCategoriaClick?: (categoria: string) => void;
+  onSquadClick?: (squad: string) => void;
 }
 
 // Função auxiliar para normalizar strings (igual ao dashboard)
 
 const CustomTooltip = ({ active, payload, projetosData }: any) => {
   if (active && payload && payload.length && projetosData) {
-    const categoria = payload[0].name;
-    const categoriaOriginal = payload[0].payload?.originalValue;
+    const squad = payload[0].name;
+    const squadOriginal = payload[0].payload?.originalValue;
 
-    // Filtrar projetos que correspondem à categoria
+    // Filtrar projetos que correspondem à squad
     const projetos = projetosData.filter((item: EspacoDeProjetos) => {
-      const itemCategoria = item["Categoria"] || "";
-      // Comparar com o valor original da categoria
-      return itemCategoria === categoriaOriginal;
+      const itemSquad = item["Squad"] || "";
+      // Comparar com o valor original da squad
+      return itemSquad === squadOriginal;
     });
 
     // Se não encontrou projetos com o valor original, tentar com o nome capitalizado
-    if (projetos.length === 0 && categoriaOriginal) {
-      const categoriaLower = categoriaOriginal.toLowerCase();
-      const categoriaCapitalized =
-        categoriaLower.charAt(0).toUpperCase() + categoriaLower.slice(1);
+    if (projetos.length === 0 && squadOriginal) {
+      const squadLower = squadOriginal.toLowerCase();
+      const squadCapitalized =
+        squadLower.charAt(0).toUpperCase() + squadLower.slice(1);
 
       const projetosAlt = projetosData.filter((item: EspacoDeProjetos) => {
-        const itemCategoria = item["Categoria"] || "";
-        const itemCategoriaLower = itemCategoria.toLowerCase();
-        const itemCategoriaCapitalized =
-          itemCategoriaLower.charAt(0).toUpperCase() +
-          itemCategoriaLower.slice(1);
-        return itemCategoriaCapitalized === categoriaCapitalized;
+        const itemSquad = item["Squad"] || "";
+        const itemSquadLower = itemSquad.toLowerCase();
+        const itemSquadCapitalized =
+          itemSquadLower.charAt(0).toUpperCase() + itemSquadLower.slice(1);
+        return itemSquadCapitalized === squadCapitalized;
       });
 
       if (projetosAlt.length > 0) {
-        return <TooltipProjetos areaLabel={categoria} projetos={projetosAlt} />;
+        return <TooltipProjetos areaLabel={squad} projetos={projetosAlt} />;
       }
     }
 
-    return <TooltipProjetos areaLabel={categoria} projetos={projetos} />;
+    return <TooltipProjetos areaLabel={squad} projetos={projetos} />;
   }
   return null;
 };
 
-const AnaliseDemandasPorCategoria: React.FC<
-  AnaliseDemandasPorCategoriaProps
-> = ({ data, onCategoriaClick }) => {
+const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
+  data,
+  onSquadClick,
+}) => {
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
     "light"
@@ -91,17 +91,17 @@ const AnaliseDemandasPorCategoria: React.FC<
     };
   }, []);
 
-  const countByCategoria = React.useMemo(() => {
+  const countBySquad = React.useMemo(() => {
     const counts: Record<string, { label: string; count: number }> = {};
     data.forEach((item) => {
-      const categoria = item["Categoria"];
-      if (categoria && categoria !== "Não informada") {
-        const categoriaLower = categoria.toLowerCase();
-        const categoriaCapitalized =
-          categoriaLower.charAt(0).toUpperCase() + categoriaLower.slice(1);
-        if (!counts[categoria])
-          counts[categoria] = { label: categoriaCapitalized, count: 0 };
-        counts[categoria].count += 1;
+      const squad = item["Squad"];
+      if (squad && squad !== "Não informada") {
+        const squadLower = squad.toLowerCase();
+        const squadCapitalized =
+          squadLower.charAt(0).toUpperCase() + squadLower.slice(1);
+        if (!counts[squad])
+          counts[squad] = { label: squadCapitalized, count: 0 };
+        counts[squad].count += 1;
       }
     });
     return Object.entries(counts)
@@ -110,18 +110,18 @@ const AnaliseDemandasPorCategoria: React.FC<
   }, [data]);
 
   const pieData = React.useMemo(() => {
-    return countByCategoria.map((cat) => ({
+    return countBySquad.map((cat) => ({
       name: cat.label,
       label: cat.label,
       value: cat.count,
       originalValue: cat.value,
     }));
-  }, [countByCategoria]);
+  }, [countBySquad]);
 
   // Função para filtrar ao clicar na fatia
   const handlePieClick = (data: any) => {
-    if (data && data.payload && onCategoriaClick) {
-      onCategoriaClick(data.payload.originalValue);
+    if (data && data.payload && onSquadClick) {
+      onSquadClick(data.payload.originalValue);
     }
   };
 
@@ -176,4 +176,4 @@ const AnaliseDemandasPorCategoria: React.FC<
   );
 };
 
-export default AnaliseDemandasPorCategoria;
+export default AnaliseDemandasPorSquad;

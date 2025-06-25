@@ -3,15 +3,15 @@
  *
  * Este é o componente principal do dashboard de Espaço de Projetos que:
  * 1. Exibe totalizadores dos projetos
- * 2. Exibe 3 gráficos principais (área, prioridade, categoria)
- * 3. Gerencia filtros (área, prioridade, status, categoria)
+ * 2. Exibe 3 gráficos principais (área, prioridade, squad)
+ * 3. Gerencia filtros (área, prioridade, status, squad)
  * 4. Renderiza visualização Kanban ou Tabela
  *
  * Componentes utilizados:
  * - ProjetosTotalizadores: Cards com totais
  * - ProjetosBarPorArea: Gráfico de barras por área
  * - ProjetosBarPorPrioridade: Gráfico de barras por prioridade
- * - AnaliseDemandasPorCategoria: Gráfico de pizza por categoria
+ * - AnaliseDemandasPorSquad: Gráfico de pizza por squad
  * - ProjetosTable: Exibe a tabela de projetos
  * - ProjetosKanban: Exibe o quadro de tarefas (Kanban)
  */
@@ -25,7 +25,7 @@ import { COLUMN_ORDER } from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
-import AnaliseDemandasPorCategoria from "../components/DashProjetos/AnaliseDemandasPorCategoria";
+import AnaliseDemandasPorSquad from "../components/DashProjetos/AnaliseDemandasPorSquad";
 import {
   getFontSizes,
   setTamanhoGlobal,
@@ -67,7 +67,7 @@ const DashProjetos: React.FC = () => {
     area: "",
     prioridade: "",
     status: "" as JiraStatus | "",
-    categoria: "",
+    squad: "",
   });
 
   // Obter configurações de fonte atuais
@@ -168,13 +168,13 @@ const DashProjetos: React.FC = () => {
         normalizeString(item.Status || "") ===
           normalizeString(filtrosAtivos.status);
 
-      const matchesCategoria =
-        !filtrosAtivos.categoria ||
-        normalizeString(item.Categoria || "") ===
-          normalizeString(filtrosAtivos.categoria);
+      const matchesSquad =
+        !filtrosAtivos.squad ||
+        normalizeString(item.Squad || "") ===
+          normalizeString(filtrosAtivos.squad);
 
       return (
-        matchesArea && matchesPrioridade && matchesStatus && matchesCategoria
+        matchesArea && matchesPrioridade && matchesStatus && matchesSquad
       );
     });
   };
@@ -228,11 +228,11 @@ const DashProjetos: React.FC = () => {
     );
   }, [projetosData.rawData]);
 
-  const categoriaOptions = useMemo(
+  const squadOptions = useMemo(
     () => [
       ...new Set(
         projetosData.rawData
-          .map((i: EspacoDeProjetos) => i.Categoria)
+          .map((i: EspacoDeProjetos) => i.Squad)
           .filter((value): value is string => Boolean(value))
       ),
     ],
@@ -250,7 +250,7 @@ const DashProjetos: React.FC = () => {
       area: "",
       status: "",
       prioridade: "",
-      categoria: "",
+      squad: "",
     });
   };
 
@@ -467,17 +467,17 @@ const DashProjetos: React.FC = () => {
               </select>
             </div>
 
-            {/* Filtro de Categoria */}
+            {/* Filtro de Squad */}
             <div className="flex flex-col">
               <label
-                htmlFor="categoria-filter"
+                htmlFor="squad-filter"
                 className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Categoria
+                Squad
               </label>
               <select
-                id="categoria-filter"
+                id="squad-filter"
                 className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
                 style={{
                   backgroundColor:
@@ -485,10 +485,8 @@ const DashProjetos: React.FC = () => {
                   border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
                   color: getTextColor("primary", currentTheme),
                 }}
-                value={filtros.categoria}
-                onChange={(e) =>
-                  handleFiltroChange("categoria", e.target.value)
-                }
+                value={filtros.squad}
+                onChange={(e) => handleFiltroChange("squad", e.target.value)}
                 onFocus={(e) => {
                   e.target.style.borderColor =
                     themeColors.components.filtros.input.focus[currentTheme];
@@ -498,10 +496,10 @@ const DashProjetos: React.FC = () => {
                     themeColors.components.filtros.input.border[currentTheme];
                 }}
               >
-                <option value="">Todas as Categorias</option>
-                {categoriaOptions.map((categoria) => (
-                  <option key={categoria} value={categoria || ""}>
-                    {categoria}
+                <option value="">Todas as Squads</option>
+                {squadOptions.map((squad) => (
+                  <option key={squad} value={squad || ""}>
+                    {squad}
                   </option>
                 ))}
               </select>
@@ -513,7 +511,7 @@ const DashProjetos: React.FC = () => {
             {(filtros.area ||
               filtros.status ||
               filtros.prioridade ||
-              filtros.categoria) && (
+              filtros.squad) && (
               <button
                 onClick={limparFiltros}
                 className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200"
@@ -629,7 +627,7 @@ const DashProjetos: React.FC = () => {
           />
         </div>
 
-        {/* Gráfico 3: Análise de Demandas por Categoria */}
+        {/* Gráfico 3: Análise de Demandas por Squad */}
         <div
           className="rounded-lg shadow p-4 flex flex-col h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
@@ -638,10 +636,10 @@ const DashProjetos: React.FC = () => {
             className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
-            Análise de Demandas por Categoria
-            {filtros.categoria && (
+            Análise de Demandas por Squad
+            {filtros.squad && (
               <button
-                onClick={() => handleFiltroChange("categoria", "")}
+                onClick={() => handleFiltroChange("squad", "")}
                 className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
                 style={{ color: themeColors.text.error[currentTheme] }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -653,7 +651,7 @@ const DashProjetos: React.FC = () => {
                 onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = "transparent";
                 }}
-                title="Limpar filtro de categoria"
+                title="Limpar filtro de squad"
               >
                 <span
                   className="text-xs font-semibold"
@@ -665,11 +663,9 @@ const DashProjetos: React.FC = () => {
               </button>
             )}
           </div>
-          <AnaliseDemandasPorCategoria
+          <AnaliseDemandasPorSquad
             data={filteredData}
-            onCategoriaClick={(categoria) =>
-              handleFiltroChange("categoria", categoria)
-            }
+            onSquadClick={(squad) => handleFiltroChange("squad", squad)}
           />
         </div>
       </div>

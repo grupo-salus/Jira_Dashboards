@@ -12,7 +12,7 @@ export interface AcompanhamentoTI {
   Responsável: string;
   Relator: string;
   Time: string;
-  Categoria: string;
+  Squad: string;
   "Criado em": string;
   "Atualizado em": string;
   "Data de Início": string | null;
@@ -52,7 +52,7 @@ export interface EspacoDeProjetos {
 
   Responsável: string; // Pessoa atribuída à execução da tarefa
   Relator: string; // Pessoa que criou o card no Jira
-  Categoria: string | null; // Categoria do projeto (vinda das labels do Jira)
+  Squad: string | null; // Squad do projeto (vindo das labels do Jira)
 
   "Estimativa original (segundos)": number; // Tempo inicialmente estimado no Jira, em segundos
   "Tempo registrado (segundos)": number | null; // Tempo total já registrado via controle (ex: Clockify), em segundos

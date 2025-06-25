@@ -66,7 +66,7 @@ export interface KanbanCard {
   prioridade: string;
   responsavel: string;
   time: string;
-  categoria: string;
+  squad: string;
 }
 
 /**

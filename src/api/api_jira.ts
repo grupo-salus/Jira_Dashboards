@@ -64,7 +64,7 @@ export async function fetchAcompanhamentoTI(filters?: {
       Relator: decodeURIComponent(item.Relator || ""),
       Prioridade: decodeURIComponent(item.Prioridade || ""),
       Time: decodeURIComponent(item.Time || ""),
-      Categoria: decodeURIComponent(item.Categoria || ""),
+      Squad: decodeURIComponent(item.Squad || ""),
     }));
   } catch (error) {
     console.error("Error fetching acompanhamento TI table:", error);
@@ -121,7 +121,7 @@ export async function fetchEspacoDeProjetos(filters?: {
       Responsável: decodeURIComponent(item.Responsável || ""),
       Relator: decodeURIComponent(item.Relator || ""),
       Prioridade: decodeURIComponent(item.Prioridade || ""),
-      Categoria: item.Categoria ? decodeURIComponent(item.Categoria) : null,
+      Squad: item.Squad ? decodeURIComponent(item.Squad) : null,
       PosicaoBacklog: item.PosicaoBacklog,
     }));
   } catch (error) {

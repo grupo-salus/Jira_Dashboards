@@ -36,9 +36,9 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
           </span>
         </div>
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-100">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
 
@@ -90,9 +90,9 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
 
@@ -151,9 +151,9 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </div>
         )
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -211,9 +211,9 @@ const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -390,9 +390,9 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -568,9 +568,9 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
       {(projeto["Data de criação"] ||
@@ -748,9 +748,9 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
           </span>
         </div>
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -906,9 +906,9 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
-      {projeto.Categoria && (
+      {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
-          Categoria: {projeto.Categoria}
+          Squad: {projeto.Squad}
         </div>
       )}
 
@@ -973,9 +973,9 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
               </span>
             </div>
           )}
-          {projeto.Categoria && (
+          {projeto.Squad && (
             <div className="text-gray-600 dark:text-gray-200">
-              Categoria: {projeto.Categoria}
+              Squad: {projeto.Squad}
             </div>
           )}
           {projeto.Responsável && (

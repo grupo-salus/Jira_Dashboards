@@ -251,9 +251,9 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Relator": issue.get("fields", {}).get("creator", {}).get("displayName"),
 
             # Categorização
-            "Categoria": (
-                issue.get("fields", {}).get("labels")[0]
-                if issue.get("fields", {}).get("labels") else None
+            "Squad": (
+                issue.get("fields", {}).get("customfield_10278")["value"]
+                if issue.get("fields", {}).get("customfield_10278") else None
             ),
 
             # Tempo e estimativas
