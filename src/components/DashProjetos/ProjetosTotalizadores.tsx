@@ -116,17 +116,11 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     (p) => p.Status === "Backlog"
   ).length;
 
-  // Total de Projetos: apenas as colunas específicas do Kanban (Backlog Priorizado, Em Desenvolvimento, Em Homologação, Operação Assistida, Bloqueado)
-  const projetosAtivos = filteredData.filter((p) =>
-    [
-      "Backlog Priorizado",
-      "Em Andamento",
-      "Em Homologação",
-      "Operação Assistida",
-      "Bloqueado",
-    ].includes(p.Status)
+  // Projetos em Desenvolvimento: apenas os status Em Andamento, Em Homologação e Operação Assistida
+  const projetosEmDesenvolvimento = filteredData.filter((p) =>
+    ["Em Andamento", "Em Homologação", "Operação Assistida"].includes(p.Status)
   );
-  const totalProjetos = projetosAtivos.length;
+  const totalEmDesenvolvimento = projetosEmDesenvolvimento.length;
 
   // Métricas do Backlog Priorizado
   const backlogPriorizado = filteredData.filter(
@@ -225,8 +219,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Total de Projetos Ativos"
-          value={totalProjetos}
+          label="Projetos em Desenvolvimento"
+          value={totalEmDesenvolvimento}
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
@@ -234,12 +228,11 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className="font-bold mb-1"
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Total de Projetos Ativos
+                Projetos em Desenvolvimento
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Todos os projetos que já viraram projetos ativos e estão em
-                alguma coluna: Backlog Priorizado, Em Desenvolvimento, Em
-                Homologação, Operação Assistida ou Bloqueado.
+                Projetos que estão ativamente sendo desenvolvidos: Em
+                Desenvolvimento, Em Homologação e Operação Assistida.
               </div>
             </div>
           }

@@ -17,6 +17,7 @@
  * - Validação de respostas
  */
 import { AcompanhamentoTI, EspacoDeProjetos } from "../types/Typesjira";
+import { normalizarStatusDisplay } from "../components/DashProjetos/kanbanUtils";
 
 interface AcompanhamentoTIResponse {
   tabela_dashboard_ti: AcompanhamentoTI[];
@@ -59,6 +60,7 @@ export async function fetchAcompanhamentoTI(filters?: {
     // Decodifica os caracteres especiais nos dados retornados
     return (data.tabela_dashboard_ti ?? []).map((item: AcompanhamentoTI) => ({
       ...item,
+      Status: normalizarStatusDisplay(item.Status),
       Título: decodeURIComponent(item.Título || ""),
       Responsável: decodeURIComponent(item.Responsável || ""),
       Relator: decodeURIComponent(item.Relator || ""),
@@ -106,6 +108,7 @@ export async function fetchEspacoDeProjetos(filters?: {
     // Decodifica os caracteres especiais nos dados retornados
     return (data.tabela_dashboard_ep ?? []).map((item: EspacoDeProjetos) => ({
       ...item,
+      Status: normalizarStatusDisplay(item.Status),
       Título: decodeURIComponent(item.Título || ""),
       Descrição: item.Descrição ? decodeURIComponent(item.Descrição) : null,
       "Benefícios Esperados": item["Benefícios Esperados"]

@@ -267,7 +267,7 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
                   {(() => {
                     const status = normalizarStatus(projeto.Status);
                     const finalizado = [
-                      "OPERAÇÃO ASSISTIDA",
+                      "Operação Assistida",
                       "Concluído",
                       "Cancelado",
                     ].includes(status);
@@ -446,7 +446,7 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
                   {(() => {
                     const status = normalizarStatus(projeto.Status);
                     const finalizado = [
-                      "OPERAÇÃO ASSISTIDA",
+                      "Operação Assistida",
                       "Concluído",
                       "Cancelado",
                     ].includes(status);
@@ -569,7 +569,7 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 };
 
 /**
- * Card para projetos em OPERAÇÃO ASSISTIDA
+ * Card para projetos em Operação Assistida
  */
 const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
@@ -634,7 +634,7 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
               {(() => {
                 const status = normalizarStatus(projeto.Status);
                 const finalizado = [
-                  "OPERAÇÃO ASSISTIDA",
+                  "Operação Assistida",
                   "Concluído",
                   "Cancelado",
                 ].includes(status);
@@ -795,7 +795,7 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
               {(() => {
                 const status = normalizarStatus(projeto.Status);
                 const finalizado = [
-                  "OPERAÇÃO ASSISTIDA",
+                  "Operação Assistida",
                   "Concluído",
                   "Cancelado",
                 ].includes(status);
@@ -968,11 +968,11 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
       return <CardBloqueado projeto={projeto} />;
     case "Backlog Priorizado":
       return <CardBacklogPriorizado projeto={projeto} />;
-    case "Em andamento":
+    case "Em Andamento":
       return <CardEmDesenvolvimento projeto={projeto} />;
     case "Em Homologação":
       return <CardEmHomologacao projeto={projeto} />;
-    case "OPERAÇÃO ASSISTIDA":
+    case "Operação Assistida":
       return <CardOperacaoAssistida projeto={projeto} />;
     case "Concluído":
       return <CardEntregue projeto={projeto} />;

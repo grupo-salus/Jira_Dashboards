@@ -21,7 +21,11 @@ import { useJira } from "../context/JiraContext";
 import { EspacoDeProjetos } from "../types/Typesjira";
 import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
 import { getPriorityConfig } from "../utils/themeColors";
-import { COLUMN_ORDER } from "../components/DashProjetos/kanbanUtils";
+import {
+  COLUMN_ORDER,
+  normalizarStatus,
+  normalizarStatusDisplay,
+} from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
@@ -40,17 +44,6 @@ import {
   DepartmentIcon,
 } from "../components/icons/DashboardIcons";
 import Select, { components as selectComponents } from "react-select";
-
-// Função para normalizar status para primeira letra maiúscula
-const normalizarStatusDisplay = (status: string): string => {
-  if (!status) return status;
-  // Dividir por espaços e capitalizar cada palavra
-  return status
-    .toLowerCase()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
 
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
