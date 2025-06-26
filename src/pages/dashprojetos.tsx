@@ -18,7 +18,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useJira } from "../context/JiraContext";
-import { EspacoDeProjetos, JiraStatus } from "../types/Typesjira";
+import { EspacoDeProjetos } from "../types/Typesjira";
 import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
 import { getPriorityConfig } from "../utils/themeColors";
 import { COLUMN_ORDER } from "../components/DashProjetos/kanbanUtils";
@@ -39,13 +39,12 @@ import {
   getBorderColor,
 } from "../utils/themeColors";
 import {
-  FilterIcon,
-  XIcon,
   DotsVerticalIcon,
   CompassIcon,
   FireIcon,
   DepartmentIcon,
 } from "../components/icons/DashboardIcons";
+import Select, { components as selectComponents } from "react-select";
 
 // Função para normalizar status para primeira letra maiúscula
 const normalizarStatusDisplay = (status: string): string => {
@@ -73,17 +72,16 @@ const DashProjetos: React.FC = () => {
     "kanban"
   );
   const [menuAberto, setMenuAberto] = useState(false);
-  const [filtrosVisiveis, setFiltrosVisiveis] = useState(false);
   const [tamanhoAtual, setTamanhoAtual] = useState(getTamanhoGlobal());
   const [, setForceUpdate] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Filtros simplificados - apenas os essenciais
   const [filtros, setFiltros] = useState({
-    area: "",
-    prioridade: "",
-    status: "" as JiraStatus | "",
-    squad: "",
+    area: [] as string[],
+    prioridade: [] as string[],
+    status: [] as string[],
+    squad: [] as string[],
   });
 
   // Obter configurações de fonte atuais
@@ -155,14 +153,6 @@ const DashProjetos: React.FC = () => {
     };
   }, [menuAberto]);
 
-  // Função auxiliar para normalizar strings
-  const normalizeString = (str: string) => {
-    return str
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-  };
-
   // Função para aplicar filtros
   const aplicarFiltros = (
     dados: EspacoDeProjetos[],
@@ -170,24 +160,22 @@ const DashProjetos: React.FC = () => {
   ) => {
     return dados.filter((item: EspacoDeProjetos) => {
       const matchesArea =
-        !filtrosAtivos.area ||
-        normalizeString(item["Departamento Solicitante"] || "") ===
-          normalizeString(filtrosAtivos.area);
+        filtrosAtivos.area.length === 0 ||
+        filtrosAtivos.area.includes(item["Departamento Solicitante"] || "");
 
       const matchesPrioridade =
-        !filtrosAtivos.prioridade ||
-        normalizeString(item.Prioridade || "") ===
-          normalizeString(filtrosAtivos.prioridade);
+        filtrosAtivos.prioridade.length === 0 ||
+        filtrosAtivos.prioridade.includes(item.Prioridade || "");
 
       const matchesStatus =
-        !filtrosAtivos.status ||
-        normalizarStatusDisplay(item.Status || "") ===
-          normalizarStatusDisplay(filtrosAtivos.status);
+        filtrosAtivos.status.length === 0 ||
+        filtrosAtivos.status.includes(
+          normalizarStatusDisplay(item.Status || "")
+        );
 
       const matchesSquad =
-        !filtrosAtivos.squad ||
-        normalizeString(item.Squad || "") ===
-          normalizeString(filtrosAtivos.squad);
+        filtrosAtivos.squad.length === 0 ||
+        filtrosAtivos.squad.includes(item.Squad || "");
 
       return matchesArea && matchesPrioridade && matchesStatus && matchesSquad;
     });
@@ -257,19 +245,41 @@ const DashProjetos: React.FC = () => {
     [projetosData.rawData]
   );
 
-  // Função para alterar filtros
-  const handleFiltroChange = (campo: keyof typeof filtros, valor: string) => {
-    setFiltros((prev) => ({ ...prev, [campo]: valor }));
-  };
+  // Opções para react-select
+  const areaOptionsSelect = areaOptions.map((area) => ({
+    value: area,
+    label: area,
+  }));
 
-  // Função para limpar todos os filtros
-  const limparFiltros = () => {
-    setFiltros({
-      area: "",
-      status: "",
-      prioridade: "",
-      squad: "",
-    });
+  const statusOptionsSelect = statusOptions.map((option) => ({
+    value: option.value,
+    label: option.label,
+  }));
+
+  const prioridadeOptionsSelect = prioridadeOptionsTraduzidas.map((prio) => ({
+    value: prio.valor,
+    label: prio.label,
+  }));
+
+  const squadOptionsSelect = squadOptions.map((squad) => ({
+    value: squad,
+    label: squad,
+  }));
+
+  // Componente customizado para o ClearIndicator
+  const CustomClearIndicator = (props: any) => {
+    return (
+      <selectComponents.ClearIndicator {...props}>
+        <svg height="20" width="20" viewBox="0 0 20 20">
+          <path
+            d="M14 6L6 14M6 6l8 8"
+            stroke={themeColors.text.error[currentTheme]}
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </selectComponents.ClearIndicator>
+    );
   };
 
   if (projetosData.loading) {
@@ -322,52 +332,11 @@ const DashProjetos: React.FC = () => {
           }
           buttonClassName={`relative h-10 px-4 text-left font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg ${fontSizes.textoBotao}`}
         />
-
-        {/* Botão Toggle Filtros */}
-        <button
-          onClick={() => setFiltrosVisiveis(!filtrosVisiveis)}
-          className={`flex items-center justify-center gap-2 h-10 px-4 font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg ${fontSizes.textoBotao}`}
-          style={{
-            background: themeColors.components.buttons.primary.bg[currentTheme],
-            color: themeColors.components.buttons.primary.text,
-          }}
-          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-            e.currentTarget.style.background =
-              themeColors.components.buttons.primary.hover[currentTheme];
-          }}
-          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-            e.currentTarget.style.background =
-              themeColors.components.buttons.primary.bg[currentTheme];
-          }}
-        >
-          {filtrosVisiveis ? (
-            <>
-              <XIcon className="w-5 h-5" />
-              Ocultar
-            </>
-          ) : (
-            <>
-              <FilterIcon className="w-5 h-5" />
-              Filtros
-            </>
-          )}
-        </button>
       </div>
 
-      {/* Seção de Filtros */}
-      <div
-        className={`mb-6 transition-all duration-300 ease-in-out overflow-hidden ${
-          filtrosVisiveis ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
-        style={{ zIndex: filtrosVisiveis ? 10 : 1 }}
-      >
-        <div
-          className="rounded-xl shadow-lg p-6"
-          style={{
-            backgroundColor: getBackgroundColor("card", currentTheme),
-            border: `1px solid ${getBorderColor("primary", currentTheme)}`,
-          }}
-        >
+      {/* Seção de Filtros - Sempre Visível */}
+      <div className="mb-6">
+        <div className="p-0 shadow-none">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
             {/* Filtro de Área */}
             <div className="flex flex-col">
@@ -378,33 +347,96 @@ const DashProjetos: React.FC = () => {
               >
                 Área
               </label>
-              <select
-                id="area-filter"
-                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-                style={{
-                  backgroundColor:
-                    themeColors.components.filtros.input.bg[currentTheme],
-                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
-                  color: getTextColor("primary", currentTheme),
+              <Select
+                inputId="area-filter"
+                isMulti
+                options={areaOptionsSelect}
+                value={areaOptionsSelect.filter((opt) =>
+                  filtros.area.includes(opt.value)
+                )}
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    area: selected ? selected.map((s: any) => s.value) : [],
+                  }))
+                }
+                placeholder="Todas"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.secondary[800]
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueRemove: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.error[700]
+                          : themeColors.error[100],
+                      color:
+                        currentTheme === "dark"
+                          ? themeColors.text.error.dark
+                          : themeColors.text.error.light,
+                    },
+                  }),
+                  option: (base) => ({
+                    ...base,
+                    backgroundColor: base.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : base.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.components.filtros.input.focus.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
                 }}
-                value={filtros.area}
-                onChange={(e) => handleFiltroChange("area", e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.focus[currentTheme];
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.border[currentTheme];
-                }}
-              >
-                <option value="">Todas</option>
-                {areaOptions.map((area) => (
-                  <option key={area} value={area}>
-                    {area}
-                  </option>
-                ))}
-              </select>
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+              />
             </div>
 
             {/* Filtro de Status */}
@@ -416,33 +448,96 @@ const DashProjetos: React.FC = () => {
               >
                 Status
               </label>
-              <select
-                id="status-filter"
-                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-                style={{
-                  backgroundColor:
-                    themeColors.components.filtros.input.bg[currentTheme],
-                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
-                  color: getTextColor("primary", currentTheme),
+              <Select
+                inputId="status-filter"
+                isMulti
+                options={statusOptionsSelect}
+                value={statusOptionsSelect.filter((opt) =>
+                  filtros.status.includes(opt.value)
+                )}
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    status: selected ? selected.map((s: any) => s.value) : [],
+                  }))
+                }
+                placeholder="Todos"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.secondary[800]
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueRemove: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.error[700]
+                          : themeColors.error[100],
+                      color:
+                        currentTheme === "dark"
+                          ? themeColors.text.error.dark
+                          : themeColors.text.error.light,
+                    },
+                  }),
+                  option: (base) => ({
+                    ...base,
+                    backgroundColor: base.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : base.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.components.filtros.input.focus.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
                 }}
-                value={filtros.status}
-                onChange={(e) => handleFiltroChange("status", e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.focus[currentTheme];
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.border[currentTheme];
-                }}
-              >
-                <option value="">Todos</option>
-                {statusOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+              />
             </div>
 
             {/* Filtro de Prioridade */}
@@ -454,35 +549,98 @@ const DashProjetos: React.FC = () => {
               >
                 Prioridade
               </label>
-              <select
-                id="prioridade-filter"
-                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-                style={{
-                  backgroundColor:
-                    themeColors.components.filtros.input.bg[currentTheme],
-                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
-                  color: getTextColor("primary", currentTheme),
-                }}
-                value={filtros.prioridade}
-                onChange={(e) =>
-                  handleFiltroChange("prioridade", e.target.value)
+              <Select
+                inputId="prioridade-filter"
+                isMulti
+                options={prioridadeOptionsSelect}
+                value={prioridadeOptionsSelect.filter((opt) =>
+                  filtros.prioridade.includes(opt.value)
+                )}
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    prioridade: selected
+                      ? selected.map((s: any) => s.value)
+                      : [],
+                  }))
                 }
-                onFocus={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.focus[currentTheme];
+                placeholder="Todas"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.secondary[800]
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueRemove: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.error[700]
+                          : themeColors.error[100],
+                      color:
+                        currentTheme === "dark"
+                          ? themeColors.text.error.dark
+                          : themeColors.text.error.light,
+                    },
+                  }),
+                  option: (base) => ({
+                    ...base,
+                    backgroundColor: base.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : base.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.components.filtros.input.focus.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
                 }}
-                onBlur={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.border[currentTheme];
-                }}
-              >
-                <option value="">Todas</option>
-                {prioridadeOptionsTraduzidas.map((prio) => (
-                  <option key={prio.valor} value={prio.valor}>
-                    {prio.label}
-                  </option>
-                ))}
-              </select>
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+              />
             </div>
 
             {/* Filtro de Squad */}
@@ -494,64 +652,97 @@ const DashProjetos: React.FC = () => {
               >
                 Squad
               </label>
-              <select
-                id="squad-filter"
-                className={`rounded-lg focus:ring-2 focus:ring-offset-2 block w-full transition-all duration-200 shadow-sm hover:shadow-md ${fontSizes.inputFiltro}`}
-                style={{
-                  backgroundColor:
-                    themeColors.components.filtros.input.bg[currentTheme],
-                  border: `2px solid ${themeColors.components.filtros.input.border[currentTheme]}`,
-                  color: getTextColor("primary", currentTheme),
+              <Select
+                inputId="squad-filter"
+                isMulti
+                options={squadOptionsSelect}
+                value={squadOptionsSelect.filter((opt) =>
+                  filtros.squad.includes(opt.value)
+                )}
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    squad: selected ? selected.map((s: any) => s.value) : [],
+                  }))
+                }
+                placeholder="Todas as Squads"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.secondary[800]
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueRemove: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.error[700]
+                          : themeColors.error[100],
+                      color:
+                        currentTheme === "dark"
+                          ? themeColors.text.error.dark
+                          : themeColors.text.error.light,
+                    },
+                  }),
+                  option: (base) => ({
+                    ...base,
+                    backgroundColor: base.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : base.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.components.filtros.input.focus.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
                 }}
-                value={filtros.squad}
-                onChange={(e) => handleFiltroChange("squad", e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.focus[currentTheme];
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor =
-                    themeColors.components.filtros.input.border[currentTheme];
-                }}
-              >
-                <option value="">Todas as Squads</option>
-                {squadOptions.map((squad) => (
-                  <option key={squad} value={squad || ""}>
-                    {squad}
-                  </option>
-                ))}
-              </select>
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+              />
             </div>
-          </div>
-
-          {/* Botão Limpar Filtros */}
-          <div className="flex justify-end mt-6">
-            {(filtros.area ||
-              filtros.status ||
-              filtros.prioridade ||
-              filtros.squad) && (
-              <button
-                onClick={limparFiltros}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200"
-                style={{
-                  background:
-                    themeColors.components.buttons.danger.bg[currentTheme],
-                  color:
-                    themeColors.components.buttons.danger.text[currentTheme],
-                }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.background =
-                    themeColors.components.buttons.danger.hover[currentTheme];
-                }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.background =
-                    themeColors.components.buttons.danger.bg[currentTheme];
-                }}
-              >
-                <XIcon className="w-4 h-4" />
-                Limpar
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -578,35 +769,32 @@ const DashProjetos: React.FC = () => {
               style={{ color: themeColors.components.totalizadores.total.bar }}
             />
             Projetos por Área
-            {filtros.area && (
+            {filtros.area.length > 0 && (
               <button
-                onClick={() => handleFiltroChange("area", "")}
-                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
+                onClick={() => setFiltros((f) => ({ ...f, area: [] }))}
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600"
                 style={{ color: themeColors.text.error[currentTheme] }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = getBackgroundColor(
-                    "hover",
-                    currentTheme
-                  );
-                }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
                 title="Limpar filtro de área"
               >
-                <span
-                  className="text-xs font-semibold"
-                  style={{ color: themeColors.text.error[currentTheme] }}
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 >
-                  Limpar filtro
-                </span>
-                <XIcon className="h-4 w-4" />
+                  <path
+                    d="M3 5h18l-7 9v5l-4 2v-7l-7-9z"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="text-xs font-semibold">Limpar filtros</span>
               </button>
             )}
           </div>
           <ProjetosBarPorArea
             data={filteredData}
-            onAreaClick={(area) => handleFiltroChange("area", area)}
+            onAreaClick={(area) => setFiltros((f) => ({ ...f, area: [area] }))}
           />
         </div>
 
@@ -624,36 +812,33 @@ const DashProjetos: React.FC = () => {
               style={{ color: themeColors.components.totalizadores.total.bar }}
             />
             Projetos por Prioridade
-            {filtros.prioridade && (
+            {filtros.prioridade.length > 0 && (
               <button
-                onClick={() => handleFiltroChange("prioridade", "")}
-                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
+                onClick={() => setFiltros((f) => ({ ...f, prioridade: [] }))}
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600"
                 style={{ color: themeColors.text.error[currentTheme] }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = getBackgroundColor(
-                    "hover",
-                    currentTheme
-                  );
-                }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
                 title="Limpar filtro de prioridade"
               >
-                <span
-                  className="text-xs font-semibold"
-                  style={{ color: themeColors.text.error[currentTheme] }}
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 >
-                  Limpar filtro
-                </span>
-                <XIcon className="h-4 w-4" />
+                  <path
+                    d="M3 5h18l-7 9v5l-4 2v-7l-7-9z"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="text-xs font-semibold">Limpar filtros</span>
               </button>
             )}
           </div>
           <ProjetosBarPorPrioridade
             data={filteredData}
             onPrioridadeClick={(prioridade) =>
-              handleFiltroChange("prioridade", prioridade)
+              setFiltros((f) => ({ ...f, prioridade: [prioridade] }))
             }
           />
         </div>
@@ -672,35 +857,34 @@ const DashProjetos: React.FC = () => {
               style={{ color: themeColors.components.totalizadores.total.bar }}
             />
             Distribuição por Squad
-            {filtros.squad && (
+            {filtros.squad.length > 0 && (
               <button
-                onClick={() => handleFiltroChange("squad", "")}
-                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors"
+                onClick={() => setFiltros((f) => ({ ...f, squad: [] }))}
+                className="absolute top-2 right-2 flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600"
                 style={{ color: themeColors.text.error[currentTheme] }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = getBackgroundColor(
-                    "hover",
-                    currentTheme
-                  );
-                }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
                 title="Limpar filtro de squad"
               >
-                <span
-                  className="text-xs font-semibold"
-                  style={{ color: themeColors.text.error[currentTheme] }}
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 >
-                  Limpar filtro
-                </span>
-                <XIcon className="h-4 w-4" />
+                  <path
+                    d="M3 5h18l-7 9v5l-4 2v-7l-7-9z"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="text-xs font-semibold">Limpar filtros</span>
               </button>
             )}
           </div>
           <AnaliseDemandasPorSquad
             data={filteredData}
-            onSquadClick={(squad) => handleFiltroChange("squad", squad)}
+            onSquadClick={(squad) =>
+              setFiltros((f) => ({ ...f, squad: [squad] }))
+            }
           />
         </div>
       </div>
