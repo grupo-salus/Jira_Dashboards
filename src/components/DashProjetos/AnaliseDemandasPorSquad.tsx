@@ -90,11 +90,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
     data.forEach((item) => {
       const squad = item["Squad"];
       if (squad && squad !== "Não informada") {
-        const squadLower = squad.toLowerCase();
-        const squadCapitalized =
-          squadLower.charAt(0).toUpperCase() + squadLower.slice(1);
-        if (!counts[squad])
-          counts[squad] = { label: squadCapitalized, count: 0 };
+        if (!counts[squad]) counts[squad] = { label: squad, count: 0 };
         counts[squad].count += 1;
       }
     });
