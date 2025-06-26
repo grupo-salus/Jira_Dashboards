@@ -14,7 +14,7 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
   Backlog: "Ideação",
   Bloqueado: "Bloqueado",
   "Backlog Priorizado": "Backlog Priorizado",
-  "Em Andamento": "Em Execução",
+  "Em Andamento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
   Concluído: "Entregue",
@@ -147,7 +147,7 @@ export const capitalizeFirst = (str: string): string => {
 };
 
 /**
- * Verifica se um projeto está em execução
+ * Verifica se um projeto está em desenvolvimento
  */
 export const isProjetoEmExecucao = (status: JiraStatus): boolean => {
   return (

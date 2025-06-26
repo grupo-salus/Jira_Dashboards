@@ -19,10 +19,9 @@ const TotalizadorCard: React.FC<{
   icon: React.ReactNode;
   label: string;
   value: number;
-  barColor: string;
   currentTheme: "light" | "dark";
   tooltipContent?: React.ReactNode;
-}> = ({ icon, label, value, barColor, currentTheme, tooltipContent }) => {
+}> = ({ icon, label, value, currentTheme, tooltipContent }) => {
   const config = getTotalizadoresConfig();
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -117,7 +116,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     (p) => p.Status === "Backlog"
   ).length;
 
-  // Total de Projetos: apenas as colunas específicas do Kanban (Backlog Priorizado, Em Andamento, Em Homologação, Operação Assistida, Bloqueado)
+  // Total de Projetos: apenas as colunas específicas do Kanban (Backlog Priorizado, Em Desenvolvimento, Em Homologação, Operação Assistida, Bloqueado)
   const projetosAtivos = filteredData.filter((p) =>
     [
       "Backlog Priorizado",
@@ -171,7 +170,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           label="Total no Board"
           value={total}
-          barColor={themeColors.components.totalizadores.total.bar}
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
@@ -183,8 +181,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Contagem de todos os cards de todas as colunas, incluindo
-                ideação, projetos em execução, entregues, cancelados e todos os
-                outros status.
+                ideação, projetos em desenvolvimento, entregues, cancelados e
+                todos os outros status.
               </div>
             </div>
           }
@@ -201,7 +199,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           label="Em Fase de Ideação"
           value={totalIdeacao}
-          barColor={themeColors.components.totalizadores.ideacao.bar}
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
@@ -230,7 +227,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           label="Total de Projetos Ativos"
           value={totalProjetos}
-          barColor={themeColors.components.totalizadores.projetos.bar}
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
@@ -242,8 +238,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Todos os projetos que já viraram projetos ativos e estão em
-                alguma coluna: Backlog Priorizado, Em Execução, Em Homologação,
-                Operação Assistida ou Bloqueado.
+                alguma coluna: Backlog Priorizado, Em Desenvolvimento, Em
+                Homologação, Operação Assistida ou Bloqueado.
               </div>
             </div>
           }
@@ -261,7 +257,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           label="Total na Fila Backlog Priorizado"
           value={totalBacklogPriorizado}
-          barColor={themeColors.components.totalizadores.backlogPriorizado.bar}
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
@@ -273,7 +268,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Ideias que viraram projetos, já passaram pela análise e estão na
-                fila priorizada aguardando execução.
+                fila priorizada aguardando desenvolvimento.
               </div>
             </div>
           }
@@ -290,7 +285,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           label="Projetos Entregues no Mês"
           value={totalEntreguesNoMes}
-          barColor={themeColors.components.totalizadores.total.bar}
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">

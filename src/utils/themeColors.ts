@@ -5,7 +5,7 @@
 // Este arquivo centraliza todas as cores do projeto, organizadas por:
 // - Cores semânticas (primary, success, warning, error)
 // - Cores por componente (kanban, gráficos, totalizadores)
-// - Cores por status (ideação, execução, homologação)
+// - Cores por status (ideação, desenvolvimento, homologação)
 // - Cores de texto (títulos, subtítulos, corpo)
 // - Cores de fundo (cards, containers, páginas)
 // - Cores de bordas e divisores

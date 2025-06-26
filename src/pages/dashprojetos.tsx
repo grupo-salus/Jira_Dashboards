@@ -55,7 +55,7 @@ const normalizarStatusDisplay = (status: string): string => {
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
   Backlog: "Ideação",
-  "Em Andamento": "Em Execução",
+  "Em Andamento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
   Concluído: "Entregue",

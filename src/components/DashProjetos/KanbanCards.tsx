@@ -211,9 +211,9 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 };
 
 /**
- * Card para projetos em EXECUÇÃO
+ * Card para projetos em DESENVOLVIMENTO
  */
-const CardEmExecucao: React.FC<{ projeto: EspacoDeProjetos }> = ({
+const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
   return (
@@ -969,7 +969,7 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
     case "Backlog Priorizado":
       return <CardBacklogPriorizado projeto={projeto} />;
     case "Em andamento":
-      return <CardEmExecucao projeto={projeto} />;
+      return <CardEmDesenvolvimento projeto={projeto} />;
     case "Em Homologação":
       return <CardEmHomologacao projeto={projeto} />;
     case "OPERAÇÃO ASSISTIDA":

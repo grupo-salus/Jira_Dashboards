@@ -50,7 +50,7 @@ export interface EspacoDeProjetos {
   "Telefone do Solicitante": string | null; // Telefone de contato
   "Email do Solicitante": string | null; // E-mail para retorno
 
-  Responsável: string; // Pessoa atribuída à execução da tarefa
+  Responsável: string; // Pessoa atribuída ao desenvolvimento da tarefa
   Relator: string; // Pessoa que criou o card no Jira
   Squad: string | null; // Squad do projeto (vindo das labels do Jira)
 
@@ -65,7 +65,7 @@ export interface EspacoDeProjetos {
   "Target end": string | null; // Data planejada de término do projeto
   "Data de término": string | null; // Data em que a issue foi finalizada no Jira
 
-  // Estratégias de execução e ideação
+  // Estratégias de desenvolvimento e ideação
   "Dias desde criação": number | null;
   "Status de ideação": IdeacaoStatus | null;
   "Dias planejados": number | null;
