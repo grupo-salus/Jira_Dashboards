@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -10,7 +10,11 @@ import {
   Cell,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
-import { themeColors, getTextColor } from "../../utils/themeColors";
+import {
+  themeColors,
+  getTextColor,
+  getUniqueColorsForCategories,
+} from "../../utils/themeColors";
 import { getFontSizes } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
 
@@ -36,8 +40,6 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   data,
   onAreaClick,
 }) => {
-  const [, setForceUpdate] = useState(0);
-
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
     "light"
@@ -66,7 +68,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   // Listener para mudanças no tamanho global
   useEffect(() => {
     const handleTamanhoChange = () => {
-      setForceUpdate((prev) => prev + 1); // Força re-render
+      // Nenhuma ação necessária, pois o componente se atualiza automaticamente
     };
 
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
@@ -132,6 +134,15 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   // Filtrar "Não informado" das barras
   const areaCountFiltered = areaCount.filter((a) => a.area !== "Não informado");
 
+  // Criar mapeamento de cores únicas para as áreas
+  const areaColors = React.useMemo(() => {
+    const areas = areaCountFiltered.map((item) => item.area);
+    return getUniqueColorsForCategories(
+      areas,
+      themeColors.components.graficos.barra.palette
+    );
+  }, [areaCountFiltered]);
+
   return (
     <div className="w-full h-full flex-1 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
@@ -168,14 +179,10 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             cursor="pointer"
             radius={[8, 8, 0, 0]}
           >
-            {areaCountFiltered.map((_, index) => (
+            {areaCountFiltered.map((item) => (
               <Cell
-                key={`cell-${index}`}
-                fill={
-                  themeColors.components.graficos.barra.palette[
-                    index % themeColors.components.graficos.barra.palette.length
-                  ]
-                }
+                key={`cell-${item.area}`}
+                fill={areaColors[item.area]}
                 cursor="pointer"
               />
             ))}

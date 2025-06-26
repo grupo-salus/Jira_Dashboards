@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
-import { themeColors } from "../../utils/themeColors";
+import {
+  getTextColor,
+  getUniqueColorsForCategories,
+  themeColors,
+} from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
 import { getFontSizes } from "../../constants/styleConfig";
 
@@ -9,8 +13,6 @@ interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
   onSquadClick?: (squad: string) => void;
 }
-
-// Função auxiliar para normalizar strings (igual ao dashboard)
 
 const CustomTooltip = ({ active, payload, projetosData }: any) => {
   if (active && payload && payload.length && projetosData) {
@@ -76,7 +78,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
 
   useEffect(() => {
     const handleTamanhoChange = () => {
-      // Nenhuma ação necessária, pois forceUpdate foi removido
+      // Nenhuma ação necessária, pois o componente se atualiza automaticamente
     };
 
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
@@ -107,6 +109,15 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
       originalValue: cat.value,
     }));
   }, [countBySquad]);
+
+  // Criar mapeamento de cores únicas para as squads
+  const squadColors = React.useMemo(() => {
+    const squads = pieData.map((item) => item.originalValue);
+    return getUniqueColorsForCategories(
+      squads,
+      themeColors.components.graficos.pizza.palette
+    );
+  }, [pieData]);
 
   // Função para filtrar ao clicar na fatia
   const handlePieClick = (data: any) => {
@@ -142,15 +153,10 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                 activeShape={{ r: 75 }}
                 activeIndex={[]}
               >
-                {pieData.map((entry, idx) => (
+                {pieData.map((entry) => (
                   <Cell
                     key={`cell-${entry.name}`}
-                    fill={
-                      themeColors.components.graficos.pizza.palette[
-                        idx %
-                          themeColors.components.graficos.pizza.palette.length
-                      ]
-                    }
+                    fill={squadColors[entry.originalValue]}
                   />
                 ))}
               </Pie>
@@ -168,7 +174,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
               {pieData
                 .slice()
                 .sort((a, b) => b.value - a.value)
-                .map((item, idx) => (
+                .map((item) => (
                   <li
                     key={item.label}
                     className={`flex items-center gap-2 ${fontSizes.legendaGrafico} font-medium`}
@@ -178,23 +184,18 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                       style={{
                         width: 14,
                         height: 14,
-                        backgroundColor:
-                          themeColors.components.graficos.pizza.palette[
-                            idx %
-                              themeColors.components.graficos.pizza.palette
-                                .length
-                          ],
+                        backgroundColor: squadColors[item.originalValue],
                       }}
                     ></span>
                     <span
                       className="whitespace-nowrap"
-                      style={{ color: themeColors.text.primary[currentTheme] }}
+                      style={{ color: getTextColor("primary", currentTheme) }}
                     >
                       {item.label}
                     </span>
                     <span
                       style={{
-                        color: themeColors.text.secondary[currentTheme],
+                        color: getTextColor("secondary", currentTheme),
                       }}
                     >
                       ({item.value})

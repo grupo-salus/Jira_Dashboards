@@ -431,23 +431,33 @@ export const themeColors = {
           "#E91E63", // rosa vibrante
           "#3498DB", // azul claro
           "#F1C40F", // amarelo dourado
-          "#9B59B6", // roxo médio
           "#2ECC71", // verde esmeralda
           "#E67E22", // laranja queimado
           "#1ABC9C", // turquesa escuro
-          "#8E44AD", // roxo profundo
+          "#9C27B0", // roxo vibrante
+          "#673AB7", // roxo profundo
+          "#FF5722", // laranja vibrante
+          "#795548", // marrom
+          "#607D8B", // azul acinzentado
+          "#FF9800", // laranja
+          "#CDDC39", // lima
+          "#009688", // verde água
+          "#8BC34A", // verde claro
+          "#4CAF50", // verde médio
         ],
       },
       barra: {
         palette: [
-          "#E3F2FD", // azul mais claro
-          "#BBDEFB", // azul claro
-          "#90CAF9", // azul médio claro
-          "#64B5F6", // azul médio
+          "#90CAF9", // azul muito claro
+          "#64B5F6", // azul claro
           "#42A5F5", // azul médio forte
           "#2196F3", // azul forte
           "#1E88E5", // azul mais forte
           "#1976D2", // azul escuro
+          "#1565C0", // azul mais escuro
+          "#0D47A1", // azul muito escuro
+          "#0A3880", // azul extremamente escuro
+          "#072B60", // azul quase preto
         ],
       },
     },
@@ -710,6 +720,69 @@ export const getPriorityValueByLabel = (label: string): string | undefined => {
   };
 
   return priorityMap[label];
+};
+
+/**
+ * Mapeia uma categoria para uma cor específica baseada no nome
+ * Garante que a mesma categoria sempre tenha a mesma cor
+ */
+export const getCategoryColor = (
+  category: string,
+  palette: string[]
+): string => {
+  // Criar um hash simples baseado no nome da categoria
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    const char = category.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Converte para 32-bit integer
+  }
+
+  // Usar o valor absoluto do hash para garantir índice positivo
+  const index = Math.abs(hash) % palette.length;
+  return palette[index];
+};
+
+/**
+ * Obtém cores únicas para um conjunto de categorias
+ * Garante que não haja repetição de cores
+ */
+export const getUniqueColorsForCategories = (
+  categories: string[],
+  palette: string[]
+): Record<string, string> => {
+  const colorMap: Record<string, string> = {};
+  const usedColors = new Set<string>();
+
+  // Primeira passada: tentar usar o hash original
+  categories.forEach((category) => {
+    const hashColor = getCategoryColor(category, palette);
+    if (!usedColors.has(hashColor)) {
+      colorMap[category] = hashColor;
+      usedColors.add(hashColor);
+    }
+  });
+
+  // Segunda passada: para categorias que não conseguiram cor única
+  categories.forEach((category) => {
+    if (!colorMap[category]) {
+      // Encontrar a primeira cor não utilizada
+      for (let i = 0; i < palette.length; i++) {
+        if (!usedColors.has(palette[i])) {
+          colorMap[category] = palette[i];
+          usedColors.add(palette[i]);
+          break;
+        }
+      }
+
+      // Se ainda não encontrou, usar a primeira cor disponível (pode repetir)
+      if (!colorMap[category]) {
+        colorMap[category] = palette[0];
+      }
+    }
+  });
+
+  return colorMap;
 };
 
 // ============================================================================
