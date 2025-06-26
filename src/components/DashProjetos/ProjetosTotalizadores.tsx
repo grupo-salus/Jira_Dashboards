@@ -94,7 +94,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     "light"
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
       setCurrentTheme(isDark ? "dark" : "light");
@@ -110,20 +110,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
 
     return () => observer.disconnect();
   }, []);
-
-  useEffect(() => {
-    const handleTamanhoChange = () => {
-      // Força re-render quando o tamanho global muda
-      setForceUpdate((prev) => prev + 1);
-    };
-    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    return () => {
-      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    };
-  }, []);
-
-  // Estado para forçar re-render quando o tamanho global muda
-  const [forceUpdate, setForceUpdate] = useState(0);
 
   // Métricas Chave
   const total = originalData.length; // Total no Board: todos os dados originais
@@ -173,7 +159,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     .slice(0, 3);
 
   return (
-    <div key={`totalizadores-${forceUpdate}`}>
+    <div>
       <div className="flex flex-wrap gap-4 lg:gap-6 mb-6">
         <TotalizadorCard
           icon={

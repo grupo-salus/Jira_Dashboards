@@ -54,6 +54,9 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   data,
   onSquadClick,
 }) => {
+  // Obter configurações atuais
+  const fontSizes = getFontSizes();
+
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
     "light"
@@ -74,17 +77,6 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
     });
 
     return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const handleTamanhoChange = () => {
-      // Nenhuma ação necessária, pois o componente se atualiza automaticamente
-    };
-
-    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    return () => {
-      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    };
   }, []);
 
   const countBySquad = React.useMemo(() => {
@@ -125,8 +117,6 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
       onSquadClick(data.payload.originalValue);
     }
   };
-
-  const fontSizes = getFontSizes();
 
   return (
     <div className="w-full h-full flex-1 flex items-center justify-center">

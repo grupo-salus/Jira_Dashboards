@@ -190,17 +190,8 @@ const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
     return () => observer.disconnect();
   }, []);
 
-  // Listener para mudanças no tamanho global
-  useEffect(() => {
-    const handleTamanhoChange = () => {
-      // Força re-render quando o tamanho global muda
-    };
-
-    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    return () => {
-      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    };
-  }, []);
+  // Obter configurações atuais
+  const fontSizes = getFontSizes();
 
   // Agrupar projetos por status
   const projetosPorStatus = data.reduce((acc, projeto) => {

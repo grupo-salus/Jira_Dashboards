@@ -40,6 +40,9 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   data,
   onAreaClick,
 }) => {
+  // Obter configurações atuais
+  const fontSizes = getFontSizes();
+
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
     "light"
@@ -60,21 +63,6 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
     });
 
     return () => observer.disconnect();
-  }, []);
-
-  // Obter configurações atuais
-  const fontSizes = getFontSizes();
-
-  // Listener para mudanças no tamanho global
-  useEffect(() => {
-    const handleTamanhoChange = () => {
-      // Nenhuma ação necessária, pois o componente se atualiza automaticamente
-    };
-
-    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    return () => {
-      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    };
   }, []);
 
   // Componente customizado para o tick do eixo X com quebra de linha, centralizado e usando tema light/dark

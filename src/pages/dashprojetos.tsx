@@ -26,12 +26,7 @@ import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
 import AnaliseDemandasPorSquad from "../components/DashProjetos/AnaliseDemandasPorSquad";
-import {
-  getFontSizes,
-  setTamanhoGlobal,
-  getTamanhoGlobal,
-} from "../constants/styleConfig";
-import CustomDropdown from "../components/common/CustomDropdown";
+import { getFontSizes } from "../constants/styleConfig";
 import {
   themeColors,
   getTextColor,
@@ -72,8 +67,6 @@ const DashProjetos: React.FC = () => {
     "kanban"
   );
   const [menuAberto, setMenuAberto] = useState(false);
-  const [tamanhoAtual, setTamanhoAtual] = useState(getTamanhoGlobal());
-  const [, setForceUpdate] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Filtros simplificados - apenas os essenciais
@@ -106,35 +99,6 @@ const DashProjetos: React.FC = () => {
 
     return () => observer.disconnect();
   }, []);
-
-  const tamanhoOptions = [
-    { value: "pequeno", label: "Pequeno" },
-    { value: "medio", label: "Médio" },
-    { value: "grande", label: "Grande" },
-    { value: "muitoGrande", label: "Muito Grande" },
-  ];
-
-  // Listener para mudanças no tamanho global
-  useEffect(() => {
-    const handleTamanhoChange = () => {
-      setTamanhoAtual(getTamanhoGlobal());
-      setForceUpdate((prev) => prev + 1);
-    };
-
-    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    return () => {
-      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    };
-  }, []);
-
-  // Função para alterar o tamanho
-  const handleTamanhoChange = (
-    novoTamanho: "pequeno" | "medio" | "grande" | "muitoGrande"
-  ) => {
-    setTamanhoGlobal(novoTamanho);
-    setTamanhoAtual(novoTamanho);
-    setForceUpdate((prev) => prev + 1);
-  };
 
   // Fechar menu quando clicar fora
   useEffect(() => {
@@ -319,21 +283,6 @@ const DashProjetos: React.FC = () => {
       className="p-6 w-full max-w-none relative"
       style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
     >
-      {/* Botões de Controle */}
-      <div className="flex items-center justify-end gap-2 mb-4">
-        {/* Dropdown de Tamanho */}
-        <CustomDropdown
-          options={tamanhoOptions}
-          value={tamanhoAtual}
-          onChange={(val) =>
-            handleTamanhoChange(
-              val as "pequeno" | "medio" | "grande" | "muitoGrande"
-            )
-          }
-          buttonClassName={`relative h-10 px-4 text-left font-semibold rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md hover:shadow-lg ${fontSizes.textoBotao}`}
-        />
-      </div>
-
       {/* Seção de Filtros - Sempre Visível */}
       <div className="mb-6">
         <div className="p-0 shadow-none">

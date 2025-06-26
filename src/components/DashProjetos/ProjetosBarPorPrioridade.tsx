@@ -97,22 +97,8 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   data,
   onPrioridadeClick,
 }) => {
-  const [, setForceUpdate] = useState(0);
-
   // Obter configurações atuais
   const fontSizes = getFontSizes();
-
-  // Listener para mudanças no tamanho global
-  useEffect(() => {
-    const handleTamanhoChange = () => {
-      setForceUpdate((prev) => prev + 1); // Força re-render
-    };
-
-    window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    return () => {
-      window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
-    };
-  }, []);
 
   // Agrupa projetos por prioridade traduzida
   const prioridadeCount = React.useMemo(() => {
