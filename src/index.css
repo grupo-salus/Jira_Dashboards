@@ -103,3 +103,36 @@ body {
   background: none !important;
   box-shadow: none !important;
 }
+
+/* Regras específicas para ícones dos totalizadores */
+.totalizador-icon {
+  flex-shrink: 0 !important;
+  min-width: fit-content !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.totalizador-icon svg {
+  width: auto !important;
+  height: auto !important;
+  min-width: fit-content !important;
+  flex-shrink: 0 !important;
+}
+
+/* Garantir que os cards dos totalizadores mantenham tamanho mínimo */
+.totalizador-card {
+  min-width: 280px !important;
+  flex-shrink: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .totalizador-card {
+    min-width: 250px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .totalizador-card {
+    min-width: 220px !important;
+  }
+}

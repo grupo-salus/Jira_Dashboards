@@ -7,6 +7,7 @@ import {
   getTextColor,
   getBackgroundColor,
   getBorderColor,
+  getPriorityConfig,
 } from "../../utils/themeColors";
 
 interface ProjetosTotalizadoresProps {
@@ -27,13 +28,13 @@ const TotalizadorCard: React.FC<{
 
   return (
     <div
-      className={`rounded-lg shadow-md ${config.padding} flex-grow ${config.largura} ${config.altura} relative`}
+      className={`rounded-lg shadow-md ${config.padding} flex-grow min-w-[280px] ${config.largura} ${config.altura} relative totalizador-card`}
       style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       <div className="flex items-center gap-4">
-        {icon}
+        <div className="flex-shrink-0 totalizador-icon">{icon}</div>
         <div>
           <p
             className={`font-semibold mb-2 break-words ${config.label}`}
@@ -49,10 +50,10 @@ const TotalizadorCard: React.FC<{
           </p>
         </div>
       </div>
-      <div
+      {/* <div
         className={`absolute bottom-0 left-0 h-1 w-full`}
         style={{ backgroundColor: barColor }}
-      ></div>
+      ></div> */}
 
       {/* Tooltip */}
       {showTooltip && tooltipContent && (
@@ -113,12 +114,16 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   useEffect(() => {
     const handleTamanhoChange = () => {
       // Força re-render quando o tamanho global muda
+      setForceUpdate((prev) => prev + 1);
     };
     window.addEventListener("tamanhoGlobalChanged", handleTamanhoChange);
     return () => {
       window.removeEventListener("tamanhoGlobalChanged", handleTamanhoChange);
     };
   }, []);
+
+  // Estado para forçar re-render quando o tamanho global muda
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   // Métricas Chave
   const total = originalData.length; // Total no Board: todos os dados originais
@@ -144,6 +149,23 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   );
   const totalBacklogPriorizado = backlogPriorizado.length;
 
+  // Métricas de Projetos Entregues no Mês
+  const projetosEntregues = filteredData.filter(
+    (p) => p.Status === "Concluído"
+  );
+  const mesAtual = new Date().getMonth();
+  const anoAtual = new Date().getFullYear();
+
+  const projetosEntreguesNoMes = projetosEntregues.filter((p) => {
+    if (!p["Data de término"]) return false;
+    const dataTermino = new Date(p["Data de término"]);
+    return (
+      dataTermino.getMonth() === mesAtual &&
+      dataTermino.getFullYear() === anoAtual
+    );
+  });
+  const totalEntreguesNoMes = projetosEntreguesNoMes.length;
+
   // Encontrar os próximos 3 projetos a serem executados
   const proximosExecucao = backlogPriorizado
     .filter((p) => p.PosicaoBacklog !== null)
@@ -151,13 +173,13 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     .slice(0, 3);
 
   return (
-    <div>
-      <div className="flex flex-wrap gap-6 mb-6">
+    <div key={`totalizadores-${forceUpdate}`}>
+      <div className="flex flex-wrap gap-4 lg:gap-6 mb-6">
         <TotalizadorCard
           icon={
             <CardsIcon
               size={config.icone}
-              className="text-current"
+              className="text-current flex-shrink-0"
               style={{ color: themeColors.components.totalizadores.total.icon }}
             />
           }
@@ -185,7 +207,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           icon={
             <LightbulbIcon
               size={config.icone}
-              className="text-current"
+              className="text-current flex-shrink-0"
               style={{
                 color: themeColors.components.totalizadores.ideacao.icon,
               }}
@@ -214,7 +236,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           icon={
             <LightbulbIcon
               size={config.icone}
-              className="text-current"
+              className="text-current flex-shrink-0"
               style={{
                 color: themeColors.components.totalizadores.projetos.icon,
               }}
@@ -244,7 +266,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           icon={
             <LightbulbIcon
               size={config.icone}
-              className="text-current"
+              className="text-current flex-shrink-0"
               style={{
                 color:
                   themeColors.components.totalizadores.backlogPriorizado.icon,
@@ -270,41 +292,71 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             </div>
           }
         />
+        <TotalizadorCard
+          icon={
+            <LightbulbIcon
+              size={config.icone}
+              className="text-current flex-shrink-0"
+              style={{
+                color: themeColors.components.totalizadores.total.icon,
+              }}
+            />
+          }
+          label="Projetos Entregues no Mês"
+          value={totalEntreguesNoMes}
+          barColor={themeColors.components.totalizadores.total.bar}
+          currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div
+                className="font-bold mb-1"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Projetos Entregues no Mês
+              </div>
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Projetos que foram concluídos e entregues no mês atual (
+                {new Date().toLocaleDateString("pt-BR", {
+                  month: "long",
+                  year: "numeric",
+                })}
+                ).
+              </div>
+            </div>
+          }
+        />
       </div>
 
       {/* Seção dos próximos projetos */}
       {proximosExecucao.length > 0 && (
         <div className="mb-6">
           <div
-            className={`rounded-lg w-full h-32 p-6 relative overflow-hidden`}
+            className={`rounded-lg w-full p-6 relative overflow-hidden flex flex-col gap-3`}
             style={{
               background: getBackgroundColor("card", currentTheme),
               border: `1px solid ${themeColors.components.totalizadores.proximoExecucao.border[currentTheme]}`,
             }}
           >
-            <div className="flex items-center h-full gap-3">
-              {/* Título e descrição - 1/4 do espaço */}
-              <div className="flex-1 h-full flex flex-col justify-center">
-                <h3
-                  className={`font-bold ${config.titulo}`}
-                  style={{ color: getTextColor("primary", currentTheme) }}
-                >
-                  Próximos Projetos a Serem Executados
-                </h3>
-                <p
-                  className={`text-sm ${config.label}`}
-                  style={{ color: getTextColor("secondary", currentTheme) }}
-                >
-                  Fila ordenada por prioridade no backlog
-                </p>
-              </div>
-
-              {/* Cards dos projetos - cada um ocupa 1/4 do espaço */}
+            <div className="w-full mb-3">
+              <h3
+                className={`font-bold ${config.titulo}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Próximos Projetos a Serem Executados
+              </h3>
+              <p
+                className={`text-sm ${config.label}`}
+                style={{ color: getTextColor("secondary", currentTheme) }}
+              >
+                Fila ordenada por prioridade no backlog
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full">
               {proximosExecucao.map((projeto, index) => (
                 <div
                   key={projeto.Título}
                   className={
-                    `flex items-center gap-2 p-3 rounded-lg border transition-all duration-200 hover:shadow-md flex-1 h-full` +
+                    `flex items-center gap-2 p-2 sm:p-3 rounded-lg border transition-all duration-200 hover:shadow-md h-16 sm:h-20 lg:h-24` +
                     (index === 0 ? " border-2" : " border")
                   }
                   style={{
@@ -312,15 +364,16 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                       themeColors.components.totalizadores.proximoExecucao.bg[
                         currentTheme
                       ],
-                    borderColor:
-                      index === 0
-                        ? themeColors.components.totalizadores.total.bar
-                        : getBorderColor("primary", currentTheme),
+                    borderColor: getBorderColor("primary", currentTheme),
+                    flex: "1 1 250px",
+                    minWidth: 0,
                   }}
                 >
                   <div
-                    className={`text-white rounded-full flex items-center justify-center font-bold ${
-                      index === 0 ? "w-8 h-8" : "w-7 h-7"
+                    className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 ${
+                      index === 0
+                        ? "w-6 h-6 sm:w-8 sm:h-8"
+                        : "w-5 h-5 sm:w-7 sm:h-7"
                     }`}
                     style={{
                       backgroundColor:
@@ -330,7 +383,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                     }}
                   >
                     <span
-                      className={`${index === 0 ? "text-sm" : "text-xs"}`}
+                      className={`${
+                        index === 0 ? "text-xs sm:text-sm" : "text-xs"
+                      }`}
                       style={{ color: themeColors.utility.white }}
                     >
                       #{projeto.PosicaoBacklog}
@@ -338,8 +393,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4
-                      className={`font-semibold truncate ${
-                        index === 0 ? "text-sm" : "text-xs"
+                      className={`font-semibold break-words whitespace-normal ${
+                        index === 0 ? "text-xs sm:text-sm" : "text-xs"
                       }`}
                       style={{ color: getTextColor("primary", currentTheme) }}
                       title={projeto.Título}
@@ -351,28 +406,49 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                       )}
                     </h4>
                     {projeto["Departamento Solicitante"] && (
-                      <p
-                        className={`truncate text-xs mt-1`}
-                        style={{
-                          color: getTextColor("secondary", currentTheme),
-                        }}
-                        title={projeto["Departamento Solicitante"]}
-                      >
-                        {projeto["Departamento Solicitante"]}
-                      </p>
+                      <div className="flex items-center gap-1 sm:gap-2 mt-1">
+                        <p
+                          className={`truncate text-xs`}
+                          style={{
+                            color: getTextColor("secondary", currentTheme),
+                          }}
+                          title={projeto["Departamento Solicitante"]}
+                        >
+                          {projeto["Departamento Solicitante"]}
+                        </p>
+                        {projeto.Prioridade && (
+                          <span
+                            className={`truncate text-xs font-medium px-1 sm:px-2 py-0.5 rounded inline-block flex-shrink-0 text-white`}
+                            style={{
+                              backgroundColor: getPriorityConfig(
+                                projeto.Prioridade
+                              ).hex,
+                            }}
+                            title={`Prioridade: ${projeto.Prioridade}`}
+                          >
+                            {projeto.Prioridade}
+                          </span>
+                        )}
+                      </div>
                     )}
+                    {!projeto["Departamento Solicitante"] &&
+                      projeto.Prioridade && (
+                        <span
+                          className={`truncate text-xs mt-1 font-medium px-1 sm:px-2 py-0.5 rounded inline-block text-white`}
+                          style={{
+                            backgroundColor: getPriorityConfig(
+                              projeto.Prioridade
+                            ).hex,
+                          }}
+                          title={`Prioridade: ${projeto.Prioridade}`}
+                        >
+                          {projeto.Prioridade}
+                        </span>
+                      )}
                   </div>
                 </div>
               ))}
             </div>
-
-            <div
-              className="absolute bottom-0 left-0 h-1 w-full"
-              style={{
-                background:
-                  themeColors.components.totalizadores.proximoExecucao.bar,
-              }}
-            ></div>
           </div>
         </div>
       )}

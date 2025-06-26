@@ -549,7 +549,7 @@ const DashProjetos: React.FC = () => {
       <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Gráfico 1: Projetos por Área */}
         <div
-          className="rounded-lg shadow p-4 flex flex-col h-72 relative"
+          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
@@ -595,7 +595,7 @@ const DashProjetos: React.FC = () => {
 
         {/* Gráfico 2: Projetos por Prioridade */}
         <div
-          className="rounded-lg shadow p-4 flex flex-col h-72 relative"
+          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
@@ -643,7 +643,7 @@ const DashProjetos: React.FC = () => {
 
         {/* Gráfico 3: Distribuição por Squad */}
         <div
-          className="rounded-lg shadow p-4 flex flex-col h-72 relative"
+          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div

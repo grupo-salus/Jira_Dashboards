@@ -46,7 +46,7 @@ const totalizadoresConfig = {
     label: "text-base",
     icone: 28,
     largura: "w-56",
-    altura: "h-24",
+    altura: "h-25",
     padding: "p-5",
     filtroLabel: "text-xs",
     filtroInput: "text-xs px-2 py-1 h-7",

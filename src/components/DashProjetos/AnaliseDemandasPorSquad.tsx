@@ -122,14 +122,12 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   const fontSizes = getFontSizes();
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center min-h-[250px] min-w-[250px]">
-      <div className="flex flex-row items-center justify-between w-full">
+    <div className="w-full h-full flex-1 flex items-center justify-center">
+      <div className="flex flex-col 2xl:flex-row items-center 2xl:items-center justify-between w-full gap-4 2xl:gap-0">
         <div className="flex-shrink-0">
           <ResponsiveContainer
             width={300}
             height={300}
-            minHeight={250}
-            minWidth={250}
             style={{ pointerEvents: "auto" }}
           >
             <PieChart width={300} height={300}>
@@ -168,9 +166,9 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start w-full 2xl:w-auto">
           {pieData.length > 0 && (
-            <ul className="flex flex-col gap-y-2 max-h-60 overflow-y-auto">
+            <ul className="flex flex-row 2xl:flex-col flex-wrap 2xl:flex-nowrap gap-x-2 gap-y-2 max-h-60 overflow-y-auto w-full 2xl:w-auto justify-center 2xl:justify-start">
               {pieData
                 .slice()
                 .sort((a, b) => b.value - a.value)
