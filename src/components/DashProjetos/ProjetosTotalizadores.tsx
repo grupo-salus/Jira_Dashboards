@@ -133,7 +133,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
       "Em andamento",
       "Em Homologação",
       "OPERAÇÃO ASSISTIDA",
-      "Bloqueado",
+      "BLOQUEADO",
     ].includes(p.Status)
   );
   const totalProjetos = projetosAtivos.length;
