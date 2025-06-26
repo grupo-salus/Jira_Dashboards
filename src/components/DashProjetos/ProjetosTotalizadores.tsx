@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CardsIcon, LightbulbIcon } from "../icons/DashboardIcons";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getTotalizadoresConfig } from "../../constants/styleConfig";
@@ -20,13 +20,17 @@ const TotalizadorCard: React.FC<{
   value: number;
   barColor: string;
   currentTheme: "light" | "dark";
-}> = ({ icon, label, value, barColor, currentTheme }) => {
+  tooltipContent?: React.ReactNode;
+}> = ({ icon, label, value, barColor, currentTheme, tooltipContent }) => {
   const config = getTotalizadoresConfig();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div
-      className={`rounded-lg shadow-md ${config.padding} flex-grow ${config.largura} ${config.altura} relative overflow-hidden`}
+      className={`rounded-lg shadow-md ${config.padding} flex-grow ${config.largura} ${config.altura} relative`}
       style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
     >
       <div className="flex items-center gap-4">
         {icon}
@@ -49,6 +53,31 @@ const TotalizadorCard: React.FC<{
         className={`absolute bottom-0 left-0 h-1 w-full`}
         style={{ backgroundColor: barColor }}
       ></div>
+
+      {/* Tooltip */}
+      {showTooltip && tooltipContent && (
+        <div
+          className="absolute z-[9999] p-3 rounded-lg shadow-lg border max-w-xs"
+          style={{
+            backgroundColor: getBackgroundColor("card", currentTheme),
+            border: `1px solid ${getBorderColor("primary", currentTheme)}`,
+            color: getTextColor("primary", currentTheme),
+            top: "calc(100% + 10px)",
+            left: "50%",
+            transform: "translateX(-50%)",
+            minWidth: "250px",
+          }}
+        >
+          {tooltipContent}
+          {/* Seta do tooltip */}
+          <div
+            className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent"
+            style={{
+              borderBottomColor: getBackgroundColor("card", currentTheme),
+            }}
+          ></div>
+        </div>
+      )}
     </div>
   );
 };
@@ -97,10 +126,17 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     (p) => p.Status === "Backlog"
   ).length;
 
-  // Total de Projetos: todos os status exceto "Backlog" (ideação), "Cancelado" e "Concluído" (entregue)
-  const totalProjetos = filteredData.filter(
-    (p) => !["Backlog", "Cancelado", "Concluído"].includes(p.Status)
-  ).length;
+  // Total de Projetos: apenas as colunas específicas do Kanban (Backlog Priorizado, Em andamento, Em Homologação, OPERAÇÃO ASSISTIDA, Bloqueado)
+  const projetosAtivos = filteredData.filter((p) =>
+    [
+      "Backlog Priorizado",
+      "Em andamento",
+      "Em Homologação",
+      "OPERAÇÃO ASSISTIDA",
+      "Bloqueado",
+    ].includes(p.Status)
+  );
+  const totalProjetos = projetosAtivos.length;
 
   // Métricas do Backlog Priorizado
   const backlogPriorizado = filteredData.filter(
@@ -129,6 +165,21 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           value={total}
           barColor={themeColors.components.totalizadores.total.bar}
           currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div
+                className="font-bold mb-1"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Total no Board
+              </div>
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Contagem de todos os cards de todas as colunas, incluindo
+                ideação, projetos em execução, entregues, cancelados e todos os
+                outros status.
+              </div>
+            </div>
+          }
         />
         <TotalizadorCard
           icon={
@@ -144,6 +195,20 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           value={totalIdeacao}
           barColor={themeColors.components.totalizadores.ideacao.bar}
           currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div
+                className="font-bold mb-1"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Total de Ideação
+              </div>
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Projetos da coluna Ideação que são ideias a serem ainda
+                analisadas e avaliadas.
+              </div>
+            </div>
+          }
         />
         <TotalizadorCard
           icon={
@@ -159,6 +224,21 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           value={totalProjetos}
           barColor={themeColors.components.totalizadores.projetos.bar}
           currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div
+                className="font-bold mb-1"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Total de Projetos
+              </div>
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Todos os projetos que já viraram projetos ativos e estão em
+                alguma coluna: Backlog Priorizado, Em Execução, Em Homologação,
+                Operação Assistida ou Bloqueado.
+              </div>
+            </div>
+          }
         />
         <TotalizadorCard
           icon={
@@ -175,6 +255,20 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           value={totalBacklogPriorizado}
           barColor={themeColors.components.totalizadores.backlogPriorizado.bar}
           currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div
+                className="font-bold mb-1"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Total na Fila Backlog Priorizado
+              </div>
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Ideias que viraram projetos, já passaram pela análise e estão na
+                fila priorizada aguardando execução.
+              </div>
+            </div>
+          }
         />
       </div>
 
