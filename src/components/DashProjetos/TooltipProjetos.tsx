@@ -39,7 +39,7 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
 
   return (
     <div
-      className="rounded-xl p-2 max-h-[220px] overflow-y-auto min-w-[180px] max-w-[260px] text-xs shadow-lg"
+      className="rounded-xl p-1 max-h-[150px] overflow-y-auto min-w-[120px] max-w-[180px] text-xs shadow-lg"
       style={{
         backgroundColor: getBackgroundColor("card", currentTheme),
         border: `1px solid ${getBorderColor("primary", currentTheme)}`,
@@ -48,7 +48,7 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
         position: "relative",
       }}
     >
-      <div className="font-bold mb-2">
+      <div className="font-bold mb-1">
         {areaLabel} ({projetos.length} projetos)
       </div>
       {projetos.length === 0 ? (
@@ -57,9 +57,9 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
         projetos.map((proj, idx) => (
           <div
             key={idx}
-            className="mb-2 pb-2 rounded-lg border"
+            className="mb-1 pb-1 rounded-lg border"
             style={{
-              padding: 8,
+              padding: 4,
               backgroundColor:
                 idx % 2 === 0
                   ? getBackgroundColor("hover", currentTheme)
