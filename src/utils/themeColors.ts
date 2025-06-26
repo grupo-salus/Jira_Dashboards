@@ -390,6 +390,10 @@ export const themeColors = {
         },
         bar: "linear-gradient(to right, #0052CC, #0747A6)", // Jira blue gradient bar
       },
+      ranking: {
+        icon: "#10b981", // verde esmeralda para ranking
+        bar: "#10b981", // verde esmeralda para ranking
+      },
     },
 
     // Kanban

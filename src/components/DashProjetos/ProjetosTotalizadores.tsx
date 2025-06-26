@@ -325,9 +325,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                     style={{
                       backgroundColor:
                         index === 0
-                          ? themeColors.components.totalizadores.total.bar
-                          : themeColors.components.totalizadores
-                              .backlogPriorizado.bar,
+                          ? themeColors.components.totalizadores.ranking.bar
+                          : themeColors.components.totalizadores.ranking.bar,
                     }}
                   >
                     <span
@@ -346,9 +345,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                       title={projeto.Título}
                     >
                       {index === 0 ? (
-                        <>
-                          Próximo: <i>{projeto.Título}</i>
-                        </>
+                        <>Próximo: {projeto.Título}</>
                       ) : (
                         projeto.Título
                       )}

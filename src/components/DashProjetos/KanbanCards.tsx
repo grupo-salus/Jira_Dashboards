@@ -135,7 +135,7 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             <span
               className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
               style={{
-                background: "#0052cc",
+                background: "#10b981",
                 color: "#fff",
                 width: 28,
                 height: 28,
@@ -160,7 +160,7 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             <span
               className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
               style={{
-                background: "#0052cc",
+                background: "#10b981",
                 color: "#fff",
                 width: 28,
                 height: 28,

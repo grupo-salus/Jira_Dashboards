@@ -283,7 +283,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
         <span
           className="flex justify-center items-center aspect-square w-7 h-7 rounded-full font-bold text-sm flex-shrink-0"
           style={{
-            backgroundColor: "#0052cc",
+            backgroundColor: "#10b981",
             color: "#ffffff",
           }}
         >
