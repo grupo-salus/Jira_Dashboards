@@ -424,14 +424,14 @@ export const themeColors = {
     graficos: {
       pizza: {
         palette: [
-          "#9DB4C0", // azul pastel escuro
-          "#C5A49B", // marrom pastel escuro
-          "#8BA888", // verde pastel escuro
-          "#C48B9F", // rosa pastel escuro
-          "#8B95C0", // azul acinzentado escuro
-          "#C0B69B", // bege pastel escuro
-          "#9B8BA6", // roxo pastel escuro
-          "#A6A392", // verde oliva pastel escuro
+          "#E91E63", // rosa vibrante
+          "#3498DB", // azul claro
+          "#F1C40F", // amarelo dourado
+          "#9B59B6", // roxo médio
+          "#2ECC71", // verde esmeralda
+          "#E67E22", // laranja queimado
+          "#1ABC9C", // turquesa escuro
+          "#8E44AD", // roxo profundo
         ],
       },
       barra: {
