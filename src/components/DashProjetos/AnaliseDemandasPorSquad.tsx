@@ -123,107 +123,93 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
 
   return (
     <div className="w-full h-full flex-1 flex items-center justify-center min-h-[250px] min-w-[250px]">
-      <ResponsiveContainer
-        width="100%"
-        height="100%"
-        minHeight={250}
-        minWidth={250}
-        style={{ pointerEvents: "auto" }}
-      >
-        <PieChart width={400} height={400}>
-          <Pie
-            data={pieData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={"70%"}
-            label={({ value, cx, cy, midAngle, innerRadius, outerRadius }) => {
-              // Cálculo da posição central da fatia
-              const RADIAN = Math.PI / 180;
-              const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-              const x = cx + radius * Math.cos(-midAngle * RADIAN);
-              const y = cy + radius * Math.sin(-midAngle * RADIAN);
-              return (
-                <text
-                  x={x}
-                  y={y}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className={
-                    typeof fontSizes.labelGraficoRosca === "string"
-                      ? fontSizes.labelGraficoRosca
-                      : String(fontSizes.labelGraficoRosca)
-                  }
-                  fill={String(themeColors.text.primary[currentTheme])}
-                  fontWeight={600}
-                >
-                  {String(value)}
-                </text>
-              );
-            }}
-            labelLine={false}
-            isAnimationActive={false}
-            onClick={handlePieClick}
-            style={{ cursor: "pointer" }}
-            activeShape={{ r: 75 }}
-            activeIndex={[]}
+      <div className="flex flex-row items-center justify-between w-full">
+        <div className="flex-shrink-0">
+          <ResponsiveContainer
+            width={300}
+            height={300}
+            minHeight={250}
+            minWidth={250}
+            style={{ pointerEvents: "auto" }}
           >
-            {pieData.map((entry, idx) => (
-              <Cell
-                key={`cell-${entry.name}`}
-                fill={
-                  themeColors.components.graficos.pizza.palette[
-                    idx % themeColors.components.graficos.pizza.palette.length
-                  ]
-                }
+            <PieChart width={300} height={300}>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={"60%"}
+                label
+                labelLine
+                isAnimationActive={false}
+                onClick={handlePieClick}
+                style={{ cursor: "pointer" }}
+                activeShape={{ r: 75 }}
+                activeIndex={[]}
+              >
+                {pieData.map((entry, idx) => (
+                  <Cell
+                    key={`cell-${entry.name}`}
+                    fill={
+                      themeColors.components.graficos.pizza.palette[
+                        idx %
+                          themeColors.components.graficos.pizza.palette.length
+                      ]
+                    }
+                  />
+                ))}
+              </Pie>
+              <Tooltip
+                content={<CustomTooltip projetosData={data} />}
+                cursor={false}
+                isAnimationActive={false}
               />
-            ))}
-          </Pie>
-          <Tooltip
-            content={<CustomTooltip projetosData={data} />}
-            cursor={false}
-            isAnimationActive={false}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-      <div className="w-full flex flex-col items-start mt-4">
-        {pieData.length > 0 && (
-          <ul className="flex flex-wrap justify-start gap-x-8 gap-y-2 w-full">
-            {pieData
-              .slice()
-              .sort((a, b) => b.value - a.value)
-              .map((item, idx) => (
-                <li
-                  key={item.label}
-                  className={`flex items-center gap-2 ${fontSizes.legendaGrafico} font-medium`}
-                >
-                  <span
-                    className="inline-block rounded-full"
-                    style={{
-                      width: 14,
-                      height: 14,
-                      backgroundColor:
-                        themeColors.components.graficos.pizza.palette[
-                          idx %
-                            themeColors.components.graficos.pizza.palette.length
-                        ],
-                    }}
-                  ></span>
-                  <span
-                    style={{ color: themeColors.text.primary[currentTheme] }}
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex flex-col items-start">
+          {pieData.length > 0 && (
+            <ul className="flex flex-col gap-y-2 max-h-60 overflow-y-auto">
+              {pieData
+                .slice()
+                .sort((a, b) => b.value - a.value)
+                .map((item, idx) => (
+                  <li
+                    key={item.label}
+                    className={`flex items-center gap-2 ${fontSizes.legendaGrafico} font-medium`}
                   >
-                    {item.label}
-                  </span>
-                  <span
-                    style={{ color: themeColors.text.secondary[currentTheme] }}
-                  >
-                    ({item.value})
-                  </span>
-                </li>
-              ))}
-          </ul>
-        )}
+                    <span
+                      className="inline-block rounded-full"
+                      style={{
+                        width: 14,
+                        height: 14,
+                        backgroundColor:
+                          themeColors.components.graficos.pizza.palette[
+                            idx %
+                              themeColors.components.graficos.pizza.palette
+                                .length
+                          ],
+                      }}
+                    ></span>
+                    <span
+                      className="whitespace-nowrap"
+                      style={{ color: themeColors.text.primary[currentTheme] }}
+                    >
+                      {item.label}
+                    </span>
+                    <span
+                      style={{
+                        color: themeColors.text.secondary[currentTheme],
+                      }}
+                    >
+                      ({item.value})
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
