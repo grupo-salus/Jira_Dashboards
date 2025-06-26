@@ -191,7 +191,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Total de Ideação"
+          label="Em Fase de Ideação"
           value={totalIdeacao}
           barColor={themeColors.components.totalizadores.ideacao.bar}
           currentTheme={currentTheme}
@@ -201,7 +201,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className="font-bold mb-1"
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Total de Ideação
+                Em Fase de Ideação
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Projetos da coluna Ideação que são ideias a serem ainda
@@ -220,7 +220,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Total de Projetos"
+          label="Total de Projetos Ativos"
           value={totalProjetos}
           barColor={themeColors.components.totalizadores.projetos.bar}
           currentTheme={currentTheme}
@@ -230,7 +230,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className="font-bold mb-1"
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Total de Projetos
+                Total de Projetos Ativos
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Todos os projetos que já viraram projetos ativos e estão em

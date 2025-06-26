@@ -86,8 +86,7 @@ export const getStatusColor = (
     string
   > = {
     // Prazo
-    "No prazo":
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+    "No prazo": "bg-green-600 text-white dark:bg-green-700 dark:text-white",
     "Fora do prazo":
       "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
 

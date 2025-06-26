@@ -641,7 +641,7 @@ const DashProjetos: React.FC = () => {
           />
         </div>
 
-        {/* Gráfico 3: Projetos por Squad */}
+        {/* Gráfico 3: Distribuição por Squad */}
         <div
           className="rounded-lg shadow p-4 flex flex-col h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
@@ -654,7 +654,7 @@ const DashProjetos: React.FC = () => {
               size={20}
               style={{ color: themeColors.components.totalizadores.total.bar }}
             />
-            Projetos por Squad
+            Distribuição por Squad
             {filtros.squad && (
               <button
                 onClick={() => handleFiltroChange("squad", "")}
