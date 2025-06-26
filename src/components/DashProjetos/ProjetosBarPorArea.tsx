@@ -145,7 +145,14 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             tick={<CustomXAxisTick />}
             interval={0}
           />
-          <YAxis type="number" allowDecimals={false} />
+          <YAxis
+            type="number"
+            allowDecimals={false}
+            fontSize={fontSizes.eixoGrafico}
+            tick={{ fill: themeColors.secondary[500] }}
+            axisLine={{ stroke: themeColors.secondary[400] }}
+            tickLine={{ stroke: themeColors.secondary[400] }}
+          />
           <Tooltip
             content={<CustomTooltip projetosData={data} />}
             cursor={false}
@@ -158,7 +165,8 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
                 onAreaClick(data.area);
               }
             }}
-            style={{ cursor: onAreaClick ? "pointer" : "default" }}
+            cursor="pointer"
+            radius={[8, 8, 0, 0]}
           >
             {areaCountFiltered.map((_, index) => (
               <Cell
@@ -168,7 +176,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
                     index % themeColors.components.graficos.barra.palette.length
                   ]
                 }
-                cursor={onAreaClick ? "pointer" : "default"}
+                cursor="pointer"
               />
             ))}
             <LabelList dataKey="count" position="top" />

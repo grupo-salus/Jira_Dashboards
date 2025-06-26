@@ -49,6 +49,50 @@ const CustomTooltip = ({ active, payload, label, projetosData }: any) => {
   return null;
 };
 
+const CustomXAxisTick = (props: any) => {
+  const { x, y, payload } = props;
+  const text = payload.value;
+  const maxCharsPerLine = 12;
+  const words = text.split(" ");
+  let lines: string[] = [];
+  let currentLine = "";
+  words.forEach((word: string) => {
+    if ((currentLine + " " + word).length > maxCharsPerLine && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = currentLine ? `${currentLine} ${word}` : word;
+    }
+  });
+  lines.push(currentLine);
+  // Definir cor da prioridade
+  const cor =
+    prioridadeCores[text as keyof typeof prioridadeCores] ||
+    themeColors.primary[600];
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={20}
+        textAnchor="middle"
+        fill={cor}
+        fontSize={getFontSizes().eixoGrafico}
+        fontWeight="bold"
+      >
+        {lines.map((line, index) => (
+          <tspan
+            x={0}
+            dy={index === 0 ? 0 : getFontSizes().eixoGrafico}
+            key={index}
+          >
+            {line}
+          </tspan>
+        ))}
+      </text>
+    </g>
+  );
+};
+
 const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   data,
   onPrioridadeClick,
@@ -101,23 +145,9 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
         >
           <XAxis
             dataKey="label"
-            fontSize={fontSizes.eixoGrafico}
-            tick={({ x, y, payload }) => (
-              <text
-                x={x}
-                y={y + 20}
-                fill={
-                  prioridadeCores[
-                    payload.value as keyof typeof prioridadeCores
-                  ] || themeColors.secondary[500]
-                }
-                fontSize={fontSizes.eixoGrafico}
-                textAnchor="middle"
-                fontWeight="500"
-              >
-                {payload.value}
-              </text>
-            )}
+            type="category"
+            tick={<CustomXAxisTick />}
+            interval={0}
             axisLine={{ stroke: themeColors.secondary[400] }}
             tickLine={{ stroke: themeColors.secondary[400] }}
           />
@@ -132,7 +162,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
             cursor={false}
             isAnimationActive={false}
           />
-          <Bar dataKey="count" radius={[4, 4, 0, 0]} cursor="pointer">
+          <Bar dataKey="count" radius={[8, 8, 0, 0]} cursor="pointer">
             {prioridadeCount.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
