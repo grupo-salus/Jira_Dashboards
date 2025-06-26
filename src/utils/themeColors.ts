@@ -381,7 +381,7 @@ export const themeColors = {
       },
       proximoExecucao: {
         bg: {
-          light: "linear-gradient(to right, #DEEBFF, #0052CC)", // Jira blue gradient light
+          light: "linear-gradient(to right, #e3f0ff, #b3d4fc)", // azul claro para azul médio
           dark: "linear-gradient(to right, #172B4D, #0747A6)", // Jira blue gradient dark
         },
         border: {
@@ -724,4 +724,4 @@ export const themeFonts = {
     semibold: 600,
     bold: 700,
   },
-}; 
+};
