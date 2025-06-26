@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { CardsIcon, LightbulbIcon } from "../icons/DashboardIcons";
+import {
+  CardsIcon,
+  LightbulbIcon,
+  ClockIcon,
+  CalendarIcon,
+  ExclamationTriangleIcon,
+  FireIcon,
+  CompassIcon,
+} from "../icons/DashboardIcons";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getTotalizadoresConfig } from "../../constants/styleConfig";
 import {
@@ -18,7 +26,7 @@ interface ProjetosTotalizadoresProps {
 const TotalizadorCard: React.FC<{
   icon: React.ReactNode;
   label: string;
-  value: number;
+  value: number | string;
   currentTheme: "light" | "dark";
   tooltipContent?: React.ReactNode;
 }> = ({ icon, label, value, currentTheme, tooltipContent }) => {
@@ -211,7 +219,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         />
         <TotalizadorCard
           icon={
-            <LightbulbIcon
+            <CompassIcon
               size={config.icone}
               className="text-current flex-shrink-0"
               style={{
@@ -239,7 +247,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         />
         <TotalizadorCard
           icon={
-            <LightbulbIcon
+            <ClockIcon
               size={config.icone}
               className="text-current flex-shrink-0"
               style={{
@@ -268,7 +276,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         />
         <TotalizadorCard
           icon={
-            <LightbulbIcon
+            <CalendarIcon
               size={config.icone}
               className="text-current flex-shrink-0"
               style={{
@@ -294,6 +302,62 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   year: "numeric",
                 })}
                 ).
+              </div>
+            </div>
+          }
+        />
+        <TotalizadorCard
+          icon={
+            <ExclamationTriangleIcon
+              size={config.icone}
+              className="text-current flex-shrink-0"
+              style={{
+                color: themeColors.components.totalizadores.total.icon,
+              }}
+            />
+          }
+          label="Projetos Em Risco"
+          value="-"
+          currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div
+                className="font-bold mb-1"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Projetos Em Risco
+              </div>
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Projetos que apresentam riscos de atraso ou problemas de
+                execução. Lógica a ser implementada.
+              </div>
+            </div>
+          }
+        />
+        <TotalizadorCard
+          icon={
+            <FireIcon
+              size={config.icone}
+              className="text-current flex-shrink-0"
+              style={{
+                color: themeColors.components.totalizadores.total.icon,
+              }}
+            />
+          }
+          label="Projetos Atrasados"
+          value="-"
+          currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div
+                className="font-bold mb-1"
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Projetos Atrasados
+              </div>
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Projetos que ultrapassaram o prazo de entrega previsto. Lógica a
+                ser implementada.
               </div>
             </div>
           }
