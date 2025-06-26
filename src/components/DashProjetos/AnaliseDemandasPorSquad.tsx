@@ -173,8 +173,8 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
               <Cell
                 key={`cell-${entry.name}`}
                 fill={
-                  themeColors.components.graficos.palette[
-                    idx % themeColors.components.graficos.palette.length
+                  themeColors.components.graficos.pizza.palette[
+                    idx % themeColors.components.graficos.pizza.palette.length
                   ]
                 }
               />
@@ -204,8 +204,9 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                       width: 14,
                       height: 14,
                       backgroundColor:
-                        themeColors.components.graficos.palette[
-                          idx % themeColors.components.graficos.palette.length
+                        themeColors.components.graficos.pizza.palette[
+                          idx %
+                            themeColors.components.graficos.pizza.palette.length
                         ],
                     }}
                   ></span>

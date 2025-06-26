@@ -164,8 +164,8 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
               <Cell
                 key={`cell-${index}`}
                 fill={
-                  themeColors.components.graficos.palette[
-                    index % themeColors.components.graficos.palette.length
+                  themeColors.components.graficos.barra.palette[
+                    index % themeColors.components.graficos.barra.palette.length
                   ]
                 }
                 cursor={onAreaClick ? "pointer" : "default"}

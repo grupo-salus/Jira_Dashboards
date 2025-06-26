@@ -422,34 +422,29 @@ export const themeColors = {
 
     // Gráficos
     graficos: {
-      // Paleta principal para gráficos - vibrante e distinta das prioridades
-      palette: [
-        "#8b5cf6", // violet-500
-        "#d946ef", // fuchsia-500
-        "#06b6d4", // cyan-500
-        "#2dd4bf", // teal-400
-        "#6366f1", // indigo-500
-        "#ec4899", // pink-500
-        "#a78bfa", // violet-400
-        "#5eead4", // cyan-300
-      ],
-      // Cores específicas por tipo de gráfico (sugestão)
-      bar: {
-        primary: "#8b5cf6", // violet-500
-        secondary: "#d946ef", // fuchsia-500
-        accent: "#06b6d4", // cyan-500
+      pizza: {
+        palette: [
+          "#9DB4C0", // azul pastel escuro
+          "#C5A49B", // marrom pastel escuro
+          "#8BA888", // verde pastel escuro
+          "#C48B9F", // rosa pastel escuro
+          "#8B95C0", // azul acinzentado escuro
+          "#C0B69B", // bege pastel escuro
+          "#9B8BA6", // roxo pastel escuro
+          "#A6A392", // verde oliva pastel escuro
+        ],
       },
-      pie: {
-        // Para gráficos de pizza, é bom usar a paleta inteira
-        // As cores abaixo são apenas um ponto de partida
-        primary: "#8b5cf6", // violet-500
-        secondary: "#d946ef", // fuchsia-500
-        accent: "#ec4899", // pink-500
-      },
-      line: {
-        primary: "#6366f1", // indigo-500
-        secondary: "#2dd4bf", // teal-400
-        accent: "#d946ef", // fuchsia-500
+      barra: {
+        palette: [
+          "#E3F2FD", // azul mais claro
+          "#BBDEFB", // azul claro
+          "#90CAF9", // azul médio claro
+          "#64B5F6", // azul médio
+          "#42A5F5", // azul médio forte
+          "#2196F3", // azul forte
+          "#1E88E5", // azul mais forte
+          "#1976D2", // azul escuro
+        ],
       },
     },
 
@@ -572,7 +567,7 @@ export const themeColors = {
     return this.background.page;
   },
   get chart() {
-    return this.components.graficos.palette;
+    return this.components.graficos.pizza.palette;
   },
 };
 
