@@ -132,7 +132,19 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {projeto["Departamento Solicitante"] ? (
         <div className="flex items-center gap-2">
           {projeto.PosicaoBacklog && (
-            <span className="text-orange-500 dark:text-orange-400 font-bold text-sm">
+            <span
+              className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
+              style={{
+                background: "#0052cc",
+                color: "#fff",
+                width: 28,
+                height: 28,
+                minWidth: 28,
+                minHeight: 28,
+                display: "inline-flex",
+                textAlign: "center",
+              }}
+            >
               #{projeto.PosicaoBacklog}
             </span>
           )}
@@ -145,7 +157,19 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       ) : (
         projeto.PosicaoBacklog && (
           <div className="flex items-center gap-2">
-            <span className="text-orange-500 dark:text-orange-400 font-bold text-sm">
+            <span
+              className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
+              style={{
+                background: "#0052cc",
+                color: "#fff",
+                width: 28,
+                height: 28,
+                minWidth: 28,
+                minHeight: 28,
+                display: "inline-flex",
+                textAlign: "center",
+              }}
+            >
               #{projeto.PosicaoBacklog}
             </span>
           </div>

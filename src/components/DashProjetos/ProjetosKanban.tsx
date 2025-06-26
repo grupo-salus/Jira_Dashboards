@@ -113,7 +113,7 @@ const ColunaHeader: React.FC<{
         {nomeColuna}
       </h3>
       <span
-        className={`px-2 py-1 rounded-full font-medium ${fontSizes.contadorColunaKanban}`}
+        className={`flex justify-center items-center aspect-square w-7 h-7 rounded-full font-medium ${fontSizes.contadorColunaKanban}`}
         style={{
           backgroundColor: themeColors.components.totalizadores.total.bar,
           color: themeColors.utility.white,

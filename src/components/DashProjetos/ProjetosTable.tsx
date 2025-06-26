@@ -4,6 +4,7 @@ import {
   getTextColor,
   getBackgroundColor,
   getBorderColor,
+  getPriorityConfig,
 } from "../../utils/themeColors";
 
 interface ProjetosTableProps {
@@ -84,9 +85,9 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
   const [startX, setStartX] = useState(0);
   const [startWidth, setStartWidth] = useState(0);
   const [sortColumn, setSortColumn] = useState<keyof EspacoDeProjetos | null>(
-    null
+    "PosicaoBacklog"
   );
-  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   // Ordenar dados
   const sortedData = React.useMemo(() => {
@@ -96,11 +97,21 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
       const aValue = a[sortColumn];
       const bValue = b[sortColumn];
 
-      if (aValue === bValue) return 0;
+      // Se ambos são null/undefined, são iguais
+      if (aValue === null && bValue === null) return 0;
+      if (aValue === undefined && bValue === undefined) return 0;
+
+      // Se apenas um é null/undefined, coloca no final
       if (aValue === null || aValue === undefined) return 1;
       if (bValue === null || bValue === undefined) return -1;
 
-      const comparison = aValue < bValue ? -1 : 1;
+      // Para comparação de strings (incluindo descrições), converte para string e faz case-insensitive
+      const aString = String(aValue).toLowerCase().trim();
+      const bString = String(bValue).toLowerCase().trim();
+
+      if (aString === bString) return 0;
+
+      const comparison = aString < bString ? -1 : 1;
       return sortDirection === "asc" ? comparison : -comparison;
     });
   }, [data, sortColumn, sortDirection]);
@@ -110,9 +121,9 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "ID",
     "Tipo",
     "Chave",
+    "PosicaoBacklog",
     "Título",
     "Prioridade",
-    "PosicaoBacklog",
     "Descrição",
     "Aprovador por (diretor)",
     "Benefícios Esperados",
@@ -216,6 +227,32 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
 
     if (value === null || value === undefined) return "-";
 
+    // Para PRIORIDADE: aplicar cor de fundo
+    if (column === "Prioridade") {
+      const { hex } = getPriorityConfig(value);
+      return (
+        <span
+          style={{
+            background: hex,
+            color: "#fff",
+            borderRadius: 6,
+            padding: "2px 10px",
+            fontWeight: 600,
+            fontSize: 13,
+            display: "inline-block",
+            minWidth: 60,
+            maxWidth: "100%",
+            textAlign: "center",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {value}
+        </span>
+      );
+    }
+
     // Para campos de tempo em segundos
     if (column.includes("segundos") && typeof value === "number") {
       const hours = Math.floor(value / 3600);
@@ -242,7 +279,19 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
 
     // Para PosicaoBacklog - mostrar apenas se há valor
     if (column === "PosicaoBacklog") {
-      return value ? `#${value}` : "-";
+      return value ? (
+        <span
+          className="flex justify-center items-center aspect-square w-7 h-7 rounded-full font-bold text-sm flex-shrink-0"
+          style={{
+            backgroundColor: "#0052cc",
+            color: "#ffffff",
+          }}
+        >
+          #{value}
+        </span>
+      ) : (
+        "-"
+      );
     }
 
     return String(value);
@@ -279,6 +328,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                             "primary",
                             currentTheme
                           )}`,
+                          transition: "background-color 0.2s ease",
                         }}
                         className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap relative group ${
                           column === "#" ? "" : "cursor-pointer"
@@ -287,6 +337,16 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                           column !== "#" &&
                           handleSort(column as keyof EspacoDeProjetos)
                         }
+                        onMouseEnter={(e) => {
+                          if (column !== "#") {
+                            e.currentTarget.style.backgroundColor =
+                              getBackgroundColor("card", currentTheme);
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor =
+                            getBackgroundColor("hover", currentTheme);
+                        }}
                       >
                         <div className="flex items-center justify-between">
                           <span className="truncate flex items-center gap-1">
@@ -297,12 +357,20 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                           </span>
                           {column !== "#" && (
                             <div
-                              className="absolute right-0 top-0 h-full w-1 cursor-col-resize opacity-0 group-hover:opacity-100"
+                              className="absolute right-0 top-0 h-full w-1 cursor-col-resize"
                               style={{
                                 backgroundColor: getBorderColor(
                                   "focus",
                                   currentTheme
                                 ),
+                                opacity: 0,
+                                transition: "opacity 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.opacity = "1";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.opacity = "0";
                               }}
                               onMouseDown={(e) =>
                                 handleMouseDown(e, column as string)
@@ -322,7 +390,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                   {sortedData.map((item, index) => (
                     <tr
                       key={index}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700"
                       style={{
                         borderBottom: `1px solid ${getBorderColor(
                           "secondary",
@@ -332,6 +399,17 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                           index % 2 === 0
                             ? getBackgroundColor("card", currentTheme)
                             : getBackgroundColor("hover", currentTheme),
+                        transition: "background-color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          getBackgroundColor("hover", currentTheme);
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          index % 2 === 0
+                            ? getBackgroundColor("card", currentTheme)
+                            : getBackgroundColor("hover", currentTheme);
                       }}
                     >
                       {columnsWithNumbering.map((column) => (
@@ -345,7 +423,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
                           className="px-6 py-4 text-sm"
                         >
                           <div
-                            className="truncate"
+                            className="truncate whitespace-nowrap overflow-hidden"
                             title={
                               column === "#"
                                 ? String(index + 1)
