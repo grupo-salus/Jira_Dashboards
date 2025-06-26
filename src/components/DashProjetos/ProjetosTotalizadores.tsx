@@ -6,6 +6,7 @@ import {
   themeColors,
   getTextColor,
   getBackgroundColor,
+  getBorderColor,
 } from "../../utils/themeColors";
 
 interface ProjetosTotalizadoresProps {
@@ -107,13 +108,11 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   );
   const totalBacklogPriorizado = backlogPriorizado.length;
 
-  // Encontrar o próximo a ser executado (primeiro da fila original)
-  const proximoExecucao =
-    backlogPriorizado.length > 0
-      ? backlogPriorizado
-          .filter((p) => p.PosicaoBacklog !== null)
-          .sort((a, b) => (a.PosicaoBacklog || 0) - (b.PosicaoBacklog || 0))[0]
-      : null;
+  // Encontrar os próximos 3 projetos a serem executados
+  const proximosExecucao = backlogPriorizado
+    .filter((p) => p.PosicaoBacklog !== null)
+    .sort((a, b) => (a.PosicaoBacklog || 0) - (b.PosicaoBacklog || 0))
+    .slice(0, 3);
 
   return (
     <div>
@@ -178,55 +177,112 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           currentTheme={currentTheme}
         />
       </div>
-      {proximoExecucao && (
-        <div
-          className={`rounded-lg w-full ${config.altura} ${config.padding} relative overflow-hidden flex items-center mb-6`}
-          style={{
-            background:
-              themeColors.components.totalizadores.proximoExecucao.bg[
-                currentTheme
-              ],
-            border: `1px solid ${themeColors.components.totalizadores.proximoExecucao.border[currentTheme]}`,
-          }}
-        >
-          <div className="flex items-center gap-3 w-full">
-            <div
-              className="text-white rounded-full w-8 h-8 flex items-center justify-center font-bold"
-              style={{
-                backgroundColor: themeColors.components.totalizadores.total.bar,
-              }}
-            >
-              <span
-                className={config.label}
-                style={{ color: themeColors.utility.white }}
-              >
-                #{proximoExecucao.PosicaoBacklog}
-              </span>
-            </div>
-            <div className="flex-1">
-              <h4
-                className={`font-semibold ${config.titulo}`}
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Próximo Projeto: <i>{proximoExecucao.Título}</i>
-              </h4>
-              {proximoExecucao["Departamento Solicitante"] && (
+
+      {/* Seção dos próximos projetos */}
+      {proximosExecucao.length > 0 && (
+        <div className="mb-6">
+          <div
+            className={`rounded-lg w-full h-32 p-6 relative overflow-hidden`}
+            style={{
+              background: getBackgroundColor("card", currentTheme),
+              border: `1px solid ${themeColors.components.totalizadores.proximoExecucao.border[currentTheme]}`,
+            }}
+          >
+            <div className="flex items-center h-full gap-3">
+              {/* Título e descrição - 1/4 do espaço */}
+              <div className="flex-1 h-full flex flex-col justify-center">
+                <h3
+                  className={`font-bold ${config.titulo}`}
+                  style={{ color: getTextColor("primary", currentTheme) }}
+                >
+                  Próximos Projetos a Serem Executados
+                </h3>
                 <p
-                  className={`mt-1 ${config.label}`}
+                  className={`text-sm ${config.label}`}
                   style={{ color: getTextColor("secondary", currentTheme) }}
                 >
-                  {proximoExecucao["Departamento Solicitante"]}
+                  Fila ordenada por prioridade no backlog
                 </p>
-              )}
+              </div>
+
+              {/* Cards dos projetos - cada um ocupa 1/4 do espaço */}
+              {proximosExecucao.map((projeto, index) => (
+                <div
+                  key={projeto.Título}
+                  className={
+                    `flex items-center gap-2 p-3 rounded-lg border transition-all duration-200 hover:shadow-md flex-1 h-full` +
+                    (index === 0 ? " border-2" : " border")
+                  }
+                  style={{
+                    background:
+                      themeColors.components.totalizadores.proximoExecucao.bg[
+                        currentTheme
+                      ],
+                    borderColor:
+                      index === 0
+                        ? themeColors.components.totalizadores.total.bar
+                        : getBorderColor("primary", currentTheme),
+                  }}
+                >
+                  <div
+                    className={`text-white rounded-full flex items-center justify-center font-bold ${
+                      index === 0 ? "w-8 h-8" : "w-7 h-7"
+                    }`}
+                    style={{
+                      backgroundColor:
+                        index === 0
+                          ? themeColors.components.totalizadores.total.bar
+                          : themeColors.components.totalizadores
+                              .backlogPriorizado.bar,
+                    }}
+                  >
+                    <span
+                      className={`${index === 0 ? "text-sm" : "text-xs"}`}
+                      style={{ color: themeColors.utility.white }}
+                    >
+                      #{projeto.PosicaoBacklog}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4
+                      className={`font-semibold truncate ${
+                        index === 0 ? "text-sm" : "text-xs"
+                      }`}
+                      style={{ color: getTextColor("primary", currentTheme) }}
+                      title={projeto.Título}
+                    >
+                      {index === 0 ? (
+                        <>
+                          Próximo: <i>{projeto.Título}</i>
+                        </>
+                      ) : (
+                        projeto.Título
+                      )}
+                    </h4>
+                    {projeto["Departamento Solicitante"] && (
+                      <p
+                        className={`truncate text-xs mt-1`}
+                        style={{
+                          color: getTextColor("secondary", currentTheme),
+                        }}
+                        title={projeto["Departamento Solicitante"]}
+                      >
+                        {projeto["Departamento Solicitante"]}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
+
+            <div
+              className="absolute bottom-0 left-0 h-1 w-full"
+              style={{
+                background:
+                  themeColors.components.totalizadores.proximoExecucao.bar,
+              }}
+            ></div>
           </div>
-          <div
-            className="absolute bottom-0 left-0 h-1 w-full"
-            style={{
-              background:
-                themeColors.components.totalizadores.proximoExecucao.bar,
-            }}
-          ></div>
         </div>
       )}
     </div>
