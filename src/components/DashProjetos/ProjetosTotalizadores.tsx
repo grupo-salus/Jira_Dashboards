@@ -131,14 +131,14 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     (p) => p.Status === "Backlog"
   ).length;
 
-  // Total de Projetos: apenas as colunas específicas do Kanban (Backlog Priorizado, Em andamento, Em Homologação, OPERAÇÃO ASSISTIDA, Bloqueado)
+  // Total de Projetos: apenas as colunas específicas do Kanban (Backlog Priorizado, Em Andamento, Em Homologação, Operação Assistida, Bloqueado)
   const projetosAtivos = filteredData.filter((p) =>
     [
       "Backlog Priorizado",
-      "Em andamento",
+      "Em Andamento",
       "Em Homologação",
-      "OPERAÇÃO ASSISTIDA",
-      "BLOQUEADO",
+      "Operação Assistida",
+      "Bloqueado",
     ].includes(p.Status)
   );
   const totalProjetos = projetosAtivos.length;

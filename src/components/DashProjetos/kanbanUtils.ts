@@ -11,23 +11,23 @@ import {
 
 // Mapeamento de status para nomes das colunas
 export const STATUS_COLUMNS: Record<JiraStatus, string> = {
-  Backlog: "IDEAÇÃO",
-  Bloqueado: "BLOQUEADO",
-  "Backlog Priorizado": "BACKLOG PRIORIZADO",
-  "Em andamento": "EM EXECUÇÃO",
-  "Em Homologação": "EM HOMOLOGAÇÃO",
-  "OPERAÇÃO ASSISTIDA": "OPERAÇÃO ASSISTIDA",
-  Concluído: "ENTREGUE",
-  Cancelado: "CANCELADO",
+  Backlog: "Ideação",
+  Bloqueado: "Bloqueado",
+  "Backlog Priorizado": "Backlog Priorizado",
+  "Em Andamento": "Em Execução",
+  "Em Homologação": "Em Homologação",
+  "Operação Assistida": "Operação Assistida",
+  Concluído: "Entregue",
+  Cancelado: "Cancelado",
 } as const;
 
 // Ordem fixa das colunas do Kanban
 export const COLUMN_ORDER: JiraStatus[] = [
   "Backlog",
   "Backlog Priorizado",
-  "Em andamento",
+  "Em Andamento",
   "Em Homologação",
-  "OPERAÇÃO ASSISTIDA",
+  "Operação Assistida",
   "Concluído",
   "Bloqueado",
   "Cancelado",
@@ -39,9 +39,9 @@ export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
   "backlog priorizado": "Backlog Priorizado",
   "tarefas pendentes": "Backlog Priorizado",
   bloqueado: "Bloqueado",
-  "em andamento": "Em andamento",
+  "em andamento": "Em Andamento",
   "em homologação": "Em Homologação",
-  "operação assistida": "OPERAÇÃO ASSISTIDA",
+  "operação assistida": "Operação Assistida",
   concluído: "Concluído",
   concluido: "Concluído",
   cancelado: "Cancelado",
@@ -114,6 +114,19 @@ export const getStatusColor = (
 };
 
 /**
+ * Normaliza um status para primeira letra maiúscula
+ */
+export const normalizarStatusDisplay = (status: string): string => {
+  if (!status) return status;
+  // Dividir por espaços e capitalizar cada palavra
+  return status
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+/**
  * Normaliza status removendo acentos e encontrando correspondência
  */
 export const normalizarStatus = (status: string): string => {
@@ -138,8 +151,8 @@ export const capitalizeFirst = (str: string): string => {
  */
 export const isProjetoEmExecucao = (status: JiraStatus): boolean => {
   return (
-    status === "Em andamento" ||
+    status === "Em Andamento" ||
     status === "Em Homologação" ||
-    status === "OPERAÇÃO ASSISTIDA"
+    status === "Operação Assistida"
   );
 };

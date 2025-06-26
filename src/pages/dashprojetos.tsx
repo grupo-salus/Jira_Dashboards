@@ -47,10 +47,23 @@ import {
   DepartmentIcon,
 } from "../components/icons/DashboardIcons";
 
+// Função para normalizar status para primeira letra maiúscula
+const normalizarStatusDisplay = (status: string): string => {
+  if (!status) return status;
+  // Dividir por espaços e capitalizar cada palavra
+  return status
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
   Backlog: "Ideação",
-  "Em andamento": "Em Execução",
+  "Em Andamento": "Em Execução",
+  "Em Homologação": "Em Homologação",
+  "Operação Assistida": "Operação Assistida",
   Concluído: "Entregue",
 };
 
@@ -168,8 +181,8 @@ const DashProjetos: React.FC = () => {
 
       const matchesStatus =
         !filtrosAtivos.status ||
-        normalizeString(item.Status || "") ===
-          normalizeString(filtrosAtivos.status);
+        normalizarStatusDisplay(item.Status || "") ===
+          normalizarStatusDisplay(filtrosAtivos.status);
 
       const matchesSquad =
         !filtrosAtivos.squad ||
@@ -218,13 +231,17 @@ const DashProjetos: React.FC = () => {
 
   // Opções de status padronizadas para o filtro
   const statusOptions = useMemo(() => {
-    const statusSet = new Set<JiraStatus>(
-      projetosData.rawData.map((i: EspacoDeProjetos) => i.Status as JiraStatus)
+    // Normalizar os status que vêm do Jira para comparar com COLUMN_ORDER
+    const statusSet = new Set<string>(
+      projetosData.rawData.map((i: EspacoDeProjetos) =>
+        normalizarStatusDisplay(i.Status || "")
+      )
     );
+
     return COLUMN_ORDER.filter((status) => statusSet.has(status)).map(
       (status) => ({
         value: status,
-        label: statusNameMap[status] || status,
+        label: normalizarStatusDisplay(statusNameMap[status] || status),
       })
     );
   }, [projetosData.rawData]);
