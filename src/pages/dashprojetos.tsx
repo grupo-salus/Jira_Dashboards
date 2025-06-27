@@ -115,6 +115,130 @@ const DashProjetos: React.FC = () => {
     };
   }, [menuAberto]);
 
+  // =====================
+  // FUNÇÕES DE DATA
+  // =====================
+
+  /**
+   * Normaliza uma data para o horário local (zera horas, minutos, segundos)
+   */
+  const normalizarData = (data: Date): Date => {
+    return new Date(data.getFullYear(), data.getMonth(), data.getDate());
+  };
+
+  /**
+   * Converte string do input (yyyy-MM-dd ou dd/MM/yyyy) para Date local
+   */
+  const parseInputDate = (input: string): Date => {
+    if (!input) return new Date("");
+    if (input.includes("-")) {
+      const [year, month, day] = input.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    } else if (input.includes("/")) {
+      const [day, month, year] = input.split("/").map(Number);
+      return new Date(year, month - 1, day);
+    }
+    return new Date(input);
+  };
+
+  /**
+   * Aplica operadores de comparação de data para filtros avançados e rápidos
+   */
+  const aplicarOperadorData = (
+    dataItem: Date,
+    operador: string,
+    valor1: string,
+    valor2: string,
+    opcaoRapida: string
+  ): boolean => {
+    const hoje = new Date();
+    const dataItemNormalizada = normalizarData(dataItem);
+
+    // Filtros rápidos (opções pré-definidas)
+    if (opcaoRapida) {
+      switch (opcaoRapida) {
+        case "hoje":
+          return (
+            dataItemNormalizada.getTime() === normalizarData(hoje).getTime()
+          );
+        case "ultimos_7_dias":
+          return (
+            dataItemNormalizada >=
+            normalizarData(new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000))
+          );
+        case "ultimos_30_dias":
+          return (
+            dataItemNormalizada >=
+            normalizarData(new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000))
+          );
+        case "mes_atual":
+          return (
+            dataItemNormalizada >=
+            new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+          );
+        case "trimestre_atual":
+          const trimestre = Math.floor(hoje.getMonth() / 3);
+          return (
+            dataItemNormalizada >=
+            new Date(hoje.getFullYear(), trimestre * 3, 1)
+          );
+        case "ano_atual":
+          return dataItemNormalizada >= new Date(hoje.getFullYear(), 0, 1);
+        case "semana_atual":
+          return (
+            dataItemNormalizada >=
+            normalizarData(
+              new Date(hoje.getTime() - hoje.getDay() * 24 * 60 * 60 * 1000)
+            )
+          );
+        case "proximos_7_dias":
+          return (
+            dataItemNormalizada <=
+              normalizarData(
+                new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000)
+              ) && dataItemNormalizada >= normalizarData(hoje)
+          );
+        case "proximos_30_dias":
+          return (
+            dataItemNormalizada <=
+              normalizarData(
+                new Date(hoje.getTime() + 30 * 24 * 60 * 60 * 1000)
+              ) && dataItemNormalizada >= normalizarData(hoje)
+          );
+        default:
+          return true;
+      }
+    }
+
+    // Filtros avançados (valores personalizados)
+    if (valor1) {
+      const dataValor1 = normalizarData(parseInputDate(valor1));
+      const dataValor2 = valor2 ? normalizarData(parseInputDate(valor2)) : null;
+      switch (operador) {
+        case "maior_que":
+          return dataItemNormalizada > dataValor1;
+        case "maior_igual":
+          return dataItemNormalizada >= dataValor1;
+        case "menor_que":
+          return dataItemNormalizada < dataValor1;
+        case "menor_igual":
+          return dataItemNormalizada <= dataValor1;
+        case "igual":
+          return dataItemNormalizada.getTime() === dataValor1.getTime();
+        case "entre":
+          return dataValor2
+            ? dataItemNormalizada >= dataValor1 &&
+                dataItemNormalizada <= dataValor2
+            : false;
+        case "nao_igual":
+          return dataItemNormalizada.getTime() !== dataValor1.getTime();
+        default:
+          return true;
+      }
+    }
+    return true;
+  };
+
   // Função para aplicar filtros
   const aplicarFiltros = (
     dados: EspacoDeProjetos[],
@@ -151,31 +275,26 @@ const DashProjetos: React.FC = () => {
         filtrosAtivos.dataRapida &&
         filtrosAtivos.dataRapida !== "filtro_avancado"
       ) {
-        const dataCriacao = new Date(item["Data de criação"] || 0);
+        const dataCriacao = normalizarData(
+          new Date(item["Data de criação"] || 0)
+        );
         const hoje = new Date();
 
         switch (filtrosAtivos.dataRapida) {
           case "hoje":
-            const inicioHoje = new Date(
-              hoje.getFullYear(),
-              hoje.getMonth(),
-              hoje.getDate()
-            );
-            const fimHoje = new Date(
-              inicioHoje.getTime() + 24 * 60 * 60 * 1000 - 1
-            );
+            const hojeNormalizado = normalizarData(hoje);
             matchesDataRapida =
-              dataCriacao >= inicioHoje && dataCriacao <= fimHoje;
+              dataCriacao.getTime() === hojeNormalizado.getTime();
             break;
           case "ultimos_7_dias":
-            const dataLimite7 = new Date(
-              hoje.getTime() - 7 * 24 * 60 * 60 * 1000
+            const dataLimite7 = normalizarData(
+              new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000)
             );
             matchesDataRapida = dataCriacao >= dataLimite7;
             break;
           case "ultimos_30_dias":
-            const dataLimite30 = new Date(
-              hoje.getTime() - 30 * 24 * 60 * 60 * 1000
+            const dataLimite30 = normalizarData(
+              new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000)
             );
             matchesDataRapida = dataCriacao >= dataLimite30;
             break;
@@ -197,23 +316,28 @@ const DashProjetos: React.FC = () => {
             matchesDataRapida = dataCriacao >= inicioAno;
             break;
           case "semana_atual":
-            const inicioSemana = new Date(
-              hoje.getTime() - hoje.getDay() * 24 * 60 * 60 * 1000
+            const inicioSemana = normalizarData(
+              new Date(hoje.getTime() - hoje.getDay() * 24 * 60 * 60 * 1000)
             );
             matchesDataRapida = dataCriacao >= inicioSemana;
             break;
           case "proximos_7_dias":
-            const proximos7 = new Date(
-              hoje.getTime() + 7 * 24 * 60 * 60 * 1000
+            const proximos7 = normalizarData(
+              new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000)
             );
-            matchesDataRapida = dataCriacao <= proximos7 && dataCriacao >= hoje;
+            const hojeNormalizadoProximos7 = normalizarData(hoje);
+            matchesDataRapida =
+              dataCriacao <= proximos7 &&
+              dataCriacao >= hojeNormalizadoProximos7;
             break;
           case "proximos_30_dias":
-            const proximos30 = new Date(
-              hoje.getTime() + 30 * 24 * 60 * 60 * 1000
+            const proximos30 = normalizarData(
+              new Date(hoje.getTime() + 30 * 24 * 60 * 60 * 1000)
             );
+            const hojeNormalizadoProximos30 = normalizarData(hoje);
             matchesDataRapida =
-              dataCriacao <= proximos30 && dataCriacao >= hoje;
+              dataCriacao <= proximos30 &&
+              dataCriacao >= hojeNormalizadoProximos30;
             break;
         }
       }
@@ -263,101 +387,6 @@ const DashProjetos: React.FC = () => {
       default:
         return null;
     }
-  };
-
-  // Função para aplicar operadores de data
-  const aplicarOperadorData = (
-    dataItem: Date,
-    operador: string,
-    valor1: string,
-    valor2: string,
-    opcaoRapida: string
-  ): boolean => {
-    const hoje = new Date();
-
-    // Se há uma opção rápida selecionada, usar ela
-    if (opcaoRapida) {
-      switch (opcaoRapida) {
-        case "hoje":
-          const inicioHoje = new Date(
-            hoje.getFullYear(),
-            hoje.getMonth(),
-            hoje.getDate()
-          );
-          const fimHoje = new Date(
-            inicioHoje.getTime() + 24 * 60 * 60 * 1000 - 1
-          );
-          return dataItem >= inicioHoje && dataItem <= fimHoje;
-        case "ultimos_7_dias":
-          const dataLimite7 = new Date(
-            hoje.getTime() - 7 * 24 * 60 * 60 * 1000
-          );
-          return dataItem >= dataLimite7;
-        case "ultimos_30_dias":
-          const dataLimite30 = new Date(
-            hoje.getTime() - 30 * 24 * 60 * 60 * 1000
-          );
-          return dataItem >= dataLimite30;
-        case "mes_atual":
-          const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-          return dataItem >= inicioMes;
-        case "trimestre_atual":
-          const trimestre = Math.floor(hoje.getMonth() / 3);
-          const inicioTrimestre = new Date(
-            hoje.getFullYear(),
-            trimestre * 3,
-            1
-          );
-          return dataItem >= inicioTrimestre;
-        case "ano_atual":
-          const inicioAno = new Date(hoje.getFullYear(), 0, 1);
-          return dataItem >= inicioAno;
-        case "semana_atual":
-          const inicioSemana = new Date(
-            hoje.getTime() - hoje.getDay() * 24 * 60 * 60 * 1000
-          );
-          return dataItem >= inicioSemana;
-        case "proximos_7_dias":
-          const proximos7 = new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000);
-          return dataItem <= proximos7 && dataItem >= hoje;
-        case "proximos_30_dias":
-          const proximos30 = new Date(
-            hoje.getTime() + 30 * 24 * 60 * 60 * 1000
-          );
-          return dataItem <= proximos30 && dataItem >= hoje;
-        default:
-          return true;
-      }
-    }
-
-    // Se há valores personalizados, usar os operadores
-    if (valor1) {
-      const dataValor1 = new Date(valor1);
-      const dataValor2 = valor2 ? new Date(valor2) : null;
-
-      switch (operador) {
-        case "maior_que":
-          return dataItem > dataValor1;
-        case "maior_igual":
-          return dataItem >= dataValor1;
-        case "menor_que":
-          return dataItem < dataValor1;
-        case "menor_igual":
-          return dataItem <= dataValor1;
-        case "igual":
-          return dataItem.getTime() === dataValor1.getTime();
-        case "entre":
-          return dataValor2
-            ? dataItem >= dataValor1 && dataItem <= dataValor2
-            : false;
-        case "nao_igual":
-          return dataItem.getTime() !== dataValor1.getTime();
-        default:
-          return true;
-      }
-    }
-
-    return true;
   };
 
   // Dados filtrados finais
@@ -1397,33 +1426,6 @@ const DashProjetos: React.FC = () => {
                     color: getTextColor("primary", currentTheme),
                   }}
                 />
-              </div>
-
-              {/* Botão Limpar Filtro de Data */}
-              <div className="flex flex-col justify-end">
-                {(filtros.filtroData.campo || filtros.filtroData.valor1) && (
-                  <button
-                    onClick={() =>
-                      setFiltros((f) => ({
-                        ...f,
-                        filtroData: {
-                          campo: "",
-                          operador: "",
-                          valor1: "",
-                          valor2: "",
-                          opcaoRapida: "",
-                        },
-                      }))
-                    }
-                    className="px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                    style={{
-                      backgroundColor: themeColors.error[100],
-                      color: themeColors.text.error[currentTheme],
-                    }}
-                  >
-                    Limpar Filtro
-                  </button>
-                )}
               </div>
             </div>
           </div>
