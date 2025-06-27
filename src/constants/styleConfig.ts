@@ -61,6 +61,13 @@ const filtrosConfig = {
   input: "text-xs px-2 py-1 h-7",
 };
 
+// SEÇÃO: PÁGINA
+const paginaConfig = {
+  titulo: "text-2xl font-bold",
+  subtitulo: "text-xl lg:text-2xl font-semibold",
+  descricao: "text-base lg:text-lg",
+};
+
 // ============================================================================
 // FUNÇÕES DE ACESSO POR SEÇÃO
 // ============================================================================
@@ -85,6 +92,11 @@ export const getFiltrosConfig = () => {
   return filtrosConfig;
 };
 
+// Função para obter configurações da Página
+export const getPaginaConfig = () => {
+  return paginaConfig;
+};
+
 // ============================================================================
 // FUNÇÕES DE COMPATIBILIDADE (para componentes existentes)
 // ============================================================================
@@ -94,6 +106,7 @@ export const getFontSizes = () => {
   return {
     // Títulos das páginas e seções principais
     tituloPrincipal: totalizadoresConfig.titulo,
+    tituloPagina: paginaConfig.titulo,
 
     // Componentes do Kanban
     tituloColunaKanban: kanbanConfig.tituloColuna,

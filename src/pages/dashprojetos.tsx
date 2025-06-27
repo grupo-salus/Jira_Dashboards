@@ -276,6 +276,16 @@ const DashProjetos: React.FC = () => {
       className="p-6 w-full max-w-none relative"
       style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
     >
+      {/* Título do Dashboard */}
+      <div className="mb-8">
+        <h1
+          className={fontSizes.tituloPagina}
+          style={{ color: getTextColor("primary", currentTheme) }}
+        >
+          Status Report de Projetos
+        </h1>
+      </div>
+
       {/* Seção de Filtros - Sempre Visível */}
       <div className="mb-6">
         <div className="p-0 shadow-none">
