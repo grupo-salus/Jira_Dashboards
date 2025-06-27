@@ -119,7 +119,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   }, []);
 
   // Métricas Chave
-  const total = originalData.length; // Total no Board: todos os dados originais
+  const total = filteredData.length; // Total no Board: dados filtrados (acompanha filtros)
   const totalIdeacao = filteredData.filter(
     (p) => p.Status === "Backlog"
   ).length;
@@ -182,9 +182,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 Total no Board
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Contagem de todos os cards de todas as colunas, incluindo
-                ideação, projetos em desenvolvimento, entregues, cancelados e
-                todos os outros status.
+                Contagem total de projetos considerando os filtros aplicados.
+                Inclui todos os status: ideação, desenvolvimento, entregues,
+                etc.
               </div>
             </div>
           }
