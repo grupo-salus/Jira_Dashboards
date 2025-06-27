@@ -37,12 +37,7 @@ import {
   getBackgroundColor,
   getBorderColor,
 } from "../utils/themeColors";
-import {
-  DotsVerticalIcon,
-  CompassIcon,
-  FireIcon,
-  DepartmentIcon,
-} from "../components/icons/DashboardIcons";
+import { DotsVerticalIcon } from "../components/icons/DashboardIcons";
 import Select, { components as selectComponents } from "react-select";
 
 // Mapeamento de nomes de status para exibição
@@ -713,13 +708,9 @@ const DashProjetos: React.FC = () => {
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
-            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico} flex items-center gap-2`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
-            <CompassIcon
-              size={20}
-              style={{ color: themeColors.components.totalizadores.total.bar }}
-            />
             Projetos por Área
             {filtros.area.length > 0 && (
               <button
@@ -756,13 +747,9 @@ const DashProjetos: React.FC = () => {
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
-            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico} flex items-center gap-2`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
-            <FireIcon
-              size={20}
-              style={{ color: themeColors.components.totalizadores.total.bar }}
-            />
             Prioridade dos Projetos
             {filtros.prioridade.length > 0 && (
               <button
@@ -801,13 +788,9 @@ const DashProjetos: React.FC = () => {
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
-            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico} flex items-center gap-2`}
+            className={`font-semibold mb-2 text-left ${fontSizes.tituloGrafico}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
-            <DepartmentIcon
-              size={20}
-              style={{ color: themeColors.components.totalizadores.total.bar }}
-            />
             Distribuição por Squad
             {filtros.squad.length > 0 && (
               <button
