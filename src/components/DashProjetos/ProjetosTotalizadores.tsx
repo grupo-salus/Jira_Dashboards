@@ -145,11 +145,11 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     (p) => p.Status === "Backlog"
   ).length;
 
-  // Projetos em Desenvolvimento: apenas os status Em Andamento, Em Homologação e Operação Assistida
-  const projetosEmDesenvolvimento = filteredData.filter((p) =>
+  // Projetos em Andamento: apenas os status Em Andamento, Em Homologação e Operação Assistida
+  const projetosEmAndamento = filteredData.filter((p) =>
     ["Em Andamento", "Em Homologação", "Operação Assistida"].includes(p.Status)
   );
-  const totalEmDesenvolvimento = projetosEmDesenvolvimento.length;
+  const totalEmAndamento = projetosEmAndamento.length;
 
   // Métricas do Backlog Priorizado
   const backlogPriorizado = filteredData.filter(
@@ -248,8 +248,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Projetos em Desenvolvimento"
-          value={totalEmDesenvolvimento}
+          label="Projetos em Andamento"
+          value={totalEmAndamento}
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
@@ -257,11 +257,11 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className="font-bold mb-1"
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Projetos em Desenvolvimento
+                Projetos em Andamento
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que estão ativamente sendo desenvolvidos: Em
-                Desenvolvimento, Em Homologação e Operação Assistida.
+                Projetos que estão ativamente sendo desenvolvidos: Em Andamento,
+                Em Homologação e Operação Assistida.
               </div>
             </div>
           }
