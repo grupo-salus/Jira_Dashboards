@@ -256,7 +256,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Em Backlog Priorizado"
+          label="Projetos no Backlog Priorizado"
           value={totalBacklogPriorizado}
           currentTheme={currentTheme}
           tooltipContent={
@@ -265,7 +265,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className="font-bold mb-1"
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Em Backlog Priorizado
+                Projetos no Backlog Priorizado
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Ideias que viraram projetos, já passaram pela análise e estão na
