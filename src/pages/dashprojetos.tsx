@@ -740,7 +740,7 @@ const DashProjetos: React.FC = () => {
           />
         </div>
 
-        {/* Gráfico 2: Projetos por Prioridade */}
+        {/* Gráfico 2: Prioridade dos Projetos */}
         <div
           className="rounded-lg shadow p-4 flex flex-col min-h-72 relative"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
@@ -753,7 +753,7 @@ const DashProjetos: React.FC = () => {
               size={20}
               style={{ color: themeColors.components.totalizadores.total.bar }}
             />
-            Projetos por Prioridade
+            Prioridade dos Projetos
             {filtros.prioridade.length > 0 && (
               <button
                 onClick={() => setFiltros((f) => ({ ...f, prioridade: [] }))}
