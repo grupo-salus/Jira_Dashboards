@@ -170,7 +170,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               style={{ color: themeColors.components.totalizadores.total.icon }}
             />
           }
-          label="Total no Board"
+          label="Total de Projetos no Board"
           value={total}
           currentTheme={currentTheme}
           tooltipContent={
@@ -179,7 +179,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className="font-bold mb-1"
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Total no Board
+                Total de Projetos no Board
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Contagem total de projetos considerando os filtros aplicados.
