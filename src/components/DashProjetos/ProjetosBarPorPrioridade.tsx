@@ -9,7 +9,7 @@ import {
   LabelList,
 } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
-import { getPriorityConfig } from "../../utils/themeColors";
+import { getPriorityConfig, getTextColor } from "../../utils/themeColors";
 import { themeColors } from "../../utils/themeColors";
 import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
@@ -94,6 +94,11 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
 
   // Componente customizado para o tick do eixo X
   const CustomXAxisTick = ({ x, y, payload }: any) => {
+    // Obter a cor específica da prioridade
+    const prioridadeColor =
+      prioridadeCores[payload.value as keyof typeof prioridadeCores] ||
+      themeColors.primary[600];
+
     return (
       <g transform={`translate(${x},${y})`}>
         <text
@@ -101,9 +106,9 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
           y={0}
           dy={16}
           textAnchor="middle"
-          fill={themeColors.secondary[500]}
+          fill={prioridadeColor}
           fontSize={fontSizes.eixoGrafico}
-          style={{ fontSize: fontSizes.eixoGrafico }}
+          style={{ fontSize: fontSizes.eixoGrafico}}
         >
           {payload.value}
         </text>
@@ -209,7 +214,14 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
                 }
               />
             ))}
-            <LabelList dataKey="count" position="top" />
+            <LabelList
+              dataKey="count"
+              position="top"
+              style={{
+                fill: getTextColor("primary", currentTheme),
+                fontSize: fontSizes.eixoGrafico,
+              }}
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

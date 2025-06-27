@@ -16,7 +16,7 @@ const totalizadoresConfig = {
   titulo: "text-lg font-bold",
   valor: "text-2xl",
   label: "text-base",
-  icone: 28,
+  icone: "1.75rem", // 28px
   largura: "w-56",
   altura: "h-25",
   padding: "p-5",
@@ -29,12 +29,12 @@ const graficosConfig = {
   titulo: "text-sm",
   label: "text-xs",
   valor: "text-xs",
-  eixo: 10,
-  tooltip: 10,
-  legenda: "text-xs",
-  labelRosca: 10,
-  raioExterno: 40,
-  raioInterno: 20,
+  eixo: "0.825rem", // 10px
+  tooltip: "0.625rem", // 10px
+  legenda: "text-xs font-bold",
+  labelRosca: "0.625rem", // 10px
+  raioExterno: "2.5rem", // 40px
+  raioInterno: "1.25rem", // 20px
   altura: "h-32",
   largura: "w-full",
   padding: "p-2",
@@ -42,13 +42,13 @@ const graficosConfig = {
 
 // SEÇÃO: KANBAN
 const kanbanConfig = {
-  tituloColuna: "text-[14px]",
-  contador: "text-[15px]",
-  tituloCard: "text-[13px]",
-  corpoCard: "text-[10px]",
-  tag: "text-[9px]",
-  status: "text-[11px]",
-  icone: 8,
+  tituloColuna: "text-[0.875rem]", // 14px
+  contador: "text-[0.9375rem]", // 15px
+  tituloCard: "text-[0.8125rem]", // 13px
+  corpoCard: "text-[0.625rem]", // 10px
+  tag: "text-[0.5625rem]", // 9px
+  status: "text-[0.6875rem]", // 11px
+  icone: "0.5rem", // 8px
   larguraCard: "w-16",
   alturaCard: "h-6",
   paddingCard: "p-0.5",

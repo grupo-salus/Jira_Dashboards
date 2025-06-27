@@ -87,9 +87,11 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
           y={0}
           dy={16}
           textAnchor="middle"
-          fill={themeColors.secondary[500]}
+          fill={getTextColor("primary", currentTheme)}
           fontSize={fontSizes.eixoGrafico}
-          style={{ fontSize: fontSizes.eixoGrafico }}
+          style={{
+            fontSize: fontSizes.eixoGrafico, 
+          }}
         >
           {payload.value.length > 12
             ? payload.value.substring(0, 12) + "..."
@@ -186,7 +188,14 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
                 cursor="pointer"
               />
             ))}
-            <LabelList dataKey="count" position="top" />
+            <LabelList
+              dataKey="count"
+              position="top"
+              style={{
+                fill: getTextColor("primary", currentTheme),
+                fontSize: fontSizes.eixoGrafico,
+              }}
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

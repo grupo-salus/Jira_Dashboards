@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   getTextColor,
@@ -7,7 +7,11 @@ import {
   themeColors,
 } from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
-import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
+import {
+  getFontSizes,
+  TOOLTIP_CONFIG,
+  getGraficosConfig,
+} from "../../constants/styleConfig";
 
 interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
@@ -124,6 +128,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
 
   // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
+  const graficosConfig = getGraficosConfig();
 
   // Agrupa projetos por squad
   const squadCount = React.useMemo(() => {
@@ -152,39 +157,33 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
     <div className="w-full h-full flex-1 flex items-center justify-center">
       <div className="flex flex-col 2xl:flex-row items-center 2xl:items-center justify-between w-full gap-4 2xl:gap-0">
         <div className="flex-shrink-0">
-          <ResponsiveContainer
-            width={300}
-            height={300}
-            style={{ pointerEvents: "auto" }}
-          >
-            <PieChart width={300} height={300}>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={"60%"}
-                label
-                labelLine
-                isAnimationActive={false}
-                onClick={handlePieClick}
-                onMouseEnter={handlePieMouseEnter}
-                onMouseLeave={handlePieMouseLeave}
-                style={{ cursor: "pointer" }}
-                activeShape={{ r: 75 }}
-                activeIndex={[]}
-              >
-                {pieData.map((entry) => (
-                  <Cell
-                    key={`cell-${entry.name}`}
-                    fill={getSquadConfig(entry.originalValue).hex}
-                  />
-                ))}
-              </Pie>
-              {/* Removido o Tooltip padrão do Recharts */}
-            </PieChart>
-          </ResponsiveContainer>
+          <PieChart width={300} height={300}>
+            <Pie
+              data={pieData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={"60%"}
+              label
+              labelLine
+              isAnimationActive={false}
+              onClick={handlePieClick}
+              onMouseEnter={handlePieMouseEnter}
+              onMouseLeave={handlePieMouseLeave}
+              style={{ cursor: "pointer" }}
+              activeShape={{ r: 75 }}
+              activeIndex={[]}
+            >
+              {pieData.map((entry) => (
+                <Cell
+                  key={`cell-${entry.name}`}
+                  fill={getSquadConfig(entry.originalValue).hex}
+                />
+              ))}
+            </Pie>
+            {/* Removido o Tooltip padrão do Recharts */}
+          </PieChart>
         </div>
 
         <div className="flex-shrink-0">
@@ -196,7 +195,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                 .map((item) => (
                   <li
                     key={item.label}
-                    className={`flex items-center gap-2 ${fontSizes.legendaGrafico} font-medium`}
+                    className={`flex items-center gap-2 ${graficosConfig.legenda} font-medium`}
                   >
                     <span
                       className="inline-block rounded-full"
