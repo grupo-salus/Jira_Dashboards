@@ -118,6 +118,27 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     return () => observer.disconnect();
   }, []);
 
+  // Função para obter a cor da prioridade (mesma lógica do Kanban)
+  const getPriorityColor = (prioridade: string) => {
+    const prioridadeConfig = getPriorityConfig(prioridade);
+    const label = prioridadeConfig.label;
+
+    switch (label) {
+      case "Estratégica":
+        return themeColors.components.prioridades.estrategica.hex;
+      case "Alta":
+        return themeColors.components.prioridades.alta.hex;
+      case "Média":
+        return themeColors.components.prioridades.media.hex;
+      case "Baixa":
+        return themeColors.components.prioridades.baixa.hex;
+      case "Baixíssima":
+        return themeColors.components.prioridades.muitoBaixa.hex;
+      default:
+        return themeColors.components.prioridades.naoDefinida.hex;
+    }
+  };
+
   // Métricas Chave
   const total = filteredData.length; // Total no Board: dados filtrados (acompanha filtros)
   const totalIdeacao = filteredData.filter(
@@ -393,7 +414,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 <div
                   key={projeto.Título}
                   className={
-                    `flex items-center gap-2 p-2 sm:p-3 rounded-lg border transition-all duration-200 hover:shadow-md h-16 sm:h-20 lg:h-24` +
+                    `relative flex items-center gap-2 p-2 sm:p-3 rounded-lg border transition-all duration-200 hover:shadow-md h-16 sm:h-20 lg:h-24` +
                     (index === 0 ? " border-2" : " border")
                   }
                   style={{
@@ -406,6 +427,14 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                     minWidth: 0,
                   }}
                 >
+                  {/* Barra de prioridade lateral */}
+                  <div
+                    className="absolute left-0 top-0 h-full w-1 rounded-l-lg"
+                    style={{
+                      background: getPriorityColor(projeto.Prioridade || ""),
+                    }}
+                  />
+
                   <div
                     className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 ${
                       index === 0
@@ -428,7 +457,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                       #{projeto.PosicaoBacklog}
                     </span>
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 pl-2">
                     <h4
                       className={`font-semibold break-words whitespace-normal ${
                         index === 0 ? "text-xs sm:text-sm" : "text-xs"
@@ -457,9 +486,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                           <span
                             className={`truncate text-xs font-medium px-1 sm:px-2 py-0.5 rounded inline-block flex-shrink-0 text-white`}
                             style={{
-                              backgroundColor: getPriorityConfig(
+                              backgroundColor: getPriorityColor(
                                 projeto.Prioridade
-                              ).hex,
+                              ),
                             }}
                             title={`Prioridade: ${projeto.Prioridade}`}
                           >
@@ -473,9 +502,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                         <span
                           className={`truncate text-xs mt-1 font-medium px-1 sm:px-2 py-0.5 rounded inline-block text-white`}
                           style={{
-                            backgroundColor: getPriorityConfig(
+                            backgroundColor: getPriorityColor(
                               projeto.Prioridade
-                            ).hex,
+                            ),
                           }}
                           title={`Prioridade: ${projeto.Prioridade}`}
                         >
