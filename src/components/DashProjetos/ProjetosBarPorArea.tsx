@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   ResponsiveContainer,
   LabelList,
   Cell,
@@ -15,21 +14,8 @@ import {
   getTextColor,
   getAreaConfig,
 } from "../../utils/themeColors";
-import { getFontSizes } from "../../constants/styleConfig";
+import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
-
-// Tooltip customizado para mostrar apenas os títulos dos projetos da área ao passar o mouse
-const CustomTooltip = ({ active, payload, label, projetosData }: any) => {
-  if (active && payload && payload.length && projetosData) {
-    const area = label;
-    const projetos = projetosData.filter(
-      (item: EspacoDeProjetos) =>
-        (item["Departamento Solicitante"] || "Não informado") === area
-    );
-    return <TooltipProjetos areaLabel={area} projetos={projetos} />;
-  }
-  return null;
-};
 
 interface ProjetosBarPorAreaProps {
   data: EspacoDeProjetos[];
@@ -40,15 +26,17 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   data,
   onAreaClick,
 }) => {
-  // Obter configurações atuais
-  const fontSizes = getFontSizes();
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipData, setTooltipData] = useState<{
+    area: string;
+    projetos: EspacoDeProjetos[];
+  } | null>(null);
+  const [tooltipTimeout, setTooltipTimeout] = useState<number | null>(null);
 
   // Hook para detectar o tema atual
-  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
-    "light"
-  );
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
       setCurrentTheme(isDark ? "dark" : "light");
@@ -65,48 +53,84 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // Componente customizado para o tick do eixo X com quebra de linha, centralizado e usando tema light/dark
-  const CustomXAxisTick = (props: any) => {
-    const { x, y, payload } = props;
-    const text = payload.value;
-    // Largura máxima para cada linha antes da quebra
-    const maxCharsPerLine = 12;
-    const words = text.split(" ");
-    let lines: string[] = [];
-    let currentLine = "";
+  // Listener para fechar o tooltip
+  useEffect(() => {
+    const handleCloseTooltip = () => {
+      setShowTooltip(false);
+      setTooltipData(null);
+    };
 
-    words.forEach((word: string) => {
-      if ((currentLine + " " + word).length > maxCharsPerLine && currentLine) {
-        lines.push(currentLine);
-        currentLine = word;
-      } else {
-        currentLine = currentLine ? `${currentLine} ${word}` : word;
+    document.addEventListener("closeTooltip", handleCloseTooltip);
+    return () => {
+      document.removeEventListener("closeTooltip", handleCloseTooltip);
+    };
+  }, []);
+
+  // Cleanup do timeout quando componente for desmontado
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
       }
-    });
-    lines.push(currentLine);
+    };
+  }, [tooltipTimeout]);
 
+  // Obter configurações de fonte atuais
+  const fontSizes = getFontSizes();
+
+  // Componente customizado para o tick do eixo X
+  const CustomXAxisTick = ({ x, y, payload }: any) => {
     return (
       <g transform={`translate(${x},${y})`}>
         <text
           x={0}
-          y={20} // margin para afastar do gráfico
+          y={0}
+          dy={16}
           textAnchor="middle"
-          fill={getTextColor("primary", currentTheme)}
+          fill={themeColors.secondary[500]}
           fontSize={fontSizes.eixoGrafico}
-          fontWeight="bold"
+          style={{ fontSize: fontSizes.eixoGrafico }}
         >
-          {lines.map((line, index) => (
-            <tspan
-              x={0}
-              dy={index === 0 ? 0 : fontSizes.eixoGrafico}
-              key={index}
-            >
-              {line}
-            </tspan>
-          ))}
+          {payload.value.length > 12
+            ? payload.value.substring(0, 12) + "..."
+            : payload.value}
         </text>
       </g>
     );
+  };
+
+  const handleBarMouseEnter = (entry: any) => {
+    if (entry && entry.area) {
+      // Limpar timeout anterior se existir
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+
+      // Criar novo timeout de 1.5 segundos
+      const timeout = window.setTimeout(() => {
+        const area = entry.area;
+        const projetos = data.filter(
+          (item: EspacoDeProjetos) =>
+            (item["Departamento Solicitante"] || "Não informado") === area
+        );
+
+        setTooltipData({
+          area: area,
+          projetos: projetos,
+        });
+        setShowTooltip(true);
+      }, TOOLTIP_CONFIG.DELAY_MS);
+
+      setTooltipTimeout(timeout);
+    }
+  };
+
+  const handleBarMouseLeave = () => {
+    // Limpar timeout quando sair do mouse
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+      setTooltipTimeout(null);
+    }
   };
 
   // Agrupa projetos por área
@@ -143,11 +167,6 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             axisLine={{ stroke: themeColors.secondary[400] }}
             tickLine={{ stroke: themeColors.secondary[400] }}
           />
-          <Tooltip
-            content={<CustomTooltip projetosData={data} />}
-            cursor={false}
-            isAnimationActive={false}
-          />
           <Bar
             dataKey="count"
             onClick={(data) => {
@@ -155,6 +174,8 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
                 onAreaClick(data.area);
               }
             }}
+            onMouseEnter={handleBarMouseEnter}
+            onMouseLeave={handleBarMouseLeave}
             cursor="pointer"
             radius={[8, 8, 0, 0]}
           >
@@ -169,6 +190,14 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+      {/* Tooltip Modal */}
+      {showTooltip && tooltipData && (
+        <TooltipProjetos
+          areaLabel={tooltipData.area}
+          projetos={tooltipData.projetos}
+        />
+      )}
     </div>
   );
 };

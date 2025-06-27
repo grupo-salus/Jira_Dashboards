@@ -158,3 +158,8 @@ export const getCardDimensions = () => {
 // EXPORTAÇÕES PARA COMPATIBILIDADE
 // ============================================================================
 export const fontSizes = getFontSizes();
+
+// Configurações de tooltip
+export const TOOLTIP_CONFIG = {
+  DELAY_MS: 400, // Delay em milissegundos para mostrar o tooltip
+};

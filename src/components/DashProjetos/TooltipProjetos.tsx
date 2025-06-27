@@ -37,41 +37,110 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
     return () => observer.disconnect();
   }, []);
 
+  const handleMouseLeave = () => {
+    // Fechar o tooltip quando o mouse sair da área
+    const event = new CustomEvent("closeTooltip");
+    document.dispatchEvent(event);
+  };
+
   return (
     <div
-      className="rounded-xl p-1 max-h-[150px] overflow-y-auto min-w-[120px] max-w-[180px] text-xs shadow-lg"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 tooltip-modal"
       style={{
-        backgroundColor: getBackgroundColor("card", currentTheme),
-        border: `1px solid ${getBorderColor("primary", currentTheme)}`,
-        color: getTextColor("primary", currentTheme),
-        zIndex: 1000,
-        position: "relative",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
       }}
     >
-      <div className="font-bold mb-1">
-        {areaLabel} ({projetos.length} projetos)
-      </div>
-      {projetos.length === 0 ? (
-        <div>Nenhum projeto encontrado.</div>
-      ) : (
-        projetos.map((proj, idx) => (
-          <div
-            key={idx}
-            className="mb-1 pb-1 rounded-lg border"
-            style={{
-              padding: 4,
-              backgroundColor:
-                idx % 2 === 0
-                  ? getBackgroundColor("hover", currentTheme)
-                  : getBackgroundColor("card", currentTheme),
-              border: `1px solid ${getBorderColor("secondary", currentTheme)}`,
+      <div
+        className="rounded-xl p-6 max-h-[80vh] overflow-y-auto min-w-[300px] max-w-[600px] text-sm shadow-2xl border"
+        style={{
+          backgroundColor: getBackgroundColor("card", currentTheme),
+          border: `1px solid ${getBorderColor("primary", currentTheme)}`,
+          color: getTextColor("primary", currentTheme),
+        }}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Header com título */}
+        <div
+          className="flex justify-between items-center mb-4 pb-2 border-b"
+          style={{
+            borderBottomColor: getBorderColor("secondary", currentTheme),
+          }}
+        >
+          <h3 className="font-bold text-lg">
+            {areaLabel} ({projetos.length} projetos)
+          </h3>
+          <button
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            onClick={() => {
+              // Fechar o tooltip - isso será controlado pelo componente pai
+              const event = new CustomEvent("closeTooltip");
+              document.dispatchEvent(event);
             }}
           >
-            <span className="font-semibold">Título:</span>{" "}
-            <span>{proj.Título}</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Conteúdo dos projetos */}
+        {projetos.length === 0 ? (
+          <div
+            className="text-center py-8"
+            style={{ color: getTextColor("secondary", currentTheme) }}
+          >
+            Nenhum projeto encontrado.
           </div>
-        ))
-      )}
+        ) : (
+          <div className="space-y-3">
+            {projetos.map((proj, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-lg border transition-colors hover:shadow-md"
+                style={{
+                  backgroundColor:
+                    idx % 2 === 0
+                      ? getBackgroundColor("hover", currentTheme)
+                      : getBackgroundColor("card", currentTheme),
+                  border: `1px solid ${getBorderColor(
+                    "secondary",
+                    currentTheme
+                  )}`,
+                }}
+              >
+                <div className="font-semibold mb-2 text-base">
+                  {proj.Título}
+                </div>
+                <div
+                  className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"
+                  style={{ color: getTextColor("secondary", currentTheme) }}
+                >
+                  <div>
+                    <span className="font-medium">Status:</span>{" "}
+                    {proj.Status || "Não informado"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Prioridade:</span>{" "}
+                    {proj.Prioridade || "Não informado"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Responsável:</span>{" "}
+                    {proj.Responsável || "Não informado"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Squad:</span>{" "}
+                    {proj.Squad || "Não informado"}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

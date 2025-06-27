@@ -4,7 +4,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   ResponsiveContainer,
   Cell,
   LabelList,
@@ -12,7 +11,7 @@ import {
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../utils/themeColors";
 import { themeColors } from "../../utils/themeColors";
-import { getFontSizes } from "../../constants/styleConfig";
+import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
 
 interface ProjetosBarPorPrioridadeProps {
@@ -37,83 +36,133 @@ const prioridadeCores = {
   Baixíssima: themeColors.components.prioridades.muitoBaixa.hex,
 };
 
-const CustomTooltip = ({ active, payload, label, projetosData }: any) => {
-  if (active && payload && payload.length && projetosData) {
-    const prioridade = label;
-    const projetos = projetosData.filter((item: EspacoDeProjetos) => {
-      const prioridadeLabel = getPriorityConfig(item.Prioridade || "").label;
-      return prioridadeLabel === prioridade;
-    });
-    return <TooltipProjetos areaLabel={prioridade} projetos={projetos} />;
-  }
-  return null;
-};
-
-const CustomXAxisTick = (props: any) => {
-  const { x, y, payload } = props;
-  const text = payload.value;
-  const maxCharsPerLine = 12;
-  const words = text.split(" ");
-  let lines: string[] = [];
-  let currentLine = "";
-  words.forEach((word: string) => {
-    if ((currentLine + " " + word).length > maxCharsPerLine && currentLine) {
-      lines.push(currentLine);
-      currentLine = word;
-    } else {
-      currentLine = currentLine ? `${currentLine} ${word}` : word;
-    }
-  });
-  lines.push(currentLine);
-  // Definir cor da prioridade
-  const cor =
-    prioridadeCores[text as keyof typeof prioridadeCores] ||
-    themeColors.primary[600];
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <text
-        x={0}
-        y={20}
-        textAnchor="middle"
-        fill={cor}
-        fontSize={getFontSizes().eixoGrafico}
-        fontWeight="bold"
-      >
-        {lines.map((line, index) => (
-          <tspan
-            x={0}
-            dy={index === 0 ? 0 : getFontSizes().eixoGrafico}
-            key={index}
-          >
-            {line}
-          </tspan>
-        ))}
-      </text>
-    </g>
-  );
-};
-
 const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   data,
   onPrioridadeClick,
 }) => {
-  // Obter configurações atuais
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipData, setTooltipData] = useState<{
+    prioridade: string;
+    projetos: EspacoDeProjetos[];
+  } | null>(null);
+  const [tooltipTimeout, setTooltipTimeout] = useState<number | null>(null);
+
+  // Hook para detectar o tema atual
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setCurrentTheme(isDark ? "dark" : "light");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Listener para fechar o tooltip
+  useEffect(() => {
+    const handleCloseTooltip = () => {
+      setShowTooltip(false);
+      setTooltipData(null);
+    };
+
+    document.addEventListener("closeTooltip", handleCloseTooltip);
+    return () => {
+      document.removeEventListener("closeTooltip", handleCloseTooltip);
+    };
+  }, []);
+
+  // Cleanup do timeout quando componente for desmontado
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+    };
+  }, [tooltipTimeout]);
+
+  // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
 
-  // Agrupa projetos por prioridade traduzida
+  // Componente customizado para o tick do eixo X
+  const CustomXAxisTick = ({ x, y, payload }: any) => {
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          x={0}
+          y={0}
+          dy={16}
+          textAnchor="middle"
+          fill={themeColors.secondary[500]}
+          fontSize={fontSizes.eixoGrafico}
+          style={{ fontSize: fontSizes.eixoGrafico }}
+        >
+          {payload.value}
+        </text>
+      </g>
+    );
+  };
+
+  const handleBarMouseEnter = (entry: any) => {
+    if (entry && entry.label) {
+      // Limpar timeout anterior se existir
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+
+      // Criar novo timeout de 1.5 segundos
+      const timeout = window.setTimeout(() => {
+        const prioridade = entry.label;
+        const projetos = data.filter((item: EspacoDeProjetos) => {
+          const prioridadeLabel = getPriorityConfig(
+            item.Prioridade || ""
+          ).label;
+          return prioridadeLabel === prioridade;
+        });
+
+        setTooltipData({
+          prioridade: prioridade,
+          projetos: projetos,
+        });
+        setShowTooltip(true);
+      }, TOOLTIP_CONFIG.DELAY_MS);
+
+      setTooltipTimeout(timeout);
+    }
+  };
+
+  const handleBarMouseLeave = () => {
+    // Limpar timeout quando sair do mouse
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+      setTooltipTimeout(null);
+    }
+  };
+
+  // Agrupa projetos por prioridade
   const prioridadeCount = React.useMemo(() => {
-    const counts: Record<string, { label: string; count: number }> = {};
+    const counts: Record<string, number> = {};
     data.forEach((item) => {
-      const value = item.Prioridade || "";
-      const label = getPriorityConfig(value).label;
-      if (!counts[value]) counts[value] = { label, count: 0 };
-      counts[value].count += 1;
+      const prioridade = getPriorityConfig(item.Prioridade || "").label;
+      counts[prioridade] = (counts[prioridade] || 0) + 1;
     });
-    return prioridadeOrdem.map((p) => ({
-      value: p.value,
-      label: p.label,
-      count: counts[p.value]?.count || 0,
-    }));
+
+    // Ordenar conforme a ordem definida
+    return prioridadeOrdem
+      .map((p) => ({
+        label: p.label,
+        value: p.value,
+        count: counts[p.label] || 0,
+      }))
+      .filter((p) => p.count > 0);
   }, [data]);
 
   return (
@@ -143,12 +192,13 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
             axisLine={{ stroke: themeColors.secondary[400] }}
             tickLine={{ stroke: themeColors.secondary[400] }}
           />
-          <Tooltip
-            content={<CustomTooltip projetosData={data} />}
-            cursor={false}
-            isAnimationActive={false}
-          />
-          <Bar dataKey="count" radius={[8, 8, 0, 0]} cursor="pointer">
+          <Bar
+            dataKey="count"
+            radius={[8, 8, 0, 0]}
+            cursor="pointer"
+            onMouseEnter={handleBarMouseEnter}
+            onMouseLeave={handleBarMouseLeave}
+          >
             {prioridadeCount.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
@@ -163,6 +213,14 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+      {/* Tooltip Modal */}
+      {showTooltip && tooltipData && (
+        <TooltipProjetos
+          areaLabel={tooltipData.prioridade}
+          projetos={tooltipData.projetos}
+        />
+      )}
     </div>
   );
 };

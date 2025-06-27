@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
@@ -7,62 +7,28 @@ import {
   themeColors,
 } from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
-import { getFontSizes } from "../../constants/styleConfig";
+import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 
 interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
   onSquadClick?: (squad: string) => void;
 }
 
-const CustomTooltip = ({ active, payload, projetosData }: any) => {
-  if (active && payload && payload.length && projetosData) {
-    const squad = payload[0].name;
-    const squadOriginal = payload[0].payload?.originalValue;
-
-    // Filtrar projetos que correspondem à squad
-    const projetos = projetosData.filter((item: EspacoDeProjetos) => {
-      const itemSquad = item["Squad"] || "";
-      // Comparar com o valor original da squad
-      return itemSquad === squadOriginal;
-    });
-
-    // Se não encontrou projetos com o valor original, tentar com o nome capitalizado
-    if (projetos.length === 0 && squadOriginal) {
-      const squadLower = squadOriginal.toLowerCase();
-      const squadCapitalized =
-        squadLower.charAt(0).toUpperCase() + squadLower.slice(1);
-
-      const projetosAlt = projetosData.filter((item: EspacoDeProjetos) => {
-        const itemSquad = item["Squad"] || "";
-        const itemSquadLower = itemSquad.toLowerCase();
-        const itemSquadCapitalized =
-          itemSquadLower.charAt(0).toUpperCase() + itemSquadLower.slice(1);
-        return itemSquadCapitalized === squadCapitalized;
-      });
-
-      if (projetosAlt.length > 0) {
-        return <TooltipProjetos areaLabel={squad} projetos={projetosAlt} />;
-      }
-    }
-
-    return <TooltipProjetos areaLabel={squad} projetos={projetos} />;
-  }
-  return null;
-};
-
 const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   data,
   onSquadClick,
 }) => {
-  // Obter configurações atuais
-  const fontSizes = getFontSizes();
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipData, setTooltipData] = useState<{
+    squad: string;
+    projetos: EspacoDeProjetos[];
+  } | null>(null);
+  const [tooltipTimeout, setTooltipTimeout] = useState<number | null>(null);
 
   // Hook para detectar o tema atual
-  const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
-    "light"
-  );
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
       setCurrentTheme(isDark ? "dark" : "light");
@@ -79,35 +45,108 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  const countBySquad = React.useMemo(() => {
-    const counts: Record<string, { label: string; count: number }> = {};
-    data.forEach((item) => {
-      const squad = item["Squad"];
-      if (squad && squad !== "Não informada") {
-        if (!counts[squad]) counts[squad] = { label: squad, count: 0 };
-        counts[squad].count += 1;
+  // Listener para fechar o tooltip
+  useEffect(() => {
+    const handleCloseTooltip = () => {
+      setShowTooltip(false);
+      setTooltipData(null);
+    };
+
+    document.addEventListener("closeTooltip", handleCloseTooltip);
+    return () => {
+      document.removeEventListener("closeTooltip", handleCloseTooltip);
+    };
+  }, []);
+
+  // Cleanup do timeout quando componente for desmontado
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
       }
-    });
-    return Object.entries(counts)
-      .map(([value, { label, count }]) => ({ value, label, count }))
-      .sort((a, b) => b.count - a.count);
-  }, [data]);
+    };
+  }, [tooltipTimeout]);
 
-  const pieData = React.useMemo(() => {
-    return countBySquad.map((cat) => ({
-      name: cat.label,
-      label: cat.label,
-      value: cat.count,
-      originalValue: cat.value,
-    }));
-  }, [countBySquad]);
-
-  // Função para filtrar ao clicar na fatia
   const handlePieClick = (data: any) => {
-    if (data && data.payload && onSquadClick) {
-      onSquadClick(data.payload.originalValue);
+    if (onSquadClick && data && data.name) {
+      onSquadClick(data.name);
     }
   };
+
+  const handlePieMouseEnter = (entry: any) => {
+    if (entry && entry.name) {
+      // Limpar timeout anterior se existir
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+
+      // Criar novo timeout de 1.5 segundos
+      const timeout = window.setTimeout(() => {
+        const squadOriginal = entry.payload?.originalValue;
+        let projetos = data.filter((item: EspacoDeProjetos) => {
+          const itemSquad = item["Squad"] || "";
+          return itemSquad === squadOriginal;
+        });
+
+        // Se não encontrou projetos com o valor original, tentar com o nome capitalizado
+        if (projetos.length === 0 && squadOriginal) {
+          const squadLower = squadOriginal.toLowerCase();
+          const squadCapitalized =
+            squadLower.charAt(0).toUpperCase() + squadLower.slice(1);
+
+          projetos = data.filter((item: EspacoDeProjetos) => {
+            const itemSquad = item["Squad"] || "";
+            const itemSquadLower = itemSquad.toLowerCase();
+            const itemSquadCapitalized =
+              itemSquadLower.charAt(0).toUpperCase() + itemSquadLower.slice(1);
+            return itemSquadCapitalized === squadCapitalized;
+          });
+        }
+
+        setTooltipData({
+          squad: entry.name,
+          projetos: projetos,
+        });
+        setShowTooltip(true);
+      }, TOOLTIP_CONFIG.DELAY_MS);
+
+      setTooltipTimeout(timeout);
+    }
+  };
+
+  const handlePieMouseLeave = () => {
+    // Limpar timeout quando sair do mouse
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+      setTooltipTimeout(null);
+    }
+  };
+
+  // Obter configurações de fonte atuais
+  const fontSizes = getFontSizes();
+
+  // Agrupa projetos por squad
+  const squadCount = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    data.forEach((item) => {
+      const squad = item["Squad"] || "Não informado";
+      counts[squad] = (counts[squad] || 0) + 1;
+    });
+    return Object.entries(counts).map(([squad, count]) => ({ squad, count }));
+  }, [data]);
+
+  // Filtrar "Não informado" das fatias
+  const squadCountFiltered = squadCount.filter(
+    (s) => s.squad !== "Não informado"
+  );
+
+  // Preparar dados para o gráfico de pizza
+  const pieData = squadCountFiltered.map((item) => ({
+    name: item.squad,
+    value: item.count,
+    originalValue: item.squad, // Manter o valor original para comparação
+    label: item.squad,
+  }));
 
   return (
     <div className="w-full h-full flex-1 flex items-center justify-center">
@@ -130,6 +169,8 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                 labelLine
                 isAnimationActive={false}
                 onClick={handlePieClick}
+                onMouseEnter={handlePieMouseEnter}
+                onMouseLeave={handlePieMouseLeave}
                 style={{ cursor: "pointer" }}
                 activeShape={{ r: 75 }}
                 activeIndex={[]}
@@ -141,15 +182,12 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                   />
                 ))}
               </Pie>
-              <Tooltip
-                content={<CustomTooltip projetosData={data} />}
-                cursor={false}
-                isAnimationActive={false}
-              />
+              {/* Removido o Tooltip padrão do Recharts */}
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex flex-col items-start w-full 2xl:w-auto">
+
+        <div className="flex-shrink-0">
           {pieData.length > 0 && (
             <ul className="flex flex-row 2xl:flex-col flex-wrap 2xl:flex-nowrap gap-x-2 gap-y-2 max-h-60 overflow-y-auto w-full 2xl:w-auto justify-center 2xl:justify-start">
               {pieData
@@ -187,6 +225,14 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
           )}
         </div>
       </div>
+
+      {/* Tooltip Modal */}
+      {showTooltip && tooltipData && (
+        <TooltipProjetos
+          areaLabel={tooltipData.squad}
+          projetos={tooltipData.projetos}
+        />
+      )}
     </div>
   );
 };
