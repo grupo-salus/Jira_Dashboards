@@ -49,8 +49,8 @@ const KanbanCard: React.FC<{
   // Mapeamento de prioridade para cor usando o sistema centralizado
   const getPriorityColor = (label: string) => {
     switch (label) {
-      case "Estratégico":
-        return themeColors.components.prioridades.estrategico.hex;
+      case "Estratégica":
+        return themeColors.components.prioridades.estrategica.hex;
       case "Alta":
         return themeColors.components.prioridades.alta.hex;
       case "Média":

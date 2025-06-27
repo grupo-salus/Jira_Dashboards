@@ -287,8 +287,8 @@ export const themeColors = {
   components: {
     // Prioridades
     prioridades: {
-      estrategico: {
-        label: "Estratégico",
+      estrategica: {
+        label: "Estratégica",
         color: {
           bg: "bg-red-100",
           text: "text-red-800",
@@ -361,6 +361,110 @@ export const themeColors = {
       },
     },
 
+    // Squads - Cores específicas para cada squad
+    squads: {
+      BI: {
+        label: "BI",
+        hex: "#E91E63", // rosa vibrante
+      },
+      Infraestrutura: {
+        label: "Infraestrutura",
+        hex: "#3498DB", // azul claro
+      },
+      PMO: {
+        label: "PMO",
+        hex: "#F1C40F", // amarelo dourado
+      },
+      Salesforce: {
+        label: "Salesforce",
+        hex: "#2ECC71", // verde esmeralda
+      },
+      Sistemas: {
+        label: "Sistemas",
+        hex: "#E67E22", // laranja queimado
+      },
+      Wetok: {
+        label: "Wetok",
+        hex: "#1ABC9C", // turquesa escuro
+      },
+      naoDefinida: {
+        label: "Não informada",
+        hex: "#6b7280", // gray-500
+      },
+    },
+
+    // Áreas/Departamentos - Cores específicas para cada área
+    areas: {
+      TI: {
+        label: "TI",
+        hex: "#90CAF9", // azul muito claro
+      },
+      Operações: {
+        label: "Operações",
+        hex: "#64B5F6", // azul claro
+      },
+      Financeiro: {
+        label: "Financeiro",
+        hex: "#42A5F5", // azul médio forte
+      },
+      Marketing: {
+        label: "Marketing",
+        hex: "#2196F3", // azul forte
+      },
+      Presidência: {
+        label: "Presidência",
+        hex: "#1E88E5", // azul mais forte
+      },
+      Auditoria: {
+        label: "Auditoria",
+        hex: "#1976D2", // azul escuro
+      },
+      "Serviço de Atendimento ao Franqueado": {
+        label: "Serviço de Atendimento ao Franqueado",
+        hex: "#1565C0", // azul mais escuro
+      },
+      Jurídico: {
+        label: "Jurídico",
+        hex: "#0D47A1", // azul muito escuro
+      },
+      Crescera: {
+        label: "Crescera",
+        hex: "#0A3880", // azul extremamente escuro
+      },
+      "Recursos Humanos": {
+        label: "Recursos Humanos",
+        hex: "#072B60", // azul quase preto
+      },
+      "Departamento Pessoal": {
+        label: "Departamento Pessoal",
+        hex: "#9C27B0", // roxo vibrante
+      },
+      Expansão: {
+        label: "Expansão",
+        hex: "#673AB7", // roxo profundo
+      },
+      CTS: {
+        label: "CTS",
+        hex: "#FF5722", // laranja vibrante
+      },
+      Sorriden: {
+        label: "Sorriden",
+        hex: "#795548", // marrom
+      },
+      "Bom D+": {
+        label: "Bom D+",
+        hex: "#607D8B", // azul acinzentado
+      },
+      Compras: {
+        label: "Compras",
+        hex: "#FF9800", // laranja
+      },
+      naoDefinida: {
+        label: "Não informado",
+        hex: "#6b7280", // gray-500
+      },
+    },
+
     // Totalizadores
     totalizadores: {
       total: {
@@ -426,40 +530,7 @@ export const themeColors = {
 
     // Gráficos
     graficos: {
-      pizza: {
-        palette: [
-          "#E91E63", // rosa vibrante
-          "#3498DB", // azul claro
-          "#F1C40F", // amarelo dourado
-          "#2ECC71", // verde esmeralda
-          "#E67E22", // laranja queimado
-          "#1ABC9C", // turquesa escuro
-          "#9C27B0", // roxo vibrante
-          "#673AB7", // roxo profundo
-          "#FF5722", // laranja vibrante
-          "#795548", // marrom
-          "#607D8B", // azul acinzentado
-          "#FF9800", // laranja
-          "#CDDC39", // lima
-          "#009688", // verde água
-          "#8BC34A", // verde claro
-          "#4CAF50", // verde médio
-        ],
-      },
-      barra: {
-        palette: [
-          "#90CAF9", // azul muito claro
-          "#64B5F6", // azul claro
-          "#42A5F5", // azul médio forte
-          "#2196F3", // azul forte
-          "#1E88E5", // azul mais forte
-          "#1976D2", // azul escuro
-          "#1565C0", // azul mais escuro
-          "#0D47A1", // azul muito escuro
-          "#0A3880", // azul extremamente escuro
-          "#072B60", // azul quase preto
-        ],
-      },
+      // Removed old palette
     },
 
     // Botões
@@ -580,9 +651,6 @@ export const themeColors = {
   get pageBg() {
     return this.background.page;
   },
-  get chart() {
-    return this.components.graficos.pizza.palette;
-  },
 };
 
 // ============================================================================
@@ -658,34 +726,6 @@ export const getStatusColor = (
 };
 
 /**
- * Obtém a cor de componente apropriada baseada no tema
- */
-export const getComponentColor = (
-  component: string,
-  variant: string,
-  theme: "light" | "dark",
-  type?: string
-) => {
-  const componentConfig = (themeColors.components as any)[component];
-  if (!componentConfig) return themeColors.text.primary[theme];
-
-  const variantConfig = componentConfig[variant];
-  if (!variantConfig) return themeColors.text.primary[theme];
-
-  if (type) {
-    return (
-      variantConfig[type]?.[theme] ||
-      variantConfig[type] ||
-      themeColors.text.primary[theme]
-    );
-  }
-
-  return (
-    variantConfig[theme] || variantConfig || themeColors.text.primary[theme]
-  );
-};
-
-/**
  * Obtém a configuração de prioridade baseada no valor
  */
 export const getPriorityConfig = (priority: string) => {
@@ -693,7 +733,7 @@ export const getPriorityConfig = (priority: string) => {
     string,
     keyof typeof themeColors.components.prioridades
   > = {
-    Estratégico: "estrategico",
+    Estratégica: "estrategica",
     Alta: "alta",
     Média: "media",
     Baixa: "baixa",
@@ -708,81 +748,54 @@ export const getPriorityConfig = (priority: string) => {
 };
 
 /**
- * Obtém o valor da prioridade a partir do label
+ * Obtém a configuração de squad baseada no valor
  */
-export const getPriorityValueByLabel = (label: string): string | undefined => {
-  const priorityMap: Record<string, string> = {
-    Estratégico: "Estratégico",
-    Alta: "Alta",
-    Média: "Média",
-    Baixa: "Baixa",
-    "Muito Baixa": "Muito Baixa",
+export const getSquadConfig = (squad: string) => {
+  const squadMap: Record<string, keyof typeof themeColors.components.squads> = {
+    BI: "BI",
+    Infraestrutura: "Infraestrutura",
+    PMO: "PMO",
+    Salesforce: "Salesforce",
+    Sistemas: "Sistemas",
+    Wetok: "Wetok",
   };
 
-  return priorityMap[label];
+  const squadKey = squadMap[squad];
+  return (
+    themeColors.components.squads[squadKey] ||
+    themeColors.components.squads.naoDefinida
+  );
 };
 
 /**
- * Mapeia uma categoria para uma cor específica baseada no nome
- * Garante que a mesma categoria sempre tenha a mesma cor
+ * Obtém a configuração de área baseada no valor
  */
-export const getCategoryColor = (
-  category: string,
-  palette: string[]
-): string => {
-  // Criar um hash simples baseado no nome da categoria
-  let hash = 0;
-  for (let i = 0; i < category.length; i++) {
-    const char = category.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Converte para 32-bit integer
-  }
+export const getAreaConfig = (area: string) => {
+  const areaMap: Record<string, keyof typeof themeColors.components.areas> = {
+    TI: "TI",
+    Operações: "Operações",
+    Financeiro: "Financeiro",
+    Marketing: "Marketing",
+    Presidência: "Presidência",
+    Auditoria: "Auditoria",
+    "Serviço de Atendimento ao Franqueado":
+      "Serviço de Atendimento ao Franqueado",
+    Jurídico: "Jurídico",
+    Crescera: "Crescera",
+    "Recursos Humanos": "Recursos Humanos",
+    "Departamento Pessoal": "Departamento Pessoal",
+    Expansão: "Expansão",
+    CTS: "CTS",
+    Sorriden: "Sorriden",
+    "Bom D+": "Bom D+",
+    Compras: "Compras",
+  };
 
-  // Usar o valor absoluto do hash para garantir índice positivo
-  const index = Math.abs(hash) % palette.length;
-  return palette[index];
-};
-
-/**
- * Obtém cores únicas para um conjunto de categorias
- * Garante que não haja repetição de cores
- */
-export const getUniqueColorsForCategories = (
-  categories: string[],
-  palette: string[]
-): Record<string, string> => {
-  const colorMap: Record<string, string> = {};
-  const usedColors = new Set<string>();
-
-  // Primeira passada: tentar usar o hash original
-  categories.forEach((category) => {
-    const hashColor = getCategoryColor(category, palette);
-    if (!usedColors.has(hashColor)) {
-      colorMap[category] = hashColor;
-      usedColors.add(hashColor);
-    }
-  });
-
-  // Segunda passada: para categorias que não conseguiram cor única
-  categories.forEach((category) => {
-    if (!colorMap[category]) {
-      // Encontrar a primeira cor não utilizada
-      for (let i = 0; i < palette.length; i++) {
-        if (!usedColors.has(palette[i])) {
-          colorMap[category] = palette[i];
-          usedColors.add(palette[i]);
-          break;
-        }
-      }
-
-      // Se ainda não encontrou, usar a primeira cor disponível (pode repetir)
-      if (!colorMap[category]) {
-        colorMap[category] = palette[0];
-      }
-    }
-  });
-
-  return colorMap;
+  const areaKey = areaMap[area];
+  return (
+    themeColors.components.areas[areaKey] ||
+    themeColors.components.areas.naoDefinida
+  );
 };
 
 // ============================================================================

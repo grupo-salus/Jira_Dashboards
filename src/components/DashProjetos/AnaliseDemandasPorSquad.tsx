@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   getTextColor,
-  getUniqueColorsForCategories,
+  getSquadConfig,
   themeColors,
 } from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
@@ -102,15 +102,6 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
     }));
   }, [countBySquad]);
 
-  // Criar mapeamento de cores únicas para as squads
-  const squadColors = React.useMemo(() => {
-    const squads = pieData.map((item) => item.originalValue);
-    return getUniqueColorsForCategories(
-      squads,
-      themeColors.components.graficos.pizza.palette
-    );
-  }, [pieData]);
-
   // Função para filtrar ao clicar na fatia
   const handlePieClick = (data: any) => {
     if (data && data.payload && onSquadClick) {
@@ -146,7 +137,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                 {pieData.map((entry) => (
                   <Cell
                     key={`cell-${entry.name}`}
-                    fill={squadColors[entry.originalValue]}
+                    fill={getSquadConfig(entry.originalValue).hex}
                   />
                 ))}
               </Pie>
@@ -174,7 +165,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                       style={{
                         width: 14,
                         height: 14,
-                        backgroundColor: squadColors[item.originalValue],
+                        backgroundColor: getSquadConfig(item.originalValue).hex,
                       }}
                     ></span>
                     <span

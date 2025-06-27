@@ -37,7 +37,7 @@ export interface EspacoDeProjetos {
   Tipo: string; // Tipo da issue (ex: Tarefa, Bug, Épico)
   Chave: string; // Chave da issue (ex: EP-123)
   Título: string; // Título resumido da tarefa ou projeto
-  Prioridade: string; // Prioridade definida no Jira (Estratégico, Alta, Média, Baixa, Muito Baixa)
+  Prioridade: string; // Prioridade definida no Jira (Estratégica, Alta, Média, Baixa, Muito Baixa)
   PosicaoBacklog: number | null; // Posição no backlog priorizado (baseada no Rank do Jira)
   Descrição: string | null; // Descrição da issue (primeiro parágrafo do rich text)
   "Aprovador por (diretor)": string | null; // Diretor responsável pela aprovação (campo customizado)

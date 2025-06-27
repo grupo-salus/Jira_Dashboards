@@ -98,10 +98,13 @@ themeColors.components.kanban.cards.bg / border / hover.light / dark;
 #### Gráficos
 
 ```typescript
-themeColors.components.graficos.palette; // Array de cores
-themeColors.components.graficos.bar.primary / secondary / accent;
-themeColors.components.graficos.pie.primary / secondary / accent;
-themeColors.components.graficos.line.primary / secondary / accent;
+// ❌ REMOVIDO - Paletas antigas não são mais utilizadas
+// themeColors.components.graficos.pizza.palette;
+// themeColors.components.graficos.barra.palette;
+
+// ✅ USADO AGORA - Cores específicas para squads e áreas
+themeColors.components.squads.BI.hex;
+themeColors.components.areas.TI.hex;
 ```
 
 #### Botões
@@ -115,12 +118,47 @@ themeColors.components.buttons.danger.bg / hover / text.light / dark;
 #### Prioridades
 
 ```typescript
-themeColors.components.prioridades.estrategico.label / color / hex;
+themeColors.components.prioridades.estrategica.label / color / hex;
 themeColors.components.prioridades.alta.label / color / hex;
 themeColors.components.prioridades.media.label / color / hex;
 themeColors.components.prioridades.baixa.label / color / hex;
 themeColors.components.prioridades.muitoBaixa.label / color / hex;
 themeColors.components.prioridades.naoDefinida.label / color / hex;
+```
+
+#### Squads
+
+```typescript
+themeColors.components.squads.BI.label / hex;
+themeColors.components.squads.Infraestrutura.label / hex;
+themeColors.components.squads.PMO.label / hex;
+themeColors.components.squads.Salesforce.label / hex;
+themeColors.components.squads.Sistemas.label / hex;
+themeColors.components.squads.Wetok.label / hex;
+themeColors.components.squads.naoDefinida.label / hex;
+```
+
+#### Áreas/Departamentos
+
+```typescript
+themeColors.components.areas.TI.label / hex;
+themeColors.components.areas.Operações.label / hex;
+themeColors.components.areas.Financeiro.label / hex;
+themeColors.components.areas.Marketing.label / hex;
+themeColors.components.areas.Presidência.label / hex;
+themeColors.components.areas.Auditoria.label / hex;
+themeColors.components.areas["Serviço de Atendimento ao Franqueado"].label /
+  hex;
+themeColors.components.areas.Jurídico.label / hex;
+themeColors.components.areas.Crescera.label / hex;
+themeColors.components.areas["Recursos Humanos"].label / hex;
+themeColors.components.areas["Departamento Pessoal"].label / hex;
+themeColors.components.areas.Expansão.label / hex;
+themeColors.components.areas.CTS.label / hex;
+themeColors.components.areas.Sorriden.label / hex;
+themeColors.components.areas["Bom D+"].label / hex;
+themeColors.components.areas.Compras.label / hex;
+themeColors.components.areas.naoDefinida.label / hex;
 ```
 
 #### Filtros
@@ -180,19 +218,13 @@ const statusText = getStatusColor(
 ); // '#34d399'
 ```
 
-### getComponentColor()
-
-```typescript
-import { getComponentColor } from "../utils/themeColors";
-
-const kanbanColor = getComponentColor("kanban", "colunas", "light", "ideacao"); // '#8b5cf6'
-const buttonColor = getComponentColor("buttons", "primary", "dark", "bg"); // 'linear-gradient(...)'
-```
-
 ### getPriorityConfig()
 
 ```typescript
 import { getPriorityConfig } from "../utils/themeColors";
+
+const priorityConfig = getPriorityConfig("Estratégica");
+// Retorna: { label: "Estratégica", color: { bg: "bg-red-100", ... }, hex: "#ef4444" }
 
 const priorityConfig = getPriorityConfig("Alta");
 // Retorna: { label: "Alta", color: { bg: "bg-orange-100", ... }, hex: "#f97316" }
@@ -201,13 +233,28 @@ const priorityConfig = getPriorityConfig("Não existe");
 // Retorna: { label: "Não definida", color: { bg: "bg-gray-100", ... }, hex: "#6b7280" }
 ```
 
-### getPriorityValueByLabel()
+### getSquadConfig()
 
 ```typescript
-import { getPriorityValueByLabel } from "../utils/themeColors";
+import { getSquadConfig } from "../utils/themeColors";
 
-const priorityValue = getPriorityValueByLabel("Alta"); // "Alta"
-const priorityValue = getPriorityValueByLabel("Não existe"); // undefined
+const squadConfig = getSquadConfig("BI");
+// Retorna: { label: "BI", hex: "#E91E63" }
+
+const squadConfig = getSquadConfig("Não existe");
+// Retorna: { label: "Não informada", hex: "#6b7280" }
+```
+
+### getAreaConfig()
+
+```typescript
+import { getAreaConfig } from "../utils/themeColors";
+
+const areaConfig = getAreaConfig("TI");
+// Retorna: { label: "TI", hex: "#90CAF9" }
+
+const areaConfig = getAreaConfig("Não existe");
+// Retorna: { label: "Não informado", hex: "#6b7280" }
 ```
 
 ## 📝 Exemplos de Uso
@@ -307,6 +354,48 @@ const PriorityBadge: React.FC = ({ priority }) => {
     >
       {priorityConfig.label}
     </span>
+  );
+};
+```
+
+### 5. Em um Gráfico de Pizza de Squads
+
+```typescript
+import { getSquadConfig } from "../utils/themeColors";
+
+const SquadPieChart: React.FC = ({ data }) => {
+  return (
+    <PieChart>
+      <Pie data={data} dataKey="value">
+        {data.map((entry) => (
+          <Cell
+            key={`cell-${entry.name}`}
+            fill={getSquadConfig(entry.squad).hex}
+          />
+        ))}
+      </Pie>
+    </PieChart>
+  );
+};
+```
+
+### 6. Em um Gráfico de Barras de Áreas
+
+```typescript
+import { getAreaConfig } from "../utils/themeColors";
+
+const AreaBarChart: React.FC = ({ data }) => {
+  return (
+    <BarChart data={data}>
+      <Bar dataKey="count">
+        {data.map((entry) => (
+          <Cell
+            key={`cell-${entry.area}`}
+            fill={getAreaConfig(entry.area).hex}
+          />
+        ))}
+      </Bar>
+    </BarChart>
   );
 };
 ```

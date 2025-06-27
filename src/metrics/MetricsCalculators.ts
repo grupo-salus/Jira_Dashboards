@@ -84,7 +84,7 @@ export function calcularPrioridadeMetrics(
     baixa: dados.filter((d) => d.Prioridade === "Baixa").length,
     media: dados.filter((d) => d.Prioridade === "Média").length,
     alta: dados.filter((d) => d.Prioridade === "Alta").length,
-    critica: dados.filter((d) => d.Prioridade === "Estratégico").length,
+    critica: dados.filter((d) => d.Prioridade === "Estratégica").length,
   };
 }
 

@@ -21,7 +21,7 @@ interface ProjetosBarPorPrioridadeProps {
 }
 
 const prioridadeOrdem = [
-  { value: "Estratégico", label: "Estratégico" },
+  { value: "Estratégica", label: "Estratégica" },
   { value: "Alta", label: "Alta" },
   { value: "Média", label: "Média" },
   { value: "Baixa", label: "Baixa" },
@@ -30,7 +30,7 @@ const prioridadeOrdem = [
 
 // Cores específicas para cada prioridade usando o sistema centralizado
 const prioridadeCores = {
-  Estratégico: themeColors.components.prioridades.estrategico.hex,
+  Estratégica: themeColors.components.prioridades.estrategica.hex,
   Alta: themeColors.components.prioridades.alta.hex,
   Média: themeColors.components.prioridades.media.hex,
   Baixa: themeColors.components.prioridades.baixa.hex,

@@ -13,7 +13,7 @@ import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   themeColors,
   getTextColor,
-  getUniqueColorsForCategories,
+  getAreaConfig,
 } from "../../utils/themeColors";
 import { getFontSizes } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
@@ -122,15 +122,6 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   // Filtrar "Não informado" das barras
   const areaCountFiltered = areaCount.filter((a) => a.area !== "Não informado");
 
-  // Criar mapeamento de cores únicas para as áreas
-  const areaColors = React.useMemo(() => {
-    const areas = areaCountFiltered.map((item) => item.area);
-    return getUniqueColorsForCategories(
-      areas,
-      themeColors.components.graficos.barra.palette
-    );
-  }, [areaCountFiltered]);
-
   return (
     <div className="w-full h-full flex-1 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
@@ -170,7 +161,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             {areaCountFiltered.map((item) => (
               <Cell
                 key={`cell-${item.area}`}
-                fill={areaColors[item.area]}
+                fill={getAreaConfig(item.area).hex}
                 cursor="pointer"
               />
             ))}
