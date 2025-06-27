@@ -199,7 +199,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Em Fase de Ideação"
+          label="Projetos em Ideação"
           value={totalIdeacao}
           currentTheme={currentTheme}
           tooltipContent={
@@ -208,7 +208,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 className="font-bold mb-1"
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
-                Em Fase de Ideação
+                Projetos em Ideação
               </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Projetos da coluna Ideação que são ideias a serem ainda
