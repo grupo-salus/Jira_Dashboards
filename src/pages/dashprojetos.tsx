@@ -57,12 +57,22 @@ const DashProjetos: React.FC = () => {
   const [menuAberto, setMenuAberto] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Filtros simplificados - apenas os essenciais
+  // Filtros expandidos com sistema de data avançado
   const [filtros, setFiltros] = useState({
     area: [] as string[],
     prioridade: [] as string[],
     status: [] as string[],
     squad: [] as string[],
+    grupoSolicitante: [] as string[],
+    dataRapida: "" as string, // Filtro rápido por data de criação
+    // Sistema de filtro de data avançado
+    filtroData: {
+      campo: "" as string,
+      operador: "" as string,
+      valor1: "" as string,
+      valor2: "" as string,
+      opcaoRapida: "" as string,
+    },
   });
 
   // Obter configurações de fonte atuais
@@ -129,8 +139,225 @@ const DashProjetos: React.FC = () => {
         filtrosAtivos.squad.length === 0 ||
         filtrosAtivos.squad.includes(item.Squad || "");
 
-      return matchesArea && matchesPrioridade && matchesStatus && matchesSquad;
+      const matchesGrupoSolicitante =
+        filtrosAtivos.grupoSolicitante.length === 0 ||
+        filtrosAtivos.grupoSolicitante.includes(
+          item["Grupo Solicitante"] || ""
+        );
+
+      // Filtro de data rápida (por data de criação)
+      let matchesDataRapida = true;
+      if (
+        filtrosAtivos.dataRapida &&
+        filtrosAtivos.dataRapida !== "filtro_avancado"
+      ) {
+        const dataCriacao = new Date(item["Data de criação"] || 0);
+        const hoje = new Date();
+
+        switch (filtrosAtivos.dataRapida) {
+          case "hoje":
+            const inicioHoje = new Date(
+              hoje.getFullYear(),
+              hoje.getMonth(),
+              hoje.getDate()
+            );
+            const fimHoje = new Date(
+              inicioHoje.getTime() + 24 * 60 * 60 * 1000 - 1
+            );
+            matchesDataRapida =
+              dataCriacao >= inicioHoje && dataCriacao <= fimHoje;
+            break;
+          case "ultimos_7_dias":
+            const dataLimite7 = new Date(
+              hoje.getTime() - 7 * 24 * 60 * 60 * 1000
+            );
+            matchesDataRapida = dataCriacao >= dataLimite7;
+            break;
+          case "ultimos_30_dias":
+            const dataLimite30 = new Date(
+              hoje.getTime() - 30 * 24 * 60 * 60 * 1000
+            );
+            matchesDataRapida = dataCriacao >= dataLimite30;
+            break;
+          case "mes_atual":
+            const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            matchesDataRapida = dataCriacao >= inicioMes;
+            break;
+          case "trimestre_atual":
+            const trimestre = Math.floor(hoje.getMonth() / 3);
+            const inicioTrimestre = new Date(
+              hoje.getFullYear(),
+              trimestre * 3,
+              1
+            );
+            matchesDataRapida = dataCriacao >= inicioTrimestre;
+            break;
+          case "ano_atual":
+            const inicioAno = new Date(hoje.getFullYear(), 0, 1);
+            matchesDataRapida = dataCriacao >= inicioAno;
+            break;
+          case "semana_atual":
+            const inicioSemana = new Date(
+              hoje.getTime() - hoje.getDay() * 24 * 60 * 60 * 1000
+            );
+            matchesDataRapida = dataCriacao >= inicioSemana;
+            break;
+          case "proximos_7_dias":
+            const proximos7 = new Date(
+              hoje.getTime() + 7 * 24 * 60 * 60 * 1000
+            );
+            matchesDataRapida = dataCriacao <= proximos7 && dataCriacao >= hoje;
+            break;
+          case "proximos_30_dias":
+            const proximos30 = new Date(
+              hoje.getTime() + 30 * 24 * 60 * 60 * 1000
+            );
+            matchesDataRapida =
+              dataCriacao <= proximos30 && dataCriacao >= hoje;
+            break;
+        }
+      }
+
+      // Filtro de data avançado
+      let matchesData = true;
+      if (filtrosAtivos.filtroData.campo && filtrosAtivos.filtroData.operador) {
+        const dataItem = getDataValue(item, filtrosAtivos.filtroData.campo);
+        if (dataItem) {
+          matchesData = aplicarOperadorData(
+            dataItem,
+            filtrosAtivos.filtroData.operador,
+            filtrosAtivos.filtroData.valor1,
+            filtrosAtivos.filtroData.valor2,
+            filtrosAtivos.filtroData.opcaoRapida
+          );
+        }
+      }
+
+      return (
+        matchesArea &&
+        matchesPrioridade &&
+        matchesStatus &&
+        matchesSquad &&
+        matchesGrupoSolicitante &&
+        matchesDataRapida &&
+        matchesData
+      );
     });
+  };
+
+  // Função para obter o valor da data baseado no campo selecionado
+  const getDataValue = (item: EspacoDeProjetos, campo: string): Date | null => {
+    switch (campo) {
+      case "dataCriacao":
+        return new Date(item["Data de criação"] || 0);
+      case "dataAtualizacao":
+        return new Date(item["Data de atualização"] || 0);
+      case "targetStart":
+        return item["Target start"] ? new Date(item["Target start"]) : null;
+      case "targetEnd":
+        return item["Target end"] ? new Date(item["Target end"]) : null;
+      case "dataTermino":
+        return item["Data de término"]
+          ? new Date(item["Data de término"])
+          : null;
+      default:
+        return null;
+    }
+  };
+
+  // Função para aplicar operadores de data
+  const aplicarOperadorData = (
+    dataItem: Date,
+    operador: string,
+    valor1: string,
+    valor2: string,
+    opcaoRapida: string
+  ): boolean => {
+    const hoje = new Date();
+
+    // Se há uma opção rápida selecionada, usar ela
+    if (opcaoRapida) {
+      switch (opcaoRapida) {
+        case "hoje":
+          const inicioHoje = new Date(
+            hoje.getFullYear(),
+            hoje.getMonth(),
+            hoje.getDate()
+          );
+          const fimHoje = new Date(
+            inicioHoje.getTime() + 24 * 60 * 60 * 1000 - 1
+          );
+          return dataItem >= inicioHoje && dataItem <= fimHoje;
+        case "ultimos_7_dias":
+          const dataLimite7 = new Date(
+            hoje.getTime() - 7 * 24 * 60 * 60 * 1000
+          );
+          return dataItem >= dataLimite7;
+        case "ultimos_30_dias":
+          const dataLimite30 = new Date(
+            hoje.getTime() - 30 * 24 * 60 * 60 * 1000
+          );
+          return dataItem >= dataLimite30;
+        case "mes_atual":
+          const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+          return dataItem >= inicioMes;
+        case "trimestre_atual":
+          const trimestre = Math.floor(hoje.getMonth() / 3);
+          const inicioTrimestre = new Date(
+            hoje.getFullYear(),
+            trimestre * 3,
+            1
+          );
+          return dataItem >= inicioTrimestre;
+        case "ano_atual":
+          const inicioAno = new Date(hoje.getFullYear(), 0, 1);
+          return dataItem >= inicioAno;
+        case "semana_atual":
+          const inicioSemana = new Date(
+            hoje.getTime() - hoje.getDay() * 24 * 60 * 60 * 1000
+          );
+          return dataItem >= inicioSemana;
+        case "proximos_7_dias":
+          const proximos7 = new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000);
+          return dataItem <= proximos7 && dataItem >= hoje;
+        case "proximos_30_dias":
+          const proximos30 = new Date(
+            hoje.getTime() + 30 * 24 * 60 * 60 * 1000
+          );
+          return dataItem <= proximos30 && dataItem >= hoje;
+        default:
+          return true;
+      }
+    }
+
+    // Se há valores personalizados, usar os operadores
+    if (valor1) {
+      const dataValor1 = new Date(valor1);
+      const dataValor2 = valor2 ? new Date(valor2) : null;
+
+      switch (operador) {
+        case "maior_que":
+          return dataItem > dataValor1;
+        case "maior_igual":
+          return dataItem >= dataValor1;
+        case "menor_que":
+          return dataItem < dataValor1;
+        case "menor_igual":
+          return dataItem <= dataValor1;
+        case "igual":
+          return dataItem.getTime() === dataValor1.getTime();
+        case "entre":
+          return dataValor2
+            ? dataItem >= dataValor1 && dataItem <= dataValor2
+            : false;
+        case "nao_igual":
+          return dataItem.getTime() !== dataValor1.getTime();
+        default:
+          return true;
+      }
+    }
+
+    return true;
   };
 
   // Dados filtrados finais
@@ -218,6 +445,58 @@ const DashProjetos: React.FC = () => {
     label: squad,
   }));
 
+  // Opções para filtro de Grupo Solicitante
+  const grupoSolicitanteOptions = useMemo(
+    () => [
+      ...new Set(
+        projetosData.rawData
+          .map((i: EspacoDeProjetos) => i["Grupo Solicitante"])
+          .filter((value): value is string => Boolean(value))
+      ),
+    ],
+    [projetosData.rawData]
+  );
+
+  const grupoSolicitanteOptionsSelect = grupoSolicitanteOptions.map(
+    (grupo) => ({
+      value: grupo,
+      label: grupo,
+    })
+  );
+
+  // Opções para filtro de data avançado
+  const camposDataOptions = [
+    { value: "", label: "Selecione um campo" },
+    { value: "dataCriacao", label: "Data de Criação" },
+    { value: "dataAtualizacao", label: "Data de Atualização" },
+    { value: "targetStart", label: "Target Start (Início Planejado)" },
+    { value: "targetEnd", label: "Target End (Fim Planejado)" },
+    { value: "dataTermino", label: "Data de Término" },
+  ];
+
+  const operadoresDataOptions = [
+    { value: "", label: "Selecione um operador" },
+    { value: "maior_que", label: "Maior que" },
+    { value: "maior_igual", label: "Maior ou igual" },
+    { value: "menor_que", label: "Menor que" },
+    { value: "menor_igual", label: "Menor ou igual" },
+    { value: "igual", label: "Igual" },
+    { value: "nao_igual", label: "Diferente" },
+    { value: "entre", label: "Entre" },
+  ];
+
+  const opcoesRapidasDataOptions = [
+    { value: "", label: "Todos os períodos" },
+    { value: "hoje", label: "Hoje" },
+    { value: "ultimos_7_dias", label: "Últimos 7 dias" },
+    { value: "ultimos_30_dias", label: "Últimos 30 dias" },
+    { value: "semana_atual", label: "Semana atual" },
+    { value: "mes_atual", label: "Mês atual" },
+    { value: "trimestre_atual", label: "Trimestre atual" },
+    { value: "ano_atual", label: "Ano atual" },
+    { value: "filtro_avancado", label: "Filtro Avançado" },
+  ];
+
   // Componente customizado para o ClearIndicator
   const CustomClearIndicator = (props: any) => {
     return (
@@ -284,7 +563,7 @@ const DashProjetos: React.FC = () => {
       {/* Seção de Filtros - Sempre Visível */}
       <div className="mb-6">
         <div className="p-0 shadow-none">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 w-full">
             {/* Filtro de Área */}
             <div className="flex flex-col">
               <label
@@ -690,9 +969,466 @@ const DashProjetos: React.FC = () => {
                 components={{ ClearIndicator: CustomClearIndicator }}
               />
             </div>
+
+            {/* Filtro de Grupo Solicitante */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="grupo-solicitante-filter"
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Grupo Solicitante
+              </label>
+              <Select
+                inputId="grupo-solicitante-filter"
+                isMulti
+                options={grupoSolicitanteOptionsSelect}
+                value={grupoSolicitanteOptionsSelect.filter((opt) =>
+                  filtros.grupoSolicitante.includes(opt.value)
+                )}
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    grupoSolicitante: selected
+                      ? selected.map((s: any) => s.value)
+                      : [],
+                  }))
+                }
+                placeholder="Todos os grupos"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.secondary[800]
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueRemove: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.error[700]
+                          : themeColors.error[100],
+                      color:
+                        currentTheme === "dark"
+                          ? themeColors.text.error.dark
+                          : themeColors.text.error.light,
+                    },
+                  }),
+                  option: (base) => ({
+                    ...base,
+                    backgroundColor: base.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : base.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.components.filtros.input.focus.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                }}
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+              />
+            </div>
+
+            {/* Filtro de Data Rápida */}
+            <div className="flex flex-col">
+              <label
+                htmlFor="data-rapida-filter"
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Período (Data de Criação)
+              </label>
+              <Select
+                inputId="data-rapida-filter"
+                isClearable={true}
+                options={opcoesRapidasDataOptions}
+                value={
+                  filtros.dataRapida
+                    ? opcoesRapidasDataOptions.find(
+                        (opt) => opt.value === filtros.dataRapida
+                      )
+                    : null
+                }
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    dataRapida: selected ? selected.value : "",
+                  }))
+                }
+                placeholder="Todos os períodos"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                  }),
+                  clearIndicator: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      color: themeColors.text.error[currentTheme],
+                    },
+                  }),
+                  option: (base) => ({
+                    ...base,
+                    backgroundColor: base.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : base.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.components.filtros.input.focus.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                }}
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Filtros de Data Avançada - Aparecem quando "Filtro Avançado" é selecionado */}
+      {filtros.dataRapida === "filtro_avancado" && (
+        <div className="mb-6">
+          <div className="p-0 shadow-none">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 w-full">
+              {/* Campo de Data */}
+              <div className="flex flex-col">
+                <label
+                  htmlFor="campo-data-filter"
+                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                  style={{ color: getTextColor("primary", currentTheme) }}
+                >
+                  Campo de Data
+                </label>
+                <Select
+                  inputId="campo-data-filter"
+                  options={camposDataOptions}
+                  value={camposDataOptions.find(
+                    (opt) => opt.value === filtros.filtroData.campo
+                  )}
+                  onChange={(selected) =>
+                    setFiltros((f) => ({
+                      ...f,
+                      filtroData: {
+                        ...f.filtroData,
+                        campo: selected ? selected.value : "",
+                      },
+                    }))
+                  }
+                  placeholder="Selecione um campo"
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg[
+                              currentTheme
+                            ],
+                      borderColor: base.isFocused
+                        ? themeColors.components.filtros.input.focus[
+                            currentTheme
+                          ]
+                        : themeColors.components.filtros.input.border[
+                            currentTheme
+                          ],
+                      color: getTextColor("primary", currentTheme),
+                      minHeight: 40,
+                      boxShadow: base.isFocused
+                        ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                        : undefined,
+                    }),
+                    option: (base) => ({
+                      ...base,
+                      backgroundColor: base.isSelected
+                        ? currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light
+                        : base.isFocused
+                        ? currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.components.filtros.input.focus.light
+                        : currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                      color: getTextColor("primary", currentTheme),
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light,
+                      color: getTextColor("primary", currentTheme),
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      color: getTextColor("primary", currentTheme),
+                    }),
+                  }}
+                  noOptionsMessage={() => "Sem opções"}
+                  components={{ ClearIndicator: CustomClearIndicator }}
+                />
+              </div>
+
+              {/* Operador */}
+              <div className="flex flex-col">
+                <label
+                  htmlFor="operador-data-filter"
+                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                  style={{ color: getTextColor("primary", currentTheme) }}
+                >
+                  Operador
+                </label>
+                <Select
+                  inputId="operador-data-filter"
+                  options={operadoresDataOptions}
+                  value={operadoresDataOptions.find(
+                    (opt) => opt.value === filtros.filtroData.operador
+                  )}
+                  onChange={(selected) =>
+                    setFiltros((f) => ({
+                      ...f,
+                      filtroData: {
+                        ...f.filtroData,
+                        operador: selected ? selected.value : "",
+                      },
+                    }))
+                  }
+                  placeholder="Selecione um operador"
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg[
+                              currentTheme
+                            ],
+                      borderColor: base.isFocused
+                        ? themeColors.components.filtros.input.focus[
+                            currentTheme
+                          ]
+                        : themeColors.components.filtros.input.border[
+                            currentTheme
+                          ],
+                      color: getTextColor("primary", currentTheme),
+                      minHeight: 40,
+                      boxShadow: base.isFocused
+                        ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                        : undefined,
+                    }),
+                    option: (base) => ({
+                      ...base,
+                      backgroundColor: base.isSelected
+                        ? currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light
+                        : base.isFocused
+                        ? currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.components.filtros.input.focus.light
+                        : currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                      color: getTextColor("primary", currentTheme),
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light,
+                      color: getTextColor("primary", currentTheme),
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      color: getTextColor("primary", currentTheme),
+                    }),
+                  }}
+                  noOptionsMessage={() => "Sem opções"}
+                  components={{ ClearIndicator: CustomClearIndicator }}
+                />
+              </div>
+
+              {/* Data 1 */}
+              <div className="flex flex-col">
+                <label
+                  htmlFor="data1-filter"
+                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                  style={{ color: getTextColor("primary", currentTheme) }}
+                >
+                  Data 1
+                </label>
+                <input
+                  type="date"
+                  id="data1-filter"
+                  value={filtros.filtroData.valor1}
+                  onChange={(e) =>
+                    setFiltros((f) => ({
+                      ...f,
+                      filtroData: {
+                        ...f.filtroData,
+                        valor1: e.target.value,
+                      },
+                    }))
+                  }
+                  className="px-3 py-2 rounded border transition-colors"
+                  style={{
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor:
+                      themeColors.components.filtros.input.border[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }}
+                />
+              </div>
+
+              {/* Data 2 (para operador "entre") */}
+              <div className="flex flex-col">
+                <label
+                  htmlFor="data2-filter"
+                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                  style={{ color: getTextColor("primary", currentTheme) }}
+                >
+                  Data 2 (opcional)
+                </label>
+                <input
+                  type="date"
+                  id="data2-filter"
+                  value={filtros.filtroData.valor2}
+                  onChange={(e) =>
+                    setFiltros((f) => ({
+                      ...f,
+                      filtroData: {
+                        ...f.filtroData,
+                        valor2: e.target.value,
+                      },
+                    }))
+                  }
+                  className="px-3 py-2 rounded border transition-colors"
+                  style={{
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor:
+                      themeColors.components.filtros.input.border[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }}
+                />
+              </div>
+
+              {/* Botão Limpar Filtro de Data */}
+              <div className="flex flex-col justify-end">
+                {(filtros.filtroData.campo || filtros.filtroData.valor1) && (
+                  <button
+                    onClick={() =>
+                      setFiltros((f) => ({
+                        ...f,
+                        filtroData: {
+                          campo: "",
+                          operador: "",
+                          valor1: "",
+                          valor2: "",
+                          opcaoRapida: "",
+                        },
+                      }))
+                    }
+                    className="px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                    style={{
+                      backgroundColor: themeColors.error[100],
+                      color: themeColors.text.error[currentTheme],
+                    }}
+                  >
+                    Limpar Filtro
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Totalizadores */}
       <ProjetosTotalizadores
