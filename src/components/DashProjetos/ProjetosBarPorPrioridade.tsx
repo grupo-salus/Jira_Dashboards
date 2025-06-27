@@ -25,7 +25,7 @@ const prioridadeOrdem = [
   { value: "Alta", label: "Alta" },
   { value: "Média", label: "Média" },
   { value: "Baixa", label: "Baixa" },
-  { value: "Muito Baixa", label: "Muito Baixa" },
+  { value: "Baixíssima", label: "Baixíssima" },
 ];
 
 // Cores específicas para cada prioridade usando o sistema centralizado
@@ -34,7 +34,7 @@ const prioridadeCores = {
   Alta: themeColors.components.prioridades.alta.hex,
   Média: themeColors.components.prioridades.media.hex,
   Baixa: themeColors.components.prioridades.baixa.hex,
-  "Muito Baixa": themeColors.components.prioridades.muitoBaixa.hex,
+  Baixíssima: themeColors.components.prioridades.muitoBaixa.hex,
 };
 
 const CustomTooltip = ({ active, payload, label, projetosData }: any) => {

@@ -57,7 +57,7 @@ const KanbanCard: React.FC<{
         return themeColors.components.prioridades.media.hex;
       case "Baixa":
         return themeColors.components.prioridades.baixa.hex;
-      case "Muito Baixa":
+      case "Baixíssima":
         return themeColors.components.prioridades.muitoBaixa.hex;
       default:
         return themeColors.components.prioridades.naoDefinida.hex;

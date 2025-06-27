@@ -122,7 +122,7 @@ themeColors.components.prioridades.estrategica.label / color / hex;
 themeColors.components.prioridades.alta.label / color / hex;
 themeColors.components.prioridades.media.label / color / hex;
 themeColors.components.prioridades.baixa.label / color / hex;
-themeColors.components.prioridades.muitoBaixa.label / color / hex;
+themeColors.components.prioridades.muitoBaixa.label / color / hex; // Baixíssima
 themeColors.components.prioridades.naoDefinida.label / color / hex;
 ```
 
@@ -228,6 +228,9 @@ const priorityConfig = getPriorityConfig("Estratégica");
 
 const priorityConfig = getPriorityConfig("Alta");
 // Retorna: { label: "Alta", color: { bg: "bg-orange-100", ... }, hex: "#f97316" }
+
+const priorityConfig = getPriorityConfig("Baixíssima");
+// Retorna: { label: "Baixíssima", color: { bg: "bg-blue-100", ... }, hex: "#3b82f6" }
 
 const priorityConfig = getPriorityConfig("Não existe");
 // Retorna: { label: "Não definida", color: { bg: "bg-gray-100", ... }, hex: "#6b7280" }

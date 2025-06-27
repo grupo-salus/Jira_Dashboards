@@ -336,7 +336,7 @@ export const themeColors = {
         hex: "#10b981", // emerald-500
       },
       muitoBaixa: {
-        label: "Muito Baixa",
+        label: "Baixíssima",
         color: {
           bg: "bg-blue-100",
           text: "text-blue-800",
@@ -737,7 +737,7 @@ export const getPriorityConfig = (priority: string) => {
     Alta: "alta",
     Média: "media",
     Baixa: "baixa",
-    "Muito Baixa": "muitoBaixa",
+    Baixíssima: "muitoBaixa",
   };
 
   const priorityKey = priorityMap[priority];
