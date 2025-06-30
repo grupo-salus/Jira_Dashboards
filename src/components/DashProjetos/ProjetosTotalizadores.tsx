@@ -181,6 +181,19 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   });
   const totalEntreguesNoMes = projetosEntreguesNoMes.length;
 
+  // Métricas de Status de Prazo (baseadas na lógica do project_analysis_utils.py)
+  const projetosNoPrazo = filteredData.filter(
+    (p) => p["Status de prazo"] === "No prazo"
+  ).length;
+
+  const projetosEmRisco = filteredData.filter(
+    (p) => p["Status de prazo"] === "Em risco"
+  ).length;
+
+  const projetosForaDoPrazo = filteredData.filter(
+    (p) => p["Status de prazo"] === "Fora do prazo"
+  ).length;
+
   // Encontrar os próximos 3 projetos a serem executados
   const proximosExecucao = backlogPriorizado
     .filter((p) => p.PosicaoBacklog !== null)
@@ -318,8 +331,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             />
           </div>
 
-          {/* Segunda linha: 3 cards */}
-          <div className="flex flex-wrap gap-4 lg:gap-6 w-full 2xl:flex-nowrap 2xl:justify-start 2xl:mt-4">
+          {/* Segunda linha: 4 cards */}
+          <div className="flex flex-wrap gap-4 lg:gap-6 w-full 2xl:flex-nowrap 2xl:justify-between 2xl:mt-4">
             <TotalizadorCard
               icon={
                 <CalendarIcon
@@ -356,6 +369,52 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             />
             <TotalizadorCard
               icon={
+                <CompassIcon
+                  size={remToPx(config.icone)}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color: themeColors.components.totalizadores.total.icon,
+                  }}
+                />
+              }
+              label="Projetos No Prazo"
+              value={projetosNoPrazo}
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Projetos No Prazo
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                    className="mb-2"
+                  >
+                    O projeto está dentro do período planejado.
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                    className="mb-2"
+                  >
+                    <strong>Como é calculado:</strong> verificamos se o tempo
+                    total planejado ainda não foi ultrapassado e se faltam mais
+                    de 2 dias para a data final (Target end). Também
+                    consideramos se o projeto ainda não foi entregue, cancelado
+                    ou finalizado.
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Isso significa que o andamento está sob controle, e há tempo
+                    para concluir etapas finais com segurança.
+                  </div>
+                </div>
+              }
+            />
+            <TotalizadorCard
+              icon={
                 <ExclamationTriangleIcon
                   size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
@@ -365,7 +424,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 />
               }
               label="Projetos Em Risco"
-              value="-"
+              value={projetosEmRisco}
               currentTheme={currentTheme}
               tooltipContent={
                 <div className="text-xs max-w-xs">
@@ -377,9 +436,25 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   </div>
                   <div
                     style={{ color: getTextColor("secondary", currentTheme) }}
+                    className="mb-2"
                   >
-                    Projetos que apresentam riscos de atraso ou problemas de
-                    execução. Lógica a ser implementada.
+                    O projeto está perto de ultrapassar o prazo.
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                    className="mb-2"
+                  >
+                    <strong>Como é calculado:</strong> mesmo sem ultrapassar o
+                    tempo total planejado (ainda abaixo de 100%), faltam 2 dias
+                    ou menos para a data final (Target end) e o projeto ainda
+                    não está finalizado.
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Isso indica que o tempo restante pode não ser suficiente
+                    para testes, validações ou operação assistida, e merece
+                    atenção.
                   </div>
                 </div>
               }
@@ -394,8 +469,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   }}
                 />
               }
-              label="Projetos Atrasados"
-              value="-"
+              label="Projetos Fora do Prazo"
+              value={projetosForaDoPrazo}
               currentTheme={currentTheme}
               tooltipContent={
                 <div className="text-xs max-w-xs">
@@ -403,13 +478,27 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                     className="font-bold mb-1"
                     style={{ color: getTextColor("primary", currentTheme) }}
                   >
-                    Projetos Atrasados
+                    Projetos Fora do Prazo
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                    className="mb-2"
+                  >
+                    O projeto ultrapassou o tempo planejado.
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                    className="mb-2"
+                  >
+                    <strong>Como é calculado:</strong> o número de dias desde o
+                    início (Target start) até hoje já superou o total de dias
+                    planejado (calculado com base em Target end).
                   </div>
                   <div
                     style={{ color: getTextColor("secondary", currentTheme) }}
                   >
-                    Projetos que ultrapassaram o prazo de entrega previsto.
-                    Lógica a ser implementada.
+                    Mesmo que ainda esteja em andamento, o prazo já estourou e
+                    pode impactar outras entregas ou áreas envolvidas.
                   </div>
                 </div>
               }
