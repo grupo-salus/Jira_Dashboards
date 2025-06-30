@@ -127,4 +127,38 @@ class JiraService:
         print(f"{len(issues)} issues encontradas no projeto '{project_key}'.")
         return {"issues": issues}
 
-        
+    def get_field_contexts(self, field_id: str) -> dict:
+        """
+        Retorna os contextos de um campo customizado.
+        """
+        print(f"Buscando contextos do campo {field_id}...")
+        url = f"{self.jira_url}/rest/api/3/field/{field_id}/context"
+
+        try:
+            response = requests.get(url, headers=self.headers, auth=self.auth)
+            response.raise_for_status()
+            contexts = response.json()
+            print(f"Contextos do campo {field_id} obtidos com sucesso.")
+            return contexts
+
+        except requests.RequestException as e:
+            print(f"Erro ao buscar contextos do campo {field_id}: {e}")
+            return {}
+
+    def get_field_context_options(self, field_id: str, context_id: str) -> dict:
+        """
+        Retorna as opções de um campo customizado para um contexto específico.
+        """
+        print(f"Buscando opções do campo {field_id} no contexto {context_id}...")
+        url = f"{self.jira_url}/rest/api/3/field/{field_id}/context/{context_id}/option"
+
+        try:
+            response = requests.get(url, headers=self.headers, auth=self.auth)
+            response.raise_for_status()
+            options = response.json()
+            print(f"Opções do campo {field_id} obtidas com sucesso.")
+            return options
+
+        except requests.RequestException as e:
+            print(f"Erro ao buscar opções do campo {field_id}: {e}")
+            return {}

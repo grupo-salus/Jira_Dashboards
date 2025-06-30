@@ -1,7 +1,8 @@
 import requests
 import json
+from services.jira_service import JiraService
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "http://127.0.0.1:8001"
 
 # ----------- Teste resumo backlog -----------
 def testar_resumo_backlog(filtros=None, nome_arquivo="backlog_summary.json"):
@@ -95,6 +96,16 @@ def testar_espacos_de_projetos(nome_arquivo="espacos_de_projetos.json"):
         json.dump(data, f, indent=4, ensure_ascii=False)
 
 
+def testar_opcoes_campo_customizado(nome_arquivo="opcoes_campo_customizado.json"):
+    url = f"{BASE_URL}/api/jira/opcoes-campo-customizado/customfield_10245"
+    try:
+        response = requests.get(url)
+        print(response.json())
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Erro ao requisitar opções do campo customizado: {e}")
+        return
+
 # ----------- Execução dos testes -----------
 if __name__ == "__main__":
     # print("Teste 1 - Resumo backlog (sem filtros):")
@@ -118,5 +129,8 @@ if __name__ == "__main__":
     # testar_acompanhamento_ti()
 
     
-    print("\nTeste 6 - Espacos de projetos:")
-    testar_espacos_de_projetos()
+    #print("\nTeste 6 - Espacos de projetos:")
+    #testar_espacos_de_projetos()
+
+    print("\nTeste 7 - Opções do campo customizado:")
+    testar_opcoes_campo_customizado()

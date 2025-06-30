@@ -60,6 +60,23 @@ def get_tabela_espaco_de_projetos(request: Request):
 
     return {"tabela_dashboard_ep": df.to_dict(orient="records")} if not df.empty else {"tabela_dashboard_ep": []}
 
+@router.get("/api/jira/opcoes-campo-customizado/{field_id}")
+def get_opcoes_campo_customizado(request: Request, field_id: str):
+    """
+    Retorna as opções de um campo customizado para um contexto específico.
+    """
+    service = JiraService()
+
+    contexts = service.get_field_contexts(field_id)
+    context_id = contexts['values'][0]['id']
+    options = service.get_field_context_options(field_id, context_id)['values']
+    
+    list_options = []
+    for option in options:
+        list_options.append(option['value'])
+    return {"opcoes_campo_customizado": list_options}
+
+
 # Roteador das APIs
 app.include_router(router)
 
