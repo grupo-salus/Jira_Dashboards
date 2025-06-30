@@ -74,20 +74,31 @@ def calcular_pct_tempo(row: pd.Series) -> float:
 
 def classificar_status_prazo(row: pd.Series, hoje: date) -> str:
     """
-    Classifica se o projeto está dentro do prazo.
+    Classifica se o projeto está 'No prazo', 'Em risco' ou 'Fora do prazo'.
     """
     target_start = row.get("Target start")
     target_end = row.get("Target end")
     pct = row.get("% do tempo decorrido", 0)
+    status = str(row.get("Status", "")).strip().lower()
     chave = row.get("Chave", "N/D")
 
     if pd.isnull(target_start) or pd.isnull(target_end):
-        logger.warning(f"[classificar_status_prazo] ({chave}) Target start ou end ausente.")
+        logger.warning(f"[classificar_status_prazo] ({chave}) Datas alvo ausentes.")
         return None
 
-    status = "No prazo" if pct <= 100 else "Fora do prazo"
-    logger.debug(f"[classificar_status_prazo] ({chave}) {pct}% do tempo decorrido => {status}")
-    return status
+    if pct > 100:
+        logger.info(f"[classificar_status_prazo] ({chave}) {pct}% => Fora do prazo")
+        return "Fora do prazo"
+
+    dias_restantes = (target_end - pd.Timestamp(hoje)).days
+
+    if not is_final_status(status) and dias_restantes <= 2:
+        logger.info(f"[classificar_status_prazo] ({chave}) {dias_restantes} dias restantes => Em risco")
+        return "Em risco"
+
+    logger.debug(f"[classificar_status_prazo] ({chave}) {dias_restantes} dias restantes => No prazo")
+    return "No prazo"
+
 
 def calcular_pct_estimativa(row: pd.Series) -> float:
     """

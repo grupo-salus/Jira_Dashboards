@@ -4,17 +4,17 @@ from logging.handlers import RotatingFileHandler
 
 def setup_logging():
     """
-    Configura logging profissional com rotação de arquivos, suporte a variáveis de ambiente
-    e log simultâneo no console e em arquivo.
+    Configura logging profissional com rotação de arquivos.
+    - Apenas erros aparecem no terminal.
+    - Todos os logs (DEBUG, INFO, etc.) vão para o arquivo.
     """
     # Diretório e arquivo de log
     log_dir = os.path.join(os.path.dirname(__file__), "..", "logs")
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, "jira_dashboard.log")
 
-    # Nível de log por ambiente
+    # Nível de log global (usado para o arquivo)
     log_level = os.getenv("LOG_LEVEL", "DEBUG").upper()
-    
 
     # Formatter padrão
     formatter = logging.Formatter(
@@ -22,12 +22,12 @@ def setup_logging():
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
-    # Handler para terminal (console)
+    # Handler para terminal: apenas erros
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(log_level)
+    console_handler.setLevel(logging.ERROR)
     console_handler.setFormatter(formatter)
 
-    # Handler para arquivo com rotação (5MB por arquivo, até 5 backups)
+    # Handler para arquivo com rotação
     file_handler = RotatingFileHandler(
         filename=log_file,
         maxBytes=5 * 1024 * 1024,  # 5 MB
@@ -40,15 +40,16 @@ def setup_logging():
     # Root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(log_level)
-    root_logger.handlers.clear()  # Evita duplicidade
+    root_logger.handlers.clear()
 
     root_logger.addHandler(console_handler)
     root_logger.addHandler(file_handler)
 
-    # Reduz ruído de bibliotecas externas
+    # Reduz ruído de bibliotecas externas no terminal
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("fastapi").setLevel(logging.INFO)
 
-    logging.info(f"Logging iniciado no nível: {log_level}")
-    logging.info(f"Logs serão salvos em: {log_file}")
+    # Apenas para o arquivo
+    logging.debug(f"Logging iniciado no nível: {log_level}")
+    logging.debug(f"Logs serão salvos em: {log_file}")

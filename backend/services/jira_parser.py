@@ -10,18 +10,28 @@ from .project_analysis_utils import (
     calcular_pct_estimativa,
     classificar_status_esforco,
 )
+import logging 
+logger = logging.getLogger(__name__)
 
 def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
     """
     Converte uma lista de issues do Jira em um DataFrame com foco em campos de tempo, datas e equipe,
     baseado no projeto Acompanhamento T.I.
     """
+    logger.info(f"Iniciando parsing de {len(issues)} issues para DataFrame de Acompanhamento T.I.")
+    
     def get(field, default=None):
         return field if field is not None else default
 
     rows = []
-    for issue in issues:
+    for i, issue in enumerate(issues):
+        if i % 100 == 0:  # Log a cada 100 issues processadas
+            logger.debug(f"Processando issue {i+1}/{len(issues)}")
+            
         fields = issue.get("fields", {})
+        
+        if not fields:
+            logger.warning(f"Issue {issue.get('key', 'N/A')} sem campos válidos")
 
         row = {
             "ID": issue.get("id"),
@@ -57,16 +67,20 @@ def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
 
         rows.append(row)
 
+    logger.debug(f"Criando DataFrame com {len(rows)} linhas")
     df = pd.DataFrame(rows)
 
     # Converter datas
+    logger.debug("Convertendo colunas de data para datetime")
     for col in ["Criado em", "Atualizado em", "Data de Início", "Data Prevista de Término", "Data Limite", "Data de Conclusão"]:
         df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
 
     # Cálculo de métricas temporais
+    logger.debug("Calculando métricas temporais")
     df["Dias no Backlog"] = (pd.Timestamp.today() - df["Criado em"]).dt.days
     df["Dias até Entrega (estimado)"] = (df["Data Prevista de Término"] - df["Data de Início"]).dt.days
 
+    logger.info(f"DataFrame de Acompanhamento T.I. criado com sucesso: {len(df)} issues, {len(df.columns)} colunas")
     return df
 
 def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -77,20 +91,27 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     - Status de prazo e esforço
     - Análise de obsolescência (ideação)
     """
+    logger.info("Iniciando enriquecimento do DataFrame com colunas específicas do projeto")
     hoje = datetime.now().date()
 
     # Garantir que as colunas de data estejam no formato datetime
     date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]
+    logger.debug(f"Convertendo colunas de data: {date_cols}")
     for col in date_cols:
-        df[col] = pd.to_datetime(df[col], errors="coerce")
+        if col in df.columns:
+            df[col] = pd.to_datetime(df[col], errors="coerce")
+        else:
+            logger.warning(f"Coluna de data '{col}' não encontrada no DataFrame")
 
     # --- IDEIAÇÃO ---
+    logger.debug("Calculando métricas de ideação")
     df["Dias desde criação"] = df["Data de criação"].apply(
         lambda x: (hoje - x.date()).days if pd.notnull(x) else None
     )
     df["Status de ideação"] = df["Dias desde criação"].apply(classificar_status_ideacao)
 
     # --- EXECUÇÃO ---
+    logger.debug("Calculando métricas de execução")
     df["Dias planejados"] = (df["Target end"] - df["Target start"]).dt.days
     df["Dias desde o início"] = df.apply(
         lambda row: (get_reference_date(row) - row["Target start"].date()).days
@@ -106,9 +127,11 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     df["Status de prazo"] = df.apply(lambda row: classificar_status_prazo(row, hoje), axis=1)
 
     # --- ESFORÇO ---
+    logger.debug("Calculando métricas de esforço")
     df["% da estimativa usada"] = df.apply(calcular_pct_estimativa, axis=1)
     df["Status de esforço"] = df["% da estimativa usada"].apply(classificar_status_esforco)
 
+    logger.info("Enriquecimento do DataFrame concluído com sucesso")
     return df
 
 def position_in_backlog(df: pd.DataFrame) -> pd.DataFrame:
@@ -116,17 +139,21 @@ def position_in_backlog(df: pd.DataFrame) -> pd.DataFrame:
     Adiciona coluna de posição apenas para issues com status 'Backlog Priorizado',
     numerando conforme a ordem em que aparecem no DataFrame.
     """
+    logger.info("Iniciando cálculo de posição no backlog")
+    
     # Primeiro, limpar todas as posições existentes
     df["PosicaoBacklog"] = None
     
     # Filtrar apenas issues com status 'Backlog Priorizado'
     backlog_priorizado_issues = df[df["Status"] == "Backlog Priorizado"]
     
+    logger.debug(f"Encontradas {len(backlog_priorizado_issues)} issues com status 'Backlog Priorizado'")
+    
     # Numerar apenas as issues do backlog priorizado
     for pos, (index, _) in enumerate(backlog_priorizado_issues.iterrows(), start=1):
         df.at[index, "PosicaoBacklog"] = pos
 
-    print(f"Posição no backlog adicionada para {len(backlog_priorizado_issues)} issues com status 'Backlog Priorizado'")
+    logger.info(f"Posição no backlog adicionada para {len(backlog_priorizado_issues)} issues com status 'Backlog Priorizado'")
     return df
 
 def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
@@ -135,9 +162,17 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     baseado no projeto Espaço de Projetos.
     As colunas de data/hora serão do tipo datetime64[ns] do Pandas.
     """
+    logger.info(f"Iniciando parsing de {len(issues)} issues para DataFrame de Espaço de Projetos")
+    
     rows = []
     for index, issue in enumerate(issues):
+        if index % 100 == 0:  # Log a cada 100 issues processadas
+            logger.debug(f"Processando issue {index+1}/{len(issues)}")
+            
         fields = issue.get("fields", {})
+        
+        if not fields:
+            logger.warning(f"Issue {issue.get('key', 'N/A')} sem campos válidos")
 
         row = {
             "ID": issue.get("id"),
@@ -209,15 +244,20 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
         }
         rows.append(row)
 
+    logger.debug(f"Criando DataFrame com {len(rows)} linhas")
     df = pd.DataFrame(rows)
 
     # Converter colunas de data/hora para o tipo datetime do Pandas e remover timezone
+    logger.debug("Convertendo colunas de data/hora para datetime")
     date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]
     for col in date_cols:
         df[col] = pd.to_datetime(df[col], errors="coerce").dt.tz_localize(None)
 
+    logger.debug("Aplicando enriquecimento específico do projeto")
     df = position_in_backlog(df)
     df = project_specific_columns(df)   
+    
+    logger.info(f"DataFrame de Espaço de Projetos criado com sucesso: {len(df)} issues, {len(df.columns)} colunas")
     return df
 
 def prepare_dataframe_for_json_export(df: pd.DataFrame, numeric_or_object_cols_with_nan: list = None) -> pd.DataFrame:
@@ -226,20 +266,32 @@ def prepare_dataframe_for_json_export(df: pd.DataFrame, numeric_or_object_cols_w
     Converte datetime64[ns] para strings e NaN/NaT para None.
     Retorna uma CÓPIA do DataFrame para evitar modificações no original.
     """
+    logger.info("Iniciando preparação do DataFrame para exportação JSON")
     df_adjusted = df.copy() # Trabalha em uma cópia para não alterar o DF original
 
     # 1. Converter colunas de data/hora (datetime64[ns]) para string formatada ou None
-    for col in df_adjusted.select_dtypes(include=['datetime64[ns]']).columns:
+    datetime_cols = df_adjusted.select_dtypes(include=['datetime64[ns]']).columns
+    logger.debug(f"Convertendo {len(datetime_cols)} colunas de datetime para string: {list(datetime_cols)}")
+    
+    for col in datetime_cols:
         df_adjusted[col] = df_adjusted[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
 
     # 2. Converter valores NaN/NaT em colunas numéricas para None para JSON
     # Isso inclui as colunas de "dias" calculadas e quaisquer outras colunas numéricas
     # que possam ter vindo com NaN (ex: Estimativa original (segundos), Investimento Esperado)
 
-    for col in numeric_or_object_cols_with_nan:
-        if col in df_adjusted.columns:
-            # Substitui NaN (float), pd.NA (missing data), pd.NaT (missing datetime) por None
-            # e converte a coluna para o tipo 'object' para permitir misturar números e None
-            df_adjusted[col] = df_adjusted[col].replace({pd.NA: None, pd.NaT: None, float('nan'): None}).astype(object)
+    if numeric_or_object_cols_with_nan:
+        logger.debug(f"Tratando valores NaN em {len(numeric_or_object_cols_with_nan)} colunas: {numeric_or_object_cols_with_nan}")
+        
+        for col in numeric_or_object_cols_with_nan:
+            if col in df_adjusted.columns:
+                # Substitui NaN (float), pd.NA (missing data), pd.NaT (missing datetime) por None
+                # e converte a coluna para o tipo 'object' para permitir misturar números e None
+                df_adjusted[col] = df_adjusted[col].replace({pd.NA: None, pd.NaT: None, float('nan'): None}).astype(object)
+            else:
+                logger.warning(f"Coluna '{col}' não encontrada no DataFrame para tratamento de NaN")
+    else:
+        logger.debug("Nenhuma coluna específica fornecida para tratamento de NaN")
             
+    logger.info("DataFrame preparado com sucesso para exportação JSON")
     return df_adjusted
