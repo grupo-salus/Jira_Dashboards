@@ -23,6 +23,12 @@ interface ProjetosTotalizadoresProps {
   originalData: EspacoDeProjetos[];
 }
 
+// Função para converter CSS rem para pixels
+const remToPx = (rem: string): number => {
+  const remValue = parseFloat(rem.replace("rem", ""));
+  return Math.round(remValue * 16); // 1rem = 16px
+};
+
 const TotalizadorCard: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -94,7 +100,6 @@ const TotalizadorCard: React.FC<{
 
 const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
-  originalData,
 }) => {
   const config = getTotalizadoresConfig();
 
@@ -191,7 +196,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             <TotalizadorCard
               icon={
                 <CardsIcon
-                  size={config.icone}
+                  size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
                   style={{
                     color: themeColors.components.totalizadores.total.icon,
@@ -222,7 +227,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             <TotalizadorCard
               icon={
                 <LightbulbIcon
-                  size={config.icone}
+                  size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
                   style={{
                     color: themeColors.components.totalizadores.ideacao.icon,
@@ -252,7 +257,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             <TotalizadorCard
               icon={
                 <CompassIcon
-                  size={config.icone}
+                  size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
                   style={{
                     color: themeColors.components.totalizadores.projetos.icon,
@@ -282,7 +287,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             <TotalizadorCard
               icon={
                 <ClockIcon
-                  size={config.icone}
+                  size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
                   style={{
                     color:
@@ -318,7 +323,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             <TotalizadorCard
               icon={
                 <CalendarIcon
-                  size={config.icone}
+                  size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
                   style={{
                     color: themeColors.components.totalizadores.total.icon,
@@ -352,7 +357,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             <TotalizadorCard
               icon={
                 <ExclamationTriangleIcon
-                  size={config.icone}
+                  size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
                   style={{
                     color: themeColors.components.totalizadores.total.icon,
@@ -382,7 +387,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             <TotalizadorCard
               icon={
                 <FireIcon
-                  size={config.icone}
+                  size={remToPx(config.icone)}
                   className="text-current flex-shrink-0"
                   style={{
                     color: themeColors.components.totalizadores.total.icon,

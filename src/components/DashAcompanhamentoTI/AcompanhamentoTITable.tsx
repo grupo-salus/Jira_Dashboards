@@ -153,7 +153,7 @@ const AcompanhamentoTITable: React.FC<AcompanhamentoTITableProps> = ({
     "Responsável",
     "Relator",
     "Time",
-    "Categoria",
+    "Squad",
     "Criado em",
     "Atualizado em",
     "Data de Início",
