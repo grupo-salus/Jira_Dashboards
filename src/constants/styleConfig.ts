@@ -29,7 +29,7 @@ const graficosConfig = {
   titulo: "text-sm",
   label: "text-xs",
   valor: "text-xs",
-  eixo: "0.825rem", // 10px
+  eixo: "0.815rem", // 
   tooltip: "0.625rem", // 10px
   legenda: "text-xs font-bold",
   labelRosca: "0.625rem", // 10px

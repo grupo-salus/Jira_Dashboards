@@ -1439,10 +1439,10 @@ const DashProjetos: React.FC = () => {
       />
 
       {/* Gráficos do dashboard - 3 gráficos em linha */}
-      <div className="mb-6 w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mb-6 w-full flex flex-wrap gap-6 justify-center">
         {/* Gráfico 1: Projetos por Área */}
         <div
-          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative"
+          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative flex-1 min-w-[320px] w-full"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
@@ -1481,7 +1481,7 @@ const DashProjetos: React.FC = () => {
 
         {/* Gráfico 2: Prioridade dos Projetos */}
         <div
-          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative"
+          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative flex-1 min-w-[320px] w-full"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div
@@ -1522,7 +1522,7 @@ const DashProjetos: React.FC = () => {
 
         {/* Gráfico 3: Distribuição por Squad */}
         <div
-          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative"
+          className="rounded-lg shadow p-4 flex flex-col min-h-72 relative flex-1 min-w-[320px] w-full"
           style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
         >
           <div

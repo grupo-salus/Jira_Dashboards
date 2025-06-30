@@ -36,6 +36,14 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
+  // Hook para detectar largura da tela
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
@@ -77,6 +85,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
 
   // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
+  const eixoFontSize = windowWidth <= 1500 ? "0.600rem" : fontSizes.eixoGrafico;
 
   // Componente customizado para o tick do eixo X
   const CustomXAxisTick = ({ x, y, payload }: any) => {
@@ -88,10 +97,8 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
           dy={16}
           textAnchor="middle"
           fill={getTextColor("primary", currentTheme)}
-          fontSize={fontSizes.eixoGrafico}
-          style={{
-            fontSize: fontSizes.eixoGrafico, 
-          }}
+          fontSize={eixoFontSize}
+          style={{ fontSize: eixoFontSize }}
         >
           {payload.value.length > 12
             ? payload.value.substring(0, 12) + "..."
@@ -149,11 +156,11 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   const areaCountFiltered = areaCount.filter((a) => a.area !== "Não informado");
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center">
+    <div className="w-full h-full flex-1">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={areaCountFiltered}
-          margin={{ left: 20, right: 20, top: 25, bottom: 20 }}
+          margin={{ left: 0, right: 0, top: 25, bottom: 20 }}
         >
           <XAxis
             dataKey="area"
@@ -164,8 +171,8 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
           <YAxis
             type="number"
             allowDecimals={false}
-            fontSize={fontSizes.eixoGrafico}
-            tick={{ fill: themeColors.secondary[500] }}
+            fontSize={eixoFontSize}
+            tick={{ fill: themeColors.secondary[500], fontSize: eixoFontSize }}
             axisLine={{ stroke: themeColors.secondary[400] }}
             tickLine={{ stroke: themeColors.secondary[400] }}
           />
@@ -193,7 +200,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
               position="top"
               style={{
                 fill: getTextColor("primary", currentTheme),
-                fontSize: fontSizes.eixoGrafico,
+                fontSize: eixoFontSize,
               }}
             />
           </Bar>

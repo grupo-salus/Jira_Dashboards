@@ -32,6 +32,14 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
+  // Hook para detectar largura da tela
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
@@ -129,6 +137,8 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
   const graficosConfig = getGraficosConfig();
+  const labelFontSize =
+    windowWidth <= 1500 ? "0.600rem" : graficosConfig.legenda;
 
   // Agrupa projetos por squad
   const squadCount = React.useMemo(() => {
@@ -165,13 +175,13 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
               cx="50%"
               cy="50%"
               outerRadius={"60%"}
-              label
+              label={({ name }) => name}
               labelLine
               isAnimationActive={false}
               onClick={handlePieClick}
               onMouseEnter={handlePieMouseEnter}
               onMouseLeave={handlePieMouseLeave}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", fontSize: labelFontSize }}
               activeShape={{ r: 75 }}
               activeIndex={[]}
             >
@@ -195,7 +205,8 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                 .map((item) => (
                   <li
                     key={item.label}
-                    className={`flex items-center gap-2 ${graficosConfig.legenda} font-medium`}
+                    className={`flex items-center gap-2 font-medium`}
+                    style={{ fontSize: labelFontSize }}
                   >
                     <span
                       className="inline-block rounded-full"

@@ -50,6 +50,14 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
+  // Hook para detectar largura da tela
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
@@ -91,6 +99,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
 
   // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
+  const eixoFontSize = windowWidth <= 1500 ? "0.600rem" : fontSizes.eixoGrafico;
 
   // Componente customizado para o tick do eixo X
   const CustomXAxisTick = ({ x, y, payload }: any) => {
@@ -107,8 +116,8 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
           dy={16}
           textAnchor="middle"
           fill={prioridadeColor}
-          fontSize={fontSizes.eixoGrafico}
-          style={{ fontSize: fontSizes.eixoGrafico}}
+          fontSize={eixoFontSize}
+          style={{ fontSize: eixoFontSize }}
         >
           {payload.value}
         </text>
@@ -192,8 +201,8 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
             tickLine={{ stroke: themeColors.secondary[400] }}
           />
           <YAxis
-            fontSize={fontSizes.eixoGrafico}
-            tick={{ fill: themeColors.secondary[500] }}
+            fontSize={eixoFontSize}
+            tick={{ fill: themeColors.secondary[500], fontSize: eixoFontSize }}
             axisLine={{ stroke: themeColors.secondary[400] }}
             tickLine={{ stroke: themeColors.secondary[400] }}
           />
@@ -219,7 +228,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
               position="top"
               style={{
                 fill: getTextColor("primary", currentTheme),
-                fontSize: fontSizes.eixoGrafico,
+                fontSize: eixoFontSize,
               }}
             />
           </Bar>
