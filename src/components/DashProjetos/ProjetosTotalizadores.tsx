@@ -35,22 +35,24 @@ const TotalizadorCard: React.FC<{
 
   return (
     <div
-      className={`rounded-lg shadow-md ${config.padding} flex-grow min-w-[280px] ${config.largura} ${config.altura} relative totalizador-card`}
+      className={`rounded-lg shadow-md ${config.padding} flex-grow min-w-[280px] ${config.largura} ${config.altura} relative totalizador-card 2xl:flex-1 2xl:min-w-0`}
       style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       <div className="flex items-center gap-4">
-        <div className="flex-shrink-0 totalizador-icon">{icon}</div>
-        <div>
+        <div className="flex-shrink-0 totalizador-icon flex items-center justify-center h-12">
+          {icon}
+        </div>
+        <div className="flex flex-col justify-center min-h-[56px]">
           <p
-            className={`font-semibold mb-2 break-words ${config.label}`}
+            className={`font-semibold break-words leading-tight min-h-[40px] flex items-center ${config.label}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
             {label}
           </p>
           <p
-            className={`font-bold ${config.valor}`}
+            className={`font-bold mt-1 ${config.valor}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
             {value}
@@ -183,206 +185,232 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   return (
     <div>
       <div className="flex flex-wrap gap-4 lg:gap-6 mb-6">
-        <TotalizadorCard
-          icon={
-            <CardsIcon
-              size={config.icone}
-              className="text-current flex-shrink-0"
-              style={{ color: themeColors.components.totalizadores.total.icon }}
+        <div className="flex flex-wrap gap-4 lg:gap-6 w-full">
+          {/* Primeira linha: 4 cards */}
+          <div className="flex flex-wrap gap-4 lg:gap-6 w-full 2xl:flex-nowrap 2xl:justify-between">
+            <TotalizadorCard
+              icon={
+                <CardsIcon
+                  size={config.icone}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color: themeColors.components.totalizadores.total.icon,
+                  }}
+                />
+              }
+              label="Total de Projetos no Board"
+              value={total}
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Total de Projetos no Board
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Contagem total de projetos considerando os filtros
+                    aplicados. Inclui todos os status: ideação, desenvolvimento,
+                    entregues, etc.
+                  </div>
+                </div>
+              }
             />
-          }
-          label="Total de Projetos no Board"
-          value={total}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Total de Projetos no Board
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Contagem total de projetos considerando os filtros aplicados.
-                Inclui todos os status: ideação, desenvolvimento, entregues,
-                etc.
-              </div>
-            </div>
-          }
-        />
-        <TotalizadorCard
-          icon={
-            <LightbulbIcon
-              size={config.icone}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.ideacao.icon,
-              }}
+            <TotalizadorCard
+              icon={
+                <LightbulbIcon
+                  size={config.icone}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color: themeColors.components.totalizadores.ideacao.icon,
+                  }}
+                />
+              }
+              label="Projetos em Ideação"
+              value={totalIdeacao}
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Projetos em Ideação
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Projetos da coluna Ideação que são ideias a serem ainda
+                    analisadas e avaliadas.
+                  </div>
+                </div>
+              }
             />
-          }
-          label="Projetos em Ideação"
-          value={totalIdeacao}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos em Ideação
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos da coluna Ideação que são ideias a serem ainda
-                analisadas e avaliadas.
-              </div>
-            </div>
-          }
-        />
-        <TotalizadorCard
-          icon={
-            <CompassIcon
-              size={config.icone}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.projetos.icon,
-              }}
+            <TotalizadorCard
+              icon={
+                <CompassIcon
+                  size={config.icone}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color: themeColors.components.totalizadores.projetos.icon,
+                  }}
+                />
+              }
+              label="Projetos em Andamento"
+              value={totalEmAndamento}
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Projetos em Andamento
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Projetos que estão ativamente sendo desenvolvidos: Em
+                    Andamento, Em Homologação e Operação Assistida.
+                  </div>
+                </div>
+              }
             />
-          }
-          label="Projetos em Andamento"
-          value={totalEmAndamento}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos em Andamento
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que estão ativamente sendo desenvolvidos: Em Andamento,
-                Em Homologação e Operação Assistida.
-              </div>
-            </div>
-          }
-        />
-        <TotalizadorCard
-          icon={
-            <ClockIcon
-              size={config.icone}
-              className="text-current flex-shrink-0"
-              style={{
-                color:
-                  themeColors.components.totalizadores.backlogPriorizado.icon,
-              }}
+            <TotalizadorCard
+              icon={
+                <ClockIcon
+                  size={config.icone}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color:
+                      themeColors.components.totalizadores.backlogPriorizado
+                        .icon,
+                  }}
+                />
+              }
+              label="Projetos no Backlog Priorizado"
+              value={totalBacklogPriorizado}
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Projetos no Backlog Priorizado
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Ideias que viraram projetos, já passaram pela análise e
+                    estão na fila priorizada aguardando desenvolvimento.
+                  </div>
+                </div>
+              }
             />
-          }
-          label="Projetos no Backlog Priorizado"
-          value={totalBacklogPriorizado}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos no Backlog Priorizado
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Ideias que viraram projetos, já passaram pela análise e estão na
-                fila priorizada aguardando desenvolvimento.
-              </div>
-            </div>
-          }
-        />
-        <TotalizadorCard
-          icon={
-            <CalendarIcon
-              size={config.icone}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
+          </div>
+
+          {/* Segunda linha: 3 cards */}
+          <div className="flex flex-wrap gap-4 lg:gap-6 w-full 2xl:flex-nowrap 2xl:justify-start 2xl:mt-4">
+            <TotalizadorCard
+              icon={
+                <CalendarIcon
+                  size={config.icone}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color: themeColors.components.totalizadores.total.icon,
+                  }}
+                />
+              }
+              label="Projetos Entregues no Mês"
+              value={totalEntreguesNoMes}
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Projetos Entregues no Mês
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Projetos que foram concluídos e entregues no mês atual (
+                    {new Date().toLocaleDateString("pt-BR", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                    ).
+                  </div>
+                </div>
+              }
             />
-          }
-          label="Projetos Entregues no Mês"
-          value={totalEntreguesNoMes}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos Entregues no Mês
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que foram concluídos e entregues no mês atual (
-                {new Date().toLocaleDateString("pt-BR", {
-                  month: "long",
-                  year: "numeric",
-                })}
-                ).
-              </div>
-            </div>
-          }
-        />
-        <TotalizadorCard
-          icon={
-            <ExclamationTriangleIcon
-              size={config.icone}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
+            <TotalizadorCard
+              icon={
+                <ExclamationTriangleIcon
+                  size={config.icone}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color: themeColors.components.totalizadores.total.icon,
+                  }}
+                />
+              }
+              label="Projetos Em Risco"
+              value="-"
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Projetos Em Risco
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Projetos que apresentam riscos de atraso ou problemas de
+                    execução. Lógica a ser implementada.
+                  </div>
+                </div>
+              }
             />
-          }
-          label="Projetos Em Risco"
-          value="-"
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos Em Risco
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que apresentam riscos de atraso ou problemas de
-                execução. Lógica a ser implementada.
-              </div>
-            </div>
-          }
-        />
-        <TotalizadorCard
-          icon={
-            <FireIcon
-              size={config.icone}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
+            <TotalizadorCard
+              icon={
+                <FireIcon
+                  size={config.icone}
+                  className="text-current flex-shrink-0"
+                  style={{
+                    color: themeColors.components.totalizadores.total.icon,
+                  }}
+                />
+              }
+              label="Projetos Atrasados"
+              value="-"
+              currentTheme={currentTheme}
+              tooltipContent={
+                <div className="text-xs max-w-xs">
+                  <div
+                    className="font-bold mb-1"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Projetos Atrasados
+                  </div>
+                  <div
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    Projetos que ultrapassaram o prazo de entrega previsto.
+                    Lógica a ser implementada.
+                  </div>
+                </div>
+              }
             />
-          }
-          label="Projetos Atrasados"
-          value="-"
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos Atrasados
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que ultrapassaram o prazo de entrega previsto. Lógica a
-                ser implementada.
-              </div>
-            </div>
-          }
-        />
+          </div>
+        </div>
       </div>
 
       {/* Seção dos próximos projetos */}
