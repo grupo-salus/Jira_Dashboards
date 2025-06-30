@@ -398,42 +398,76 @@ const DashProjetos: React.FC = () => {
   const areaOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
-          .map((i: EspacoDeProjetos) => i["Departamento Solicitante"])
-          .filter((value): value is string => Boolean(value))
+        projetosData.rawData.map(
+          (i: EspacoDeProjetos) => i["Departamento Solicitante"]
+        )
       ),
     ],
     [projetosData.rawData]
   );
+  const areaHasEmpty = projetosData.rawData.some(
+    (i: EspacoDeProjetos) => !i["Departamento Solicitante"]
+  );
+  const areaOptionsSelect = [
+    ...(areaHasEmpty
+      ? [
+          {
+            value: "",
+            label: (
+              <span style={{ color: "#dc2626", fontWeight: 600 }}>
+                Não informado
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...areaOptions
+      .filter((area): area is string => Boolean(area))
+      .map((area) => ({ value: area, label: area })),
+  ];
 
   const prioridadeOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
-          .map((i: EspacoDeProjetos) => i.Prioridade)
-          .filter((value): value is string => Boolean(value))
+        projetosData.rawData.map((i: EspacoDeProjetos) => i.Prioridade)
       ),
     ],
     [projetosData.rawData]
   );
-
-  // Opções de prioridade traduzidas para o dropdown
-  const prioridadeOptionsTraduzidas = useMemo(() => {
-    return prioridadeOptions.map((prioridade) => ({
+  const prioridadeHasEmpty = projetosData.rawData.some(
+    (i: EspacoDeProjetos) => !i.Prioridade
+  );
+  const prioridadeOptionsTraduzidas = prioridadeOptions
+    .filter((prioridade): prioridade is string => Boolean(prioridade))
+    .map((prioridade) => ({
       valor: prioridade,
       label: getPriorityConfig(prioridade).label,
     }));
-  }, [prioridadeOptions]);
+  const prioridadeOptionsSelect = [
+    ...(prioridadeHasEmpty
+      ? [
+          {
+            value: "",
+            label: (
+              <span style={{ color: "#dc2626", fontWeight: 600 }}>
+                Não informado
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...prioridadeOptionsTraduzidas.map((prio) => ({
+      value: prio.valor,
+      label: prio.label,
+    })),
+  ];
 
-  // Opções de status padronizadas para o filtro
   const statusOptions = useMemo(() => {
-    // Normalizar os status que vêm do Jira para comparar com COLUMN_ORDER
     const statusSet = new Set<string>(
       projetosData.rawData.map((i: EspacoDeProjetos) =>
         normalizarStatusDisplay(i.Status || "")
       )
     );
-
     return COLUMN_ORDER.filter((status) => statusSet.has(status)).map(
       (status) => ({
         value: status,
@@ -441,57 +475,85 @@ const DashProjetos: React.FC = () => {
       })
     );
   }, [projetosData.rawData]);
+  const statusHasEmpty = projetosData.rawData.some(
+    (i: EspacoDeProjetos) => !i.Status
+  );
+  const statusOptionsSelect = [
+    ...(statusHasEmpty
+      ? [
+          {
+            value: "",
+            label: (
+              <span style={{ color: "#dc2626", fontWeight: 600 }}>
+                Não informado
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...statusOptions.map((option) => ({
+      value: option.value,
+      label: option.label,
+    })),
+  ];
 
   const squadOptions = useMemo(
     () => [
-      ...new Set(
-        projetosData.rawData
-          .map((i: EspacoDeProjetos) => i.Squad)
-          .filter((value): value is string => Boolean(value))
-      ),
+      ...new Set(projetosData.rawData.map((i: EspacoDeProjetos) => i.Squad)),
     ],
     [projetosData.rawData]
   );
+  const squadHasEmpty = projetosData.rawData.some(
+    (i: EspacoDeProjetos) => !i.Squad
+  );
+  const squadOptionsSelect = [
+    ...(squadHasEmpty
+      ? [
+          {
+            value: "",
+            label: (
+              <span style={{ color: "#dc2626", fontWeight: 600 }}>
+                Não informado
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...squadOptions
+      .filter((squad): squad is string => Boolean(squad))
+      .map((squad) => ({ value: squad, label: squad })),
+  ];
 
-  // Opções para react-select
-  const areaOptionsSelect = areaOptions.map((area) => ({
-    value: area,
-    label: area,
-  }));
-
-  const statusOptionsSelect = statusOptions.map((option) => ({
-    value: option.value,
-    label: option.label,
-  }));
-
-  const prioridadeOptionsSelect = prioridadeOptionsTraduzidas.map((prio) => ({
-    value: prio.valor,
-    label: prio.label,
-  }));
-
-  const squadOptionsSelect = squadOptions.map((squad) => ({
-    value: squad,
-    label: squad,
-  }));
-
-  // Opções para filtro de Grupo Solicitante
   const grupoSolicitanteOptions = useMemo(
     () => [
       ...new Set(
-        projetosData.rawData
-          .map((i: EspacoDeProjetos) => i["Grupo Solicitante"])
-          .filter((value): value is string => Boolean(value))
+        projetosData.rawData.map(
+          (i: EspacoDeProjetos) => i["Grupo Solicitante"]
+        )
       ),
     ],
     [projetosData.rawData]
   );
-
-  const grupoSolicitanteOptionsSelect = grupoSolicitanteOptions.map(
-    (grupo) => ({
-      value: grupo,
-      label: grupo,
-    })
+  const grupoSolicitanteHasEmpty = projetosData.rawData.some(
+    (i: EspacoDeProjetos) => !i["Grupo Solicitante"]
   );
+  const grupoSolicitanteOptionsSelect = [
+    ...(grupoSolicitanteHasEmpty
+      ? [
+          {
+            value: "",
+            label: (
+              <span style={{ color: "#dc2626", fontWeight: 600 }}>
+                Não informado
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...grupoSolicitanteOptions
+      .filter((grupo): grupo is string => Boolean(grupo))
+      .map((grupo) => ({ value: grupo, label: grupo })),
+  ];
 
   // Opções para filtro de data avançado
   const camposDataOptions = [
