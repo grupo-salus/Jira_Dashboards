@@ -192,6 +192,16 @@ export const themeColors = {
           dark: "#34d399", // green-300
         },
       },
+      emRisco: {
+        bg: {
+          light: "#fef3c7", // yellow-100
+          dark: "#78350f", // yellow-900
+        },
+        text: {
+          light: "#92400e", // yellow-800
+          dark: "#fde68a", // yellow-300
+        },
+      },
       foraPrazo: {
         bg: {
           light: "#fee2e2", // red-100
@@ -706,6 +716,7 @@ export const getStatusColor = (
   const statusMap: Record<string, any> = {
     prazo: {
       "No prazo": themeColors.status.prazo.noPrazo,
+      "Em risco": themeColors.status.prazo.emRisco,
       "Fora do prazo": themeColors.status.prazo.foraPrazo,
     },
     esforco: {

@@ -324,7 +324,11 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
                   <div
-                    className="bg-blue-600 h-1.5 rounded-full"
+                    className={`h-1.5 rounded-full ${
+                      (projeto["% do tempo decorrido"] || 0) > 100
+                        ? "bg-red-600"
+                        : "bg-blue-600"
+                    }`}
                     style={{
                       width: `${Math.min(
                         projeto["% do tempo decorrido"] || 0,
@@ -371,7 +375,11 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
                   <div
-                    className="bg-green-600 h-1.5 rounded-full"
+                    className={`h-1.5 rounded-full ${
+                      (projeto["% da estimativa usada"] || 0) > 100
+                        ? "bg-red-600"
+                        : "bg-blue-600"
+                    }`}
                     style={{
                       width: `${Math.min(
                         projeto["% da estimativa usada"] || 0,
@@ -503,7 +511,11 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
                   <div
-                    className="bg-blue-600 h-1.5 rounded-full"
+                    className={`h-1.5 rounded-full ${
+                      (projeto["% do tempo decorrido"] || 0) > 100
+                        ? "bg-red-600"
+                        : "bg-blue-600"
+                    }`}
                     style={{
                       width: `${Math.min(
                         projeto["% do tempo decorrido"] || 0,
@@ -550,7 +562,11 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
                   <div
-                    className="bg-green-600 h-1.5 rounded-full"
+                    className={`h-1.5 rounded-full ${
+                      (projeto["% da estimativa usada"] || 0) > 100
+                        ? "bg-red-600"
+                        : "bg-blue-600"
+                    }`}
                     style={{
                       width: `${Math.min(
                         projeto["% da estimativa usada"] || 0,
@@ -689,7 +705,11 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
             </div>
             <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
               <div
-                className="bg-blue-600 h-1.5 rounded-full"
+                className={`h-1.5 rounded-full ${
+                  (projeto["% do tempo decorrido"] || 0) > 100
+                    ? "bg-red-600"
+                    : "bg-blue-600"
+                }`}
                 style={{
                   width: `${Math.min(
                     projeto["% do tempo decorrido"] || 0,
@@ -733,7 +753,11 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
                 <div
-                  className="bg-green-600 h-1.5 rounded-full"
+                  className={`h-1.5 rounded-full ${
+                    (projeto["% da estimativa usada"] || 0) > 100
+                      ? "bg-red-600"
+                      : "bg-blue-600"
+                  }`}
                   style={{
                     width: `${Math.min(
                       projeto["% da estimativa usada"] || 0,
@@ -850,7 +874,11 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
             </div>
             <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
               <div
-                className="bg-blue-600 h-1.5 rounded-full"
+                className={`h-1.5 rounded-full ${
+                  (projeto["% do tempo decorrido"] || 0) > 100
+                    ? "bg-red-600"
+                    : "bg-blue-600"
+                }`}
                 style={{
                   width: `${Math.min(
                     projeto["% do tempo decorrido"] || 0,
@@ -891,7 +919,11 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
             </div>
             <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 dark:bg-gray-700">
               <div
-                className="bg-green-600 h-1.5 rounded-full"
+                className={`h-1.5 rounded-full ${
+                  (projeto["% da estimativa usada"] || 0) > 100
+                    ? "bg-red-600"
+                    : "bg-blue-600"
+                }`}
                 style={{
                   width: `${Math.min(
                     projeto["% da estimativa usada"] || 0,
