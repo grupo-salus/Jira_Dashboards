@@ -225,3 +225,21 @@ class JiraService:
             logger.error(f"[get_field_context_options] Erro ao buscar opções do campo {field_id} (contexto {context_id}): {e}")
             logger.debug(f"[get_field_context_options] URL que falhou: {url}")
             return {}
+        
+    def get_issue_with_changelog(self, issue_key: str) -> dict:
+        """
+        Retorna uma issue completa com histórico de mudanças (changelog).
+        """
+        logger.info(f"[get_issue_with_changelog] Buscando changelog da issue {issue_key}")
+        url = f"{self.jira_url}/rest/api/3/issue/{issue_key}?expand=changelog"
+
+        try:
+            response = requests.get(url, headers=self.headers, auth=self.auth)
+            response.raise_for_status()
+            issue = response.json()
+            logger.debug(f"[get_issue_with_changelog] Issue {issue_key} carregada com changelog")
+            return issue
+        except Exception as e:
+            logger.error(f"[get_issue_with_changelog] Erro ao buscar changelog da issue {issue_key}: {e}")
+            return {}
+
