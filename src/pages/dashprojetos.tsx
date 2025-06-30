@@ -50,7 +50,7 @@ const statusNameMap: Record<string, string> = {
 };
 
 const DashProjetos: React.FC = () => {
-  const { projetosData } = useJira();
+  const { projetosData, opcoesDepartamentoSolicitante } = useJira();
   const [visualizacao, setVisualizacao] = useState<"tabela" | "kanban">(
     "kanban"
   );
@@ -395,16 +395,21 @@ const DashProjetos: React.FC = () => {
   }, [projetosData.rawData, filtros]);
 
   // Opções para dropdowns baseadas nos dados
-  const areaOptions = useMemo(
-    () => [
+  const areaOptions = useMemo(() => {
+    // Usar as opções do campo customizado se disponíveis, senão usar os dados dos projetos
+    if (opcoesDepartamentoSolicitante.options.length > 0) {
+      return opcoesDepartamentoSolicitante.options;
+    }
+
+    // Fallback para os dados dos projetos (caso as opções do campo customizado não estejam disponíveis)
+    return [
       ...new Set(
         projetosData.rawData.map(
           (i: EspacoDeProjetos) => i["Departamento Solicitante"]
         )
       ),
-    ],
-    [projetosData.rawData]
-  );
+    ];
+  }, [opcoesDepartamentoSolicitante.options, projetosData.rawData]);
   const areaHasEmpty = projetosData.rawData.some(
     (i: EspacoDeProjetos) => !i["Departamento Solicitante"]
   );
@@ -663,6 +668,22 @@ const DashProjetos: React.FC = () => {
                 style={{ color: getTextColor("primary", currentTheme) }}
               >
                 Área
+                {opcoesDepartamentoSolicitante.loading && (
+                  <span
+                    className="ml-2 text-sm font-normal"
+                    style={{ color: getTextColor("secondary", currentTheme) }}
+                  >
+                    (carregando...)
+                  </span>
+                )}
+                {opcoesDepartamentoSolicitante.error && (
+                  <span
+                    className="ml-2 text-sm font-normal"
+                    style={{ color: themeColors.text.error[currentTheme] }}
+                  >
+                    (erro ao carregar)
+                  </span>
+                )}
               </label>
               <Select
                 inputId="area-filter"
@@ -677,7 +698,12 @@ const DashProjetos: React.FC = () => {
                     area: selected ? selected.map((s: any) => s.value) : [],
                   }))
                 }
-                placeholder="Todas"
+                placeholder={
+                  opcoesDepartamentoSolicitante.loading
+                    ? "Carregando..."
+                    : "Todas"
+                }
+                isDisabled={opcoesDepartamentoSolicitante.loading}
                 classNamePrefix="react-select"
                 styles={{
                   control: (base) => ({

@@ -27,6 +27,10 @@ interface EspacoDeProjetosResponse {
   tabela_dashboard_ep: EspacoDeProjetos[];
 }
 
+interface CampoCustomizadoResponse {
+  opcoes_campo_customizado: string[];
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchAcompanhamentoTI(filters?: {
@@ -129,6 +133,25 @@ export async function fetchEspacoDeProjetos(filters?: {
     }));
   } catch (error) {
     console.error("Error fetching espaco de projetos table:", error);
+    throw error;
+  }
+}
+
+export async function fetchOpcoesCampoCustomizado(
+  fieldId: string
+): Promise<string[]> {
+  try {
+    const url = `${API_URL}/api/jira/opcoes-campo-customizado/${fieldId}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch custom field options for ${fieldId}`);
+    }
+
+    const data: CampoCustomizadoResponse = await response.json();
+    return data.opcoes_campo_customizado ?? [];
+  } catch (error) {
+    console.error(`Error fetching custom field options for ${fieldId}:`, error);
     throw error;
   }
 }

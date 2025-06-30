@@ -161,5 +161,5 @@ export const fontSizes = getFontSizes();
 
 // Configurações de tooltip
 export const TOOLTIP_CONFIG = {
-  DELAY_MS: 400, // Delay em milissegundos para mostrar o tooltip
+  DELAY_MS: 800, // Delay em milissegundos para mostrar o tooltip
 };

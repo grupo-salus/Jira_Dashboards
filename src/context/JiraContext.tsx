@@ -21,7 +21,11 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { fetchAcompanhamentoTI, fetchEspacoDeProjetos } from "../api/api_jira";
+import {
+  fetchAcompanhamentoTI,
+  fetchEspacoDeProjetos,
+  fetchOpcoesCampoCustomizado,
+} from "../api/api_jira";
 import { AcompanhamentoTI, EspacoDeProjetos } from "../types/Typesjira";
 
 interface JiraContextType {
@@ -47,10 +51,18 @@ interface JiraContextType {
     error: string | null;
     lastUpdate: Date | null;
   };
+  // Opções do campo customizado Departamento Solicitante
+  opcoesDepartamentoSolicitante: {
+    options: string[];
+    loading: boolean;
+    error: string | null;
+    lastUpdate: Date | null;
+  };
   // Funções de atualização
   refreshProjetosData: () => Promise<void>;
   refreshSprintData: () => Promise<void>;
   refreshAcompanhamentoTIData: () => Promise<void>;
+  refreshOpcoesDepartamentoSolicitante: () => Promise<void>;
 }
 
 const CACHE_KEY = "jira_data_cache";
@@ -88,9 +100,16 @@ export const JiraContext = createContext<JiraContextType>({
     error: null,
     lastUpdate: null,
   },
+  opcoesDepartamentoSolicitante: {
+    options: [],
+    loading: true,
+    error: null,
+    lastUpdate: null,
+  },
   refreshProjetosData: async () => {},
   refreshSprintData: async () => {},
   refreshAcompanhamentoTIData: async () => {},
+  refreshOpcoesDepartamentoSolicitante: async () => {},
 });
 
 export const useJira = () => useContext(JiraContext);
@@ -126,6 +145,22 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   >(null);
   const [acompanhamentoTILastUpdate, setAcompanhamentoTILastUpdate] =
     useState<Date | null>(null);
+
+  // Estado das opções do campo customizado Departamento Solicitante
+  const [opcoesDepartamentoSolicitante, setOpcoesDepartamentoSolicitante] =
+    useState<string[]>([]);
+  const [
+    opcoesDepartamentoSolicitanteLoading,
+    setOpcoesDepartamentoSolicitanteLoading,
+  ] = useState(true);
+  const [
+    opcoesDepartamentoSolicitanteError,
+    setOpcoesDepartamentoSolicitanteError,
+  ] = useState<string | null>(null);
+  const [
+    opcoesDepartamentoSolicitanteLastUpdate,
+    setOpcoesDepartamentoSolicitanteLastUpdate,
+  ] = useState<Date | null>(null);
 
   const loadFromCache = (): boolean => {
     try {
@@ -225,6 +260,26 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
     }
   };
 
+  const refreshOpcoesDepartamentoSolicitante = async () => {
+    try {
+      setOpcoesDepartamentoSolicitanteLoading(true);
+      setOpcoesDepartamentoSolicitanteError(null);
+
+      const options = await fetchOpcoesCampoCustomizado("customfield_10245");
+      setOpcoesDepartamentoSolicitante(options);
+      setOpcoesDepartamentoSolicitanteLastUpdate(new Date());
+    } catch (error) {
+      setOpcoesDepartamentoSolicitanteError(
+        error instanceof Error
+          ? error.message
+          : "Erro ao carregar opções do campo customizado"
+      );
+      console.error("Erro ao buscar opções do campo customizado:", error);
+    } finally {
+      setOpcoesDepartamentoSolicitanteLoading(false);
+    }
+  };
+
   useEffect(() => {
     const carregarDados = async () => {
       try {
@@ -265,6 +320,29 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
     };
 
     carregarDadosTI();
+  }, []);
+
+  // Carregar opções do campo customizado Departamento Solicitante
+  useEffect(() => {
+    const carregarOpcoesCampoCustomizado = async () => {
+      try {
+        setOpcoesDepartamentoSolicitanteLoading(true);
+        setOpcoesDepartamentoSolicitanteError(null);
+        const options = await fetchOpcoesCampoCustomizado("customfield_10245");
+        setOpcoesDepartamentoSolicitante(options);
+        setOpcoesDepartamentoSolicitanteLastUpdate(new Date());
+      } catch (err) {
+        setOpcoesDepartamentoSolicitanteError(
+          err instanceof Error
+            ? err.message
+            : "Erro ao carregar opções do campo customizado"
+        );
+      } finally {
+        setOpcoesDepartamentoSolicitanteLoading(false);
+      }
+    };
+
+    carregarOpcoesCampoCustomizado();
   }, []);
 
   // Carrega dados iniciais apenas uma vez
@@ -308,9 +386,16 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
           error: acompanhamentoTIError,
           lastUpdate: acompanhamentoTILastUpdate,
         },
+        opcoesDepartamentoSolicitante: {
+          options: opcoesDepartamentoSolicitante,
+          loading: opcoesDepartamentoSolicitanteLoading,
+          error: opcoesDepartamentoSolicitanteError,
+          lastUpdate: opcoesDepartamentoSolicitanteLastUpdate,
+        },
         refreshProjetosData,
         refreshSprintData,
         refreshAcompanhamentoTIData,
+        refreshOpcoesDepartamentoSolicitante,
       }}
     >
       {children}
