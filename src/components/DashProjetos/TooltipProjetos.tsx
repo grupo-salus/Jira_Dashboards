@@ -4,6 +4,7 @@ import {
   getTextColor,
   getBackgroundColor,
   getBorderColor,
+  getPriorityConfig,
 } from "../../utils/themeColors";
 
 interface TooltipProjetosProps {
@@ -125,7 +126,23 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
                   </div>
                   <div>
                     <span className="font-medium">Prioridade:</span>{" "}
-                    {proj.Prioridade || "Não informado"}
+                    {proj.Prioridade ? (
+                      <span
+                        style={{
+                          backgroundColor: getPriorityConfig(proj.Prioridade).hex,
+                          color: '#fff',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          fontWeight: 600,
+                          fontSize: '0.85em',
+                          marginLeft: 4,
+                        }}
+                      >
+                        {getPriorityConfig(proj.Prioridade).label}
+                      </span>
+                    ) : (
+                      <span>Não informado</span>
+                    )}
                   </div>
                   <div>
                     <span className="font-medium">Responsável:</span>{" "}
