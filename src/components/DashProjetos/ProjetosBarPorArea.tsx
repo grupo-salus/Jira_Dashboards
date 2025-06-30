@@ -44,6 +44,8 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const isMobile = windowWidth <= 600;
+
   useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
@@ -161,16 +163,17 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
         <BarChart
           data={areaCountFiltered}
           margin={{ left: 0, right: 0, top: 25, bottom: 20 }}
+          layout={isMobile ? "vertical" : "horizontal"}
         >
           <XAxis
-            dataKey="area"
-            type="category"
+            dataKey={isMobile ? "count" : "area"}
+            type={isMobile ? "number" : "category"}
             tick={<CustomXAxisTick />}
             interval={0}
           />
           <YAxis
-            type="number"
-            allowDecimals={false}
+            dataKey={isMobile ? "area" : undefined}
+            type={isMobile ? "category" : "number"}
             fontSize={eixoFontSize}
             tick={{ fill: themeColors.secondary[500], fontSize: eixoFontSize }}
             axisLine={{ stroke: themeColors.secondary[400] }}
@@ -197,7 +200,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             ))}
             <LabelList
               dataKey="count"
-              position="top"
+              position={isMobile ? "right" : "top"}
               style={{
                 fill: getTextColor("primary", currentTheme),
                 fontSize: eixoFontSize,

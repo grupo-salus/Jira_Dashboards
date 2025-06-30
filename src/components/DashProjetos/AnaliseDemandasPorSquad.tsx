@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
-import {
-  getTextColor,
-  getSquadConfig,
-  themeColors,
-} from "../../utils/themeColors";
+import { getTextColor, getSquadConfig } from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
-import {
-  getFontSizes,
-  TOOLTIP_CONFIG,
-  getGraficosConfig,
-} from "../../constants/styleConfig";
+import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 
 interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
@@ -136,9 +128,8 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
 
   // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
-  const graficosConfig = getGraficosConfig();
   const labelFontSize =
-    windowWidth <= 1500 ? "0.600rem" : graficosConfig.legenda;
+    windowWidth <= 1500 ? "0.600rem" : fontSizes.eixoGrafico;
 
   // Agrupa projetos por squad
   const squadCount = React.useMemo(() => {
@@ -175,13 +166,31 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
               cx="50%"
               cy="50%"
               outerRadius={"60%"}
-              label={({ name }) => name}
+              label={({ name, x, y, cx, cy }) => {
+                // Afastar a label 20% a mais do centro
+                const dx = x - cx;
+                const dy = y - cy;
+                const newX = cx + dx * 1.2;
+                const newY = cy + dy * 1.2;
+                return (
+                  <text
+                    x={newX}
+                    y={newY}
+                    textAnchor="middle"
+                    fill={getTextColor("primary", currentTheme)}
+                    fontSize={labelFontSize}
+                    style={{ fontSize: labelFontSize }}
+                  >
+                    {name}
+                  </text>
+                );
+              }}
               labelLine
               isAnimationActive={false}
               onClick={handlePieClick}
               onMouseEnter={handlePieMouseEnter}
               onMouseLeave={handlePieMouseLeave}
-              style={{ cursor: "pointer", fontSize: labelFontSize }}
+              style={{ cursor: "pointer" }}
               activeShape={{ r: 75 }}
               activeIndex={[]}
             >

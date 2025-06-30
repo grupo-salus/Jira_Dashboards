@@ -58,6 +58,8 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const isMobile = windowWidth <= 600;
+
   useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
@@ -185,6 +187,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
         <BarChart
           data={prioridadeCount}
           margin={{ left: 20, right: 20, top: 25, bottom: 20 }}
+          layout={isMobile ? "vertical" : "horizontal"}
           onClick={(e) => {
             if (e && e.activePayload && e.activePayload[0]) {
               const prioridadeValue = e.activePayload[0].payload.value;
@@ -193,14 +196,16 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
           }}
         >
           <XAxis
-            dataKey="label"
-            type="category"
+            dataKey={isMobile ? "count" : "label"}
+            type={isMobile ? "number" : "category"}
             tick={<CustomXAxisTick />}
             interval={0}
             axisLine={{ stroke: themeColors.secondary[400] }}
             tickLine={{ stroke: themeColors.secondary[400] }}
           />
           <YAxis
+            dataKey={isMobile ? "label" : undefined}
+            type={isMobile ? "category" : "number"}
             fontSize={eixoFontSize}
             tick={{ fill: themeColors.secondary[500], fontSize: eixoFontSize }}
             axisLine={{ stroke: themeColors.secondary[400] }}
@@ -225,7 +230,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
             ))}
             <LabelList
               dataKey="count"
-              position="top"
+              position={isMobile ? "right" : "top"}
               style={{
                 fill: getTextColor("primary", currentTheme),
                 fontSize: eixoFontSize,
