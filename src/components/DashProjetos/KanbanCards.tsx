@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import {
   formatDate,
@@ -7,11 +7,84 @@ import {
   normalizarStatus,
 } from "./kanbanUtils";
 import { getFontSizes } from "../../constants/styleConfig";
+import { useTheme } from "../../context/ThemeContext";
+import { getPriorityConfig } from "../../utils/themeColors";
 
 const fontSizes = getFontSizes();
 
 const JIRA_URL_BASE =
   "https://tigruposalus.atlassian.net/jira/software/c/projects/EP/boards/323?selectedIssue=";
+
+// ============================================================================
+// COMPONENTE DE TOOLTIP PERSONALIZADO
+// ============================================================================
+
+interface CustomTooltipProps {
+  content: string;
+  children: React.ReactNode;
+  priority?: string;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  content,
+  children,
+  priority,
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const { theme } = useTheme();
+  const tooltipRef = React.useRef<HTMLDivElement>(null);
+
+  // Obtém a cor da prioridade
+  const priorityConfig = priority ? getPriorityConfig(priority) : null;
+  const priorityColor =
+    priorityConfig?.hex || (theme === "dark" ? "#10b981" : "#3b82f6");
+
+  if (!content || content === "Sem descrição disponível") {
+    return <>{children}</>;
+  }
+
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipPosition({
+      top: rect.top,
+      left: rect.right + 8,
+    });
+    setIsVisible(true);
+  };
+
+  return (
+    <div
+      className="relative inline-block w-full"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={() => setIsVisible(false)}
+    >
+      {children}
+      {isVisible && (
+        <div
+          ref={tooltipRef}
+          className="fixed px-4 py-3 text-sm rounded-lg shadow-lg max-w-md break-words"
+          style={{
+            backgroundColor:
+              theme === "dark"
+                ? "rgba(31, 41, 55, 0.95)"
+                : "rgba(255, 255, 255, 0.95)",
+            color: theme === "dark" ? "#d1d5db" : "#374151",
+            border: `2px solid ${priorityColor}`,
+            boxShadow: `0 10px 25px -5px rgba(0, 0, 0, 0.3)`,
+            zIndex: 9999,
+            top: tooltipPosition.top,
+            left: tooltipPosition.left,
+            minWidth: "300px",
+            maxWidth: "400px",
+          }}
+        >
+          {content}
+        </div>
+      )}
+    </div>
+  );
+};
 
 function withJiraLink(projeto: EspacoDeProjetos, children: React.ReactNode) {
   return (
@@ -36,68 +109,70 @@ function withJiraLink(projeto: EspacoDeProjetos, children: React.ReactNode) {
 const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
   return withJiraLink(
     projeto,
-    <div
-      className={`space-y-2 ${fontSizes.corpoCardKanban}`}
-      title={projeto.Descrição || "Sem descrição disponível"}
+    <CustomTooltip
+      content={projeto.Descrição || "Sem descrição disponível"}
+      priority={projeto.Prioridade}
     >
-      <div
-        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
-      >
-        <span>{projeto.Título}</span>
-      </div>
-
-      {/* Área */}
-      {projeto["Departamento Solicitante"] && (
-        <div className="flex items-center gap-2">
-          <span
-            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-          >
-            {projeto["Departamento Solicitante"]}
-          </span>
+      <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+        <div
+          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        >
+          <span>{projeto.Título}</span>
         </div>
-      )}
 
-      {/* Squad */}
-      {projeto.Squad && (
-        <div className="text-gray-600 dark:text-gray-100">
-          Squad: {projeto.Squad}
-        </div>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Data de ideação */}
-      {projeto["Data: Início Backlog"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Data de ideação: {formatDate(projeto["Data: Início Backlog"])}
-        </div>
-      )}
-
-      {/* Dias em espera */}
-      {projeto["Dias na fase atual"] !== null &&
-        projeto["Dias na fase atual"] !== undefined && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Em espera há: {projeto["Dias na fase atual"]} dias
+        {/* Área */}
+        {projeto["Departamento Solicitante"] && (
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+            >
+              {projeto["Departamento Solicitante"]}
+            </span>
           </div>
         )}
 
-      {/* Data fim de ideação */}
-      {projeto["Data: Fim Backlog"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Data fim de ideação: {formatDate(projeto["Data: Fim Backlog"])}
-        </div>
-      )}
-
-      {/* Status de ideação */}
-      {projeto["Status de ideação"] && (
-        <>
-          <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="text-gray-600 dark:text-gray-200">
-            Status de ideação: {projeto["Status de ideação"]}
+        {/* Squad */}
+        {projeto.Squad && (
+          <div className="text-gray-600 dark:text-gray-100">
+            Squad: {projeto.Squad}
           </div>
-        </>
-      )}
-    </div>
+        )}
+
+        <hr className="my-1 border-gray-300 dark:border-gray-600" />
+
+        {/* Data de ideação */}
+        {projeto["Data: Início Backlog"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Data de ideação: {formatDate(projeto["Data: Início Backlog"])}
+          </div>
+        )}
+
+        {/* Dias em espera */}
+        {projeto["Dias na fase atual"] !== null &&
+          projeto["Dias na fase atual"] !== undefined && (
+            <div className="text-gray-600 dark:text-gray-200">
+              Em espera há: {projeto["Dias na fase atual"]} dias
+            </div>
+          )}
+
+        {/* Data fim de ideação */}
+        {projeto["Data: Fim Backlog"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Data fim de ideação: {formatDate(projeto["Data: Fim Backlog"])}
+          </div>
+        )}
+
+        {/* Status de ideação */}
+        {projeto["Status de ideação"] && (
+          <>
+            <hr className="my-1 border-gray-300 dark:border-gray-600" />
+            <div className="text-gray-600 dark:text-gray-200">
+              Status de ideação: {projeto["Status de ideação"]}
+            </div>
+          </>
+        )}
+      </div>
+    </CustomTooltip>
   );
 };
 
@@ -197,100 +272,102 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 }) => {
   return withJiraLink(
     projeto,
-    <div
-      className={`space-y-2 ${fontSizes.corpoCardKanban}`}
-      title={projeto.Descrição || "Sem descrição disponível"}
+    <CustomTooltip
+      content={projeto.Descrição || "Sem descrição disponível"}
+      priority={projeto.Prioridade}
     >
-      <div
-        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
-      >
-        <span>{projeto.Título}</span>
-      </div>
-
-      {/* Posição no backlog e Área */}
-      <div className="flex items-center gap-2">
-        {projeto.PosicaoBacklog && (
-          <span
-            className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
-            style={{
-              background: "#10b981",
-              color: "#fff",
-              width: 28,
-              height: 28,
-              minWidth: 28,
-              minHeight: 28,
-              display: "inline-flex",
-              textAlign: "center",
-            }}
-          >
-            #{projeto.PosicaoBacklog}
-          </span>
-        )}
-        {projeto["Departamento Solicitante"] && (
-          <span
-            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-          >
-            {projeto["Departamento Solicitante"]}
-          </span>
-        )}
-      </div>
-
-      {/* Squad */}
-      {projeto.Squad && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Squad: {projeto.Squad}
+      <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+        <div
+          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        >
+          <span>{projeto.Título}</span>
         </div>
-      )}
 
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Data que entrou em backlog priorizado */}
-      {projeto["Data: Início Backlog priorizado"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Entrou em backlog priorizado:{" "}
-          {formatDate(projeto["Data: Início Backlog priorizado"])}
+        {/* Posição no backlog e Área */}
+        <div className="flex items-center gap-2">
+          {projeto.PosicaoBacklog && (
+            <span
+              className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
+              style={{
+                background: "#10b981",
+                color: "#fff",
+                width: 28,
+                height: 28,
+                minWidth: 28,
+                minHeight: 28,
+                display: "inline-flex",
+                textAlign: "center",
+              }}
+            >
+              #{projeto.PosicaoBacklog}
+            </span>
+          )}
+          {projeto["Departamento Solicitante"] && (
+            <span
+              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+            >
+              {projeto["Departamento Solicitante"]}
+            </span>
+          )}
         </div>
-      )}
 
-      {/* Dias em espera */}
-      {projeto["Dias na fase atual"] !== null &&
-        projeto["Dias na fase atual"] !== undefined && (
+        {/* Squad */}
+        {projeto.Squad && (
           <div className="text-gray-600 dark:text-gray-200">
-            Em espera há: {projeto["Dias na fase atual"]} dias
+            Squad: {projeto.Squad}
           </div>
         )}
 
-      {/* Datas adicionais (se disponíveis) */}
-      {(projeto["Data: Fim Backlog priorizado"] ||
-        projeto["Target start"] ||
-        projeto["Target end"]) && (
-        <>
-          <hr className="my-1 border-gray-300 dark:border-gray-600" />
+        <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-          {/* Data fim backlog priorizado */}
-          {projeto["Data: Fim Backlog priorizado"] && (
+        {/* Data que entrou em backlog priorizado */}
+        {projeto["Data: Início Backlog priorizado"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Entrou em backlog priorizado:{" "}
+            {formatDate(projeto["Data: Início Backlog priorizado"])}
+          </div>
+        )}
+
+        {/* Dias em espera */}
+        {projeto["Dias na fase atual"] !== null &&
+          projeto["Dias na fase atual"] !== undefined && (
             <div className="text-gray-600 dark:text-gray-200">
-              Data fim backlog priorizado:{" "}
-              {formatDate(projeto["Data: Fim Backlog priorizado"])}
+              Em espera há: {projeto["Dias na fase atual"]} dias
             </div>
           )}
 
-          {/* Data prevista de início */}
-          {projeto["Target start"] && (
-            <div className="text-gray-600 dark:text-gray-200">
-              Data prevista de início: {formatDate(projeto["Target start"])}
-            </div>
-          )}
+        {/* Datas adicionais (se disponíveis) */}
+        {(projeto["Data: Fim Backlog priorizado"] ||
+          projeto["Target start"] ||
+          projeto["Target end"]) && (
+          <>
+            <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-          {/* Data prevista para término */}
-          {projeto["Target end"] && (
-            <div className="text-gray-600 dark:text-gray-200">
-              Data prevista para término: {formatDate(projeto["Target end"])}
-            </div>
-          )}
-        </>
-      )}
-    </div>
+            {/* Data fim backlog priorizado */}
+            {projeto["Data: Fim Backlog priorizado"] && (
+              <div className="text-gray-600 dark:text-gray-200">
+                Data fim backlog priorizado:{" "}
+                {formatDate(projeto["Data: Fim Backlog priorizado"])}
+              </div>
+            )}
+
+            {/* Data prevista de início */}
+            {projeto["Target start"] && (
+              <div className="text-gray-600 dark:text-gray-200">
+                Data prevista de início: {formatDate(projeto["Target start"])}
+              </div>
+            )}
+
+            {/* Data prevista para término */}
+            {projeto["Target end"] && (
+              <div className="text-gray-600 dark:text-gray-200">
+                Data prevista para término: {formatDate(projeto["Target end"])}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </CustomTooltip>
   );
 };
 
