@@ -48,7 +48,7 @@ const TotalizadorCard: React.FC<{
     >
       <div className="flex items-start gap-4 min-h-[56px]">
         <div
-          className="flex-shrink-0 totalizador-icon flex items-center justify-center h-full z-10 -mt-1"
+          className="flex-shrink-0 totalizador-icon flex items-center justify-center h-full -mt-1"
           style={{ position: "relative" }}
         >
           {icon}
