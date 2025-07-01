@@ -46,13 +46,16 @@ const TotalizadorCard: React.FC<{
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <div className="flex items-center gap-4">
-        <div className="flex-shrink-0 totalizador-icon flex items-center justify-center h-12">
+      <div className="flex items-start gap-4 min-h-[56px]">
+        <div
+          className="flex-shrink-0 totalizador-icon flex items-center justify-center h-full z-10 -mt-1"
+          style={{ position: "relative" }}
+        >
           {icon}
         </div>
-        <div className="flex flex-col justify-center min-h-[56px]">
+        <div className="flex flex-col justify-center flex-1">
           <p
-            className={`font-semibold break-words leading-tight min-h-[40px] flex items-center ${config.label}`}
+            className={`font-semibold break-words leading-tight ${config.label}`}
             style={{ color: getTextColor("primary", currentTheme) }}
           >
             {label}
