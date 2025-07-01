@@ -10,6 +10,22 @@ import { getFontSizes } from "../../constants/styleConfig";
 
 const fontSizes = getFontSizes();
 
+const JIRA_URL_BASE =
+  "https://tigruposalus.atlassian.net/jira/software/c/projects/EP/boards/323?selectedIssue=";
+
+function withJiraLink(projeto: EspacoDeProjetos, children: React.ReactNode) {
+  return (
+    <a
+      href={`${JIRA_URL_BASE}${projeto.Chave}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ textDecoration: "none", display: "block", height: "100%" }}
+    >
+      {children}
+    </a>
+  );
+}
+
 // ============================================================================
 // COMPONENTES DE CARDS ESPECÍFICOS POR STATUS
 // ============================================================================
@@ -18,7 +34,8 @@ const fontSizes = getFontSizes();
  * Card para projetos em IDEAÇÃO (Backlog)
  */
 const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
@@ -73,7 +90,8 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
@@ -271,7 +289,8 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
@@ -367,7 +386,8 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
       <div
@@ -554,7 +574,8 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
       <div
@@ -741,7 +762,8 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
       <div
@@ -929,7 +951,8 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
  * Card para projetos ENTREGUE (Concluído)
  */
 const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
       <div
@@ -1096,7 +1119,8 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  return (
+  return withJiraLink(
+    projeto,
     <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
