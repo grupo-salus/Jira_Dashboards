@@ -66,11 +66,6 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-      {/* Data de criação */}
-      <div className="text-gray-600 dark:text-gray-200">
-        Criado em: {formatDate(projeto["Data de criação"])}
-      </div>
-
       {/* Data de ideação */}
       {projeto["Data: Início Backlog"] && (
         <div className="text-gray-600 dark:text-gray-200">
@@ -202,84 +197,97 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 }) => {
   return withJiraLink(
     projeto,
-    <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+    <div
+      className={`space-y-2 ${fontSizes.corpoCardKanban}`}
+      title={projeto.Descrição || "Sem descrição disponível"}
+    >
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
         <span>{projeto.Título}</span>
       </div>
 
-      {/* Informações Gerais */}
-      {projeto["Departamento Solicitante"] ? (
-        <div className="flex items-center gap-2">
-          {projeto.PosicaoBacklog && (
-            <span
-              className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
-              style={{
-                background: "#10b981",
-                color: "#fff",
-                width: 28,
-                height: 28,
-                minWidth: 28,
-                minHeight: 28,
-                display: "inline-flex",
-                textAlign: "center",
-              }}
-            >
-              #{projeto.PosicaoBacklog}
-            </span>
-          )}
+      {/* Posição no backlog e Área */}
+      <div className="flex items-center gap-2">
+        {projeto.PosicaoBacklog && (
+          <span
+            className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
+            style={{
+              background: "#10b981",
+              color: "#fff",
+              width: 28,
+              height: 28,
+              minWidth: 28,
+              minHeight: 28,
+              display: "inline-flex",
+              textAlign: "center",
+            }}
+          >
+            #{projeto.PosicaoBacklog}
+          </span>
+        )}
+        {projeto["Departamento Solicitante"] && (
           <span
             className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
           >
             {projeto["Departamento Solicitante"]}
           </span>
-        </div>
-      ) : (
-        projeto.PosicaoBacklog && (
-          <div className="flex items-center gap-2">
-            <span
-              className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
-              style={{
-                background: "#10b981",
-                color: "#fff",
-                width: 28,
-                height: 28,
-                minWidth: 28,
-                minHeight: 28,
-                display: "inline-flex",
-                textAlign: "center",
-              }}
-            >
-              #{projeto.PosicaoBacklog}
-            </span>
-          </div>
-        )
-      )}
+        )}
+      </div>
+
+      {/* Squad */}
       {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
           Squad: {projeto.Squad}
         </div>
       )}
+
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-      {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-200">
-        Criado em: {formatDate(projeto["Data de criação"])}
-      </div>
-      {projeto["Target start"] && (
+      {/* Data que entrou em backlog priorizado */}
+      {projeto["Data: Início Backlog priorizado"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Início previsto: {formatDate(projeto["Target start"])}
+          Entrou em backlog priorizado:{" "}
+          {formatDate(projeto["Data: Início Backlog priorizado"])}
         </div>
       )}
 
-      {/* Financeiro */}
-      {projeto["Investimento Esperado"] && (
+      {/* Dias em espera */}
+      {projeto["Dias na fase atual"] !== null &&
+        projeto["Dias na fase atual"] !== undefined && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Em espera há: {projeto["Dias na fase atual"]} dias
+          </div>
+        )}
+
+      {/* Datas adicionais (se disponíveis) */}
+      {(projeto["Data: Fim Backlog priorizado"] ||
+        projeto["Target start"] ||
+        projeto["Target end"]) && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="text-gray-600 dark:text-gray-200">
-            Investimento esperado: {projeto["Investimento Esperado"]}
-          </div>
+
+          {/* Data fim backlog priorizado */}
+          {projeto["Data: Fim Backlog priorizado"] && (
+            <div className="text-gray-600 dark:text-gray-200">
+              Data fim backlog priorizado:{" "}
+              {formatDate(projeto["Data: Fim Backlog priorizado"])}
+            </div>
+          )}
+
+          {/* Data prevista de início */}
+          {projeto["Target start"] && (
+            <div className="text-gray-600 dark:text-gray-200">
+              Data prevista de início: {formatDate(projeto["Target start"])}
+            </div>
+          )}
+
+          {/* Data prevista para término */}
+          {projeto["Target end"] && (
+            <div className="text-gray-600 dark:text-gray-200">
+              Data prevista para término: {formatDate(projeto["Target end"])}
+            </div>
+          )}
         </>
       )}
     </div>
