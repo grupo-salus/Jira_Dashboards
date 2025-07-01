@@ -27,8 +27,7 @@ def get_tabela_espaco_de_projetos(request: Request):
 
         cols_to_normalize = [
             "Estimativa original (segundos)", "Tempo registrado (segundos)", "Tempo restante (segundos)",
-            "Investimento Esperado", "Dias desde criação", "Dias planejados", "Dias desde o início",
-            "Dias restantes", "% do tempo decorrido", "% da estimativa usada", "PosicaoBacklog"
+            "Investimento Esperado", "PosicaoBacklog"
         ]
         df = prepare_dataframe_for_json_export(df, cols_to_normalize)
 

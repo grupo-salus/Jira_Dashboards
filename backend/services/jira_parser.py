@@ -3,12 +3,13 @@ from datetime import datetime
 import numpy as np
 from datetime import timedelta
 from .project_analysis_utils import (
-    get_reference_date,
+    calcular_tempo_por_fase,
+    calcular_dias_na_fase_atual,
     classificar_status_ideacao,
-    calcular_pct_tempo,
-    classificar_status_prazo,
-    calcular_pct_estimativa,
-    classificar_status_esforco,
+    classificar_prazo,
+    verificar_inicio_atrasado,
+    verificar_conclusao_atrasada,
+    verificar_risco_atual,
 )
 import logging 
 logger = logging.getLogger(__name__)
@@ -84,54 +85,34 @@ def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
     return df
 
 def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Enriquecimento do DataFrame com colunas derivadas para análise estratégica:
-    - Prazo e progresso (execução)
-    - Tempo registrado vs estimativa
-    - Status de prazo e esforço
-    - Análise de obsolescência (ideação)
-    """
-    logger.info("Iniciando enriquecimento do DataFrame com colunas específicas do projeto")
-    hoje = datetime.now().date()
+    fases = [
+        "Ideação", "Backlog Priorizado", "Em desenvolvimento",
+        "Em homologacao", "Operação assistida", "Entregue",
+        "Cancelado", "Bloqueado"
+    ]
 
-    # Garantir que as colunas de data estejam no formato datetime
-    date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término"]
-    logger.debug(f"Convertendo colunas de data: {date_cols}")
-    for col in date_cols:
-        if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors="coerce")
-        else:
-            logger.warning(f"Coluna de data '{col}' não encontrada no DataFrame")
+    for fase in fases:
+        col_name = f"Tempo na fase {fase} (dias)"
+        df[col_name] = df.apply(lambda row: calcular_tempo_por_fase(row, fase), axis=1)
 
-    # --- IDEIAÇÃO ---
-    logger.debug("Calculando métricas de ideação")
-    df["Dias desde criação"] = df["Data de criação"].apply(
-        lambda x: (hoje - x.date()).days if pd.notnull(x) else None
-    )
-    df["Status de ideação"] = df["Dias desde criação"].apply(classificar_status_ideacao)
+    df["Dias na fase atual"] = df.apply(calcular_dias_na_fase_atual, axis=1)
 
-    # --- EXECUÇÃO ---
-    logger.debug("Calculando métricas de execução")
-    df["Dias planejados"] = (df["Target end"] - df["Target start"]).dt.days
-    df["Dias desde o início"] = df.apply(
-        lambda row: (get_reference_date(row) - row["Target start"].date()).days
-        if pd.notnull(row["Target start"]) else None,
+    df["Status de ideação"] = df.apply(
+        lambda row: classificar_status_ideacao(row["Dias na fase atual"])
+        if str(row.get("Status", "")).strip().lower() == "ideação" else None,
         axis=1
     )
-    df["Dias restantes"] = df.apply(
-        lambda row: (row["Target end"].date() - get_reference_date(row)).days
-        if pd.notnull(row["Target end"]) else None,
-        axis=1
-    )
-    df["% do tempo decorrido"] = df.apply(calcular_pct_tempo, axis=1)
-    df["Status de prazo"] = df.apply(lambda row: classificar_status_prazo(row, hoje), axis=1)
 
-    # --- ESFORÇO ---
-    logger.debug("Calculando métricas de esforço")
-    df["% da estimativa usada"] = df.apply(calcular_pct_estimativa, axis=1)
-    df["Status de esforço"] = df["% da estimativa usada"].apply(classificar_status_esforco)
+    df["Status de prazo"] = df.apply(classificar_prazo, axis=1)
+    df["Início atrasado?"] = df.apply(verificar_inicio_atrasado, axis=1)
+    df["Conclusão atrasada?"] = df.apply(lambda row: verificar_conclusao_atrasada(row, fases), axis=1)
+    df["Risco de atraso atual?"] = df.apply(verificar_risco_atual, axis=1)
 
-    logger.info("Enriquecimento do DataFrame concluído com sucesso")
+    # Limpar valores infinitos e NaN das colunas numéricas
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    for col in numeric_cols:
+        df[col] = df[col].replace([float('inf'), float('-inf'), float('nan')], None)
+
     return df
 
 def position_in_backlog(df: pd.DataFrame) -> pd.DataFrame:
@@ -307,7 +288,7 @@ def prepare_dataframe_for_json_export(df: pd.DataFrame, numeric_or_object_cols_w
     for col in datetime_cols:
         df_adjusted[col] = df_adjusted[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
 
-    # 2. Converter valores NaN/NaT em colunas numéricas para None para JSON
+    # 2. Converter valores NaN/NaT/inf em colunas numéricas para None para JSON
     # Isso inclui as colunas de "dias" calculadas e quaisquer outras colunas numéricas
     # que possam ter vindo com NaN (ex: Estimativa original (segundos), Investimento Esperado)
 
@@ -316,13 +297,30 @@ def prepare_dataframe_for_json_export(df: pd.DataFrame, numeric_or_object_cols_w
         
         for col in numeric_or_object_cols_with_nan:
             if col in df_adjusted.columns:
-                # Substitui NaN (float), pd.NA (missing data), pd.NaT (missing datetime) por None
+                # Substitui NaN (float), pd.NA (missing data), pd.NaT (missing datetime), inf por None
                 # e converte a coluna para o tipo 'object' para permitir misturar números e None
-                df_adjusted[col] = df_adjusted[col].replace({pd.NA: None, pd.NaT: None, float('nan'): None}).astype(object)
+                df_adjusted[col] = df_adjusted[col].replace({
+                    pd.NA: None, 
+                    pd.NaT: None, 
+                    float('nan'): None,
+                    float('inf'): None,
+                    float('-inf'): None
+                }).astype(object)
             else:
                 logger.warning(f"Coluna '{col}' não encontrada no DataFrame para tratamento de NaN")
     else:
         logger.debug("Nenhuma coluna específica fornecida para tratamento de NaN")
+    
+    # 3. Tratar todas as colunas numéricas para valores infinitos e NaN
+    numeric_cols = df_adjusted.select_dtypes(include=['number']).columns
+    logger.debug(f"Tratando valores infinitos e NaN em {len(numeric_cols)} colunas numéricas")
+    
+    for col in numeric_cols:
+        df_adjusted[col] = df_adjusted[col].replace({
+            float('inf'): None,
+            float('-inf'): None,
+            float('nan'): None
+        })
             
     logger.info("DataFrame preparado com sucesso para exportação JSON")
     return df_adjusted

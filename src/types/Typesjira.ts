@@ -66,15 +66,8 @@ export interface EspacoDeProjetos {
   "Data de término": string | null; // Data em que a issue foi finalizada no Jira
 
   // Estratégias de desenvolvimento e ideação
-  "Dias desde criação": number | null;
   "Status de ideação": IdeacaoStatus | null;
-  "Dias planejados": number | null;
-  "Dias desde o início": number | null;
-  "Dias restantes": number | null;
-  "% do tempo decorrido": number | null;
   "Status de prazo": PrazoStatus | null;
-  "% da estimativa usada": number | null;
-  "Status de esforço": EsforcoStatus | null;
 
   "Data: Início Ideação"?: string | null;
   "Data: Fim Ideação"?: string | null;
@@ -109,9 +102,3 @@ export type IdeacaoStatus = "Recente" | "Rever" | "Quase obsoleto" | "Obsoleto";
 
 // Status de prazo
 export type PrazoStatus = "No prazo" | "Em risco" | "Fora do prazo";
-
-// Status de esforço
-export type EsforcoStatus =
-  | "Dentro do estimado"
-  | "Próximo do limite"
-  | "Estourou a estimativa";

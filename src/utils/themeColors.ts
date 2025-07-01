@@ -213,39 +213,7 @@ export const themeColors = {
         },
       },
     },
-    // Status de Esforço
-    esforco: {
-      dentroEstimado: {
-        bg: {
-          light: "#d1fae5", // green-100
-          dark: "#064e3b", // green-900
-        },
-        text: {
-          light: "#065f46", // green-800
-          dark: "#34d399", // green-300
-        },
-      },
-      proximoLimite: {
-        bg: {
-          light: "#fef3c7", // yellow-100
-          dark: "#78350f", // yellow-900
-        },
-        text: {
-          light: "#92400e", // yellow-800
-          dark: "#fde68a", // yellow-300
-        },
-      },
-      estourouEstimativa: {
-        bg: {
-          light: "#fee2e2", // red-100
-          dark: "#7f1d1d", // red-900
-        },
-        text: {
-          light: "#991b1b", // red-800
-          dark: "#fca5a5", // red-300
-        },
-      },
-    },
+
     // Status de Ideação
     ideacao: {
       recente: {
@@ -708,7 +676,7 @@ export const getBorderColor = (
  * Obtém a cor de status apropriada baseada no tema
  */
 export const getStatusColor = (
-  category: "prazo" | "esforco" | "ideacao",
+  category: "prazo" | "ideacao",
   status: string,
   theme: "light" | "dark",
   type: "bg" | "text"
@@ -718,11 +686,6 @@ export const getStatusColor = (
       "No prazo": themeColors.status.prazo.noPrazo,
       "Em risco": themeColors.status.prazo.emRisco,
       "Fora do prazo": themeColors.status.prazo.foraPrazo,
-    },
-    esforco: {
-      "Dentro do estimado": themeColors.status.esforco.dentroEstimado,
-      "Próximo do limite": themeColors.status.esforco.proximoLimite,
-      "Estourou a estimativa": themeColors.status.esforco.estourouEstimativa,
     },
     ideacao: {
       Recente: themeColors.status.ideacao.recente,
