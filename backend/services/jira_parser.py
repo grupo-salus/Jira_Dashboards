@@ -86,9 +86,14 @@ def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
 
 def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     fases = [
-        "Ideação", "Backlog Priorizado", "Em desenvolvimento",
-        "Em homologacao", "Operação assistida", "Entregue",
-        "Cancelado", "Bloqueado"
+        "Backlog",
+        "Bloqueado",
+        "Backlog priorizado",
+        "Em andamento",
+        "Em homologação",
+        "Operação assistida",
+        "Concluído",
+        "Cancelado",
     ]
 
     for fase in fases:
@@ -223,19 +228,19 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Target end": issue.get("fields", {}).get("customfield_10023"),
             "Data de término": issue.get("fields", {}).get("resolutiondate"),
 
-            # datas por fase
-            "Data: Início Ideação": issue.get("fields", {}).get("customfield_10345"),
-            "Data: Fim Ideação": issue.get("fields", {}).get("customfield_10346"),
-            "Data: Início Backlog Priorizado": issue.get("fields", {}).get("customfield_10347"),
-            "Data: Fim Backlog Priorizado": issue.get("fields", {}).get("customfield_10348"),
-            "Data: Início Em desenvolvimento": issue.get("fields", {}).get("customfield_10349"),
-            "Data: Fim Em desenvolvimento": issue.get("fields", {}).get("customfield_10350"),
+            # Datas por fase
+            "Data: Início Backlog": issue.get("fields", {}).get("customfield_10345"),
+            "Data: Fim Backlog": issue.get("fields", {}).get("customfield_10346"),
+            "Data: Início Backlog priorizado": issue.get("fields", {}).get("customfield_10347"),
+            "Data: Fim Backlog priorizado": issue.get("fields", {}).get("customfield_10348"),
+            "Data: Início Em andamento": issue.get("fields", {}).get("customfield_10349"),
+            "Data: Fim Em andamento": issue.get("fields", {}).get("customfield_10350"),
             "Data: Início Em homologacao": issue.get("fields", {}).get("customfield_10351"),
             "Data: Fim Em homologação": issue.get("fields", {}).get("customfield_10352"),
             "Data: Início Operação assistida": issue.get("fields", {}).get("customfield_10353"),
             "Data: Fim Operação assistida": issue.get("fields", {}).get("customfield_10354"),
-            "Data: Início Entregue": issue.get("fields", {}).get("customfield_10355"),
-            "Data: Fim Entregue": issue.get("fields", {}).get("customfield_10356"),
+            "Data: Início Concluído": issue.get("fields", {}).get("customfield_10355"),
+            "Data: Fim Concluído": issue.get("fields", {}).get("customfield_10356"),
             "Data: Início Cancelado": issue.get("fields", {}).get("customfield_10357"),
             "Data: Fim Cancelado": issue.get("fields", {}).get("customfield_10358"),
             "Data: Início Bloqueado": issue.get("fields", {}).get("customfield_10359"),
@@ -253,12 +258,12 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     # Converter colunas de data/hora para o tipo datetime do Pandas e remover timezone
     logger.debug("Convertendo colunas de data/hora para datetime")
     date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término", 
-                 "Data: Início Ideação", "Data: Fim Ideação", 
-                 "Data: Início Backlog Priorizado", "Data: Fim Backlog Priorizado", 
-                 "Data: Início Em desenvolvimento", "Data: Fim Em desenvolvimento", 
+                 "Data: Início Backlog", "Data: Fim Backlog", 
+                 "Data: Início Backlog priorizado", "Data: Fim Backlog priorizado", 
+                 "Data: Início Em andamento", "Data: Fim Em andamento", 
                  "Data: Início Em homologacao", "Data: Fim Em homologação", 
                  "Data: Início Operação assistida", "Data: Fim Operação assistida", 
-                 "Data: Início Entregue", "Data: Fim Entregue", 
+                 "Data: Início Concluído", "Data: Fim Concluído", 
                  "Data: Início Cancelado", "Data: Fim Cancelado", 
                  "Data: Início Bloqueado", "Data: Fim Bloqueado"]
     

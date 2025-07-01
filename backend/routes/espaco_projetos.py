@@ -20,18 +20,21 @@ def get_tabela_espaco_de_projetos(request: Request):
 
     try:
         issues = service.get_all_issues_from_project("EP").get("issues", [])
+        issues = [issue for issue in issues if issue['key'] == "EP-45"]
         logger.info(f"Total de issues retornadas do projeto EP: {len(issues)}")
 
         df = parse_issues_to_dataframe_espaco_de_projetos(issues)
         logger.info(f"DataFrame gerado com {len(df)} linhas para espaço de projetos")
 
-        cols_to_normalize = [
+        cols_to_normalize = [   
             "Estimativa original (segundos)", "Tempo registrado (segundos)", "Tempo restante (segundos)",
-            "Investimento Esperado", "PosicaoBacklog"
+            "Investimento Esperado", "PosicaoBacklog", "Dias na fase atual"
         ]
         df = prepare_dataframe_for_json_export(df, cols_to_normalize)
 
         logger.info("Resposta final da tabela de espaço de projetos concluída com sucesso")
+        
+
         return {"tabela_dashboard_ep": df.to_dict(orient="records")} if not df.empty else {"tabela_dashboard_ep": []}
 
     except Exception as e:

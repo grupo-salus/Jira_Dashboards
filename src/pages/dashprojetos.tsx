@@ -23,7 +23,6 @@ import { ProjetosTable, ProjetosKanban } from "../components/DashProjetos";
 import { getPriorityConfig } from "../utils/themeColors";
 import {
   COLUMN_ORDER,
-  normalizarStatus,
   normalizarStatusDisplay,
 } from "../components/DashProjetos/kanbanUtils";
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";

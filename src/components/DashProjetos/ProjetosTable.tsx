@@ -87,6 +87,19 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Data: Fim Cancelado": 150,
     "Data: Início Bloqueado": 150,
     "Data: Fim Bloqueado": 150,
+    "Motivo para Bloqueio de Projeto": 200,
+    "Tempo na fase Ideação (dias)": 150,
+    "Tempo na fase Backlog Priorizado (dias)": 180,
+    "Tempo na fase Em desenvolvimento (dias)": 180,
+    "Tempo na fase Em homologacao (dias)": 180,
+    "Tempo na fase Operação assistida (dias)": 180,
+    "Tempo na fase Entregue (dias)": 150,
+    "Tempo na fase Cancelado (dias)": 150,
+    "Tempo na fase Bloqueado (dias)": 150,
+    "Dias na fase atual": 150,
+    "Início atrasado?": 120,
+    "Conclusão atrasada?": 140,
+    "Risco de atraso atual?": 150,
   });
 
   const [isResizing, setIsResizing] = useState(false);
@@ -172,6 +185,19 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Data: Fim Cancelado",
     "Data: Início Bloqueado",
     "Data: Fim Bloqueado",
+    "Motivo para Bloqueio de Projeto",
+    "Tempo na fase Ideação (dias)",
+    "Tempo na fase Backlog Priorizado (dias)",
+    "Tempo na fase Em desenvolvimento (dias)",
+    "Tempo na fase Em homologacao (dias)",
+    "Tempo na fase Operação assistida (dias)",
+    "Tempo na fase Entregue (dias)",
+    "Tempo na fase Cancelado (dias)",
+    "Tempo na fase Bloqueado (dias)",
+    "Dias na fase atual",
+    "Início atrasado?",
+    "Conclusão atrasada?",
+    "Risco de atraso atual?",
   ];
 
   // Adicionar coluna de numeração
@@ -310,6 +336,21 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
       ) : (
         "-"
       );
+    }
+
+    // Adicionar formatação especial para as colunas booleanas de status
+    if (
+      [
+        "Início atrasado?",
+        "Conclusão atrasada?",
+        "Risco de atraso atual?",
+      ].includes(column)
+    ) {
+      if (value === true)
+        return <span style={{ color: "#dc2626", fontWeight: 600 }}>Sim</span>;
+      if (value === false)
+        return <span style={{ color: "#16a34a", fontWeight: 600 }}>Não</span>;
+      return "-";
     }
 
     return String(value);

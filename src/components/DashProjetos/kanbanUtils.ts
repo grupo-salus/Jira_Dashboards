@@ -1,9 +1,4 @@
-import {
-  JiraStatus,
-  PrazoStatus,
-  EsforcoStatus,
-  IdeacaoStatus,
-} from "../../types/Typesjira";
+import { JiraStatus, PrazoStatus, IdeacaoStatus } from "../../types/Typesjira";
 
 // ============================================================================
 // CONSTANTES
@@ -76,27 +71,14 @@ export const formatDate = (dateString: string | null): string => {
 };
 
 /**
- * Obtém a cor CSS para um status de prazo ou esforço
+ * Obtém a cor CSS para um status de prazo ou ideação
  */
-export const getStatusColor = (
-  status: PrazoStatus | EsforcoStatus | IdeacaoStatus
-): string => {
-  const statusColors: Record<
-    PrazoStatus | EsforcoStatus | IdeacaoStatus,
-    string
-  > = {
+export const getStatusColor = (status: PrazoStatus | IdeacaoStatus): string => {
+  const statusColors: Record<PrazoStatus | IdeacaoStatus, string> = {
     // Prazo
     "No prazo": "bg-green-600 text-white dark:bg-green-700 dark:text-white",
     "Em risco": "bg-yellow-500 text-white dark:bg-yellow-600 dark:text-white",
     "Fora do prazo": "bg-red-600 text-white dark:bg-red-700 dark:text-white",
-
-    // Esforço
-    "Dentro do estimado":
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    "Próximo do limite":
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-    "Estourou a estimativa":
-      "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
 
     // Ideação
     Recente:

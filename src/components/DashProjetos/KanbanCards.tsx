@@ -36,14 +36,17 @@ function withJiraLink(projeto: EspacoDeProjetos, children: React.ReactNode) {
 const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
   return withJiraLink(
     projeto,
-    <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+    <div
+      className={`space-y-2 ${fontSizes.corpoCardKanban}`}
+      title={projeto.Descrição || "Sem descrição disponível"}
+    >
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
         <span>{projeto.Título}</span>
       </div>
 
-      {/* Informações Gerais */}
+      {/* Área */}
       {projeto["Departamento Solicitante"] && (
         <div className="flex items-center gap-2">
           <span
@@ -53,6 +56,8 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
           </span>
         </div>
       )}
+
+      {/* Squad */}
       {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-100">
           Squad: {projeto.Squad}
@@ -61,10 +66,32 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-      {/* Datas */}
+      {/* Data de criação */}
       <div className="text-gray-600 dark:text-gray-200">
         Criado em: {formatDate(projeto["Data de criação"])}
       </div>
+
+      {/* Data de ideação */}
+      {projeto["Data: Início Backlog"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data de ideação: {formatDate(projeto["Data: Início Backlog"])}
+        </div>
+      )}
+
+      {/* Dias em espera */}
+      {projeto["Dias na fase atual"] !== null &&
+        projeto["Dias na fase atual"] !== undefined && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Em espera há: {projeto["Dias na fase atual"]} dias
+          </div>
+        )}
+
+      {/* Data fim de ideação */}
+      {projeto["Data: Fim Backlog"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data fim de ideação: {formatDate(projeto["Data: Fim Backlog"])}
+        </div>
+      )}
 
       {/* Status de ideação */}
       {projeto["Status de ideação"] && (

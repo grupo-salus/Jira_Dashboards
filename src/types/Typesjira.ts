@@ -69,22 +69,39 @@ export interface EspacoDeProjetos {
   "Status de ideação": IdeacaoStatus | null;
   "Status de prazo": PrazoStatus | null;
 
-  "Data: Início Ideação"?: string | null;
-  "Data: Fim Ideação"?: string | null;
-  "Data: Início Backlog Priorizado"?: string | null;
-  "Data: Fim Backlog Priorizado"?: string | null;
-  "Data: Início Em desenvolvimento"?: string | null;
-  "Data: Fim Em desenvolvimento"?: string | null;
+  "Data: Início Backlog"?: string | null;
+  "Data: Fim Backlog"?: string | null;
+  "Data: Início Backlog priorizado"?: string | null;
+  "Data: Fim Backlog priorizado"?: string | null;
+  "Data: Início Em andamento"?: string | null;
+  "Data: Fim Em andamento"?: string | null;
   "Data: Início Em homologacao"?: string | null;
   "Data: Fim Em homologação"?: string | null;
   "Data: Início Operação assistida"?: string | null;
   "Data: Fim Operação assistida"?: string | null;
-  "Data: Início Entregue"?: string | null;
-  "Data: Fim Entregue"?: string | null;
+  "Data: Início Concluído"?: string | null;
+  "Data: Fim Concluído"?: string | null;
   "Data: Início Cancelado"?: string | null;
   "Data: Fim Cancelado"?: string | null;
   "Data: Início Bloqueado"?: string | null;
   "Data: Fim Bloqueado"?: string | null;
+  "Motivo para Bloqueio de Projeto"?: string | null;
+
+  // Colunas calculadas de tempo por fase
+  "Tempo na fase Ideação (dias)"?: number | null;
+  "Tempo na fase Backlog Priorizado (dias)"?: number | null;
+  "Tempo na fase Em desenvolvimento (dias)"?: number | null;
+  "Tempo na fase Em homologacao (dias)"?: number | null;
+  "Tempo na fase Operação assistida (dias)"?: number | null;
+  "Tempo na fase Entregue (dias)"?: number | null;
+  "Tempo na fase Cancelado (dias)"?: number | null;
+  "Tempo na fase Bloqueado (dias)"?: number | null;
+
+  // Colunas de status e controle
+  "Dias na fase atual"?: number | null;
+  "Início atrasado?"?: boolean | null;
+  "Conclusão atrasada?"?: boolean | null;
+  "Risco de atraso atual?"?: boolean | null;
 }
 
 export type JiraStatus =
