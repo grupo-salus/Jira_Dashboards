@@ -75,6 +75,23 @@ export interface EspacoDeProjetos {
   "Status de prazo": PrazoStatus | null;
   "% da estimativa usada": number | null;
   "Status de esforço": EsforcoStatus | null;
+
+  "Data: Início Ideação"?: string | null;
+  "Data: Fim Ideação"?: string | null;
+  "Data: Início Backlog Priorizado"?: string | null;
+  "Data: Fim Backlog Priorizado"?: string | null;
+  "Data: Início Em desenvolvimento"?: string | null;
+  "Data: Fim Em desenvolvimento"?: string | null;
+  "Data: Início Em homologacao"?: string | null;
+  "Data: Fim Em homologação"?: string | null;
+  "Data: Início Operação assistida"?: string | null;
+  "Data: Fim Operação assistida"?: string | null;
+  "Data: Início Entregue"?: string | null;
+  "Data: Fim Entregue"?: string | null;
+  "Data: Início Cancelado"?: string | null;
+  "Data: Fim Cancelado"?: string | null;
+  "Data: Início Bloqueado"?: string | null;
+  "Data: Fim Bloqueado"?: string | null;
 }
 
 export type JiraStatus =

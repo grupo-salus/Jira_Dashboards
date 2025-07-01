@@ -64,7 +64,9 @@ export async function fetchAcompanhamentoTI(filters?: {
     // Decodifica os caracteres especiais nos dados retornados
     return (data.tabela_dashboard_ti ?? []).map((item: AcompanhamentoTI) => ({
       ...item,
-      Status: normalizarStatusDisplay(item.Status),
+      Status: normalizarStatusDisplay(
+        item.Status
+      ) as import("../types/Typesjira").JiraStatus,
       Título: decodeURIComponent(item.Título || ""),
       Responsável: decodeURIComponent(item.Responsável || ""),
       Relator: decodeURIComponent(item.Relator || ""),
@@ -112,7 +114,9 @@ export async function fetchEspacoDeProjetos(filters?: {
     // Decodifica os caracteres especiais nos dados retornados
     return (data.tabela_dashboard_ep ?? []).map((item: EspacoDeProjetos) => ({
       ...item,
-      Status: normalizarStatusDisplay(item.Status),
+      Status: normalizarStatusDisplay(
+        item.Status
+      ) as import("../types/Typesjira").JiraStatus,
       Título: decodeURIComponent(item.Título || ""),
       Descrição: item.Descrição ? decodeURIComponent(item.Descrição) : null,
       "Benefícios Esperados": item["Benefícios Esperados"]
