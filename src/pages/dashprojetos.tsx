@@ -63,6 +63,7 @@ const DashProjetos: React.FC = () => {
     status: [] as string[],
     squad: [] as string[],
     grupoSolicitante: [] as string[],
+    statusPrazo: [] as string[],
     dataRapida: "" as string,
     filtroData: {
       campo: "" as string,
@@ -270,6 +271,10 @@ const DashProjetos: React.FC = () => {
           item["Grupo Solicitante"] || ""
         );
 
+      const matchesStatusPrazo =
+        filtrosAtivos.statusPrazo.length === 0 ||
+        filtrosAtivos.statusPrazo.includes(item["Status de prazo"] || "");
+
       // Filtro de data rápida (por data de criação)
       let matchesDataRapida = true;
       if (
@@ -364,6 +369,7 @@ const DashProjetos: React.FC = () => {
         matchesStatus &&
         matchesSquad &&
         matchesGrupoSolicitante &&
+        matchesStatusPrazo &&
         matchesDataRapida &&
         matchesData
       );
@@ -1609,6 +1615,12 @@ const DashProjetos: React.FC = () => {
       <ProjetosTotalizadores
         filteredData={filteredData}
         originalData={projetosData.rawData}
+        onStatusPrazoClick={(status) =>
+          setFiltros((f) => ({
+            ...f,
+            statusPrazo: [status],
+          }))
+        }
       />
 
       {/* Gráficos do dashboard - 3 gráficos em linha */}

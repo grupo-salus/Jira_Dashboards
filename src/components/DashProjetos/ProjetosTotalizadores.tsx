@@ -22,6 +22,7 @@ import {
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
   originalData: EspacoDeProjetos[];
+  onStatusPrazoClick?: (status: string) => void;
 }
 
 // Função para converter CSS rem para pixels
@@ -37,18 +38,39 @@ const TotalizadorCard: React.FC<{
   currentTheme: "light" | "dark";
   tooltipContent?: React.ReactNode;
   valueColor?: string;
-}> = ({ icon, label, value, currentTheme, tooltipContent, valueColor }) => {
+  onClickValue?: () => void;
+  clickable?: boolean;
+}> = ({
+  icon,
+  label,
+  value,
+  currentTheme,
+  tooltipContent,
+  valueColor,
+  onClickValue,
+  clickable,
+}) => {
   const config = getTotalizadoresConfig();
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div
-      className={`rounded-lg shadow-md ${config.padding} flex-grow ${config.altura} relative totalizador-card 2xl:flex-1 2xl:min-w-0`}
+      className={`rounded-lg shadow-md ${config.padding} flex-grow ${
+        config.altura
+      } relative totalizador-card 2xl:flex-1 2xl:min-w-0 ${
+        clickable
+          ? "cursor-pointer hover:shadow-lg transition-shadow duration-200"
+          : ""
+      }`}
       style={{
         backgroundColor: getBackgroundColor("card", currentTheme),
       }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
+      onClick={clickable ? onClickValue : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      role={clickable ? "button" : undefined}
+      aria-label={clickable ? `Filtrar por ${label}` : undefined}
     >
       <div className="flex items-start gap-4 min-h-[56px]">
         <div
@@ -105,6 +127,7 @@ const TotalizadorCard: React.FC<{
 
 const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
+  onStatusPrazoClick,
 }) => {
   const config = getTotalizadoresConfig();
 
@@ -397,6 +420,12 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             </div>
           }
           valueColor={themeColors.status.prazo.noPrazo.text[currentTheme]}
+          onClickValue={
+            onStatusPrazoClick
+              ? () => onStatusPrazoClick("No prazo")
+              : undefined
+          }
+          clickable={!!onStatusPrazoClick}
         />
         <TotalizadorCard
           icon={
@@ -441,6 +470,12 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             </div>
           }
           valueColor={themeColors.status.prazo.emRisco.text[currentTheme]}
+          onClickValue={
+            onStatusPrazoClick
+              ? () => onStatusPrazoClick("Em risco")
+              : undefined
+          }
+          clickable={!!onStatusPrazoClick}
         />
         <TotalizadorCard
           icon={
@@ -484,6 +519,12 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             </div>
           }
           valueColor={themeColors.status.prazo.foraPrazo.text[currentTheme]}
+          onClickValue={
+            onStatusPrazoClick
+              ? () => onStatusPrazoClick("Fora do prazo")
+              : undefined
+          }
+          clickable={!!onStatusPrazoClick}
         />
       </div>
 
