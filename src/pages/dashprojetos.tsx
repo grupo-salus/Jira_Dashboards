@@ -36,7 +36,7 @@ import {
   getBackgroundColor,
   getBorderColor,
 } from "../utils/themeColors";
-import { DotsVerticalIcon } from "../components/icons/DashboardIcons";
+import { DotsVerticalIcon, XIcon } from "../components/icons/DashboardIcons";
 import Select, { components as selectComponents } from "react-select";
 
 // Mapeamento de nomes de status para exibição
@@ -56,15 +56,14 @@ const DashProjetos: React.FC = () => {
   const [menuAberto, setMenuAberto] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Filtros expandidos com sistema de data avançado
-  const [filtros, setFiltros] = useState({
+  // Estado inicial dos filtros
+  const filtrosIniciais = {
     area: [] as string[],
     prioridade: [] as string[],
     status: [] as string[],
     squad: [] as string[],
     grupoSolicitante: [] as string[],
-    dataRapida: "" as string, // Filtro rápido por data de criação
-    // Sistema de filtro de data avançado
+    dataRapida: "" as string,
     filtroData: {
       campo: "" as string,
       operador: "" as string,
@@ -73,7 +72,10 @@ const DashProjetos: React.FC = () => {
       opcaoRapida: "" as string,
     },
     statusPrazo: [] as string[],
-  });
+  };
+
+  // Filtros expandidos com sistema de data avançado
+  const [filtros, setFiltros] = useState(filtrosIniciais);
 
   // Obter configurações de fonte atuais
   const fontSizes = getFontSizes();
@@ -671,6 +673,34 @@ const DashProjetos: React.FC = () => {
 
       {/* Seção de Filtros - Sempre Visível */}
       <div className="mb-6">
+        {/* Botões compactos de filtro e limpar */}
+        <div className="flex justify-end mb-2 gap-2 items-center">
+          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) && (
+            <button
+              onClick={() => setFiltros(filtrosIniciais)}
+              className="flex items-center gap-1 p-2 rounded-full border transition-colors font-semibold"
+              style={{
+                color: themeColors.text.error[currentTheme],
+                borderColor: themeColors.text.error[currentTheme],
+                background: "transparent",
+                lineHeight: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = themeColors.error[100];
+                e.currentTarget.style.color = themeColors.error[600];
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color =
+                  themeColors.text.error[currentTheme];
+              }}
+              title="Limpar todos os filtros"
+            >
+              <XIcon size={20} />
+              <span style={{ fontSize: 14 }}>Limpar todos os filtros</span>
+            </button>
+          )}
+        </div>
         <div className="p-0 shadow-none">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 w-full">
             {/* Filtro de Área */}
