@@ -72,6 +72,7 @@ const DashProjetos: React.FC = () => {
       valor2: "" as string,
       opcaoRapida: "" as string,
     },
+    statusPrazo: [] as string[],
   });
 
   // Obter configurações de fonte atuais
@@ -356,6 +357,10 @@ const DashProjetos: React.FC = () => {
         }
       }
 
+      const matchesStatusPrazo =
+        filtrosAtivos.statusPrazo.length === 0 ||
+        filtrosAtivos.statusPrazo.includes(item["Status de prazo"] || '');
+
       return (
         matchesArea &&
         matchesPrioridade &&
@@ -363,7 +368,8 @@ const DashProjetos: React.FC = () => {
         matchesSquad &&
         matchesGrupoSolicitante &&
         matchesDataRapida &&
-        matchesData
+        matchesData &&
+        matchesStatusPrazo
       );
     });
   };
@@ -592,6 +598,14 @@ const DashProjetos: React.FC = () => {
     { value: "filtro_avancado", label: "Filtro Avançado" },
   ];
 
+  // Opções para filtro de status de prazo
+  const statusPrazoOptions = [
+    { value: '', label: 'Todos' },
+    { value: 'No prazo', label: 'No prazo' },
+    { value: 'Em risco', label: 'Em risco' },
+    { value: 'Fora do prazo', label: 'Fora do prazo' },
+  ];
+
   // Componente customizado para o ClearIndicator
   const CustomClearIndicator = (props: any) => {
     return (
@@ -658,9 +672,9 @@ const DashProjetos: React.FC = () => {
       {/* Seção de Filtros - Sempre Visível */}
       <div className="mb-6">
         <div className="p-0 shadow-none">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 w-full">
             {/* Filtro de Área */}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <label
                 htmlFor="area-filter"
                 className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -721,6 +735,7 @@ const DashProjetos: React.FC = () => {
                     boxShadow: base.isFocused
                       ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                       : undefined,
+                    minWidth: 0,
                   }),
                   multiValue: (base) => ({
                     ...base,
@@ -774,6 +789,10 @@ const DashProjetos: React.FC = () => {
                   singleValue: (base) => ({
                     ...base,
                     color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
                   }),
                 }}
                 noOptionsMessage={() => "Sem opções"}
@@ -782,7 +801,7 @@ const DashProjetos: React.FC = () => {
             </div>
 
             {/* Filtro de Status */}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <label
                 htmlFor="status-filter"
                 className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -822,6 +841,7 @@ const DashProjetos: React.FC = () => {
                     boxShadow: base.isFocused
                       ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                       : undefined,
+                    minWidth: 0,
                   }),
                   multiValue: (base) => ({
                     ...base,
@@ -875,6 +895,10 @@ const DashProjetos: React.FC = () => {
                   singleValue: (base) => ({
                     ...base,
                     color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
                   }),
                 }}
                 noOptionsMessage={() => "Sem opções"}
@@ -883,7 +907,7 @@ const DashProjetos: React.FC = () => {
             </div>
 
             {/* Filtro de Prioridade */}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <label
                 htmlFor="prioridade-filter"
                 className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -925,6 +949,7 @@ const DashProjetos: React.FC = () => {
                     boxShadow: base.isFocused
                       ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                       : undefined,
+                    minWidth: 0,
                   }),
                   multiValue: (base) => ({
                     ...base,
@@ -978,6 +1003,10 @@ const DashProjetos: React.FC = () => {
                   singleValue: (base) => ({
                     ...base,
                     color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
                   }),
                 }}
                 noOptionsMessage={() => "Sem opções"}
@@ -986,7 +1015,7 @@ const DashProjetos: React.FC = () => {
             </div>
 
             {/* Filtro de Squad */}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <label
                 htmlFor="squad-filter"
                 className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -1026,6 +1055,7 @@ const DashProjetos: React.FC = () => {
                     boxShadow: base.isFocused
                       ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                       : undefined,
+                    minWidth: 0,
                   }),
                   multiValue: (base) => ({
                     ...base,
@@ -1079,6 +1109,10 @@ const DashProjetos: React.FC = () => {
                   singleValue: (base) => ({
                     ...base,
                     color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
                   }),
                 }}
                 noOptionsMessage={() => "Sem opções"}
@@ -1087,7 +1121,7 @@ const DashProjetos: React.FC = () => {
             </div>
 
             {/* Filtro de Grupo Solicitante */}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <label
                 htmlFor="grupo-solicitante-filter"
                 className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -1129,6 +1163,7 @@ const DashProjetos: React.FC = () => {
                     boxShadow: base.isFocused
                       ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                       : undefined,
+                    minWidth: 0,
                   }),
                   multiValue: (base) => ({
                     ...base,
@@ -1182,6 +1217,10 @@ const DashProjetos: React.FC = () => {
                   singleValue: (base) => ({
                     ...base,
                     color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
                   }),
                 }}
                 noOptionsMessage={() => "Sem opções"}
@@ -1190,7 +1229,7 @@ const DashProjetos: React.FC = () => {
             </div>
 
             {/* Filtro de Data Rápida */}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <label
                 htmlFor="data-rapida-filter"
                 className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -1234,6 +1273,7 @@ const DashProjetos: React.FC = () => {
                     boxShadow: base.isFocused
                       ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                       : undefined,
+                    minWidth: 0,
                   }),
                   clearIndicator: (base) => ({
                     ...base,
@@ -1268,6 +1308,114 @@ const DashProjetos: React.FC = () => {
                   singleValue: (base) => ({
                     ...base,
                     color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
+                  }),
+                }}
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+              />
+            </div>
+
+            {/* Filtro de Status de Prazo */}
+            <div className="flex flex-col min-w-0">
+              <label
+                htmlFor="status-prazo-filter"
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Status de Prazo
+              </label>
+              <Select
+                inputId="status-prazo-filter"
+                isMulti
+                options={statusPrazoOptions}
+                value={statusPrazoOptions.filter((opt) =>
+                  filtros.statusPrazo.includes(opt.value)
+                )}
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    statusPrazo: selected ? selected.map((s: any) => s.value) : [],
+                  }))
+                }
+                placeholder="Todos"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                    minWidth: 0,
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.secondary[800]
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueRemove: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.error[700]
+                          : themeColors.error[100],
+                      color:
+                        currentTheme === "dark"
+                          ? themeColors.text.error.dark
+                          : themeColors.text.error.light,
+                    },
+                  }),
+                  option: (base) => ({
+                    ...base,
+                    backgroundColor: base.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : base.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.components.filtros.input.focus.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
                   }),
                 }}
                 noOptionsMessage={() => "Sem opções"}
@@ -1282,9 +1430,9 @@ const DashProjetos: React.FC = () => {
       {filtros.dataRapida === "filtro_avancado" && (
         <div className="mb-6">
           <div className="p-0 shadow-none">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 w-full">
               {/* Campo de Data */}
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0">
                 <label
                   htmlFor="campo-data-filter"
                   className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -1330,6 +1478,7 @@ const DashProjetos: React.FC = () => {
                       boxShadow: base.isFocused
                         ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                         : undefined,
+                      minWidth: 0,
                     }),
                     option: (base) => ({
                       ...base,
@@ -1357,6 +1506,10 @@ const DashProjetos: React.FC = () => {
                     singleValue: (base) => ({
                       ...base,
                       color: getTextColor("primary", currentTheme),
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: 160,
                     }),
                   }}
                   noOptionsMessage={() => "Sem opções"}
@@ -1365,7 +1518,7 @@ const DashProjetos: React.FC = () => {
               </div>
 
               {/* Operador */}
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0">
                 <label
                   htmlFor="operador-data-filter"
                   className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -1411,6 +1564,7 @@ const DashProjetos: React.FC = () => {
                       boxShadow: base.isFocused
                         ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
                         : undefined,
+                      minWidth: 0,
                     }),
                     option: (base) => ({
                       ...base,
@@ -1438,6 +1592,10 @@ const DashProjetos: React.FC = () => {
                     singleValue: (base) => ({
                       ...base,
                       color: getTextColor("primary", currentTheme),
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: 160,
                     }),
                   }}
                   noOptionsMessage={() => "Sem opções"}
@@ -1446,7 +1604,7 @@ const DashProjetos: React.FC = () => {
               </div>
 
               {/* Data 1 */}
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0">
                 <label
                   htmlFor="data1-filter"
                   className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
@@ -1481,7 +1639,7 @@ const DashProjetos: React.FC = () => {
               </div>
 
               {/* Data 2 (para operador "entre") */}
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0">
                 <label
                   htmlFor="data2-filter"
                   className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
