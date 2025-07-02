@@ -223,15 +223,36 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
+  // Cálculo do tempo bloqueado
+  const inicioBloqueado = projeto["Data: Início Bloqueado"]
+    ? new Date(projeto["Data: Início Bloqueado"])
+    : null;
+  const fimBloqueado = projeto["Data: Fim Bloqueado"]
+    ? new Date(projeto["Data: Fim Bloqueado"])
+    : null;
+  const hoje = new Date();
+  let diasBloqueado = null;
+  if (inicioBloqueado) {
+    const dataFinal = fimBloqueado ? fimBloqueado : hoje;
+    diasBloqueado = Math.max(
+      0,
+      Math.floor(
+        (dataFinal.getTime() - inicioBloqueado.getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
+    );
+  }
+
   return withJiraLink(
     projeto,
-    <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+    <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
+      {/* Cabeçalho */}
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
         <span>{projeto.Título}</span>
       </div>
-      {/* Informações Gerais */}
+      {/* Área */}
       {projeto["Departamento Solicitante"] && (
         <div className="flex items-center gap-2">
           <span
@@ -241,66 +262,42 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
+      {/* Squad */}
       {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
           Squad: {projeto.Squad}
         </div>
       )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-200">
-        Criado em: {formatDate(projeto["Data de criação"])}
-      </div>
-      <div className="text-gray-600 dark:text-gray-200">
-        Última atualização: {formatDate(projeto["Data de atualização"])}
-      </div>
-
       {/* Datas planejadas */}
-      {projeto["Target start"] && projeto["Target end"] && (
+      {projeto["Target start"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Período planejado: <br />
-          {formatDate(projeto["Target start"])} →{" "}
-          {formatDate(projeto["Target end"])} <br />
+          Target start: {formatDate(projeto["Target start"])}
         </div>
       )}
-
-      {/* Status de prazo */}
-      {projeto["Status de prazo"] && (
-        <>
-          <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="pt-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Status de prazo:</span>
-              <span
-                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                  projeto["Status de prazo"]
-                )} ${fontSizes.statusCardKanban}`}
-              >
-                {projeto["Status de prazo"]}
-              </span>
-            </div>
-          </div>
-        </>
+      {projeto["Target end"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Target end: {formatDate(projeto["Target end"])}
+        </div>
       )}
-
-      {/* Esforço */}
-      {projeto["Estimativa original (segundos)"] &&
-        projeto["Tempo registrado (segundos)"] !== null && (
-          <>
-            <hr className="my-1 border-gray-300 dark:border-gray-600" />
-            <div className="pt-2">
-              <div className="font-medium">Estimativa vs. Registrado:</div>
-              <div className="text-gray-600 dark:text-gray-200">
-                Estimativa:{" "}
-                {formatarSegundos(projeto["Estimativa original (segundos)"])} •
-                Registrado:{" "}
-                {formatarSegundos(projeto["Tempo registrado (segundos)"])}
-              </div>
-            </div>
-          </>
-        )}
+      <hr className="my-1 border-gray-300 dark:border-gray-600" />
+      {/* Data que entrou em bloqueado */}
+      {projeto["Data: Início Bloqueado"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Entrou em bloqueado: {formatDate(projeto["Data: Início Bloqueado"])}
+        </div>
+      )}
+      {/* Dias bloqueado */}
+      {diasBloqueado !== null && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Tempo bloqueado: {diasBloqueado} dias
+        </div>
+      )}
+      {/* Data de fim do bloqueio */}
+      {projeto["Data: Fim Bloqueado"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Saiu do bloqueio: {formatDate(projeto["Data: Fim Bloqueado"])}
+        </div>
+      )}
     </div>
   );
 };
@@ -1037,15 +1034,36 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
+  // Cálculo do tempo em cancelamento
+  const inicioCancelado = projeto["Data: Início Cancelado"]
+    ? new Date(projeto["Data: Início Cancelado"])
+    : null;
+  const fimCancelado = projeto["Data: Fim Cancelado"]
+    ? new Date(projeto["Data: Fim Cancelado"])
+    : null;
+  const hoje = new Date();
+  let diasCancelado = null;
+  if (inicioCancelado) {
+    const dataFinal = fimCancelado ? fimCancelado : hoje;
+    diasCancelado = Math.max(
+      0,
+      Math.floor(
+        (dataFinal.getTime() - inicioCancelado.getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
+    );
+  }
+
   return withJiraLink(
     projeto,
-    <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+    <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
+      {/* Cabeçalho */}
       <div
         className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
       >
         <span>{projeto.Título}</span>
       </div>
-      {/* Informações Gerais */}
+      {/* Área */}
       {projeto["Departamento Solicitante"] && (
         <div className="flex items-center gap-2">
           <span
@@ -1055,21 +1073,50 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
+      {/* Squad */}
       {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
           Squad: {projeto.Squad}
         </div>
       )}
-
+      {/* Datas planejadas */}
+      {projeto["Target start"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Target start: {formatDate(projeto["Target start"])}
+        </div>
+      )}
+      {projeto["Target end"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Target end: {formatDate(projeto["Target end"])}
+        </div>
+      )}
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-200">
-        Criado em: {formatDate(projeto["Data de criação"])}
-      </div>
-      <div className="text-gray-600 dark:text-gray-200">
-        Cancelado em: {formatDate(projeto["Data de atualização"])}
-      </div>
+      {/* Data que entrou em cancelamento */}
+      {projeto["Data: Início Cancelado"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data que entrou em cancelamento:{" "}
+          {formatDate(projeto["Data: Início Cancelado"])}
+        </div>
+      )}
+      {/* Data que saiu do cancelamento */}
+      {projeto["Data: Fim Cancelado"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data que saiu do cancelamento:{" "}
+          {formatDate(projeto["Data: Fim Cancelado"])}
+        </div>
+      )}
+      {/* Tempo em cancelamento */}
+      {diasCancelado !== null && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Tempo em cancelamento: {diasCancelado} dias
+        </div>
+      )}
+      {/* Motivo do cancelamento */}
+      {projeto["Motivo para Bloqueio de Projeto"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Motivo do cancelamento: {projeto["Motivo para Bloqueio de Projeto"]}
+        </div>
+      )}
     </div>
   );
 };
