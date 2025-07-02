@@ -168,25 +168,32 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
               cx="50%"
               cy="50%"
               outerRadius={"60%"}
-              label={filtroAtivo ? null : ({ name, x, y, cx, cy }) => {
-                // Afastar a label 20% a mais do centro
-                const dx = x - cx;
-                const dy = y - cy;
-                const newX = cx + dx * 1.2;
-                const newY = cy + dy * 1.2;
-                return (
-                  <text
-                    x={newX}
-                    y={newY}
-                    textAnchor="middle"
-                    fill={getTextColor("primary", currentTheme)}
-                    fontSize={labelFontSize}
-                    style={{ fontSize: labelFontSize }}
-                  >
-                    {name}
-                  </text>
-                );
-              }}
+              startAngle={0}
+              endAngle={360}
+              stroke="none"
+              label={
+                filtroAtivo
+                  ? undefined
+                  : ({ name, x, y, cx, cy }) => {
+                      // Afastar a label 20% a mais do centro
+                      const dx = x - cx;
+                      const dy = y - cy;
+                      const newX = cx + dx * 1.2;
+                      const newY = cy + dy * 1.2;
+                      return (
+                        <text
+                          x={newX}
+                          y={newY}
+                          textAnchor="middle"
+                          fill={getTextColor("primary", currentTheme)}
+                          fontSize={labelFontSize}
+                          style={{ fontSize: labelFontSize }}
+                        >
+                          {name}
+                        </text>
+                      );
+                    }
+              }
               labelLine={!filtroAtivo}
               isAnimationActive={false}
               onClick={handlePieClick}
