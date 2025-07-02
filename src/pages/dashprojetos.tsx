@@ -38,8 +38,7 @@ import {
 } from "../utils/themeColors";
 import {
   DotsVerticalIcon,
-  XIcon,
-  FilterIcon,
+  FilterIcon
 } from "../components/icons/DashboardIcons";
 import Select, { components as selectComponents } from "react-select";
 
