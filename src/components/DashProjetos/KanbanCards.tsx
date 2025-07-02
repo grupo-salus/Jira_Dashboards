@@ -245,60 +245,65 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
   return withJiraLink(
     projeto,
-    <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
-      {/* Cabeçalho */}
-      <div
-        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
-      >
-        <span>{projeto.Título}</span>
+    <CustomTooltip
+      content={projeto.Descrição || "Sem descrição disponível"}
+      priority={projeto.Prioridade}
+    >
+      <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
+        {/* Cabeçalho */}
+        <div
+          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        >
+          <span>{projeto.Título}</span>
+        </div>
+        {/* Área */}
+        {projeto["Departamento Solicitante"] && (
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+            >
+              {projeto["Departamento Solicitante"]}
+            </span>
+          </div>
+        )}
+        {/* Squad */}
+        {projeto.Squad && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Squad: {projeto.Squad}
+          </div>
+        )}
+        {/* Datas planejadas */}
+        {projeto["Target start"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Target start: {formatDate(projeto["Target start"])}
+          </div>
+        )}
+        {projeto["Target end"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Target end: {formatDate(projeto["Target end"])}
+          </div>
+        )}
+        <hr className="my-1 border-gray-300 dark:border-gray-600" />
+        {/* Data que entrou em bloqueado */}
+        {projeto["Data: Início Bloqueado"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Entrou em bloqueado: {formatDate(projeto["Data: Início Bloqueado"])}
+          </div>
+        )}
+        {/* Dias bloqueado */}
+        {diasBloqueado !== null && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Tempo bloqueado: {diasBloqueado} dias
+          </div>
+        )}
+        {/* Data de fim do bloqueio */}
+        {projeto["Data: Fim Bloqueado"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Saiu do bloqueio: {formatDate(projeto["Data: Fim Bloqueado"])}
+          </div>
+        )}
       </div>
-      {/* Área */}
-      {projeto["Departamento Solicitante"] && (
-        <div className="flex items-center gap-2">
-          <span
-            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-          >
-            {projeto["Departamento Solicitante"]}
-          </span>
-        </div>
-      )}
-      {/* Squad */}
-      {projeto.Squad && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Squad: {projeto.Squad}
-        </div>
-      )}
-      {/* Datas planejadas */}
-      {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target start: {formatDate(projeto["Target start"])}
-        </div>
-      )}
-      {projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target end: {formatDate(projeto["Target end"])}
-        </div>
-      )}
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-      {/* Data que entrou em bloqueado */}
-      {projeto["Data: Início Bloqueado"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Entrou em bloqueado: {formatDate(projeto["Data: Início Bloqueado"])}
-        </div>
-      )}
-      {/* Dias bloqueado */}
-      {diasBloqueado !== null && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Tempo bloqueado: {diasBloqueado} dias
-        </div>
-      )}
-      {/* Data de fim do bloqueio */}
-      {projeto["Data: Fim Bloqueado"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Saiu do bloqueio: {formatDate(projeto["Data: Fim Bloqueado"])}
-        </div>
-      )}
-    </div>
+    </CustomTooltip>
   );
 };
 
@@ -940,91 +945,86 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
   return withJiraLink(
     projeto,
-    <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
-      {/* Cabeçalho */}
-      <div
-        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
-      >
-        <span>{projeto.Título}</span>
-      </div>
-
-      {/* Área */}
-      {projeto["Departamento Solicitante"] && (
-        <div className="flex items-center gap-2">
-          <span
-            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-          >
-            {projeto["Departamento Solicitante"]}
-          </span>
+    <CustomTooltip
+      content={projeto.Descrição || "Sem descrição disponível"}
+      priority={projeto.Prioridade}
+    >
+      <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
+        {/* Cabeçalho */}
+        <div
+          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        >
+          <span>{projeto.Título}</span>
         </div>
-      )}
-
-      {/* Squad */}
-      {projeto.Squad && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Squad: {projeto.Squad}
-        </div>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Target start */}
-      {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target start: {formatDate(projeto["Target start"])}
-        </div>
-      )}
-
-      {/* Target end */}
-      {projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target end: {formatDate(projeto["Target end"])}
-        </div>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Entrou em desenvolvimento */}
-      {projeto["Data: Início Em andamento"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Entrou em desenvolvimento:{" "}
-          {formatDate(projeto["Data: Início Em andamento"])}
-        </div>
-      )}
-
-      {/* Data de fim do desenvolvimento */}
-      {projeto["Data: Fim Em andamento"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Data de fim do desenvolvimento:{" "}
-          {formatDate(projeto["Data: Fim Em andamento"])}
-        </div>
-      )}
-
-      {/* Tempo em desenvolvimento */}
-      {projeto["Tempo na fase Em andamento (dias)"] !== null &&
-        projeto["Tempo na fase Em andamento (dias)"] !== undefined && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Tempo em desenvolvimento:{" "}
-            {projeto["Tempo na fase Em andamento (dias)"]} dias
-          </div>
-        )}
-
-      {/* Status de prazo */}
-      {projeto["Status de prazo"] && (
-        <div className="pt-2">
+        {/* Área */}
+        {projeto["Departamento Solicitante"] && (
           <div className="flex items-center gap-2">
-            <span className="font-medium">Status de prazo:</span>
             <span
-              className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                projeto["Status de prazo"]
-              )} ${fontSizes.statusCardKanban}`}
+              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
             >
-              {projeto["Status de prazo"]}
+              {projeto["Departamento Solicitante"]}
             </span>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+        {/* Squad */}
+        {projeto.Squad && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Squad: {projeto.Squad}
+          </div>
+        )}
+        {/* Target start */}
+        {projeto["Target start"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Target start: {formatDate(projeto["Target start"])}
+          </div>
+        )}
+        {/* Target end */}
+        {projeto["Target end"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Target end: {formatDate(projeto["Target end"])}
+          </div>
+        )}
+        <hr className="my-1 border-gray-300 dark:border-gray-600" />
+        {/* Entrou em desenvolvimento */}
+        {projeto["Data: Início Em andamento"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Entrou em desenvolvimento:{" "}
+            {formatDate(projeto["Data: Início Em andamento"])}
+          </div>
+        )}
+        {/* Data de fim do desenvolvimento */}
+        {projeto["Data: Fim Em andamento"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Data de fim do desenvolvimento:{" "}
+            {formatDate(projeto["Data: Fim Em andamento"])}
+          </div>
+        )}
+        {/* Tempo em desenvolvimento */}
+        {projeto["Tempo na fase Em andamento (dias)"] !== null &&
+          projeto["Tempo na fase Em andamento (dias)"] !== undefined && (
+            <div className="text-gray-600 dark:text-gray-200">
+              Tempo em desenvolvimento:{" "}
+              {projeto["Tempo na fase Em andamento (dias)"]} dias
+            </div>
+          )}
+        <hr className="my-1 border-gray-300 dark:border-gray-600" />
+        {/* Status de prazo */}
+        {projeto["Status de prazo"] && (
+          <div className="pt-2">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Status de prazo:</span>
+              <span
+                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                  projeto["Status de prazo"]
+                )} ${fontSizes.statusCardKanban}`}
+              >
+                {projeto["Status de prazo"]}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    </CustomTooltip>
   );
 };
 
@@ -1056,68 +1056,73 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
   return withJiraLink(
     projeto,
-    <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
-      {/* Cabeçalho */}
-      <div
-        className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
-      >
-        <span>{projeto.Título}</span>
+    <CustomTooltip
+      content={projeto.Descrição || "Sem descrição disponível"}
+      priority={projeto.Prioridade}
+    >
+      <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
+        {/* Cabeçalho */}
+        <div
+          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        >
+          <span>{projeto.Título}</span>
+        </div>
+        {/* Área */}
+        {projeto["Departamento Solicitante"] && (
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+            >
+              {projeto["Departamento Solicitante"]}
+            </span>
+          </div>
+        )}
+        {/* Squad */}
+        {projeto.Squad && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Squad: {projeto.Squad}
+          </div>
+        )}
+        {/* Datas planejadas */}
+        {projeto["Target start"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Target start: {formatDate(projeto["Target start"])}
+          </div>
+        )}
+        {projeto["Target end"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Target end: {formatDate(projeto["Target end"])}
+          </div>
+        )}
+        <hr className="my-1 border-gray-300 dark:border-gray-600" />
+        {/* Data que entrou em cancelamento */}
+        {projeto["Data: Início Cancelado"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Data que entrou em cancelamento:{" "}
+            {formatDate(projeto["Data: Início Cancelado"])}
+          </div>
+        )}
+        {/* Data que saiu do cancelamento */}
+        {projeto["Data: Fim Cancelado"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Data que saiu do cancelamento:{" "}
+            {formatDate(projeto["Data: Fim Cancelado"])}
+          </div>
+        )}
+        {/* Tempo em cancelamento */}
+        {diasCancelado !== null && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Tempo em cancelamento: {diasCancelado} dias
+          </div>
+        )}
+        {/* Motivo do cancelamento */}
+        {projeto["Motivo para Bloqueio de Projeto"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Motivo do cancelamento: {projeto["Motivo para Bloqueio de Projeto"]}
+          </div>
+        )}
       </div>
-      {/* Área */}
-      {projeto["Departamento Solicitante"] && (
-        <div className="flex items-center gap-2">
-          <span
-            className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-          >
-            {projeto["Departamento Solicitante"]}
-          </span>
-        </div>
-      )}
-      {/* Squad */}
-      {projeto.Squad && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Squad: {projeto.Squad}
-        </div>
-      )}
-      {/* Datas planejadas */}
-      {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target start: {formatDate(projeto["Target start"])}
-        </div>
-      )}
-      {projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target end: {formatDate(projeto["Target end"])}
-        </div>
-      )}
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-      {/* Data que entrou em cancelamento */}
-      {projeto["Data: Início Cancelado"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Data que entrou em cancelamento:{" "}
-          {formatDate(projeto["Data: Início Cancelado"])}
-        </div>
-      )}
-      {/* Data que saiu do cancelamento */}
-      {projeto["Data: Fim Cancelado"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Data que saiu do cancelamento:{" "}
-          {formatDate(projeto["Data: Fim Cancelado"])}
-        </div>
-      )}
-      {/* Tempo em cancelamento */}
-      {diasCancelado !== null && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Tempo em cancelamento: {diasCancelado} dias
-        </div>
-      )}
-      {/* Motivo do cancelamento */}
-      {projeto["Motivo para Bloqueio de Projeto"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Motivo do cancelamento: {projeto["Motivo para Bloqueio de Projeto"]}
-        </div>
-      )}
-    </div>
+    </CustomTooltip>
   );
 };
 
