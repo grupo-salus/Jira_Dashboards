@@ -252,16 +252,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Total de Projetos no Board
-              </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Contagem total de projetos considerando os filtros aplicados.
-                Inclui todos os status: ideação, desenvolvimento, entregues,
-                etc.
+                Total de projetos registrados no board, considerando todos os
+                status
               </div>
             </div>
           }
@@ -281,15 +274,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos em Ideação
-              </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos da coluna Ideação que são ideias a serem ainda
-                analisadas e avaliadas.
+                Projetos que estão na etapa inicial, em análise ou validação
+                antes de serem priorizados para execução
               </div>
             </div>
           }
@@ -309,15 +296,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos em Andamento
-              </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que estão ativamente sendo desenvolvidos: Em Andamento,
-                Em Homologação e Operação Assistida.
+                Projetos que estão ativamente sendo desenvolvidos: Em
+                desenvolvimento, em homologação e em operação assistida.
               </div>
             </div>
           }
@@ -338,15 +319,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos no Backlog Priorizado
-              </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Ideias que viraram projetos, já passaram pela análise e estão na
-                fila priorizada aguardando desenvolvimento.
+                Projetos que já foram analisados e priorizados, prontos para
+                serem executados.
               </div>
             </div>
           }
@@ -366,14 +341,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           currentTheme={currentTheme}
           tooltipContent={
             <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos Entregues no Mês
-              </div>
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que foram concluídos e entregues no mês atual (
+                Projetos concluídos e formalmente entregues no mês vigente (
                 {new Date().toLocaleDateString("pt-BR", {
                   month: "long",
                   year: "numeric",
