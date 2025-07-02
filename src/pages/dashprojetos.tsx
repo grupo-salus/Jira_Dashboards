@@ -1621,6 +1621,9 @@ const DashProjetos: React.FC = () => {
             statusPrazo: [status],
           }))
         }
+        filtroStatusPrazoAtivo={
+          filtros.statusPrazo.length > 0 ? filtros.statusPrazo[0] : null
+        }
       />
 
       {/* Gráficos do dashboard - 3 gráficos em linha */}

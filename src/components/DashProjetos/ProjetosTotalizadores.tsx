@@ -23,6 +23,7 @@ interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
   originalData: EspacoDeProjetos[];
   onStatusPrazoClick?: (status: string) => void;
+  filtroStatusPrazoAtivo?: string | null;
 }
 
 // Função para converter CSS rem para pixels
@@ -40,6 +41,7 @@ const TotalizadorCard: React.FC<{
   valueColor?: string;
   onClickValue?: () => void;
   clickable?: boolean;
+  isFiltered?: boolean;
 }> = ({
   icon,
   label,
@@ -49,6 +51,7 @@ const TotalizadorCard: React.FC<{
   valueColor,
   onClickValue,
   clickable,
+  isFiltered = false,
 }) => {
   const config = getTotalizadoresConfig();
   const [showTooltip, setShowTooltip] = useState(false);
@@ -64,6 +67,8 @@ const TotalizadorCard: React.FC<{
       }`}
       style={{
         backgroundColor: getBackgroundColor("card", currentTheme),
+        border: isFiltered ? `2px solid ${themeColors.info[400]}` : undefined,
+        transition: "border-color 0.2s ease-in-out",
       }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
@@ -128,6 +133,7 @@ const TotalizadorCard: React.FC<{
 const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
   onStatusPrazoClick,
+  filtroStatusPrazoAtivo,
 }) => {
   const config = getTotalizadoresConfig();
 
@@ -397,6 +403,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               : undefined
           }
           clickable={!!onStatusPrazoClick}
+          isFiltered={filtroStatusPrazoAtivo === "No prazo"}
         />
         <TotalizadorCard
           icon={
@@ -418,6 +425,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               : undefined
           }
           clickable={!!onStatusPrazoClick}
+          isFiltered={filtroStatusPrazoAtivo === "Em risco"}
         />
         <TotalizadorCard
           icon={
@@ -439,6 +447,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               : undefined
           }
           clickable={!!onStatusPrazoClick}
+          isFiltered={filtroStatusPrazoAtivo === "Fora do prazo"}
         />
       </div>
 
