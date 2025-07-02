@@ -194,12 +194,12 @@ export const themeColors = {
       },
       emRisco: {
         bg: {
-          light: "#c7c41d", // amber-600 - mais forte
-          dark: "#c7c41d", // amber-400 - mais forte
+          light: "#ffe700", // amber-600 - mais forte
+          dark: "#ffe700", // amber-400 - mais forte
         },
         text: {
-          light: "#c7c41d", // amber-600 - mais forte
-          dark: "#c7c41d", // amber-400 - mais forte
+          light: "#ffe700", // amber-600 - mais forte
+          dark: "##ffe700", // amber-400 - mais forte
         },
       },
       foraPrazo: {

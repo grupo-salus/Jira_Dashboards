@@ -146,7 +146,7 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-2">
                   <Kanban className="h-4 w-4" />
-                  Espaço de Projetos
+                  Projetos
                 </span>
               </button>
 
@@ -186,7 +186,7 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
-                  Acompanhamento TI
+                  Tasks TI
                 </span>
               </button>
             </div>
@@ -289,7 +289,7 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-3">
                   <Kanban className="h-5 w-5" />
-                  Espaço de Projetos
+                  Projetos
                 </span>
               </button>
 
@@ -329,7 +329,7 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-3">
                   <Users className="h-5 w-5" />
-                  Acompanhamento TI
+                  Tasks TI
                 </span>
               </button>
             </div>

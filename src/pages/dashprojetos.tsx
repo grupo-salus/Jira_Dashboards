@@ -36,7 +36,11 @@ import {
   getBackgroundColor,
   getBorderColor,
 } from "../utils/themeColors";
-import { DotsVerticalIcon, XIcon } from "../components/icons/DashboardIcons";
+import {
+  DotsVerticalIcon,
+  XIcon,
+  FilterIcon,
+} from "../components/icons/DashboardIcons";
 import Select, { components as selectComponents } from "react-select";
 
 // Mapeamento de nomes de status para exibição
@@ -670,26 +674,12 @@ const DashProjetos: React.FC = () => {
           {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) && (
             <button
               onClick={() => setFiltros(filtrosIniciais)}
-              className="flex items-center gap-1 p-2 rounded-full border transition-colors font-semibold"
-              style={{
-                color: themeColors.text.error[currentTheme],
-                borderColor: themeColors.text.error[currentTheme],
-                background: "transparent",
-                lineHeight: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = themeColors.error[100];
-                e.currentTarget.style.color = themeColors.error[600];
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.color =
-                  themeColors.text.error[currentTheme];
-              }}
+              className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs"
+              style={{ color: themeColors.text.error[currentTheme] }}
               title="Limpar todos os filtros"
             >
-              <XIcon size={20} />
-              <span style={{ fontSize: 14 }}>Limpar todos os filtros</span>
+              <FilterIcon size={16} />
+              <span className="font-semibold">Limpar filtros</span>
             </button>
           )}
         </div>
