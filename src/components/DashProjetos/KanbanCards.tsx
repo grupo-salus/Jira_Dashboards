@@ -417,9 +417,9 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
  */
 const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
-  }) => {
-    // Calcula o progresso se tiver as datas necessárias
-    const progresso =
+}) => {
+  // Calcula o progresso se tiver as datas necessárias
+  const progresso =
     projeto["Data: Início Em andamento"] && projeto["Target end"]
       ? calcularProgresso(
           projeto["Data: Início Em andamento"],
@@ -476,14 +476,16 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data que entrou em desenvolvimento */}
       {projeto["Data: Início Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Entrou em desenvolvimento: {formatDate(projeto["Data: Início Em andamento"])}
+          Entrou em desenvolvimento:{" "}
+          {formatDate(projeto["Data: Início Em andamento"])}
         </div>
       )}
 
       {/* Data que saiu de desenvolvimento (se houver) */}
       {projeto["Data: Fim Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Saiu de desenvolvimento: {formatDate(projeto["Data: Fim Em andamento"])}
+          Saiu de desenvolvimento:{" "}
+          {formatDate(projeto["Data: Fim Em andamento"])}
         </div>
       )}
 
@@ -492,10 +494,10 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         projeto["Tempo na fase Em andamento (dias)"] !== undefined &&
         projeto["Tempo na fase Em andamento (dias)"] !== 0 && (
           <div className="text-gray-600 dark:text-gray-200">
-            Tempo em desenvolvimento: {projeto["Tempo na fase Em andamento (dias)"]} dias
+            Tempo em desenvolvimento:{" "}
+            {projeto["Tempo na fase Em andamento (dias)"]} dias
           </div>
         )}
-
 
       {/* Barra de progresso */}
       {progresso !== null && (
@@ -568,7 +570,6 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </div>
         </>
       )}
-
     </div>
   );
 };
@@ -580,8 +581,12 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
   // Datas de homologação
-  const inicioHom = projeto["Data: Início Em homologação"] ? new Date(projeto["Data: Início Em homologação"]) : null;
-  const fimHom = projeto["Data: Fim Em homologação"] ? new Date(projeto["Data: Fim Em homologação"]) : null;
+  const inicioHom = projeto["Data: Início Em homologação"]
+    ? new Date(projeto["Data: Início Em homologação"])
+    : null;
+  const fimHom = projeto["Data: Fim Em homologação"]
+    ? new Date(projeto["Data: Fim Em homologação"])
+    : null;
   const hoje = new Date();
 
   // Progresso: dias decorridos e total
@@ -589,17 +594,26 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
   let totalDias = 0;
   let atraso = false;
   if (inicioHom && fimHom) {
-    totalDias = Math.floor((fimHom.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24));
+    totalDias = Math.floor(
+      (fimHom.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
+    );
     // Se hoje passou do fim, conta até hoje, senão até hoje
     if (hoje > fimHom) {
-      diasDecorridos = Math.floor((hoje.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24));
+      diasDecorridos = Math.floor(
+        (hoje.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
+      );
       atraso = true;
     } else {
-      diasDecorridos = Math.floor((hoje.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24));
+      diasDecorridos = Math.floor(
+        (hoje.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
+      );
     }
     if (diasDecorridos < 0) diasDecorridos = 0;
   }
-  const progresso = inicioHom && fimHom && totalDias > 0 ? Math.min((diasDecorridos / totalDias) * 100, 100) : 0;
+  const progresso =
+    inicioHom && fimHom && totalDias > 0
+      ? Math.min((diasDecorridos / totalDias) * 100, 100)
+      : 0;
 
   return withJiraLink(
     projeto,
@@ -611,8 +625,8 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <span>{projeto.Título}</span>
       </div>
 
-          {/* Área */}
-          {projeto["Departamento Solicitante"] && (
+      {/* Área */}
+      {projeto["Departamento Solicitante"] && (
         <div className="flex items-center gap-2">
           <span
             className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
@@ -647,17 +661,19 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-            {/* Data que entrou em desenvolvimento */}
-            {projeto["Data: Início Em andamento"] && (
+      {/* Data que entrou em desenvolvimento */}
+      {projeto["Data: Início Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Entrou em desenvolvimento: {formatDate(projeto["Data: Início Em andamento"])}
+          Entrou em desenvolvimento:{" "}
+          {formatDate(projeto["Data: Início Em andamento"])}
         </div>
       )}
 
       {/* Data que entrou em homologação */}
       {projeto["Data: Início Em homologação"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Entrou em homologação: {formatDate(projeto["Data: Início Em homologação"])}
+          Entrou em homologação:{" "}
+          {formatDate(projeto["Data: Início Em homologação"])}
         </div>
       )}
 
@@ -679,16 +695,24 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 mb-1">
             <div
-              className={`h-2 rounded-full transition-all duration-300 ${atraso ? 'bg-red-500' : 'bg-blue-400'}`}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                atraso ? "bg-red-500" : "bg-blue-400"
+              }`}
               style={{ width: `${Math.min(progresso, 100)}%` }}
             />
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            Dias decorridos: <b>{diasDecorridos} / {totalDias} dias</b>
+            Dias decorridos:{" "}
+            <b>
+              {diasDecorridos} / {totalDias} dias
+            </b>
           </div>
 
           {atraso && (
-            <div className="text-xs text-red-600 font-bold mt-1">Homologação atrasada — prazo previsto era até {formatDate(fimHom.toISOString())}</div>
+            <div className="text-xs text-red-600 font-bold mt-1">
+              Homologação atrasada — prazo previsto era até{" "}
+              {formatDate(fimHom.toISOString())}
+            </div>
           )}
         </>
       )}
@@ -711,7 +735,6 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </div>
         </>
       )}
-      
     </div>
   );
 };
@@ -722,6 +745,41 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
+  // Datas de operação assistida
+  const inicioOp = projeto["Data: Início Operação assistida"]
+    ? new Date(projeto["Data: Início Operação assistida"])
+    : null;
+  const fimOp = projeto["Data: Fim Operação assistida"]
+    ? new Date(projeto["Data: Fim Operação assistida"])
+    : null;
+  const hoje = new Date();
+
+  // Progresso: dias decorridos e total
+  let diasDecorridos = 0;
+  let totalDias = 0;
+  let atraso = false;
+  if (inicioOp && fimOp) {
+    totalDias = Math.floor(
+      (fimOp.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    // Se hoje passou do fim, conta até hoje, senão até hoje
+    if (hoje > fimOp) {
+      diasDecorridos = Math.floor(
+        (hoje.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      atraso = true;
+    } else {
+      diasDecorridos = Math.floor(
+        (hoje.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
+      );
+    }
+    if (diasDecorridos < 0) diasDecorridos = 0;
+  }
+  const progresso =
+    inicioOp && fimOp && totalDias > 0
+      ? Math.min((diasDecorridos / totalDias) * 100, 100)
+      : 0;
+
   return withJiraLink(
     projeto,
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
@@ -731,7 +789,8 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       >
         <span>{projeto.Título}</span>
       </div>
-      {/* Informações Gerais */}
+
+      {/* Área */}
       {projeto["Departamento Solicitante"] && (
         <div className="flex items-center gap-2">
           <span
@@ -741,36 +800,107 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </span>
         </div>
       )}
+
+      {/* Squad */}
       {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
           Squad: {projeto.Squad}
         </div>
       )}
-      {(projeto["Data de criação"] ||
-        projeto["Data de atualização"] ||
-        (projeto["Target start"] && projeto["Target end"])) && (
-        <hr className="my-1 border-gray-300 dark:border-gray-600" />
-      )}
-      {/* Datas */}
-      {projeto["Data de criação"] && (
+
+      <hr className="my-1 border-gray-300 dark:border-gray-600" />
+
+      {/* Data prevista de início */}
+      {projeto["Target start"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Criado em: {formatDate(projeto["Data de criação"])}
-        </div>
-      )}
-      {projeto["Data de atualização"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Resolvido em: {formatDate(projeto["Data de atualização"])}
-        </div>
-      )}
-      {projeto["Target start"] && projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Período planejado: <br />
-          {formatDate(projeto["Target start"])} →{" "}
-          {formatDate(projeto["Target end"])} <br />
+          Target start: {formatDate(projeto["Target start"])}
         </div>
       )}
 
-      {/* Status de prazo */}
+      {/* Data prevista para término */}
+      {projeto["Target end"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Target end: {formatDate(projeto["Target end"])}
+        </div>
+      )}
+
+      <hr className="my-1 border-gray-300 dark:border-gray-600" />
+
+      {/* Data que entrou em desenvolvimento */}
+      {projeto["Data: Início Em andamento"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Entrou em desenvolvimento:{" "}
+          {formatDate(projeto["Data: Início Em andamento"])}
+        </div>
+      )}
+
+      {/* Data que saiu da homologação */}
+      {projeto["Data: Fim Em homologação"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Saiu da homologação: {formatDate(projeto["Data: Fim Em homologação"])}
+        </div>
+      )}
+
+      {/* Data de finalização (fim do desenvolvimento) */}
+      {projeto["Data: Fim Em andamento"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data de finalização: {formatDate(projeto["Data: Fim Em andamento"])}
+        </div>
+      )}
+
+      {/* Data que entrou em operação assistida */}
+      {projeto["Data: Início Operação assistida"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Entrou em operação assistida:{" "}
+          {formatDate(projeto["Data: Início Operação assistida"])}
+        </div>
+      )}
+
+      {/* Tempo em operação assistida */}
+      {inicioOp && fimOp && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Tempo em operação assistida: {diasDecorridos} dias
+        </div>
+      )}
+
+      <hr />
+
+      {/* Progresso da operação assistida */}
+      {inicioOp && fimOp && (
+        <>
+          <div className="flex justify-between text-sm">
+            <span className="font-medium">
+              Progresso da operação assistida:
+            </span>
+            <span className="text-gray-600 dark:text-gray-400">
+              {Math.round(progresso)}%
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 mb-1">
+            <div
+              className={`h-2 rounded-full transition-all duration-300 ${
+                atraso ? "bg-red-500" : "bg-blue-400"
+              }`}
+              style={{ width: `${Math.min(progresso, 100)}%` }}
+            />
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Dias decorridos:{" "}
+            <b>
+              {diasDecorridos} / {totalDias} dias
+            </b>
+          </div>
+
+          {atraso && (
+            <div className="text-xs text-red-600 font-bold mt-1">
+              Operação assistida atrasada — prazo previsto era até{" "}
+              {formatDate(fimOp.toISOString())}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Status de prazo - sempre fora do bloco acima */}
       {projeto["Status de prazo"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -796,7 +926,10 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <div className="pt-2">
             <div className="font-medium">Estimativa vs. Registrado:</div>
             <div className="text-gray-600 dark:text-gray-200">
-              Estimativa: {formatarSegundos(projeto["Estimativa original (segundos)"])} • Registrado: {formatarSegundos(projeto["Tempo registrado (segundos)"])}
+              Estimativa:{" "}
+              {formatarSegundos(projeto["Estimativa original (segundos)"])} •
+              Registrado:{" "}
+              {formatarSegundos(projeto["Tempo registrado (segundos)"])}
             </div>
           </div>
         )}
@@ -866,7 +999,9 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
           projeto["Tempo registrado (segundos)"] !== null && (
             <div className="text-gray-600 dark:text-gray-200">
               Estimativa:{" "}
-              {formatarSegundos(projeto["Estimativa original (segundos)"])} • Registrado: {formatarSegundos(projeto["Tempo registrado (segundos)"])}
+              {formatarSegundos(projeto["Estimativa original (segundos)"])} •
+              Registrado:{" "}
+              {formatarSegundos(projeto["Tempo registrado (segundos)"])}
             </div>
           )}
       </div>

@@ -75,25 +75,38 @@ def classificar_status_ideacao(dias: int) -> str:
     return "Obsoleto"
 
 def is_final_status(status: str) -> bool:
-    finais = ["concluído", "cancelado", "operação assistida"]
+    finais = ["concluído"]
     resultado = status.strip().lower() in finais
     logger.debug(f"Verificando se {status} é status final: {resultado}")
     return resultado
 
 def classificar_prazo(row: pd.Series) -> str:
-    logger.debug("Classificando prazo")
+    logger.debug(f"Classificando prazo do projeto: {row.get('key')}")
     target_end = row.get("Target end")
-    dias_fase = row.get("Dias na fase atual")
-    status = str(row.get("Status", "")).strip().lower()
-    if is_final_status(status):
-        logger.debug("Status final encontrado, retornando 'Concluído'")
-        pass
-        #return "Concluído"
-    if pd.isnull(target_end) or dias_fase is None:
-        logger.debug("Target end ou dias_fase ausentes")
+    logger.debug(f"Target end: {target_end}")
+
+    # 1. Se existe data de finalização (preferencialmente Data de término, senão Data: Fim Em andamento)
+    data_finalizacao = row.get("Data: Fim Em andamento")
+    logger.debug(f"Data: Fim Em andamento: {data_finalizacao}")
+    if pd.notnull(data_finalizacao):
+        if pd.isnull(target_end):
+            logger.debug("Target end ausente")
+            return None
+        if data_finalizacao <= target_end:
+            logger.debug(f"Projeto finalizado no prazo: {data_finalizacao} <= {target_end}")
+            return "No prazo"
+        else:
+            logger.debug(f"Projeto finalizado fora do prazo: {data_finalizacao} > {target_end}")
+            return "Fora do prazo"
+
+    # 2. Se não existe data de finalização, faz a lógica normal
+    if pd.isnull(target_end):
+        logger.debug("Target end ausente")
         return None
+
     dias_restantes = (target_end - hoje).days
     logger.debug(f"Dias restantes: {dias_restantes}")
+
     if dias_restantes < 0:
         return "Fora do prazo"
     elif dias_restantes <= 2:
