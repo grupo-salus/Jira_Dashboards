@@ -1743,6 +1743,7 @@ const DashProjetos: React.FC = () => {
             onSquadClick={(squad) =>
               setFiltros((f) => ({ ...f, squad: [squad] }))
             }
+            filtroAtivo={filtros.squad.length > 0}
           />
         </div>
       </div>

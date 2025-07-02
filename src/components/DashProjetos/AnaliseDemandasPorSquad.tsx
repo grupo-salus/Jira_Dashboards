@@ -8,11 +8,13 @@ import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
   onSquadClick?: (squad: string) => void;
+  filtroAtivo?: boolean;
 }
 
 const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   data,
   onSquadClick,
+  filtroAtivo = false,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipData, setTooltipData] = useState<{
@@ -166,7 +168,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
               cx="50%"
               cy="50%"
               outerRadius={"60%"}
-              label={({ name, x, y, cx, cy }) => {
+              label={filtroAtivo ? null : ({ name, x, y, cx, cy }) => {
                 // Afastar a label 20% a mais do centro
                 const dx = x - cx;
                 const dy = y - cy;
@@ -185,7 +187,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                   </text>
                 );
               }}
-              labelLine
+              labelLine={!filtroAtivo}
               isAnimationActive={false}
               onClick={handlePieClick}
               onMouseEnter={handlePieMouseEnter}
