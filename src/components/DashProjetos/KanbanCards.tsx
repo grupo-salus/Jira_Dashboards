@@ -4,6 +4,7 @@ import {
   formatDate,
   formatarSegundos,
   getStatusColor,
+  getPrazoBackgroundColor,
   normalizarStatus,
 } from "./kanbanUtils";
 import { getFontSizes } from "../../constants/styleConfig";
@@ -420,6 +421,8 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
+  const { theme } = useTheme();
+
   // Calcula o progresso se tiver as datas necessárias
   const progresso =
     projeto["Data: Início Em andamento"] && projeto["Target end"]
@@ -514,12 +517,14 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
               <div
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  getStatusColor(projeto["Status de prazo"] || "No prazo")
-                    .split(" ")
-                    .find((c) => c.startsWith("bg-")) || "bg-blue-600"
-                }`}
-                style={{ width: `${progresso}%` }}
+                className="h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${progresso}%`,
+                  backgroundColor: getPrazoBackgroundColor(
+                    projeto["Status de prazo"] || "No prazo",
+                    theme
+                  ),
+                }}
               />
             </div>
             {/* Dias decorridos */}
@@ -565,6 +570,12 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
                   projeto["Status de prazo"]
                 )} ${fontSizes.statusCardKanban}`}
+                style={{
+                  backgroundColor: getPrazoBackgroundColor(
+                    projeto["Status de prazo"],
+                    theme
+                  ),
+                }}
               >
                 {projeto["Status de prazo"]}
               </span>
@@ -582,6 +593,8 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
+  const { theme } = useTheme();
+
   // Datas de homologação
   const inicioHom = projeto["Data: Início Em homologação"]
     ? new Date(projeto["Data: Início Em homologação"])
@@ -730,6 +743,12 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
                   projeto["Status de prazo"]
                 )} ${fontSizes.statusCardKanban}`}
+                style={{
+                  backgroundColor: getPrazoBackgroundColor(
+                    projeto["Status de prazo"],
+                    theme
+                  ),
+                }}
               >
                 {projeto["Status de prazo"]}
               </span>
@@ -747,6 +766,8 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
+  const { theme } = useTheme();
+
   // Datas de operação assistida
   const inicioOp = projeto["Data: Início Operação assistida"]
     ? new Date(projeto["Data: Início Operação assistida"])
@@ -913,6 +934,12 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
                   projeto["Status de prazo"]
                 )} ${fontSizes.statusCardKanban}`}
+                style={{
+                  backgroundColor: getPrazoBackgroundColor(
+                    projeto["Status de prazo"],
+                    theme
+                  ),
+                }}
               >
                 {projeto["Status de prazo"]}
               </span>

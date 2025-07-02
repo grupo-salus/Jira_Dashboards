@@ -36,8 +36,8 @@ const TotalizadorCard: React.FC<{
   value: number | string;
   currentTheme: "light" | "dark";
   tooltipContent?: React.ReactNode;
-  borderBottomColor?: string;
-}> = ({ icon, label, value, currentTheme, tooltipContent, borderBottomColor }) => {
+  valueColor?: string;
+}> = ({ icon, label, value, currentTheme, tooltipContent, valueColor }) => {
   const config = getTotalizadoresConfig();
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -46,7 +46,6 @@ const TotalizadorCard: React.FC<{
       className={`rounded-lg shadow-md ${config.padding} flex-grow ${config.altura} relative totalizador-card 2xl:flex-1 2xl:min-w-0`}
       style={{
         backgroundColor: getBackgroundColor("card", currentTheme),
-        borderBottom: borderBottomColor ? `4px solid ${borderBottomColor}` : undefined,
       }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
@@ -67,16 +66,14 @@ const TotalizadorCard: React.FC<{
           </p>
           <p
             className={`font-bold mt-1 ${config.valor}`}
-            style={{ color: getTextColor("primary", currentTheme) }}
+            style={{
+              color: valueColor || getTextColor("primary", currentTheme),
+            }}
           >
             {value}
           </p>
         </div>
       </div>
-      {/* <div
-        className={`absolute bottom-0 left-0 h-1 w-full`}
-        style={{ backgroundColor: barColor }}
-      ></div> */}
 
       {/* Tooltip */}
       {showTooltip && tooltipContent && (
@@ -232,12 +229,10 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               >
                 Total de Projetos no Board
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
-                Contagem total de projetos considerando os filtros
-                aplicados. Inclui todos os status: ideação, desenvolvimento,
-                entregues, etc.
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Contagem total de projetos considerando os filtros aplicados.
+                Inclui todos os status: ideação, desenvolvimento, entregues,
+                etc.
               </div>
             </div>
           }
@@ -263,9 +258,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               >
                 Projetos em Ideação
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Projetos da coluna Ideação que são ideias a serem ainda
                 analisadas e avaliadas.
               </div>
@@ -293,11 +286,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               >
                 Projetos em Andamento
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
-                Projetos que estão ativamente sendo desenvolvidos: Em
-                Andamento, Em Homologação e Operação Assistida.
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Projetos que estão ativamente sendo desenvolvidos: Em Andamento,
+                Em Homologação e Operação Assistida.
               </div>
             </div>
           }
@@ -309,8 +300,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               className="text-current flex-shrink-0"
               style={{
                 color:
-                  themeColors.components.totalizadores.backlogPriorizado
-                    .icon,
+                  themeColors.components.totalizadores.backlogPriorizado.icon,
               }}
             />
           }
@@ -325,11 +315,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               >
                 Projetos no Backlog Priorizado
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
-                Ideias que viraram projetos, já passaram pela análise e
-                estão na fila priorizada aguardando desenvolvimento.
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Ideias que viraram projetos, já passaram pela análise e estão na
+                fila priorizada aguardando desenvolvimento.
               </div>
             </div>
           }
@@ -355,9 +343,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               >
                 Projetos Entregues no Mês
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Projetos que foram concluídos e entregues no mês atual (
                 {new Date().toLocaleDateString("pt-BR", {
                   month: "long",
@@ -399,21 +385,18 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 style={{ color: getTextColor("secondary", currentTheme) }}
                 className="mb-2"
               >
-                <strong>Como é calculado:</strong> verificamos se o tempo
-                total planejado ainda não foi ultrapassado e se faltam mais
-                de 2 dias para a data final (Target end). Também
-                consideramos se o projeto ainda não foi entregue, cancelado
-                ou finalizado.
+                <strong>Como é calculado:</strong> verificamos se o tempo total
+                planejado ainda não foi ultrapassado e se faltam mais de 2 dias
+                para a data final (Target end). Também consideramos se o projeto
+                ainda não foi entregue, cancelado ou finalizado.
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Isso significa que o andamento está sob controle, e há tempo
                 para concluir etapas finais com segurança.
               </div>
             </div>
           }
-          borderBottomColor={currentTheme === "dark" ? "#15803d" : "#16a34a"}
+          valueColor={themeColors.status.prazo.noPrazo.text[currentTheme]}
         />
         <TotalizadorCard
           icon={
@@ -446,21 +429,18 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 style={{ color: getTextColor("secondary", currentTheme) }}
                 className="mb-2"
               >
-                <strong>Como é calculado:</strong> mesmo sem ultrapassar o
-                tempo total planejado (ainda abaixo de 100%), faltam 2 dias
-                ou menos para a data final (Target end) e o projeto ainda
-                não está finalizado.
+                <strong>Como é calculado:</strong> mesmo sem ultrapassar o tempo
+                total planejado (ainda abaixo de 100%), faltam 2 dias ou menos
+                para a data final (Target end) e o projeto ainda não está
+                finalizado.
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
-                Isso indica que o tempo restante pode não ser suficiente
-                para testes, validações ou operação assistida, e merece
-                atenção.
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Isso indica que o tempo restante pode não ser suficiente para
+                testes, validações ou operação assistida, e merece atenção.
               </div>
             </div>
           }
-          borderBottomColor={currentTheme === "dark" ? "#ca8a04" : "#eab308"}
+          valueColor={themeColors.status.prazo.emRisco.text[currentTheme]}
         />
         <TotalizadorCard
           icon={
@@ -497,15 +477,13 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 início (Target start) até hoje já superou o total de dias
                 planejado (calculado com base em Target end).
               </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
-                Mesmo que ainda esteja em andamento, o prazo já estourou e
-                pode impactar outras entregas ou áreas envolvidas.
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Mesmo que ainda esteja em andamento, o prazo já estourou e pode
+                impactar outras entregas ou áreas envolvidas.
               </div>
             </div>
           }
-          borderBottomColor={currentTheme === "dark" ? "#b91c1c" : "#dc2626"}
+          valueColor={themeColors.status.prazo.foraPrazo.text[currentTheme]}
         />
       </div>
 

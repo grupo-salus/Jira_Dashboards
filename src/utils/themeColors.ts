@@ -184,32 +184,32 @@ export const themeColors = {
     prazo: {
       noPrazo: {
         bg: {
-          light: "#d1fae5", // green-100
-          dark: "#064e3b", // green-900
+          light: "#069b1a", // green-600 - mais forte
+          dark: "#069b1a", // green-500 - mais forte
         },
         text: {
-          light: "#065f46", // green-800
-          dark: "#34d399", // green-300
+          light: "#069b1a", // green-600 - mais forte
+          dark: "#069b1a", // green-500 - mais forte
         },
       },
       emRisco: {
         bg: {
-          light: "#fef3c7", // yellow-100
-          dark: "#78350f", // yellow-900
+          light: "#fcf805", // amber-600 - mais forte
+          dark: "#fcf805", // amber-400 - mais forte
         },
         text: {
-          light: "#92400e", // yellow-800
-          dark: "#fde68a", // yellow-300
+          light: "#fcf805", // amber-600 - mais forte
+          dark: "#fcf805", // amber-400 - mais forte
         },
       },
       foraPrazo: {
         bg: {
-          light: "#fee2e2", // red-100
-          dark: "#7f1d1d", // red-900
+          light: "#ff0707", // red-600 - mais forte
+          dark: "#ff0707", // red-400 - mais forte
         },
         text: {
-          light: "#991b1b", // red-800
-          dark: "#fca5a5", // red-300
+          light: "#ff0707", // red-600 - mais forte
+          dark: " #ff0707", // red-400 - mais forte
         },
       },
     },
@@ -338,36 +338,39 @@ export const themeColors = {
         hex: "#6b7280", // gray-500
       },
     },
-
     // Squads - Cores específicas para cada squad
     squads: {
       BI: {
         label: "BI",
-        hex: "#E91E63", // rosa vibrante
+        hex: "#54595F", // Cinza escuro Salus
+      },
+      DITO: {
+        label: "DITO",
+        hex: "#0d3d50", // Verde Limão Salus
       },
       Infraestrutura: {
         label: "Infraestrutura",
-        hex: "#3498DB", // azul claro
+        hex: "#6EC1E4", // Verde Escuro Salus
       },
       PMO: {
         label: "PMO",
-        hex: "#F1C40F", // amarelo dourado
+        hex: "#61CE70", // Verde Salus
       },
       Salesforce: {
         label: "Salesforce",
-        hex: "#2ECC71", // verde esmeralda
+        hex: "#052f28", // Azul Salus 052f28
       },
       Sistemas: {
         label: "Sistemas",
-        hex: "#E67E22", // laranja queimado
+        hex: "#23B4AD", // Turquesa Salus
       },
       Wetok: {
         label: "Wetok",
-        hex: "#1ABC9C", // turquesa escuro
+        hex: "#AEE436", // Azul Escuro Salus
       },
       naoDefinida: {
         label: "Não informada",
-        hex: "#6b7280", // gray-500
+        hex: "#7A7A7A", // Cinza Salus
       },
     },
 
@@ -375,67 +378,67 @@ export const themeColors = {
     areas: {
       TI: {
         label: "TI",
-        hex: "#90CAF9", // azul muito claro
+        hex: "#E3F2FD", // azul mais claro
       },
       Operações: {
         label: "Operações",
-        hex: "#64B5F6", // azul claro
+        hex: "#BBDEFB", // azul muito claro
       },
       Financeiro: {
         label: "Financeiro",
-        hex: "#42A5F5", // azul médio forte
+        hex: "#90CAF9", // azul claro
       },
       Marketing: {
         label: "Marketing",
-        hex: "#2196F3", // azul forte
+        hex: "#64B5F6", // azul médio claro
       },
       Presidência: {
         label: "Presidência",
-        hex: "#1E88E5", // azul mais forte
+        hex: "#42A5F5", // azul médio
       },
       Auditoria: {
         label: "Auditoria",
-        hex: "#1976D2", // azul escuro
+        hex: "#2196F3", // azul médio forte
       },
       "Serviço de Atendimento ao Franqueado": {
         label: "Serviço de Atendimento ao Franqueado",
-        hex: "#1565C0", // azul mais escuro
+        hex: "#1E88E5", // azul forte
       },
       Jurídico: {
         label: "Jurídico",
-        hex: "#0D47A1", // azul muito escuro
+        hex: "#1976D2", // azul mais forte
       },
       Crescera: {
         label: "Crescera",
-        hex: "#0A3880", // azul extremamente escuro
+        hex: "#1565C0", // azul escuro
       },
       "Recursos Humanos": {
         label: "Recursos Humanos",
-        hex: "#072B60", // azul quase preto
+        hex: "#0D47A1", // azul muito escuro
       },
       "Departamento Pessoal": {
         label: "Departamento Pessoal",
-        hex: "#9C27B0", // roxo vibrante
+        hex: "#0A3880", // azul extremamente escuro
       },
       Expansão: {
         label: "Expansão",
-        hex: "#673AB7", // roxo profundo
+        hex: "#072B60", // azul quase preto
       },
       CTS: {
         label: "CTS",
-        hex: "#FF5722", // laranja vibrante
+        hex: "#051940", // azul escuríssimo
       },
       Sorriden: {
         label: "Sorriden",
-        hex: "#795548", // marrom
+        hex: "#041230", // azul noite
       },
       "Bom D+": {
         label: "Bom D+",
-        hex: "#607D8B", // azul acinzentado
+        hex: "#030C20", // azul profundo
       },
       Compras: {
         label: "Compras",
-        hex: "#FF9800", // laranja
+        hex: "#020610", // azul abissal
       },
       naoDefinida: {
         label: "Não informado",
@@ -727,6 +730,7 @@ export const getPriorityConfig = (priority: string) => {
 export const getSquadConfig = (squad: string) => {
   const squadMap: Record<string, keyof typeof themeColors.components.squads> = {
     BI: "BI",
+    DITO: "DITO",
     Infraestrutura: "Infraestrutura",
     PMO: "PMO",
     Salesforce: "Salesforce",

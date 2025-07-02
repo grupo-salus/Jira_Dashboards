@@ -1,4 +1,5 @@
 import { JiraStatus, PrazoStatus, IdeacaoStatus } from "../../types/Typesjira";
+import { themeColors } from "../../utils/themeColors";
 
 // ============================================================================
 // CONSTANTES
@@ -74,13 +75,8 @@ export const formatDate = (dateString: string | null): string => {
  * Obtém a cor CSS para um status de prazo ou ideação
  */
 export const getStatusColor = (status: PrazoStatus | IdeacaoStatus): string => {
-  const statusColors: Record<PrazoStatus | IdeacaoStatus, string> = {
-    // Prazo
-    "No prazo": "bg-green-600 text-white dark:bg-green-700 dark:text-white",
-    "Em risco": "bg-yellow-500 text-white dark:bg-yellow-600 dark:text-white",
-    "Fora do prazo": "bg-red-600 text-white dark:bg-red-700 dark:text-white",
-
-    // Ideação
+  // Mapeamento dos status de ideação para classes CSS
+  const ideacaoColors: Record<IdeacaoStatus, string> = {
     Recente:
       "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
     Rever: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
@@ -89,10 +85,29 @@ export const getStatusColor = (status: PrazoStatus | IdeacaoStatus): string => {
     Obsoleto: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
   };
 
-  return (
-    statusColors[status] ||
-    "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
-  );
+  // Se for status de ideação, retorna as classes CSS completas
+  if (status in ideacaoColors) {
+    return ideacaoColors[status as IdeacaoStatus];
+  }
+
+  // Para status de prazo, retorna apenas a classe de texto (bg será aplicado via style)
+  return "text-white";
+};
+
+/**
+ * Obtém a cor de fundo para um status de prazo
+ */
+export const getPrazoBackgroundColor = (
+  status: PrazoStatus,
+  theme: "light" | "dark"
+): string => {
+  const prazoColors = {
+    "No prazo": themeColors.status.prazo.noPrazo.bg[theme],
+    "Em risco": themeColors.status.prazo.emRisco.bg[theme],
+    "Fora do prazo": themeColors.status.prazo.foraPrazo.bg[theme],
+  };
+
+  return prazoColors[status];
 };
 
 /**
