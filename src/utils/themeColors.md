@@ -86,7 +86,7 @@ themeColors.components.totalizadores.proximoExecucao.bg /
 themeColors.components.kanban.colunas.ideacao;
 themeColors.components.kanban.colunas.backlogPriorizado;
 themeColors.components.kanban.colunas.emExecucao;
-themeColors.components.kanban.colunas.emHomologacao;
+themeColors.components.kanban.colunas.emhomologação;
 themeColors.components.kanban.colunas.operacaoAssistida;
 themeColors.components.kanban.colunas.entregue;
 themeColors.components.kanban.colunas.cancelado;

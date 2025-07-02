@@ -75,7 +75,7 @@ export interface EspacoDeProjetos {
   "Data: Fim Backlog priorizado"?: string | null;
   "Data: Início Em andamento"?: string | null;
   "Data: Fim Em andamento"?: string | null;
-  "Data: Início Em homologacao"?: string | null;
+  "Data: Início Em homologação"?: string | null;
   "Data: Fim Em homologação"?: string | null;
   "Data: Início Operação assistida"?: string | null;
   "Data: Fim Operação assistida"?: string | null;
@@ -91,7 +91,7 @@ export interface EspacoDeProjetos {
   "Tempo na fase Ideação (dias)"?: number | null;
   "Tempo na fase Backlog Priorizado (dias)"?: number | null;
   "Tempo na fase Em andamento (dias)"?: number | null;
-  "Tempo na fase Em homologacao (dias)"?: number | null;
+  "Tempo na fase Em homologação (dias)"?: number | null;
   "Tempo na fase Operação assistida (dias)"?: number | null;
   "Tempo na fase Entregue (dias)"?: number | null;
   "Tempo na fase Cancelado (dias)"?: number | null;

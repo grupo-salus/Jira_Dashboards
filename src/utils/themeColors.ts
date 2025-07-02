@@ -484,7 +484,7 @@ export const themeColors = {
         ideacao: "#8b5cf6", // purple-500
         backlogPriorizado: "#f97316", // orange-500
         emExecucao: "#3b82f6", // blue-500
-        emHomologacao: "#06b6d4", // cyan-500
+        emhomologação: "#06b6d4", // cyan-500
         operacaoAssistida: "#10b981", // green-500
         entregue: "#059669", // green-600
         cancelado: "#ef4444", // red-500
