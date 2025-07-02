@@ -657,32 +657,29 @@ const DashProjetos: React.FC = () => {
       className="p-6 w-full max-w-none relative"
       style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
     >
-      {/* Título do Dashboard */}
-      <div className="mb-8">
+      {/* Título do Dashboard + Limpar Filtros */}
+      <div className="mb-8 flex items-center justify-between w-full">
         <h1
           className={fontSizes.tituloPagina}
           style={{ color: getTextColor("primary", currentTheme) }}
         >
           Status Report de Projetos
         </h1>
+        {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) && (
+          <button
+            onClick={() => setFiltros(filtrosIniciais)}
+            className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs ml-4"
+            style={{ color: themeColors.text.error[currentTheme] }}
+            title="Limpar todos os filtros"
+          >
+            <FilterIcon size={16} />
+            <span className="font-semibold">Limpar filtros</span>
+          </button>
+        )}
       </div>
 
       {/* Seção de Filtros - Sempre Visível */}
       <div className="mb-6">
-        {/* Botões compactos de filtro e limpar */}
-        <div className="flex justify-end mb-2 gap-2 items-center">
-          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) && (
-            <button
-              onClick={() => setFiltros(filtrosIniciais)}
-              className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs"
-              style={{ color: themeColors.text.error[currentTheme] }}
-              title="Limpar todos os filtros"
-            >
-              <FilterIcon size={16} />
-              <span className="font-semibold">Limpar filtros</span>
-            </button>
-          )}
-        </div>
         <div className="p-0 shadow-none">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-7 w-full">
             {/* Filtro de Área */}
