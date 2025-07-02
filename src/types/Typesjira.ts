@@ -90,7 +90,7 @@ export interface EspacoDeProjetos {
   // Colunas calculadas de tempo por fase
   "Tempo na fase Ideação (dias)"?: number | null;
   "Tempo na fase Backlog Priorizado (dias)"?: number | null;
-  "Tempo na fase Em desenvolvimento (dias)"?: number | null;
+  "Tempo na fase Em andamento (dias)"?: number | null;
   "Tempo na fase Em homologacao (dias)"?: number | null;
   "Tempo na fase Operação assistida (dias)"?: number | null;
   "Tempo na fase Entregue (dias)"?: number | null;

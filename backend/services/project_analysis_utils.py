@@ -8,21 +8,31 @@ hoje = pd.Timestamp(date.today())
 
 def calcular_tempo_por_fase(row: pd.Series, fase: str) -> int:
     logger.debug(f"Calculando tempo para fase: {fase}")
+    logger.debug(f"Data: Início {fase}: {row.get(f'Data: Início {fase}')}")
+    logger.debug(f"Data: Fim {fase}: {row.get(f'Data: Fim {fase}')}")
+    logger.debug(f"Data de hoje: {hoje.date()}")
     inicio = row.get(f"Data: Início {fase}")
     fim = row.get(f"Data: Fim {fase}")
-    if pd.notnull(inicio) and pd.notnull(fim):
+
+    if pd.notnull(inicio):
+        if pd.notnull(fim):
+            fim_efetivo = fim
+        else:
+            fim_efetivo = hoje
+            logger.debug(f"Data de fim não disponível para fase '{fase}'. Usando data atual: {hoje.date()}")
+
         try:
-            dias = (fim - inicio).days
-            # Verificar se o resultado é infinito ou NaN
+            dias = (fim_efetivo - inicio).days
             if pd.isna(dias) or dias == float('inf') or dias == float('-inf'):
-                logger.debug(f"Valor inválido encontrado para fase {fase}: {dias}")
+                logger.debug(f"Valor inválido para fase {fase}: {dias}")
                 return None
-            logger.debug(f"Tempo calculado para fase {fase}: {dias} dias")
+            logger.debug(f"Tempo na fase {fase}: {dias} dias")
             return dias
         except Exception as e:
             logger.error(f"Erro ao calcular tempo para fase {fase}: {str(e)}")
             return None
-    logger.debug(f"Datas de início ou fim ausentes para fase {fase}")
+
+    logger.debug(f"Data de início ausente para fase {fase}")
     return None
 
 def calcular_dias_na_fase_atual(row: pd.Series) -> int:

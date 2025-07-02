@@ -417,9 +417,9 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
  */
 const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
-}) => {
-  // Calcula o progresso se tiver as datas necessárias
-  const progresso =
+  }) => {
+    // Calcula o progresso se tiver as datas necessárias
+    const progresso =
     projeto["Data: Início Em andamento"] && projeto["Target end"]
       ? calcularProgresso(
           projeto["Data: Início Em andamento"],
@@ -457,39 +457,45 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
+      {/* Data prevista de início */}
+      {projeto["Target start"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data prevista de início: {formatDate(projeto["Target start"])}
+        </div>
+      )}
+
+      {/* Data prevista para término */}
+      {projeto["Target end"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data prevista para término: {formatDate(projeto["Target end"])}
+        </div>
+      )}
+
+      <hr className="my-1 border-gray-300 dark:border-gray-600" />
+
       {/* Data que entrou em desenvolvimento */}
       {projeto["Data: Início Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Entrou em desenvolvimento:{" "}
-          {formatDate(projeto["Data: Início Em andamento"])}
+          Entrou em desenvolvimento: {formatDate(projeto["Data: Início Em andamento"])}
         </div>
       )}
 
       {/* Data que saiu de desenvolvimento (se houver) */}
       {projeto["Data: Fim Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Saiu de desenvolvimento:{" "}
-          {formatDate(projeto["Data: Fim Em andamento"])}
-        </div>
-      )}
-
-      {/* Datas de início e término planejado */}
-      {projeto["Target start"] && projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Período planejado: <br />
-          {formatDate(projeto["Target start"])} →{" "}
-          {formatDate(projeto["Target end"])}
+          Saiu de desenvolvimento: {formatDate(projeto["Data: Fim Em andamento"])}
         </div>
       )}
 
       {/* Dias em desenvolvimento */}
-      {projeto["Tempo na fase Em desenvolvimento (dias)"] !== null &&
-        projeto["Tempo na fase Em desenvolvimento (dias)"] !== undefined && (
+      {projeto["Tempo na fase Em andamento (dias)"] !== null &&
+        projeto["Tempo na fase Em andamento (dias)"] !== undefined &&
+        projeto["Tempo na fase Em andamento (dias)"] !== 0 && (
           <div className="text-gray-600 dark:text-gray-200">
-            Dias em desenvolvimento:{" "}
-            {projeto["Tempo na fase Em desenvolvimento (dias)"]} dias
+            Tempo em desenvolvimento: {projeto["Tempo na fase Em andamento (dias)"]} dias
           </div>
         )}
+
 
       {/* Barra de progresso */}
       {progresso !== null && (
@@ -529,7 +535,7 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
                     (1000 * 60 * 60 * 24)
                 );
                 // Dias decorridos: do início até hoje ou até a data de término real, se houver
-                let diasDecorridos = Math.round(
+                let diasDecorridos = Math.floor(
                   ((fimReal ? fimReal : hoje).getTime() - inicioDev.getTime()) /
                     (1000 * 60 * 60 * 24)
                 );
