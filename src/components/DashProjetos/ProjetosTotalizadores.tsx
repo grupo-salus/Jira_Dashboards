@@ -390,35 +390,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label="Projetos No Prazo"
           value={projetosNoPrazo}
           currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos No Prazo
-              </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-                className="mb-2"
-              >
-                O projeto está dentro do período planejado.
-              </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-                className="mb-2"
-              >
-                <strong>Como é calculado:</strong> verificamos se o tempo total
-                planejado ainda não foi ultrapassado e se faltam mais de 2 dias
-                para a data final (Target end). Também consideramos se o projeto
-                ainda não foi entregue, cancelado ou finalizado.
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Isso significa que o andamento está sob controle, e há tempo
-                para concluir etapas finais com segurança.
-              </div>
-            </div>
-          }
           valueColor={themeColors.status.prazo.noPrazo.text[currentTheme]}
           onClickValue={
             onStatusPrazoClick
@@ -440,35 +411,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label="Projetos Em Risco"
           value={projetosEmRisco}
           currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos Em Risco
-              </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-                className="mb-2"
-              >
-                O projeto está perto de ultrapassar o prazo.
-              </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-                className="mb-2"
-              >
-                <strong>Como é calculado:</strong> mesmo sem ultrapassar o tempo
-                total planejado (ainda abaixo de 100%), faltam 2 dias ou menos
-                para a data final (Target end) e o projeto ainda não está
-                finalizado.
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Isso indica que o tempo restante pode não ser suficiente para
-                testes, validações ou operação assistida, e merece atenção.
-              </div>
-            </div>
-          }
           valueColor={themeColors.status.prazo.emRisco.text[currentTheme]}
           onClickValue={
             onStatusPrazoClick
@@ -490,34 +432,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label="Projetos Fora do Prazo"
           value={projetosForaDoPrazo}
           currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div
-                className="font-bold mb-1"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Projetos Fora do Prazo
-              </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-                className="mb-2"
-              >
-                O projeto ultrapassou o tempo planejado.
-              </div>
-              <div
-                style={{ color: getTextColor("secondary", currentTheme) }}
-                className="mb-2"
-              >
-                <strong>Como é calculado:</strong> o número de dias desde o
-                início (Target start) até hoje já superou o total de dias
-                planejado (calculado com base em Target end).
-              </div>
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Mesmo que ainda esteja em andamento, o prazo já estourou e pode
-                impactar outras entregas ou áreas envolvidas.
-              </div>
-            </div>
-          }
           valueColor={themeColors.status.prazo.foraPrazo.text[currentTheme]}
           onClickValue={
             onStatusPrazoClick
