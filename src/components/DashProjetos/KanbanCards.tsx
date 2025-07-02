@@ -950,7 +950,8 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       >
         <span>{projeto.Título}</span>
       </div>
-      {/* Informações Gerais */}
+
+      {/* Área */}
       {projeto["Departamento Solicitante"] && (
         <div className="flex items-center gap-2">
           <span
@@ -960,20 +961,56 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
           </span>
         </div>
       )}
+
+      {/* Squad */}
       {projeto.Squad && (
         <div className="text-gray-600 dark:text-gray-200">
           Squad: {projeto.Squad}
         </div>
       )}
+
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
-      {/* Datas */}
-      <div className="text-gray-600 dark:text-gray-200">
-        Criado em: {formatDate(projeto["Data de criação"])}
-      </div>
-      <div className="text-gray-600 dark:text-gray-200">
-        Entregue em: {formatDate(projeto["Data de término"])}
-      </div>
+
+      {/* Target start */}
+      {projeto["Target start"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Target start: {formatDate(projeto["Target start"])}
+        </div>
+      )}
+
+      {/* Target end */}
+      {projeto["Target end"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Target end: {formatDate(projeto["Target end"])}
+        </div>
+      )}
+
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
+
+      {/* Entrou em desenvolvimento */}
+      {projeto["Data: Início Em andamento"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Entrou em desenvolvimento:{" "}
+          {formatDate(projeto["Data: Início Em andamento"])}
+        </div>
+      )}
+
+      {/* Data de fim do desenvolvimento */}
+      {projeto["Data: Fim Em andamento"] && (
+        <div className="text-gray-600 dark:text-gray-200">
+          Data de fim do desenvolvimento:{" "}
+          {formatDate(projeto["Data: Fim Em andamento"])}
+        </div>
+      )}
+
+      {/* Tempo em desenvolvimento */}
+      {projeto["Tempo na fase Em andamento (dias)"] !== null &&
+        projeto["Tempo na fase Em andamento (dias)"] !== undefined && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Tempo em desenvolvimento:{" "}
+            {projeto["Tempo na fase Em andamento (dias)"]} dias
+          </div>
+        )}
 
       {/* Status de prazo */}
       {projeto["Status de prazo"] && (
@@ -990,21 +1027,6 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
           </div>
         </div>
       )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-      {/* Esforço */}
-      <div className="pt-2">
-        <div className="font-medium">Estimativa vs. Registrado:</div>
-        {projeto["Estimativa original (segundos)"] &&
-          projeto["Tempo registrado (segundos)"] !== null && (
-            <div className="text-gray-600 dark:text-gray-200">
-              Estimativa:{" "}
-              {formatarSegundos(projeto["Estimativa original (segundos)"])} •
-              Registrado:{" "}
-              {formatarSegundos(projeto["Tempo registrado (segundos)"])}
-            </div>
-          )}
-      </div>
     </div>
   );
 };

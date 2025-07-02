@@ -7,8 +7,6 @@ from .project_analysis_utils import (
     calcular_dias_na_fase_atual,
     classificar_status_ideacao,
     classificar_prazo,
-    verificar_inicio_atrasado,
-    verificar_conclusao_atrasada,
     verificar_risco_atual,
 )
 import logging 
@@ -109,8 +107,6 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     df["Status de prazo"] = df.apply(classificar_prazo, axis=1)
-    df["Início atrasado?"] = df.apply(verificar_inicio_atrasado, axis=1)
-    df["Conclusão atrasada?"] = df.apply(lambda row: verificar_conclusao_atrasada(row, fases), axis=1)
     df["Risco de atraso atual?"] = df.apply(verificar_risco_atual, axis=1)
 
     # Limpar valores infinitos e NaN das colunas numéricas

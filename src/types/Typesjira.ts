@@ -99,8 +99,6 @@ export interface EspacoDeProjetos {
 
   // Colunas de status e controle
   "Dias na fase atual"?: number | null;
-  "Início atrasado?"?: boolean | null;
-  "Conclusão atrasada?"?: boolean | null;
   "Risco de atraso atual?"?: boolean | null;
 }
 

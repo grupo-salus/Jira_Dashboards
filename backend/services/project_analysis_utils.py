@@ -113,29 +113,6 @@ def classificar_prazo(row: pd.Series) -> str:
         return "Em risco"
     return "No prazo"
 
-def verificar_inicio_atrasado(row: pd.Series) -> str:
-    logger.debug("Verificando início atrasado")
-    target_start = row.get("Target start")
-    inicio_real = row.get("Data: Início Ideação")
-    if pd.notnull(target_start) and pd.notnull(inicio_real):
-        atrasado = "Sim" if inicio_real > target_start else "Não"
-        logger.debug(f"Início atrasado: {atrasado}")
-        return atrasado
-    logger.debug("Datas ausentes para verificar atraso")
-    return None
-
-def verificar_conclusao_atrasada(row: pd.Series, fases: list) -> str:
-    logger.debug("Verificando conclusão atrasada")
-    target_end = row.get("Target end")
-    for fase in reversed(fases):
-        fim = row.get(f"Data: Fim {fase}")
-        if pd.notnull(fim) and pd.notnull(target_end):
-            atrasado = "Sim" if fim > target_end else "Não"
-            logger.debug(f"Conclusão atrasada para fase {fase}: {atrasado}")
-            return atrasado
-    logger.debug("Não foi possível determinar atraso na conclusão")
-    return None
-
 def verificar_risco_atual(row: pd.Series) -> str:
     logger.debug("Verificando risco atual")
     target_end = row.get("Target end")
