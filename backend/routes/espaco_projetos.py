@@ -20,7 +20,7 @@ def get_tabela_espaco_de_projetos(request: Request):
 
     try:
         issues = service.get_all_issues_from_project("EP").get("issues", [])
-        issues = [issue for issue in issues if issue['key'] in ["EP-4"]]
+        #issues = [issue for issue in issues if issue['key'] in ["EP-4"]]
         logger.info(f"Total de issues retornadas do projeto EP: {len(issues)}")
 
         df = parse_issues_to_dataframe_espaco_de_projetos(issues)

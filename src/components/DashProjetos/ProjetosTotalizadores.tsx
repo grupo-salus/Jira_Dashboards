@@ -35,14 +35,18 @@ const TotalizadorCard: React.FC<{
   value: number | string;
   currentTheme: "light" | "dark";
   tooltipContent?: React.ReactNode;
-}> = ({ icon, label, value, currentTheme, tooltipContent }) => {
+  borderBottomColor?: string;
+}> = ({ icon, label, value, currentTheme, tooltipContent, borderBottomColor }) => {
   const config = getTotalizadoresConfig();
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div
       className={`rounded-lg shadow-md ${config.padding} flex-grow ${config.altura} relative totalizador-card 2xl:flex-1 2xl:min-w-0`}
-      style={{ backgroundColor: getBackgroundColor("card", currentTheme) }}
+      style={{
+        backgroundColor: getBackgroundColor("card", currentTheme),
+        borderBottom: borderBottomColor ? `4px solid ${borderBottomColor}` : undefined,
+      }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -408,6 +412,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               </div>
             </div>
           }
+          borderBottomColor={currentTheme === "dark" ? "#15803d" : "#16a34a"}
         />
         <TotalizadorCard
           icon={
@@ -454,6 +459,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               </div>
             </div>
           }
+          borderBottomColor={currentTheme === "dark" ? "#ca8a04" : "#eab308"}
         />
         <TotalizadorCard
           icon={
@@ -498,6 +504,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               </div>
             </div>
           }
+          borderBottomColor={currentTheme === "dark" ? "#b91c1c" : "#dc2626"}
         />
       </div>
 
