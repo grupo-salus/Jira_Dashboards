@@ -359,7 +359,7 @@ const DashProjetos: React.FC = () => {
 
       const matchesStatusPrazo =
         filtrosAtivos.statusPrazo.length === 0 ||
-        filtrosAtivos.statusPrazo.includes(item["Status de prazo"] || '');
+        filtrosAtivos.statusPrazo.includes(item["Status de prazo"] || "");
 
       return (
         matchesArea &&
@@ -600,10 +600,10 @@ const DashProjetos: React.FC = () => {
 
   // Opções para filtro de status de prazo
   const statusPrazoOptions = [
-    { value: '', label: 'Todos' },
-    { value: 'No prazo', label: 'No prazo' },
-    { value: 'Em risco', label: 'Em risco' },
-    { value: 'Fora do prazo', label: 'Fora do prazo' },
+    { value: "", label: "Todos" },
+    { value: "No prazo", label: "No prazo" },
+    { value: "Em risco", label: "Em risco" },
+    { value: "Fora do prazo", label: "Fora do prazo" },
   ];
 
   // Componente customizado para o ClearIndicator
@@ -766,16 +766,16 @@ const DashProjetos: React.FC = () => {
                   option: (base, state) => ({
                     ...base,
                     backgroundColor: state.isSelected
-                      ? (currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light)
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
                       : state.isFocused
-                      ? (currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light)
-                      : (currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light),
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
                     color: getTextColor("primary", currentTheme),
                     cursor: "pointer",
                   }),
@@ -874,16 +874,16 @@ const DashProjetos: React.FC = () => {
                   option: (base, state) => ({
                     ...base,
                     backgroundColor: state.isSelected
-                      ? (currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light)
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
                       : state.isFocused
-                      ? (currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light)
-                      : (currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light),
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
                     color: getTextColor("primary", currentTheme),
                     cursor: "pointer",
                   }),
@@ -984,16 +984,16 @@ const DashProjetos: React.FC = () => {
                   option: (base, state) => ({
                     ...base,
                     backgroundColor: state.isSelected
-                      ? (currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light)
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
                       : state.isFocused
-                      ? (currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light)
-                      : (currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light),
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
                     color: getTextColor("primary", currentTheme),
                     cursor: "pointer",
                   }),
@@ -1042,7 +1042,7 @@ const DashProjetos: React.FC = () => {
                     squad: selected ? selected.map((s: any) => s.value) : [],
                   }))
                 }
-                placeholder="Todas as Squads"
+                placeholder="Todas"
                 classNamePrefix="react-select"
                 styles={{
                   control: (base) => ({
@@ -1092,16 +1092,16 @@ const DashProjetos: React.FC = () => {
                   option: (base, state) => ({
                     ...base,
                     backgroundColor: state.isSelected
-                      ? (currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light)
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
                       : state.isFocused
-                      ? (currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light)
-                      : (currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light),
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
                     color: getTextColor("primary", currentTheme),
                     cursor: "pointer",
                   }),
@@ -1152,7 +1152,7 @@ const DashProjetos: React.FC = () => {
                       : [],
                   }))
                 }
-                placeholder="Todos os grupos"
+                placeholder="Todos"
                 classNamePrefix="react-select"
                 styles={{
                   control: (base) => ({
@@ -1202,16 +1202,16 @@ const DashProjetos: React.FC = () => {
                   option: (base, state) => ({
                     ...base,
                     backgroundColor: state.isSelected
-                      ? (currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light)
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
                       : state.isFocused
-                      ? (currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light)
-                      : (currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light),
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
                     color: getTextColor("primary", currentTheme),
                     cursor: "pointer",
                   }),
@@ -1264,7 +1264,7 @@ const DashProjetos: React.FC = () => {
                     dataRapida: selected ? selected.value : "",
                   }))
                 }
-                placeholder="Todos os períodos"
+                placeholder="Todos"
                 classNamePrefix="react-select"
                 styles={{
                   control: (base) => ({
@@ -1295,16 +1295,16 @@ const DashProjetos: React.FC = () => {
                   option: (base, state) => ({
                     ...base,
                     backgroundColor: state.isSelected
-                      ? (currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light)
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
                       : state.isFocused
-                      ? (currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light)
-                      : (currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light),
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
                     color: getTextColor("primary", currentTheme),
                     cursor: "pointer",
                   }),
@@ -1350,7 +1350,9 @@ const DashProjetos: React.FC = () => {
                 onChange={(selected) =>
                   setFiltros((f) => ({
                     ...f,
-                    statusPrazo: selected ? selected.map((s: any) => s.value) : [],
+                    statusPrazo: selected
+                      ? selected.map((s: any) => s.value)
+                      : [],
                   }))
                 }
                 placeholder="Todos"
@@ -1364,7 +1366,9 @@ const DashProjetos: React.FC = () => {
                         : themeColors.components.filtros.input.bg[currentTheme],
                     borderColor: base.isFocused
                       ? themeColors.components.filtros.input.focus[currentTheme]
-                      : themeColors.components.filtros.input.border[currentTheme],
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
                     color: getTextColor("primary", currentTheme),
                     minHeight: 40,
                     boxShadow: base.isFocused
@@ -1401,16 +1405,16 @@ const DashProjetos: React.FC = () => {
                   option: (base, state) => ({
                     ...base,
                     backgroundColor: state.isSelected
-                      ? (currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light)
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
                       : state.isFocused
-                      ? (currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light)
-                      : (currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light),
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
                     color: getTextColor("primary", currentTheme),
                     cursor: "pointer",
                   }),
@@ -1497,16 +1501,16 @@ const DashProjetos: React.FC = () => {
                     option: (base, state) => ({
                       ...base,
                       backgroundColor: state.isSelected
-                        ? (currentTheme === "dark"
-                            ? themeColors.components.buttons.primary.bg.dark
-                            : themeColors.components.buttons.primary.bg.light)
+                        ? currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light
                         : state.isFocused
-                        ? (currentTheme === "dark"
-                            ? themeColors.background.hover.dark
-                            : themeColors.background.hover.light)
-                        : (currentTheme === "dark"
-                            ? themeColors.background.card.dark
-                            : themeColors.components.filtros.input.bg.light),
+                        ? currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light
+                        : currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
                       color: getTextColor("primary", currentTheme),
                       cursor: "pointer",
                     }),
@@ -1585,16 +1589,16 @@ const DashProjetos: React.FC = () => {
                     option: (base, state) => ({
                       ...base,
                       backgroundColor: state.isSelected
-                        ? (currentTheme === "dark"
-                            ? themeColors.components.buttons.primary.bg.dark
-                            : themeColors.components.buttons.primary.bg.light)
+                        ? currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light
                         : state.isFocused
-                        ? (currentTheme === "dark"
-                            ? themeColors.background.hover.dark
-                            : themeColors.background.hover.light)
-                        : (currentTheme === "dark"
-                            ? themeColors.background.card.dark
-                            : themeColors.components.filtros.input.bg.light),
+                        ? currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light
+                        : currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
                       color: getTextColor("primary", currentTheme),
                       cursor: "pointer",
                     }),
