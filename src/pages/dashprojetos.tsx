@@ -763,20 +763,21 @@ const DashProjetos: React.FC = () => {
                           : themeColors.text.error.light,
                     },
                   }),
-                  option: (base) => ({
+                  option: (base, state) => ({
                     ...base,
-                    backgroundColor: base.isSelected
-                      ? currentTheme === "dark"
-                        ? themeColors.components.buttons.primary.bg.dark
-                        : themeColors.components.buttons.primary.bg.light
-                      : base.isFocused
-                      ? currentTheme === "dark"
-                        ? themeColors.background.hover.dark
-                        : themeColors.components.filtros.input.focus.light
-                      : currentTheme === "dark"
-                      ? themeColors.background.card.dark
-                      : themeColors.components.filtros.input.bg.light,
+                    backgroundColor: state.isSelected
+                      ? (currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light)
+                      : state.isFocused
+                      ? (currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light)
+                      : (currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light),
                     color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
                   }),
                   menu: (base) => ({
                     ...base,
@@ -797,6 +798,7 @@ const DashProjetos: React.FC = () => {
                 }}
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
               />
             </div>
 
@@ -869,20 +871,21 @@ const DashProjetos: React.FC = () => {
                           : themeColors.text.error.light,
                     },
                   }),
-                  option: (base) => ({
+                  option: (base, state) => ({
                     ...base,
-                    backgroundColor: base.isSelected
-                      ? currentTheme === "dark"
-                        ? themeColors.components.buttons.primary.bg.dark
-                        : themeColors.components.buttons.primary.bg.light
-                      : base.isFocused
-                      ? currentTheme === "dark"
-                        ? themeColors.background.hover.dark
-                        : themeColors.components.filtros.input.focus.light
-                      : currentTheme === "dark"
-                      ? themeColors.background.card.dark
-                      : themeColors.components.filtros.input.bg.light,
+                    backgroundColor: state.isSelected
+                      ? (currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light)
+                      : state.isFocused
+                      ? (currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light)
+                      : (currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light),
                     color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
                   }),
                   menu: (base) => ({
                     ...base,
@@ -903,6 +906,7 @@ const DashProjetos: React.FC = () => {
                 }}
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
               />
             </div>
 
@@ -977,20 +981,21 @@ const DashProjetos: React.FC = () => {
                           : themeColors.text.error.light,
                     },
                   }),
-                  option: (base) => ({
+                  option: (base, state) => ({
                     ...base,
-                    backgroundColor: base.isSelected
-                      ? currentTheme === "dark"
-                        ? themeColors.components.buttons.primary.bg.dark
-                        : themeColors.components.buttons.primary.bg.light
-                      : base.isFocused
-                      ? currentTheme === "dark"
-                        ? themeColors.background.hover.dark
-                        : themeColors.components.filtros.input.focus.light
-                      : currentTheme === "dark"
-                      ? themeColors.background.card.dark
-                      : themeColors.components.filtros.input.bg.light,
+                    backgroundColor: state.isSelected
+                      ? (currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light)
+                      : state.isFocused
+                      ? (currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light)
+                      : (currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light),
                     color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
                   }),
                   menu: (base) => ({
                     ...base,
@@ -1011,6 +1016,7 @@ const DashProjetos: React.FC = () => {
                 }}
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
               />
             </div>
 
@@ -1083,20 +1089,21 @@ const DashProjetos: React.FC = () => {
                           : themeColors.text.error.light,
                     },
                   }),
-                  option: (base) => ({
+                  option: (base, state) => ({
                     ...base,
-                    backgroundColor: base.isSelected
-                      ? currentTheme === "dark"
-                        ? themeColors.components.buttons.primary.bg.dark
-                        : themeColors.components.buttons.primary.bg.light
-                      : base.isFocused
-                      ? currentTheme === "dark"
-                        ? themeColors.background.hover.dark
-                        : themeColors.components.filtros.input.focus.light
-                      : currentTheme === "dark"
-                      ? themeColors.background.card.dark
-                      : themeColors.components.filtros.input.bg.light,
+                    backgroundColor: state.isSelected
+                      ? (currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light)
+                      : state.isFocused
+                      ? (currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light)
+                      : (currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light),
                     color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
                   }),
                   menu: (base) => ({
                     ...base,
@@ -1117,6 +1124,7 @@ const DashProjetos: React.FC = () => {
                 }}
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
               />
             </div>
 
@@ -1191,20 +1199,21 @@ const DashProjetos: React.FC = () => {
                           : themeColors.text.error.light,
                     },
                   }),
-                  option: (base) => ({
+                  option: (base, state) => ({
                     ...base,
-                    backgroundColor: base.isSelected
-                      ? currentTheme === "dark"
-                        ? themeColors.components.buttons.primary.bg.dark
-                        : themeColors.components.buttons.primary.bg.light
-                      : base.isFocused
-                      ? currentTheme === "dark"
-                        ? themeColors.background.hover.dark
-                        : themeColors.components.filtros.input.focus.light
-                      : currentTheme === "dark"
-                      ? themeColors.background.card.dark
-                      : themeColors.components.filtros.input.bg.light,
+                    backgroundColor: state.isSelected
+                      ? (currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light)
+                      : state.isFocused
+                      ? (currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light)
+                      : (currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light),
                     color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
                   }),
                   menu: (base) => ({
                     ...base,
@@ -1225,6 +1234,7 @@ const DashProjetos: React.FC = () => {
                 }}
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
               />
             </div>
 
@@ -1282,20 +1292,21 @@ const DashProjetos: React.FC = () => {
                       color: themeColors.text.error[currentTheme],
                     },
                   }),
-                  option: (base) => ({
+                  option: (base, state) => ({
                     ...base,
-                    backgroundColor: base.isSelected
-                      ? currentTheme === "dark"
-                        ? themeColors.components.buttons.primary.bg.dark
-                        : themeColors.components.buttons.primary.bg.light
-                      : base.isFocused
-                      ? currentTheme === "dark"
-                        ? themeColors.background.hover.dark
-                        : themeColors.components.filtros.input.focus.light
-                      : currentTheme === "dark"
-                      ? themeColors.background.card.dark
-                      : themeColors.components.filtros.input.bg.light,
+                    backgroundColor: state.isSelected
+                      ? (currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light)
+                      : state.isFocused
+                      ? (currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light)
+                      : (currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light),
                     color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
                   }),
                   menu: (base) => ({
                     ...base,
@@ -1316,6 +1327,7 @@ const DashProjetos: React.FC = () => {
                 }}
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
               />
             </div>
 
@@ -1386,20 +1398,21 @@ const DashProjetos: React.FC = () => {
                           : themeColors.text.error.light,
                     },
                   }),
-                  option: (base) => ({
+                  option: (base, state) => ({
                     ...base,
-                    backgroundColor: base.isSelected
-                      ? currentTheme === "dark"
-                        ? themeColors.components.buttons.primary.bg.dark
-                        : themeColors.components.buttons.primary.bg.light
-                      : base.isFocused
-                      ? currentTheme === "dark"
-                        ? themeColors.background.hover.dark
-                        : themeColors.components.filtros.input.focus.light
-                      : currentTheme === "dark"
-                      ? themeColors.background.card.dark
-                      : themeColors.components.filtros.input.bg.light,
+                    backgroundColor: state.isSelected
+                      ? (currentTheme === "dark"
+                          ? themeColors.components.buttons.primary.bg.dark
+                          : themeColors.components.buttons.primary.bg.light)
+                      : state.isFocused
+                      ? (currentTheme === "dark"
+                          ? themeColors.background.hover.dark
+                          : themeColors.background.hover.light)
+                      : (currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light),
                     color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
                   }),
                   menu: (base) => ({
                     ...base,
@@ -1420,6 +1433,7 @@ const DashProjetos: React.FC = () => {
                 }}
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
               />
             </div>
           </div>
@@ -1480,20 +1494,21 @@ const DashProjetos: React.FC = () => {
                         : undefined,
                       minWidth: 0,
                     }),
-                    option: (base) => ({
+                    option: (base, state) => ({
                       ...base,
-                      backgroundColor: base.isSelected
-                        ? currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light
-                        : base.isFocused
-                        ? currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.components.filtros.input.focus.light
-                        : currentTheme === "dark"
-                        ? themeColors.background.card.dark
-                        : themeColors.components.filtros.input.bg.light,
+                      backgroundColor: state.isSelected
+                        ? (currentTheme === "dark"
+                            ? themeColors.components.buttons.primary.bg.dark
+                            : themeColors.components.buttons.primary.bg.light)
+                        : state.isFocused
+                        ? (currentTheme === "dark"
+                            ? themeColors.background.hover.dark
+                            : themeColors.background.hover.light)
+                        : (currentTheme === "dark"
+                            ? themeColors.background.card.dark
+                            : themeColors.components.filtros.input.bg.light),
                       color: getTextColor("primary", currentTheme),
+                      cursor: "pointer",
                     }),
                     menu: (base) => ({
                       ...base,
@@ -1514,6 +1529,7 @@ const DashProjetos: React.FC = () => {
                   }}
                   noOptionsMessage={() => "Sem opções"}
                   components={{ ClearIndicator: CustomClearIndicator }}
+                  closeMenuOnScroll={true}
                 />
               </div>
 
@@ -1566,20 +1582,21 @@ const DashProjetos: React.FC = () => {
                         : undefined,
                       minWidth: 0,
                     }),
-                    option: (base) => ({
+                    option: (base, state) => ({
                       ...base,
-                      backgroundColor: base.isSelected
-                        ? currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light
-                        : base.isFocused
-                        ? currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.components.filtros.input.focus.light
-                        : currentTheme === "dark"
-                        ? themeColors.background.card.dark
-                        : themeColors.components.filtros.input.bg.light,
+                      backgroundColor: state.isSelected
+                        ? (currentTheme === "dark"
+                            ? themeColors.components.buttons.primary.bg.dark
+                            : themeColors.components.buttons.primary.bg.light)
+                        : state.isFocused
+                        ? (currentTheme === "dark"
+                            ? themeColors.background.hover.dark
+                            : themeColors.background.hover.light)
+                        : (currentTheme === "dark"
+                            ? themeColors.background.card.dark
+                            : themeColors.components.filtros.input.bg.light),
                       color: getTextColor("primary", currentTheme),
+                      cursor: "pointer",
                     }),
                     menu: (base) => ({
                       ...base,
@@ -1600,6 +1617,7 @@ const DashProjetos: React.FC = () => {
                   }}
                   noOptionsMessage={() => "Sem opções"}
                   components={{ ClearIndicator: CustomClearIndicator }}
+                  closeMenuOnScroll={true}
                 />
               </div>
 

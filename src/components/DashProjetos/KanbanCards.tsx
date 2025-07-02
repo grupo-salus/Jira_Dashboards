@@ -687,7 +687,14 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
             Dias decorridos: <b>{diasDecorridos} / {totalDias} dias</b>
           </div>
 
-          {projeto["Status de prazo"] && (
+          {atraso && (
+            <div className="text-xs text-red-600 font-bold mt-1">Homologação atrasada — prazo previsto era até {formatDate(fimHom.toISOString())}</div>
+          )}
+        </>
+      )}
+
+      {/* Status de prazo - sempre fora do bloco acima */}
+      {projeto["Status de prazo"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
           <div className="pt-2">
@@ -702,13 +709,6 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
               </span>
             </div>
           </div>
-        </>
-      )}
-
-
-          {atraso && (
-            <div className="text-xs text-red-600 font-bold mt-1">Homologação atrasada — prazo previsto era até {formatDate(fimHom.toISOString())}</div>
-          )}
         </>
       )}
       
