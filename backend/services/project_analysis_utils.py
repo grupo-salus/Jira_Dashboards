@@ -87,7 +87,8 @@ def classificar_prazo(row: pd.Series) -> str:
     status = str(row.get("Status", "")).strip().lower()
     if is_final_status(status):
         logger.debug("Status final encontrado, retornando 'Concluído'")
-        return "Concluído"
+        pass
+        #return "Concluído"
     if pd.isnull(target_end) or dias_fase is None:
         logger.debug("Target end ou dias_fase ausentes")
         return None

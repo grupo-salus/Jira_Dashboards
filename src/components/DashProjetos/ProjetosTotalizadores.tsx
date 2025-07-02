@@ -7,6 +7,7 @@ import {
   ExclamationTriangleIcon,
   FireIcon,
   CompassIcon,
+  EpicIcon,
 } from "../icons/DashboardIcons";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getTotalizadoresConfig } from "../../constants/styleConfig";
@@ -273,7 +274,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         />
         <TotalizadorCard
           icon={
-            <CompassIcon
+            <EpicIcon
               size={remToPx(config.icone)}
               className="text-current flex-shrink-0"
               style={{
