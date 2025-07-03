@@ -7,6 +7,7 @@ import { ProjetosPorAreaChart } from "@/features/projetos/components/Charts/Proj
 import { PrioridadeChart } from "@/features/projetos/components/Charts/PrioridadeChart";
 import { KanbanWrapper } from "@/features/projetos/components/Kanban/KanbanWrapper";
 import { ProjetosTable } from "@/features/projetos/components/Tabela/ProjetosTable";
+import { ProximosProjetos } from "@/features/projetos/components/Proximos/ProximosProjetos";
 import projetosMock from "./mockProjetos.json";
 // import { EspacoDeProjetos } from "@/types/Typesjira"; // descomente quando usar tipagem real
 
@@ -91,7 +92,12 @@ export const DashProjetos = () => {
         />
       </section>
 
-      {/* Seção 3: Gráficos */}
+      {/* Seção 3: Próximos Projetos a Serem Executados */}
+      <section>
+        <ProximosProjetos projetos={projetos} />
+      </section>
+
+      {/* Seção 4: Gráficos */}
       <section>
         <div className="flex items-center gap-2 mb-6">
           <BarChart3 size={20} style={{ color: theme.text.title }} />
@@ -109,7 +115,7 @@ export const DashProjetos = () => {
         </div>
       </section>
 
-      {/* Seção 4: Kanban & Tabela */}
+      {/* Seção 5: Kanban & Tabela */}
       <section>
         <div className="flex items-center gap-2 mb-6">
           {viewMode === "kanban" ? (
