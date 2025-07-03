@@ -95,7 +95,7 @@ const Navbar: React.FC<NavbarProps> = ({
             {/* Logo e Título */}
             <div className="flex items-center">
               <img
-                src="/logo.png"
+                src="/assets/logo.png"
                 alt="Salus Logo"
                 className="h-12 w-full mr-2"
               />
