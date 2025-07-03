@@ -422,7 +422,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
 
       {/* Seção dos próximos projetos */}
       {proximosExecucao.length > 0 && (
-        <div className="mb-6">
+        <div className="mb-20">
           <div
             className={`rounded-lg shadow-md w-full p-6 relative overflow-hidden flex flex-col gap-3`}
             style={{

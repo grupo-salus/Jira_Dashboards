@@ -466,8 +466,8 @@ export const themeColors = {
       },
       proximoExecucao: {
         bg: {
-          light: "linear-gradient(to right, #e3f0ff, #b3d4fc)", // azul claro para azul médio
-          dark: "linear-gradient(to right, #172B4D, #0747A6)", // Jira blue gradient dark
+          light: "linear-gradient(to right, #fff, #f9fafb)", // azul claro para azul médio
+          dark: "linear-gradient(to right, #1f2937, #111827)", // Jira blue gradient dark
         },
         border: {
           light: "#DEEBFF", // Jira blue border light
@@ -569,7 +569,7 @@ export const themeColors = {
       },
       input: {
         bg: {
-          light: "#f9fafb", // gray-50
+          light: "#ffffff", // gray-50
           dark: "#374151", // gray-700
         },
         border: {
