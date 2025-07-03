@@ -75,7 +75,7 @@ export const ProximosProjetos = ({ projetos }: Props) => {
                   className="rounded px-2 py-1 text-xs font-semibold"
                   style={{
                     background: prioridadeColor(p.Prioridade),
-                    color: "#fff",
+                    color: theme.text.inverse,
                   }}
                 >
                   {p.Prioridade}
