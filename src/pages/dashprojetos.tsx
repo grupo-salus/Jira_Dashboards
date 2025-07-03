@@ -653,33 +653,33 @@ const DashProjetos: React.FC = () => {
 
   return (
     <div
-      className="p-6 w-full max-w-none relative"
+      className="p-6 pt-2 w-full max-w-none relative"
       style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
     >
-      {/* Título do Dashboard + Limpar Filtros */}
-      <div className="mb-8 flex items-center justify-between w-full">
-        <h1
-          className={fontSizes.tituloPagina}
-          style={{ color: getTextColor("primary", currentTheme) }}
-        >
-          Status Report de Projetos
-        </h1>
-        {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) && (
-          <button
-            onClick={() => setFiltros(filtrosIniciais)}
-            className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs ml-4"
-            style={{ color: themeColors.text.error[currentTheme] }}
-            title="Limpar todos os filtros"
-          >
-            <FilterIcon size={16} />
-            <span className="font-semibold">Limpar filtros</span>
-          </button>
-        )}
-      </div>
-
-      {/* Container de Filtros */}
+      {/* Container de Filtros com botão Limpar acima, sempre reservando espaço */}
       <div className="mb-20">
-        {/* Seção de Filtros - Sempre Visível */}
+        <div className="flex justify-end w-full mt-0 mb-4">
+          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) ? (
+            <button
+              onClick={() => setFiltros(filtrosIniciais)}
+              className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs ml-4"
+              style={{ color: themeColors.text.error[currentTheme] }}
+              title="Limpar todos os filtros"
+            >
+              <FilterIcon size={16} />
+              <span className="font-semibold">Limpar filtros</span>
+            </button>
+          ) : (
+            <button
+              className="flex items-center gap-1 p-1 bg-transparent rounded-full border border-transparent font-semibold text-xs ml-4 opacity-0 select-none pointer-events-none"
+              tabIndex={-1}
+              aria-hidden="true"
+            >
+              <FilterIcon size={16} />
+              <span className="font-semibold">Limpar filtros</span>
+            </button>
+          )}
+        </div>
         <div className="p-0 shadow-none">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-7 w-full">
             {/* Filtro de Área */}

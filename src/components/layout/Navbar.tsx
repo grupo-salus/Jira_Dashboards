@@ -95,16 +95,10 @@ const Navbar: React.FC<NavbarProps> = ({
             {/* Logo e Título */}
             <div className="flex items-center">
               <img
-                src="https://cdn.worldvectorlogo.com/logos/jira-1.svg"
-                alt="Jira Logo"
-                className="h-8 w-8 mr-2"
+                src="/logo.png"
+                alt="Salus Logo"
+                className="h-12 w-full mr-2"
               />
-              <span
-                className="ml-2 text-lg md:text-xl font-semibold"
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                JIRA Dashboard
-              </span>
             </div>
 
             {/* Menus de Navegação - Desktop */}
@@ -146,7 +140,7 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-2">
                   <Kanban className="h-4 w-4" />
-                  Projetos
+                  Status Report de Projetos
                 </span>
               </button>
 
@@ -289,7 +283,7 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-3">
                   <Kanban className="h-5 w-5" />
-                  Projetos
+                  Status Report de Projetos
                 </span>
               </button>
 
