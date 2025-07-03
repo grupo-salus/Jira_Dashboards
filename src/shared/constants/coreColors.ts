@@ -8,7 +8,8 @@ export const coreColors = {
   },
   prazo: {
     dentroDoPrazo: "#22C55E", // verde
-    emRisco: "#FBBF24", // amarelo  
+    emRisco: "#FBBF24", // amarelo
     atrasado: "#DC2626", // vermelho
   },
+  acaoLimpar: "#f87171", // vermelho claro para ações como limpar filtros
 };

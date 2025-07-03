@@ -1,6 +1,7 @@
 import { useTheme } from "@/shared/context/ThemeContext";
 import { FilterBase } from "./FilterBase";
 import { Calendar } from "lucide-react";
+import { useState } from "react";
 
 interface Data1FilterProps {
   value: string;
@@ -9,6 +10,10 @@ interface Data1FilterProps {
 
 export const Data1Filter = ({ value, onChange }: Data1FilterProps) => {
   const { theme } = useTheme();
+  const [isFocused, setIsFocused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const borderColor =
+    isFocused || isHovered ? theme.brand.primary : theme.border.base;
   return (
     <FilterBase
       label="Data 1"
@@ -21,7 +26,7 @@ export const Data1Filter = ({ value, onChange }: Data1FilterProps) => {
         className="w-full border focus:outline-none transition-colors duration-200 rounded-md"
         style={{
           backgroundColor: theme.bg.base,
-          borderColor: theme.border.base,
+          borderColor,
           color: theme.text.subtitle,
           height: 40,
           paddingLeft: 12,
@@ -32,6 +37,10 @@ export const Data1Filter = ({ value, onChange }: Data1FilterProps) => {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="dd/mm/aaaa"
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       />
     </FilterBase>
   );
