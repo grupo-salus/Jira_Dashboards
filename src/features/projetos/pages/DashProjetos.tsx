@@ -43,6 +43,25 @@ export const DashProjetos = () => {
       totalProjetos: projetos.length,
       projetosEmAndamento: projetos.filter((p) => p.Status === "Em Andamento")
         .length,
+      projetosIdeacao: projetos.filter(
+        (p) =>
+          p["Status de ideação"] === "Recente" ||
+          p["Status de ideação"] === "Rever"
+      ).length,
+      projetosBacklog: projetos.filter((p) => p.Status === "Backlog Priorizado")
+        .length,
+      projetosEntreguesMes: projetos.filter((p) => {
+        if (!p["Data de término"]) return false;
+        const data = new Date(p["Data de término"]);
+        const agora = new Date();
+        return (
+          data.getMonth() === agora.getMonth() &&
+          data.getFullYear() === agora.getFullYear()
+        );
+      }).length,
+      projetosEmRisco: projetos.filter(
+        (p) => p["Status de prazo"] === "Em risco"
+      ).length,
     };
   }, [projetos]);
 
@@ -65,6 +84,10 @@ export const DashProjetos = () => {
           projetosAtrasados={totalizadores.projetosAtrasados}
           totalProjetos={totalizadores.totalProjetos}
           projetosEmAndamento={totalizadores.projetosEmAndamento}
+          projetosIdeacao={totalizadores.projetosIdeacao}
+          projetosBacklog={totalizadores.projetosBacklog}
+          projetosEntreguesMes={totalizadores.projetosEntreguesMes}
+          projetosEmRisco={totalizadores.projetosEmRisco}
         />
       </section>
 

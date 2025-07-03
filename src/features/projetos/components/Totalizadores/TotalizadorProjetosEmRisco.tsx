@@ -1,21 +1,21 @@
 import { BaseTotalizador } from "./BaseTotalizador";
 import { useTheme } from "@/shared/context/ThemeContext";
 import { coreColors } from "@/shared/constants/coreColors";
-import { CheckCircle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 interface Props {
   valor: number;
 }
 
-export const TotalizadorProjetosNoPrazo = ({ valor }: Props) => {
+export const TotalizadorProjetosEmRisco = ({ valor }: Props) => {
   const { theme } = useTheme();
   return (
     <BaseTotalizador
-      icon={<CheckCircle size={20} />}
-      titulo="Projetos No Prazo"
+      icon={<AlertTriangle size={20} />}
+      titulo="Projetos Em Risco"
       valor={valor}
-      corValor={coreColors.prazo.dentroDoPrazo}
-      corIcone={coreColors.prazo.dentroDoPrazo}
+      corValor={coreColors.prazo.emRisco}
+      corIcone={coreColors.prazo.emRisco}
     />
   );
 };

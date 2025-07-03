@@ -2,13 +2,23 @@ import { useTheme } from "@/shared/context/ThemeContext";
 import { BarChart3 } from "lucide-react";
 import { TotalizadorProjetosNoPrazo } from "./TotalizadorProjetosNoPrazo";
 import { TotalizadorProjetosAtrasados } from "./TotalizadorProjetosAtrasados";
+import { TotalizadorTotalProjetos } from "./TotalizadorTotalProjetos";
+import { TotalizadorProjetosIdeacao } from "./TotalizadorProjetosIdeacao";
+import { TotalizadorProjetosAndamento } from "./TotalizadorProjetosAndamento";
+import { TotalizadorProjetosBacklog } from "./TotalizadorProjetosBacklog";
+import { TotalizadorProjetosEntreguesMes } from "./TotalizadorProjetosEntreguesMes";
+import { TotalizadorProjetosEmRisco } from "./TotalizadorProjetosEmRisco";
 import { BaseTotalizador } from "./BaseTotalizador";
 
-interface TotalizadoresWrapperProps {
+interface Props {
   projetosNoPrazo: number;
   projetosAtrasados: number;
   totalProjetos: number;
   projetosEmAndamento: number;
+  projetosIdeacao: number;
+  projetosBacklog: number;
+  projetosEntreguesMes: number;
+  projetosEmRisco: number;
 }
 
 export const TotalizadoresWrapper = ({
@@ -16,7 +26,11 @@ export const TotalizadoresWrapper = ({
   projetosAtrasados,
   totalProjetos,
   projetosEmAndamento,
-}: TotalizadoresWrapperProps) => {
+  projetosIdeacao,
+  projetosBacklog,
+  projetosEntreguesMes,
+  projetosEmRisco,
+}: Props) => {
   const { theme } = useTheme();
 
   return (
@@ -33,29 +47,16 @@ export const TotalizadoresWrapper = ({
       </div>
 
       {/* Grid de Totalizadores */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <TotalizadorProjetosNoPrazo
-          count={projetosNoPrazo}
-          trend={{ value: 12, isPositive: true }}
-        />
-        <TotalizadorProjetosAtrasados
-          count={projetosAtrasados}
-          trend={{ value: 5, isPositive: false }}
-        />
-        <BaseTotalizador
-          title="Total de Projetos"
-          value={totalProjetos}
-          icon={<BarChart3 size={24} />}
-          color="#3b82f6"
-        />
-        <BaseTotalizador
-          title="Em Andamento"
-          value={projetosEmAndamento}
-          icon={<BarChart3 size={24} />}
-          color="#f59e0b"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full items-stretch">
+        <TotalizadorTotalProjetos valor={totalProjetos} />
+        <TotalizadorProjetosIdeacao valor={projetosIdeacao} />
+        <TotalizadorProjetosAndamento valor={projetosEmAndamento} />
+        <TotalizadorProjetosBacklog valor={projetosBacklog} />
+        <TotalizadorProjetosEntreguesMes valor={projetosEntreguesMes} />
+        <TotalizadorProjetosNoPrazo valor={projetosNoPrazo} />
+        <TotalizadorProjetosEmRisco valor={projetosEmRisco} />
+        <TotalizadorProjetosAtrasados valor={projetosAtrasados} />
       </div>
     </div>
   );
 };
- 
