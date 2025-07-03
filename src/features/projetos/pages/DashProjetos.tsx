@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { BarChart3, Kanban, Table, Eye } from "lucide-react";
+import { BarChart3, Kanban, Table, Eye, ChevronUp } from "lucide-react";
 import { FilterPanel } from "@/features/projetos/components/Filters/FilterPanel";
 import { TotalizadoresWrapper } from "@/features/projetos/components/Totalizadores/TotalizadoresWrapper";
 import { ProjetosPorAreaChart } from "@/features/projetos/components/Charts/ProjetosPorAreaChart";
@@ -17,6 +17,19 @@ export const DashProjetos = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
   // const [projetos, setProjetos] = useState<EspacoDeProjetos[]>(projetosMock as EspacoDeProjetos[]); // use quando tipar
   const [projetos] = useState<any[]>(projetosMock); // mock, troque para tipado depois
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setShowScrollTop(window.scrollY > 200);
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Exemplo de cálculo de totalizadores a partir dos dados
   const totalizadores = useMemo(() => {
@@ -97,6 +110,21 @@ export const DashProjetos = () => {
           <ProjetosTable projetos={projetos} />
         )}
       </section>
+      {/* Botão flutuante para rolar ao topo */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 p-2 rounded-full shadow-lg transition-colors"
+          style={{
+            backgroundColor: theme.bg.surface,
+            color: theme.brand.primary,
+            border: `1px solid ${theme.border.base}`,
+          }}
+          title="Voltar ao topo"
+        >
+          <ChevronUp size={24} />
+        </button>
+      )}
     </div>
   );
 };

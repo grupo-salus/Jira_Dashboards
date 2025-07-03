@@ -58,7 +58,11 @@ export const FilterPanel = ({ projetos }: FilterPanelProps) => {
       {/* Botão para mostrar/ocultar filtros no mobile */}
       <div className="flex justify-end w-full sm:hidden mb-2">
         <button
-          className="flex items-center gap-1 px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-sm font-semibold"
+          className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-semibold"
+          style={{
+            backgroundColor: theme.bg.surface,
+            color: theme.brand.primary,
+          }}
           onClick={() => setShowFilters((v) => !v)}
         >
           <Filter size={16} />
