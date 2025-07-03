@@ -38,7 +38,7 @@ import {
 } from "../utils/themeColors";
 import {
   DotsVerticalIcon,
-  FilterIcon
+  FilterIcon,
 } from "../components/icons/DashboardIcons";
 import Select, { components as selectComponents } from "react-select";
 
@@ -677,8 +677,9 @@ const DashProjetos: React.FC = () => {
         )}
       </div>
 
-      {/* Seção de Filtros - Sempre Visível */}
-      <div className="mb-6">
+      {/* Container de Filtros */}
+      <div className="mb-20">
+        {/* Seção de Filtros - Sempre Visível */}
         <div className="p-0 shadow-none">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-7 w-full">
             {/* Filtro de Área */}
@@ -1340,262 +1341,270 @@ const DashProjetos: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Filtros de Data Avançada - Aparecem quando "Filtro Avançado" é selecionado */}
-      {filtros.dataRapida === "filtro_avancado" && (
-        <div className="mb-6">
-          <div className="p-0 shadow-none">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 w-full">
-              {/* Campo de Data */}
-              <div className="flex flex-col min-w-0">
-                <label
-                  htmlFor="campo-data-filter"
-                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
-                  style={{ color: getTextColor("primary", currentTheme) }}
-                >
-                  Campo de Data
-                </label>
-                <Select
-                  inputId="campo-data-filter"
-                  options={camposDataOptions}
-                  value={camposDataOptions.find(
-                    (opt) => opt.value === filtros.filtroData.campo
-                  )}
-                  onChange={(selected) =>
-                    setFiltros((f) => ({
-                      ...f,
-                      filtroData: {
-                        ...f.filtroData,
-                        campo: selected ? selected.value : "",
-                      },
-                    }))
-                  }
-                  placeholder="Selecione um campo"
-                  classNamePrefix="react-select"
-                  styles={{
-                    control: (base) => ({
-                      ...base,
+        {/* Filtros de Data Avançada - Aparecem quando "Filtro Avançado" é selecionado */}
+        {filtros.dataRapida === "filtro_avancado" && (
+          <div className="mt-6">
+            <div className="p-0 shadow-none">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 w-full">
+                {/* Campo de Data */}
+                <div className="flex flex-col min-w-0">
+                  <label
+                    htmlFor="campo-data-filter"
+                    className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Campo de Data
+                  </label>
+                  <Select
+                    inputId="campo-data-filter"
+                    options={camposDataOptions}
+                    value={camposDataOptions.find(
+                      (opt) => opt.value === filtros.filtroData.campo
+                    )}
+                    onChange={(selected) =>
+                      setFiltros((f) => ({
+                        ...f,
+                        filtroData: {
+                          ...f.filtroData,
+                          campo: selected ? selected.value : "",
+                        },
+                      }))
+                    }
+                    placeholder="Selecione um campo"
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        backgroundColor:
+                          currentTheme === "dark"
+                            ? themeColors.background.card.dark
+                            : themeColors.components.filtros.input.bg[
+                                currentTheme
+                              ],
+                        borderColor: base.isFocused
+                          ? themeColors.components.filtros.input.focus[
+                              currentTheme
+                            ]
+                          : themeColors.components.filtros.input.border[
+                              currentTheme
+                            ],
+                        color: getTextColor("primary", currentTheme),
+                        minHeight: 40,
+                        boxShadow: base.isFocused
+                          ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                          : undefined,
+                        minWidth: 0,
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected
+                          ? currentTheme === "dark"
+                            ? themeColors.components.buttons.primary.bg.dark
+                            : themeColors.components.buttons.primary.bg.light
+                          : state.isFocused
+                          ? currentTheme === "dark"
+                            ? themeColors.background.hover.dark
+                            : themeColors.background.hover.light
+                          : currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light,
+                        color: getTextColor("primary", currentTheme),
+                        cursor: "pointer",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor:
+                          currentTheme === "dark"
+                            ? themeColors.background.card.dark
+                            : themeColors.components.filtros.input.bg.light,
+                        color: getTextColor("primary", currentTheme),
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: getTextColor("primary", currentTheme),
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: 160,
+                      }),
+                    }}
+                    noOptionsMessage={() => "Sem opções"}
+                    components={{ ClearIndicator: CustomClearIndicator }}
+                    closeMenuOnScroll={true}
+                  />
+                </div>
+
+                {/* Operador */}
+                <div className="flex flex-col min-w-0">
+                  <label
+                    htmlFor="operador-data-filter"
+                    className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Operador
+                  </label>
+                  <Select
+                    inputId="operador-data-filter"
+                    options={operadoresDataOptions}
+                    value={operadoresDataOptions.find(
+                      (opt) => opt.value === filtros.filtroData.operador
+                    )}
+                    onChange={(selected) =>
+                      setFiltros((f) => ({
+                        ...f,
+                        filtroData: {
+                          ...f.filtroData,
+                          operador: selected ? selected.value : "",
+                        },
+                      }))
+                    }
+                    placeholder="Selecione um operador"
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        backgroundColor:
+                          currentTheme === "dark"
+                            ? themeColors.background.card.dark
+                            : themeColors.components.filtros.input.bg[
+                                currentTheme
+                              ],
+                        borderColor: base.isFocused
+                          ? themeColors.components.filtros.input.focus[
+                              currentTheme
+                            ]
+                          : themeColors.components.filtros.input.border[
+                              currentTheme
+                            ],
+                        color: getTextColor("primary", currentTheme),
+                        minHeight: 40,
+                        boxShadow: base.isFocused
+                          ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                          : undefined,
+                        minWidth: 0,
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected
+                          ? currentTheme === "dark"
+                            ? themeColors.components.buttons.primary.bg.dark
+                            : themeColors.components.buttons.primary.bg.light
+                          : state.isFocused
+                          ? currentTheme === "dark"
+                            ? themeColors.background.hover.dark
+                            : themeColors.background.hover.light
+                          : currentTheme === "dark"
+                          ? themeColors.background.card.dark
+                          : themeColors.components.filtros.input.bg.light,
+                        color: getTextColor("primary", currentTheme),
+                        cursor: "pointer",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor:
+                          currentTheme === "dark"
+                            ? themeColors.background.card.dark
+                            : themeColors.components.filtros.input.bg.light,
+                        color: getTextColor("primary", currentTheme),
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: getTextColor("primary", currentTheme),
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: 160,
+                      }),
+                    }}
+                    noOptionsMessage={() => "Sem opções"}
+                    components={{ ClearIndicator: CustomClearIndicator }}
+                    closeMenuOnScroll={true}
+                  />
+                </div>
+
+                {/* Data 1 */}
+                <div className="flex flex-col min-w-0">
+                  <label
+                    htmlFor="data1-filter"
+                    className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Data 1
+                  </label>
+                  <input
+                    type="date"
+                    id="data1-filter"
+                    value={filtros.filtroData.valor1}
+                    onChange={(e) =>
+                      setFiltros((f) => ({
+                        ...f,
+                        filtroData: {
+                          ...f.filtroData,
+                          valor1: e.target.value,
+                        },
+                      }))
+                    }
+                    className="px-3 py-2 rounded border transition-colors"
+                    style={{
                       backgroundColor:
                         currentTheme === "dark"
                           ? themeColors.background.card.dark
                           : themeColors.components.filtros.input.bg[
                               currentTheme
                             ],
-                      borderColor: base.isFocused
-                        ? themeColors.components.filtros.input.focus[
-                            currentTheme
-                          ]
-                        : themeColors.components.filtros.input.border[
-                            currentTheme
-                          ],
+                      borderColor:
+                        themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
                       color: getTextColor("primary", currentTheme),
-                      minHeight: 40,
-                      boxShadow: base.isFocused
-                        ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
-                        : undefined,
-                      minWidth: 0,
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light
-                        : state.isFocused
-                        ? currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light
-                        : currentTheme === "dark"
-                        ? themeColors.background.card.dark
-                        : themeColors.components.filtros.input.bg.light,
-                      color: getTextColor("primary", currentTheme),
-                      cursor: "pointer",
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      backgroundColor:
-                        currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light,
-                      color: getTextColor("primary", currentTheme),
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      color: getTextColor("primary", currentTheme),
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      maxWidth: 160,
-                    }),
-                  }}
-                  noOptionsMessage={() => "Sem opções"}
-                  components={{ ClearIndicator: CustomClearIndicator }}
-                  closeMenuOnScroll={true}
-                />
-              </div>
+                    }}
+                  />
+                </div>
 
-              {/* Operador */}
-              <div className="flex flex-col min-w-0">
-                <label
-                  htmlFor="operador-data-filter"
-                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
-                  style={{ color: getTextColor("primary", currentTheme) }}
-                >
-                  Operador
-                </label>
-                <Select
-                  inputId="operador-data-filter"
-                  options={operadoresDataOptions}
-                  value={operadoresDataOptions.find(
-                    (opt) => opt.value === filtros.filtroData.operador
-                  )}
-                  onChange={(selected) =>
-                    setFiltros((f) => ({
-                      ...f,
-                      filtroData: {
-                        ...f.filtroData,
-                        operador: selected ? selected.value : "",
-                      },
-                    }))
-                  }
-                  placeholder="Selecione um operador"
-                  classNamePrefix="react-select"
-                  styles={{
-                    control: (base) => ({
-                      ...base,
+                {/* Data 2 (para operador "entre") */}
+                <div className="flex flex-col min-w-0">
+                  <label
+                    htmlFor="data2-filter"
+                    className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    Data 2 (opcional)
+                  </label>
+                  <input
+                    type="date"
+                    id="data2-filter"
+                    value={filtros.filtroData.valor2}
+                    onChange={(e) =>
+                      setFiltros((f) => ({
+                        ...f,
+                        filtroData: {
+                          ...f.filtroData,
+                          valor2: e.target.value,
+                        },
+                      }))
+                    }
+                    className="px-3 py-2 rounded border transition-colors"
+                    style={{
                       backgroundColor:
                         currentTheme === "dark"
                           ? themeColors.background.card.dark
                           : themeColors.components.filtros.input.bg[
                               currentTheme
                             ],
-                      borderColor: base.isFocused
-                        ? themeColors.components.filtros.input.focus[
-                            currentTheme
-                          ]
-                        : themeColors.components.filtros.input.border[
-                            currentTheme
-                          ],
+                      borderColor:
+                        themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
                       color: getTextColor("primary", currentTheme),
-                      minHeight: 40,
-                      boxShadow: base.isFocused
-                        ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
-                        : undefined,
-                      minWidth: 0,
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? currentTheme === "dark"
-                          ? themeColors.components.buttons.primary.bg.dark
-                          : themeColors.components.buttons.primary.bg.light
-                        : state.isFocused
-                        ? currentTheme === "dark"
-                          ? themeColors.background.hover.dark
-                          : themeColors.background.hover.light
-                        : currentTheme === "dark"
-                        ? themeColors.background.card.dark
-                        : themeColors.components.filtros.input.bg.light,
-                      color: getTextColor("primary", currentTheme),
-                      cursor: "pointer",
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      backgroundColor:
-                        currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg.light,
-                      color: getTextColor("primary", currentTheme),
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      color: getTextColor("primary", currentTheme),
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      maxWidth: 160,
-                    }),
-                  }}
-                  noOptionsMessage={() => "Sem opções"}
-                  components={{ ClearIndicator: CustomClearIndicator }}
-                  closeMenuOnScroll={true}
-                />
-              </div>
-
-              {/* Data 1 */}
-              <div className="flex flex-col min-w-0">
-                <label
-                  htmlFor="data1-filter"
-                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
-                  style={{ color: getTextColor("primary", currentTheme) }}
-                >
-                  Data 1
-                </label>
-                <input
-                  type="date"
-                  id="data1-filter"
-                  value={filtros.filtroData.valor1}
-                  onChange={(e) =>
-                    setFiltros((f) => ({
-                      ...f,
-                      filtroData: {
-                        ...f.filtroData,
-                        valor1: e.target.value,
-                      },
-                    }))
-                  }
-                  className="px-3 py-2 rounded border transition-colors"
-                  style={{
-                    backgroundColor:
-                      currentTheme === "dark"
-                        ? themeColors.background.card.dark
-                        : themeColors.components.filtros.input.bg[currentTheme],
-                    borderColor:
-                      themeColors.components.filtros.input.border[currentTheme],
-                    color: getTextColor("primary", currentTheme),
-                  }}
-                />
-              </div>
-
-              {/* Data 2 (para operador "entre") */}
-              <div className="flex flex-col min-w-0">
-                <label
-                  htmlFor="data2-filter"
-                  className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
-                  style={{ color: getTextColor("primary", currentTheme) }}
-                >
-                  Data 2 (opcional)
-                </label>
-                <input
-                  type="date"
-                  id="data2-filter"
-                  value={filtros.filtroData.valor2}
-                  onChange={(e) =>
-                    setFiltros((f) => ({
-                      ...f,
-                      filtroData: {
-                        ...f.filtroData,
-                        valor2: e.target.value,
-                      },
-                    }))
-                  }
-                  className="px-3 py-2 rounded border transition-colors"
-                  style={{
-                    backgroundColor:
-                      currentTheme === "dark"
-                        ? themeColors.background.card.dark
-                        : themeColors.components.filtros.input.bg[currentTheme],
-                    borderColor:
-                      themeColors.components.filtros.input.border[currentTheme],
-                    color: getTextColor("primary", currentTheme),
-                  }}
-                />
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Totalizadores */}
       <ProjetosTotalizadores
