@@ -424,10 +424,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
       {proximosExecucao.length > 0 && (
         <div className="mb-6">
           <div
-            className={`rounded-lg w-full p-6 relative overflow-hidden flex flex-col gap-3`}
+            className={`rounded-lg shadow-md w-full p-6 relative overflow-hidden flex flex-col gap-3`}
             style={{
-              background: getBackgroundColor("card", currentTheme),
-              border: `1px solid ${themeColors.components.totalizadores.proximoExecucao.border[currentTheme]}`,
+              backgroundColor: getBackgroundColor("card", currentTheme),
             }}
           >
             <div className="w-full mb-3">
