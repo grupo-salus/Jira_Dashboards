@@ -1,44 +1,45 @@
 import Select from "react-select";
-import { AlertTriangle } from "lucide-react";
+import { Users } from "lucide-react";
 import { useSelectTheme } from "@/shared/hooks/useSelectTheme";
 import { useTheme } from "@/shared/context/ThemeContext";
 import { FilterBase } from "./FilterBase";
 
-const prioridadeOptions = [
-  { value: "Alta", label: "Alta" },
-  { value: "Média", label: "Média" },
-  { value: "Baixa", label: "Baixa" },
-  { value: "Crítica", label: "Crítica" },
-  { value: "Estratégica", label: "Estratégica" },
+const grupoOptions = [
+  { value: "TI", label: "TI" },
+  { value: "Financeiro", label: "Financeiro" },
+  { value: "Comercial", label: "Comercial" },
+  { value: "Vendas", label: "Vendas" },
+  { value: "RH", label: "RH" },
+  { value: "Operações", label: "Operações" },
 ];
 
-interface PrioridadeFilterProps {
+interface GrupoSolicitanteFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
 }
 
-export const PrioridadeFilter = ({
+export const GrupoSolicitanteFilter = ({
   value,
   onChange,
-}: PrioridadeFilterProps) => {
+}: GrupoSolicitanteFilterProps) => {
   const selectTheme = useSelectTheme();
   const { theme } = useTheme();
   return (
     <FilterBase
-      label="Prioridade"
-      icon={<AlertTriangle size={16} />}
-      htmlFor="prioridade-filter"
+      label="Grupo Solicitante"
+      icon={<Users size={16} />}
+      htmlFor="grupo-solicitante-filter"
     >
       <Select
-        inputId="prioridade-filter"
+        inputId="grupo-solicitante-filter"
         classNamePrefix="react-select"
-        options={prioridadeOptions}
-        value={prioridadeOptions.filter((opt) => value?.includes(opt.value))}
+        options={grupoOptions}
+        value={grupoOptions.filter((opt) => value?.includes(opt.value))}
         onChange={(opts) => onChange(opts ? opts.map((o) => o.value) : [])}
         theme={selectTheme}
         isMulti
         isClearable
-        placeholder="Todas"
+        placeholder="Todos"
         closeMenuOnSelect={false}
         styles={{
           control: (base) => ({
@@ -55,10 +56,7 @@ export const PrioridadeFilter = ({
           multiValueRemove: (base) => ({
             ...base,
             color: "#ef4444",
-            ":hover": {
-              backgroundColor: "#fee2e2",
-              color: "#ef4444",
-            },
+            ":hover": { backgroundColor: "#fee2e2", color: "#ef4444" },
           }),
           placeholder: (base) => ({ ...base, color: theme.text.subtitle }),
           menu: (base) => ({ ...base, backgroundColor: theme.bg.base }),
