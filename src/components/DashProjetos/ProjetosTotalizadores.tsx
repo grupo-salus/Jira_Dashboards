@@ -32,6 +32,10 @@ const remToPx = (rem: string): number => {
   return Math.round(remValue * 16); // 1rem = 16px
 };
 
+// URL base do Jira (igual ao KanbanCards.tsx)
+const JIRA_URL_BASE =
+  "https://tigruposalus.atlassian.net/jira/software/c/projects/EP/boards/323?selectedIssue=";
+
 const TotalizadorCard: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -447,18 +451,19 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               {proximosExecucao.map((projeto, index) => (
                 <div
                   key={projeto.Título}
-                  className={
-                    `relative flex items-center gap-2 p-2 sm:p-3 rounded-lg border transition-all duration-200 hover:shadow-md h-16 sm:h-20 lg:h-24` +
-                    (index === 0 ? " border-2" : " border")
-                  }
+                  className={`relative flex items-center gap-2 p-2 sm:p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 h-16 sm:h-20 lg:h-24 cursor-pointer`}
                   style={{
                     background:
                       themeColors.components.totalizadores.proximoExecucao.bg[
                         currentTheme
                       ],
-                    borderColor: getBorderColor("primary", currentTheme),
                     flex: "1 1 250px",
                     minWidth: 0,
+                  }}
+                  onClick={() => {
+                    if (projeto.Chave) {
+                      window.open(`${JIRA_URL_BASE}${projeto.Chave}`, "_blank");
+                    }
                   }}
                 >
                   {/* Barra de prioridade lateral */}
