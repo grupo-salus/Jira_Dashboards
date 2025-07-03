@@ -129,12 +129,13 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
                     {proj.Prioridade ? (
                       <span
                         style={{
-                          backgroundColor: getPriorityConfig(proj.Prioridade).hex,
-                          color: '#fff',
-                          borderRadius: '4px',
-                          padding: '2px 8px',
+                          backgroundColor: getPriorityConfig(proj.Prioridade)
+                            .hex,
+                          color: "#fff",
+                          borderRadius: "4px",
+                          padding: "2px 8px",
                           fontWeight: 600,
-                          fontSize: '0.85em',
+                          fontSize: "0.85em",
                           marginLeft: 4,
                         }}
                       >
@@ -145,13 +146,20 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
                     )}
                   </div>
                   <div>
-                    <span className="font-medium">Responsável:</span>{" "}
-                    {proj.Responsável || "Não informado"}
-                  </div>
-                  <div>
                     <span className="font-medium">Squad:</span>{" "}
                     {proj.Squad || "Não informado"}
                   </div>
+                  <div>
+                    <span className="font-medium">Área:</span>{" "}
+                    {proj["Departamento Solicitante"] || "Não informado"}
+                  </div>
+                </div>
+                <div
+                  className="mt-2 text-xs"
+                  style={{ color: getTextColor("secondary", currentTheme) }}
+                >
+                  <span className="font-medium">Responsável:</span>{" "}
+                  {proj.Responsável || "Não informado"}
                 </div>
               </div>
             ))}
