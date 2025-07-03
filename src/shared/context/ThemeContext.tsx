@@ -1,0 +1,1 @@
+// Arquivo vazio - será implementado futuramente 
