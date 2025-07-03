@@ -688,7 +688,7 @@ export const getStatusColor = (
     prazo: {
       "No prazo": themeColors.status.prazo.noPrazo,
       "Em risco": themeColors.status.prazo.emRisco,
-      "Fora do prazo": themeColors.status.prazo.foraPrazo,
+      Atrasado: themeColors.status.prazo.foraPrazo,
     },
     ideacao: {
       Recente: themeColors.status.ideacao.recente,

@@ -37,7 +37,7 @@ def testar_resumo_sprint(nome_arquivo="sprint_summary.json"):
     print(f"\nResumo da sprint salvo em '{nome_arquivo}'")
     print(f"Total de cards: {data['resumo_geral'].get('total_cards')}")
     print(f"Entregues no prazo: {data['resumo_geral'].get('entregues_no_prazo')}")
-    print(f"Fora do prazo: {data['resumo_geral'].get('fora_do_prazo')}")
+    print(f"Atrasado: {data['resumo_geral'].get('fora_do_prazo')}")
 
     with open(nome_arquivo, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)

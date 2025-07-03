@@ -225,7 +225,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   ).length;
 
   const projetosForaDoPrazo = filteredData.filter(
-    (p) => p["Status de prazo"] === "Fora do prazo"
+    (p) => p["Status de prazo"] === "Atrasado"
   ).length;
 
   // Encontrar os próximos 3 projetos a serem executados
@@ -406,17 +406,17 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Projetos Fora do Prazo"
+          label="Projetos Atrasados"
           value={projetosForaDoPrazo}
           currentTheme={currentTheme}
           valueColor={themeColors.status.prazo.foraPrazo.text[currentTheme]}
           onClickValue={
             onStatusPrazoClick
-              ? () => onStatusPrazoClick("Fora do prazo")
+              ? () => onStatusPrazoClick("Atrasado")
               : undefined
           }
           clickable={!!onStatusPrazoClick}
-          isFiltered={filtroStatusPrazoAtivo === "Fora do prazo"}
+          isFiltered={filtroStatusPrazoAtivo === "Atrasado"}
         />
       </div>
 

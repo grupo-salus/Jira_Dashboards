@@ -104,7 +104,7 @@ export const getPrazoBackgroundColor = (
   const prazoColors = {
     "No prazo": themeColors.status.prazo.noPrazo.bg[theme],
     "Em risco": themeColors.status.prazo.emRisco.bg[theme],
-    "Fora do prazo": themeColors.status.prazo.foraPrazo.bg[theme],
+    Atrasado: themeColors.status.prazo.foraPrazo.bg[theme],
   };
 
   return prazoColors[status];
