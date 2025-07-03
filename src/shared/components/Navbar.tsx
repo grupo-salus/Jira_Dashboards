@@ -1,5 +1,6 @@
 // src/shared/components/Navbar.tsx
 import { useTheme } from "@/shared/context/ThemeContext";
+import { useDataSync } from "@/shared/context/DataSyncContext";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -21,6 +22,7 @@ import { availableThemes, ThemeName } from "@/shared/themes";
 
 export const Navbar = () => {
   const { toggleMode, mode, theme, themeName, setThemeName } = useTheme();
+  const { refreshAllData, isRefreshing } = useDataSync();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
@@ -86,14 +88,19 @@ export const Navbar = () => {
             <button
               className="p-2.5 rounded-lg transition-all duration-200 hover:shadow-md group"
               aria-label="Refresh data"
+              onClick={refreshAllData}
+              disabled={isRefreshing}
               style={{
                 color: theme.text.subtitle,
                 backgroundColor: theme.bg.muted,
+                opacity: isRefreshing ? 0.6 : 1,
               }}
             >
               <RefreshCw
                 size={18}
-                className="group-hover:rotate-180 transition-transform duration-500"
+                className={`transition-transform duration-500 ${
+                  isRefreshing ? "animate-spin" : "group-hover:rotate-180"
+                }`}
               />
             </button>
 

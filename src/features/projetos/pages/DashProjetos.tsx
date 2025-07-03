@@ -1,6 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { BarChart3, Kanban, Table, Eye, ChevronUp } from "lucide-react";
+import {
+  BarChart3,
+  Kanban,
+  Table,
+  Eye,
+  ChevronUp,
+  AlertCircle,
+} from "lucide-react";
 import { FilterPanel } from "@/features/projetos/components/Filters/FilterPanel";
 import { TotalizadoresWrapper } from "@/features/projetos/components/Totalizadores/TotalizadoresWrapper";
 import { ProjetosPorAreaChart } from "@/features/projetos/components/Charts/ProjetosPorAreaChart";
@@ -8,17 +15,23 @@ import { PrioridadeChart } from "@/features/projetos/components/Charts/Prioridad
 import { KanbanWrapper } from "@/features/projetos/components/Kanban/KanbanWrapper";
 import { ProjetosTable } from "@/features/projetos/components/Tabela/ProjetosTable";
 import { ProximosProjetos } from "@/features/projetos/components/Proximos/ProximosProjetos";
-import projetosMock from "./mockProjetos.json";
-// import { EspacoDeProjetos } from "@/types/Typesjira"; // descomente quando usar tipagem real
+import { useProjetos } from "@/features/projetos/hooks/useProjetos";
+import { EspacoDeProjetos } from "@/types/Typesjira";
+import { LastUpdateInfo } from "@/shared/components/LastUpdateInfo";
+import { useAutoRefresh } from "@/shared/hooks/useAutoRefresh";
 
 type ViewMode = "kanban" | "table";
 
 export const DashProjetos = () => {
   const { theme } = useTheme();
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
-  // const [projetos, setProjetos] = useState<EspacoDeProjetos[]>(projetosMock as EspacoDeProjetos[]); // use quando tipar
-  const [projetos] = useState<any[]>(projetosMock); // mock, troque para tipado depois
   const [showScrollTop, setShowScrollTop] = useState(false);
+  
+  // Hook para buscar dados reais da API
+  const { data: projetos, loading, error, refetch } = useProjetos();
+  
+  // Auto-refresh habilitado automaticamente para dashboards
+  useAutoRefresh({ enabled: true });
 
   useEffect(() => {
     const onScroll = () => {
@@ -34,6 +47,19 @@ export const DashProjetos = () => {
 
   // Exemplo de cálculo de totalizadores a partir dos dados
   const totalizadores = useMemo(() => {
+    if (!projetos) {
+      return {
+        projetosNoPrazo: 0,
+        projetosAtrasados: 0,
+        totalProjetos: 0,
+        projetosEmAndamento: 0,
+        projetosIdeacao: 0,
+        projetosBacklog: 0,
+        projetosEntreguesMes: 0,
+        projetosEmRisco: 0,
+      };
+    }
+
     return {
       projetosNoPrazo: projetos.filter(
         (p) => p["Status de prazo"] === "No prazo"
@@ -66,6 +92,75 @@ export const DashProjetos = () => {
     };
   }, [projetos]);
 
+  // Estados de loading e erro
+  if (loading) {
+    return (
+      <div
+        className="min-h-screen p-6 flex items-center justify-center"
+        style={{ backgroundColor: theme.bg.base }}
+      >
+        <div className="text-center">
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
+            style={{ borderColor: theme.brand.primary }}
+          ></div>
+          <p style={{ color: theme.text.base }}>
+            Carregando dados dos projetos...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        className="min-h-screen p-6 flex items-center justify-center"
+        style={{ backgroundColor: theme.bg.base }}
+      >
+        <div className="text-center max-w-md">
+          <AlertCircle
+            size={48}
+            className="mx-auto mb-4"
+            style={{ color: theme.text.base }}
+          />
+          <h2
+            className="text-xl font-semibold mb-2"
+            style={{ color: theme.text.title }}
+          >
+            Erro ao carregar dados
+          </h2>
+          <p className="mb-4" style={{ color: theme.text.base }}>
+            {error}
+          </p>
+          <button
+            onClick={refetch}
+            className="px-4 py-2 rounded-lg transition-colors"
+            style={{
+              backgroundColor: theme.brand.primary,
+              color: theme.text.inverse,
+            }}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!projetos) {
+    return (
+      <div
+        className="min-h-screen p-6 flex items-center justify-center"
+        style={{ backgroundColor: theme.bg.base }}
+      >
+        <div className="text-center">
+          <p style={{ color: theme.text.base }}>Nenhum dado disponível</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="min-h-screen p-6 space-y-8"
@@ -75,7 +170,7 @@ export const DashProjetos = () => {
 
       {/* Seção 1: Filtros */}
       <section>
-        <FilterPanel projetos={projetos} />
+        <FilterPanel projetos={projetos as any[]} />
       </section>
 
       {/* Seção 2: Totalizadores */}
@@ -94,7 +189,7 @@ export const DashProjetos = () => {
 
       {/* Seção 3: Próximos Projetos a Serem Executados */}
       <section>
-        <ProximosProjetos projetos={projetos} />
+        <ProximosProjetos projetos={projetos as any[]} />
       </section>
 
       {/* Seção 4: Gráficos */}
@@ -110,8 +205,8 @@ export const DashProjetos = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ProjetosPorAreaChart projetos={projetos} />
-          <PrioridadeChart projetos={projetos} />
+          <ProjetosPorAreaChart projetos={projetos as any[]} />
+          <PrioridadeChart projetos={projetos as any[]} />
         </div>
       </section>
 
@@ -134,16 +229,16 @@ export const DashProjetos = () => {
         </div>
 
         {viewMode === "kanban" ? (
-          <KanbanWrapper projetos={projetos} />
+          <KanbanWrapper projetos={projetos as any[]} />
         ) : (
-          <ProjetosTable projetos={projetos} />
+          <ProjetosTable projetos={projetos as any[]} />
         )}
       </section>
       {/* Botão flutuante para rolar ao topo */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 p-2 rounded-full shadow-lg transition-colors"
+          className="fixed bottom-6 left-6 z-50 p-2 rounded-full shadow-lg transition-colors"
           style={{
             backgroundColor: theme.bg.surface,
             color: theme.brand.primary,
@@ -154,6 +249,9 @@ export const DashProjetos = () => {
           <ChevronUp size={24} />
         </button>
       )}
+
+      {/* Informação da última atualização */}
+      <LastUpdateInfo />
     </div>
   );
 };

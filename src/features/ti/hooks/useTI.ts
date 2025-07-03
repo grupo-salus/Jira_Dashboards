@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
-import { projetosApi } from "../../../api/jira";
-import { ProjetosTableData, ProjetosApiError } from "../types";
+import { tiApi } from "../../../api/jira";
+import { TITableData, TIApiError } from "../types";
 import { useDataSync } from "../../../shared/context/DataSyncContext";
 
-interface UseProjetosReturn {
-  data: ProjetosTableData | null;
+interface UseTIReturn {
+  data: TITableData | null;
   loading: boolean;
   error: string | null;
   refetch: () => void;
 }
 
-export const useProjetos = (): UseProjetosReturn => {
-  const [data, setData] = useState<ProjetosTableData | null>(null);
+export const useTI = (): UseTIReturn => {
+  const [data, setData] = useState<TITableData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { lastRefresh } = useDataSync();
@@ -21,15 +21,15 @@ export const useProjetos = (): UseProjetosReturn => {
       setLoading(true);
       setError(null);
 
-      const response = await projetosApi.getTabelaProjetos();
-      setData(response.tabela_dashboard_ep);
+      const response = await tiApi.getTabelaTI();
+      setData(response.tabela_dashboard_ti);
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
           : "Erro desconhecido ao buscar dados";
       setError(errorMessage);
-      console.error("Erro no hook useProjetos:", err);
+      console.error("Erro no hook useTI:", err);
     } finally {
       setLoading(false);
     }
