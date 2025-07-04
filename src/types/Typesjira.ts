@@ -52,7 +52,7 @@ export interface EspacoDeProjetos {
 
   Responsável: string; // Pessoa atribuída ao desenvolvimento da tarefa
   Relator: string; // Pessoa que criou o card no Jira
-  Squad: string | null; // Squad do projeto (vindo das labels do Jira)
+  Squads: string[]; // Array com todos os squads associados ao projeto
 
   "Estimativa original (segundos)": number; // Tempo inicialmente estimado no Jira, em segundos
   "Tempo registrado (segundos)": number | null; // Tempo total já registrado via controle (ex: Clockify), em segundos

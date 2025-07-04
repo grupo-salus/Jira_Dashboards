@@ -273,7 +273,8 @@ const DashProjetos: React.FC = () => {
 
       const matchesSquad =
         filtrosAtivos.squad.length === 0 ||
-        filtrosAtivos.squad.includes(item.Squad || "");
+        (item.Squads &&
+          item.Squads.some((squad) => filtrosAtivos.squad.includes(squad)));
 
       const matchesGrupoSolicitante =
         filtrosAtivos.grupoSolicitante.length === 0 ||
@@ -602,14 +603,24 @@ const DashProjetos: React.FC = () => {
     })),
   ];
 
-  const squadOptions = useMemo(
-    () => [
-      ...new Set(projetosData.rawData.map((i: EspacoDeProjetos) => i.Squad)),
-    ],
-    [projetosData.rawData]
-  );
+  const squadOptions = useMemo(() => {
+    const allSquads = new Set<string>();
+
+    projetosData.rawData.forEach((i: EspacoDeProjetos) => {
+      // Adicionar squads do array se existir
+      if (i.Squads && i.Squads.length > 0) {
+        i.Squads.forEach((squad) => {
+          if (squad) {
+            allSquads.add(squad);
+          }
+        });
+      }
+    });
+
+    return Array.from(allSquads);
+  }, [projetosData.rawData]);
   const squadHasEmpty = projetosData.rawData.some(
-    (i: EspacoDeProjetos) => !i.Squad
+    (i: EspacoDeProjetos) => !i.Squads || i.Squads.length === 0
   );
   const squadOptionsSelect = [
     ...(squadHasEmpty
@@ -1988,6 +1999,7 @@ const DashProjetos: React.FC = () => {
               setFiltros((f) => ({ ...f, squad: [squad] }))
             }
             filtroAtivo={filtros.squad.length > 0}
+            squadFiltrado={filtros.squad.length === 1 ? filtros.squad[0] : undefined}
           />
         </div>
       </div>

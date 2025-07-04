@@ -146,7 +146,7 @@ function withJiraLink(projeto: EspacoDeProjetos, children: React.ReactNode) {
 // ============================================================================
 
 /**
- * Card para projetos em IDEAÇÃO (Backlog)
+ * Card para projetos em IDEAÇÃO
  */
 const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
   return withJiraLink(
@@ -155,7 +155,8 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
       content={projeto.Descrição || "Sem descrição disponível"}
       priority={projeto.Prioridade}
     >
-      <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+      <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
+        {/* Cabeçalho */}
         <div
           className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
         >
@@ -173,10 +174,10 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
           </div>
         )}
 
-        {/* Squad */}
-        {projeto.Squad && (
+        {/* Squads */}
+        {projeto.Squads && projeto.Squads.length > 0 && (
           <div className="text-gray-600 dark:text-gray-100">
-            Squad: {projeto.Squad}
+            Squads: {projeto.Squads.join(", ")}
           </div>
         )}
 
@@ -225,7 +226,7 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
   const { theme } = useTheme();
-  
+
   // Cálculo do tempo bloqueado
   const inicioBloqueado = projeto["Data: Início Bloqueado"]
     ? new Date(projeto["Data: Início Bloqueado"])
@@ -269,10 +270,10 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             </span>
           </div>
         )}
-        {/* Squad */}
-        {projeto.Squad && (
+        {/* Squads */}
+        {projeto.Squads && projeto.Squads.length > 0 && (
           <div className="text-gray-600 dark:text-gray-200">
-            Squad: {projeto.Squad}
+            Squads: {projeto.Squads.join(", ")}
           </div>
         )}
         {/* Datas planejadas */}
@@ -382,10 +383,10 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           )}
         </div>
 
-        {/* Squad */}
-        {projeto.Squad && (
+        {/* Squads */}
+        {projeto.Squads && projeto.Squads.length > 0 && (
           <div className="text-gray-600 dark:text-gray-200">
-            Squad: {projeto.Squad}
+            Squads: {projeto.Squads.join(", ")}
           </div>
         )}
 
@@ -480,10 +481,10 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
 
-      {/* Squad */}
-      {projeto.Squad && (
+      {/* Squads */}
+      {projeto.Squads && projeto.Squads.length > 0 && (
         <div className="text-gray-600 dark:text-gray-200">
-          Squad: {projeto.Squad}
+          Squads: {projeto.Squads.join(", ")}
         </div>
       )}
 
@@ -687,10 +688,10 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
 
-      {/* Squad */}
-      {projeto.Squad && (
+      {/* Squads */}
+      {projeto.Squads && projeto.Squads.length > 0 && (
         <div className="text-gray-600 dark:text-gray-200">
-          Squad: {projeto.Squad}
+          Squads: {projeto.Squads.join(", ")}
         </div>
       )}
 
@@ -887,10 +888,10 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
 
-      {/* Squad */}
-      {projeto.Squad && (
+      {/* Squads */}
+      {projeto.Squads && projeto.Squads.length > 0 && (
         <div className="text-gray-600 dark:text-gray-200">
-          Squad: {projeto.Squad}
+          Squads: {projeto.Squads.join(", ")}
         </div>
       )}
 
@@ -1073,10 +1074,10 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
             </span>
           </div>
         )}
-        {/* Squad */}
-        {projeto.Squad && (
+        {/* Squads */}
+        {projeto.Squads && projeto.Squads.length > 0 && (
           <div className="text-gray-600 dark:text-gray-200">
-            Squad: {projeto.Squad}
+            Squads: {projeto.Squads.join(", ")}
           </div>
         )}
         {/* Target start */}
@@ -1184,10 +1185,10 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             </span>
           </div>
         )}
-        {/* Squad */}
-        {projeto.Squad && (
+        {/* Squads */}
+        {projeto.Squads && projeto.Squads.length > 0 && (
           <div className="text-gray-600 dark:text-gray-200">
-            Squad: {projeto.Squad}
+            Squads: {projeto.Squads.join(", ")}
           </div>
         )}
         {/* Datas planejadas */}
@@ -1281,9 +1282,9 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
               </span>
             </div>
           )}
-          {projeto.Squad && (
+          {projeto.Squads && projeto.Squads.length > 0 && (
             <div className="text-gray-600 dark:text-gray-200">
-              Squad: {projeto.Squad}
+              Squads: {projeto.Squads.join(", ")}
             </div>
           )}
           {projeto.Responsável && (

@@ -9,12 +9,14 @@ interface AnaliseDemandasPorSquadProps {
   data: EspacoDeProjetos[];
   onSquadClick?: (squad: string) => void;
   filtroAtivo?: boolean;
+  squadFiltrado?: string;
 }
 
 const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   data,
   onSquadClick,
   filtroAtivo = false,
+  squadFiltrado,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipData, setTooltipData] = useState<{
@@ -90,8 +92,10 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
       const timeout = window.setTimeout(() => {
         const squadOriginal = entry.payload?.originalValue;
         let projetos = data.filter((item: EspacoDeProjetos) => {
-          const itemSquad = item["Squad"] || "";
-          return itemSquad === squadOriginal;
+          // Verificar se o squad está no array Squads
+          const itemSquads = item["Squads"] || [];
+
+          return itemSquads.includes(squadOriginal);
         });
 
         // Se não encontrou projetos com o valor original, tentar com o nome capitalizado
@@ -101,11 +105,9 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
             squadLower.charAt(0).toUpperCase() + squadLower.slice(1);
 
           projetos = data.filter((item: EspacoDeProjetos) => {
-            const itemSquad = item["Squad"] || "";
-            const itemSquadLower = itemSquad.toLowerCase();
-            const itemSquadCapitalized =
-              itemSquadLower.charAt(0).toUpperCase() + itemSquadLower.slice(1);
-            return itemSquadCapitalized === squadCapitalized;
+            const itemSquads = item["Squads"] || [];
+
+            return itemSquads.includes(squadCapitalized);
           });
         }
 
@@ -137,16 +139,36 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   const squadCount = React.useMemo(() => {
     const counts: Record<string, number> = {};
     data.forEach((item) => {
-      const squad = item["Squad"] || "Não informado";
-      counts[squad] = (counts[squad] || 0) + 1;
+      // Usar o campo Squads (array)
+      const squads =
+        item["Squads"] && item["Squads"].length > 0
+          ? item["Squads"]
+          : ["Não informado"];
+
+      squads.forEach((squad) => {
+        if (squad) {
+          counts[squad] = (counts[squad] || 0) + 1;
+        }
+      });
     });
     return Object.entries(counts).map(([squad, count]) => ({ squad, count }));
   }, [data]);
 
   // Filtrar "Não informado" das fatias
-  const squadCountFiltered = squadCount.filter(
+  let squadCountFiltered = squadCount.filter(
     (s) => s.squad !== "Não informado"
   );
+
+  // Se há filtro ativo, mostrar apenas a fatia selecionada
+  if (filtroAtivo && squadFiltrado) {
+    const squadFiltradoEncontrado = squadCountFiltered.find(
+      (squad) => squad.squad === squadFiltrado
+    );
+
+    if (squadFiltradoEncontrado) {
+      squadCountFiltered = [squadFiltradoEncontrado];
+    }
+  }
 
   // Preparar dados para o gráfico de pizza
   const pieData = squadCountFiltered.map((item) => ({

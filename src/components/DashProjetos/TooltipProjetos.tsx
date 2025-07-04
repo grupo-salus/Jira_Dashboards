@@ -146,8 +146,10 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
                     )}
                   </div>
                   <div>
-                    <span className="font-medium">Squad:</span>{" "}
-                    {proj.Squad || "Não informado"}
+                    <span className="font-medium">Squads:</span>{" "}
+                    {proj.Squads && proj.Squads.length > 0
+                      ? proj.Squads.join(", ")
+                      : "Não informado"}
                   </div>
                   <div>
                     <span className="font-medium">Área:</span>{" "}
