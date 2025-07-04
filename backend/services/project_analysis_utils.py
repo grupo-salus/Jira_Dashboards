@@ -96,8 +96,8 @@ def classificar_prazo(row: pd.Series) -> str:
             logger.debug(f"Projeto finalizado no prazo: {data_finalizacao} <= {target_end}")
             return "No prazo"
         else:
-                    logger.debug(f"Projeto finalizado atrasado: {data_finalizacao} > {target_end}")
-        return "Atrasado"
+            logger.debug(f"Projeto finalizado atrasado: {data_finalizacao} > {target_end}")
+            return "Atrasado"
 
     # 2. Se não existe data de finalização, faz a lógica normal
     if pd.isnull(target_end):

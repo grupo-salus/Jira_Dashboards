@@ -186,7 +186,7 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         {/* Data de ideação */}
         {projeto["Data: Início Backlog"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Data de ideação: {formatDate(projeto["Data: Início Backlog"])}
+            Início: {formatDate(projeto["Data: Início Backlog"])}
           </div>
         )}
 
@@ -194,14 +194,14 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         {projeto["Dias na fase atual"] !== null &&
           projeto["Dias na fase atual"] !== undefined && (
             <div className="text-gray-600 dark:text-gray-200">
-              Em espera há: {projeto["Dias na fase atual"]} dias
+              Tempo decorrido: {projeto["Dias na fase atual"]} dias
             </div>
           )}
 
         {/* Data fim de ideação */}
         {projeto["Data: Fim Backlog"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Data fim de ideação: {formatDate(projeto["Data: Fim Backlog"])}
+            Fim: {formatDate(projeto["Data: Fim Backlog"])}
           </div>
         )}
 
@@ -291,19 +291,19 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {/* Data que entrou em bloqueado */}
         {projeto["Data: Início Bloqueado"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Entrou em bloqueado: {formatDate(projeto["Data: Início Bloqueado"])}
+            Início: {formatDate(projeto["Data: Início Bloqueado"])}
           </div>
         )}
         {/* Dias bloqueado */}
         {diasBloqueado !== null && (
           <div className="text-gray-600 dark:text-gray-200">
-            Tempo bloqueado: {diasBloqueado} dias
+            Tempo decorrido: {diasBloqueado} dias
           </div>
         )}
         {/* Data de fim do bloqueio */}
         {projeto["Data: Fim Bloqueado"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Saiu do bloqueio: {formatDate(projeto["Data: Fim Bloqueado"])}
+            Fim: {formatDate(projeto["Data: Fim Bloqueado"])}
           </div>
         )}
 
@@ -311,23 +311,21 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {projeto["Status de prazo"] && (
           <>
             <hr className="my-1 border-gray-300 dark:border-gray-600" />
-            <div className="pt-2">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Status de prazo:</span>
-                <span
-                  className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                    projeto["Status de prazo"]
-                  )} ${fontSizes.statusCardKanban}`}
-                  style={{
-                    backgroundColor: getPrazoBackgroundColor(
-                      projeto["Status de prazo"],
-                      theme
-                    ),
-                  }}
-                >
-                  {projeto["Status de prazo"]}
-                </span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Status de prazo:</span>
+              <span
+                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                  projeto["Status de prazo"]
+                )} ${fontSizes.statusCardKanban}`}
+                style={{
+                  backgroundColor: getPrazoBackgroundColor(
+                    projeto["Status de prazo"],
+                    theme
+                  ),
+                }}
+              >
+                {projeto["Status de prazo"]}
+              </span>
             </div>
           </>
         )}
@@ -395,8 +393,7 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {/* Data que entrou em backlog priorizado */}
         {projeto["Data: Início Backlog priorizado"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Entrou em backlog priorizado:{" "}
-            {formatDate(projeto["Data: Início Backlog priorizado"])}
+            Início: {formatDate(projeto["Data: Início Backlog priorizado"])}
           </div>
         )}
 
@@ -404,7 +401,7 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {projeto["Dias na fase atual"] !== null &&
           projeto["Dias na fase atual"] !== undefined && (
             <div className="text-gray-600 dark:text-gray-200">
-              Em espera há: {projeto["Dias na fase atual"]} dias
+              Tempo decorrido: {projeto["Dias na fase atual"]} dias
             </div>
           )}
 
@@ -418,22 +415,21 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             {/* Data fim backlog priorizado */}
             {projeto["Data: Fim Backlog priorizado"] && (
               <div className="text-gray-600 dark:text-gray-200">
-                Data fim backlog priorizado:{" "}
-                {formatDate(projeto["Data: Fim Backlog priorizado"])}
+                Fim: {formatDate(projeto["Data: Fim Backlog priorizado"])}
               </div>
             )}
 
             {/* Data prevista de início */}
             {projeto["Target start"] && (
               <div className="text-gray-600 dark:text-gray-200">
-                Data prevista de início: {formatDate(projeto["Target start"])}
+                Início previsto: {formatDate(projeto["Target start"])}
               </div>
             )}
 
             {/* Data prevista para término */}
             {projeto["Target end"] && (
               <div className="text-gray-600 dark:text-gray-200">
-                Data prevista para término: {formatDate(projeto["Target end"])}
+                Fim previsto: {formatDate(projeto["Target end"])}
               </div>
             )}
           </>
@@ -509,16 +505,14 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data que entrou em desenvolvimento */}
       {projeto["Data: Início Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Entrou em desenvolvimento:{" "}
-          {formatDate(projeto["Data: Início Em andamento"])}
+          Início: {formatDate(projeto["Data: Início Em andamento"])}
         </div>
       )}
 
       {/* Data que saiu de desenvolvimento (se houver) */}
       {projeto["Data: Fim Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Saiu de desenvolvimento:{" "}
-          {formatDate(projeto["Data: Fim Em andamento"])}
+          Fim: {formatDate(projeto["Data: Fim Em andamento"])}
         </div>
       )}
 
@@ -527,8 +521,7 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         projeto["Tempo na fase Em andamento (dias)"] !== undefined &&
         projeto["Tempo na fase Em andamento (dias)"] !== 0 && (
           <div className="text-gray-600 dark:text-gray-200">
-            Tempo em desenvolvimento:{" "}
-            {projeto["Tempo na fase Em andamento (dias)"]} dias
+            Tempo decorrido: {projeto["Tempo na fase Em andamento (dias)"]} dias
           </div>
         )}
 
@@ -538,7 +531,7 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="font-medium">Progresso do desenvolvimento:</span>
+              <span className="font-medium">Progresso:</span>
               <span className="text-gray-600 dark:text-gray-400">
                 {Math.round(progresso)}%
               </span>
@@ -591,23 +584,21 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {projeto["Status de prazo"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="pt-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Status de prazo:</span>
-              <span
-                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                  projeto["Status de prazo"]
-                )} ${fontSizes.statusCardKanban}`}
-                style={{
-                  backgroundColor: getPrazoBackgroundColor(
-                    projeto["Status de prazo"],
-                    theme
-                  ),
-                }}
-              >
-                {projeto["Status de prazo"]}
-              </span>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Status de prazo:</span>
+            <span
+              className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                projeto["Status de prazo"]
+              )} ${fontSizes.statusCardKanban}`}
+              style={{
+                backgroundColor: getPrazoBackgroundColor(
+                  projeto["Status de prazo"],
+                  theme
+                ),
+              }}
+            >
+              {projeto["Status de prazo"]}
+            </span>
           </div>
         </>
       )}
@@ -724,15 +715,14 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data que entrou em homologação */}
       {projeto["Data: Início Em homologação"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Entrou em homologação:{" "}
-          {formatDate(projeto["Data: Início Em homologação"])}
+          Início: {formatDate(projeto["Data: Início Em homologação"])}
         </div>
       )}
 
       {/* Tempo em homologação */}
       {inicioHom && fimHom && (
         <div className="text-gray-600 dark:text-gray-200">
-          Tempo em homologação: {diasDecorridos} dias
+          Tempo decorrido: {diasDecorridos} dias
         </div>
       )}
 
@@ -740,15 +730,9 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {projeto["Data: Fim Em homologação"] && fimHom && (
         <div className="text-gray-600 dark:text-gray-200">
           {hoje < fimHom ? (
-            <>
-              Fim previsto homologação:{" "}
-              {formatDate(projeto["Data: Fim Em homologação"])}
-            </>
+            <>Fim previsto: {formatDate(projeto["Data: Fim Em homologação"])}</>
           ) : (
-            <>
-              Saiu da homologação:{" "}
-              {formatDate(projeto["Data: Fim Em homologação"])}
-            </>
+            <>Fim: {formatDate(projeto["Data: Fim Em homologação"])}</>
           )}
         </div>
       )}
@@ -758,7 +742,7 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {inicioHom && fimHom && (
         <>
           <div className="flex justify-between text-sm">
-            <span className="font-medium">Progresso da homologação:</span>
+            <span className="font-medium">Progresso:</span>
             <span className="text-gray-600 dark:text-gray-400">
               {Math.round(progresso)}%
             </span>
@@ -780,7 +764,7 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
           {atraso && (
             <div className="text-xs text-red-600 font-bold mt-1">
-              Homologação atrasada — prazo previsto era até{" "}
+              Atrasado — prazo previsto era até{" "}
               {formatDate(fimHom.toISOString())}
             </div>
           )}
@@ -791,23 +775,21 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {projeto["Status de prazo"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="pt-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Status de prazo:</span>
-              <span
-                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                  projeto["Status de prazo"]
-                )} ${fontSizes.statusCardKanban}`}
-                style={{
-                  backgroundColor: getPrazoBackgroundColor(
-                    projeto["Status de prazo"],
-                    theme
-                  ),
-                }}
-              >
-                {projeto["Status de prazo"]}
-              </span>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Status de prazo:</span>
+            <span
+              className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                projeto["Status de prazo"]
+              )} ${fontSizes.statusCardKanban}`}
+              style={{
+                backgroundColor: getPrazoBackgroundColor(
+                  projeto["Status de prazo"],
+                  theme
+                ),
+              }}
+            >
+              {projeto["Status de prazo"]}
+            </span>
           </div>
         </>
       )}
@@ -924,29 +906,28 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data que saiu da homologação */}
       {projeto["Data: Fim Em homologação"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Saiu da homologação: {formatDate(projeto["Data: Fim Em homologação"])}
+          Fim homologação: {formatDate(projeto["Data: Fim Em homologação"])}
         </div>
       )}
 
       {/* Data de finalização (fim do desenvolvimento) */}
       {projeto["Data: Fim Em andamento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Data de finalização: {formatDate(projeto["Data: Fim Em andamento"])}
+          Fim desenvolvimento: {formatDate(projeto["Data: Fim Em andamento"])}
         </div>
       )}
 
       {/* Data que entrou em operação assistida */}
       {projeto["Data: Início Operação assistida"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Entrou em operação assistida:{" "}
-          {formatDate(projeto["Data: Início Operação assistida"])}
+          Início: {formatDate(projeto["Data: Início Operação assistida"])}
         </div>
       )}
 
       {/* Tempo em operação assistida */}
       {inicioOp && fimOp && (
         <div className="text-gray-600 dark:text-gray-200">
-          Tempo em operação assistida: {diasDecorridos} dias
+          Tempo decorrido: {diasDecorridos} dias
         </div>
       )}
 
@@ -955,14 +936,11 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <div className="text-gray-600 dark:text-gray-200">
           {hoje < fimOp ? (
             <>
-              Fim previsto operação assistida:{" "}
+              Fim previsto:{" "}
               {formatDate(projeto["Data: Fim Operação assistida"])}
             </>
           ) : (
-            <>
-              Saiu da operação assistida:{" "}
-              {formatDate(projeto["Data: Fim Operação assistida"])}
-            </>
+            <>Fim: {formatDate(projeto["Data: Fim Operação assistida"])}</>
           )}
         </div>
       )}
@@ -973,9 +951,7 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {inicioOp && fimOp && (
         <>
           <div className="flex justify-between text-sm">
-            <span className="font-medium">
-              Progresso da operação assistida:
-            </span>
+            <span className="font-medium">Progresso:</span>
             <span className="text-gray-600 dark:text-gray-400">
               {Math.round(progresso)}%
             </span>
@@ -997,7 +973,7 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
           {atraso && (
             <div className="text-xs text-red-600 font-bold mt-1">
-              Operação assistida atrasada — prazo previsto era até{" "}
+              Atrasado — prazo previsto era até{" "}
               {formatDate(fimOp.toISOString())}
             </div>
           )}
@@ -1008,23 +984,21 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {projeto["Status de prazo"] && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
-          <div className="pt-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Status de prazo:</span>
-              <span
-                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                  projeto["Status de prazo"]
-                )} ${fontSizes.statusCardKanban}`}
-                style={{
-                  backgroundColor: getPrazoBackgroundColor(
-                    projeto["Status de prazo"],
-                    theme
-                  ),
-                }}
-              >
-                {projeto["Status de prazo"]}
-              </span>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Status de prazo:</span>
+            <span
+              className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                projeto["Status de prazo"]
+              )} ${fontSizes.statusCardKanban}`}
+              style={{
+                backgroundColor: getPrazoBackgroundColor(
+                  projeto["Status de prazo"],
+                  theme
+                ),
+              }}
+            >
+              {projeto["Status de prazo"]}
+            </span>
           </div>
         </>
       )}
@@ -1033,7 +1007,7 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Esforço */}
       {projeto["Estimativa original (segundos)"] &&
         projeto["Tempo registrado (segundos)"] !== null && (
-          <div className="pt-2">
+          <div className="flex items-center gap-2">
             <div className="font-medium">Estimativa vs. Registrado:</div>
             <div className="text-gray-600 dark:text-gray-200">
               Estimativa:{" "}
@@ -1051,6 +1025,7 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
  * Card para projetos ENTREGUE (Concluído)
  */
 const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
+  const { theme } = useTheme();
   return withJiraLink(
     projeto,
     <CustomTooltip
@@ -1096,39 +1071,41 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         {/* Entrou em desenvolvimento */}
         {projeto["Data: Início Em andamento"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Entrou em desenvolvimento:{" "}
-            {formatDate(projeto["Data: Início Em andamento"])}
+            Início: {formatDate(projeto["Data: Início Em andamento"])}
           </div>
         )}
         {/* Data de fim do desenvolvimento */}
         {projeto["Data: Fim Em andamento"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Data de fim do desenvolvimento:{" "}
-            {formatDate(projeto["Data: Fim Em andamento"])}
+            Fim: {formatDate(projeto["Data: Fim Em andamento"])}
           </div>
         )}
         {/* Tempo em desenvolvimento */}
         {projeto["Tempo na fase Em andamento (dias)"] !== null &&
           projeto["Tempo na fase Em andamento (dias)"] !== undefined && (
             <div className="text-gray-600 dark:text-gray-200">
-              Tempo em desenvolvimento:{" "}
-              {projeto["Tempo na fase Em andamento (dias)"]} dias
+              Tempo decorrido: {projeto["Tempo na fase Em andamento (dias)"]}{" "}
+              dias
             </div>
           )}
         <hr className="my-1 border-gray-300 dark:border-gray-600" />
         {/* Status de prazo */}
         {projeto["Status de prazo"] && (
-          <div className="pt-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Status de prazo:</span>
-              <span
-                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                  projeto["Status de prazo"]
-                )} ${fontSizes.statusCardKanban}`}
-              >
-                {projeto["Status de prazo"]}
-              </span>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Status de prazo:</span>
+            <span
+              className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                projeto["Status de prazo"]
+              )} ${fontSizes.statusCardKanban}`}
+              style={{
+                backgroundColor: getPrazoBackgroundColor(
+                  projeto["Status de prazo"],
+                  theme
+                ),
+              }}
+            >
+              {projeto["Status de prazo"]}
+            </span>
           </div>
         )}
       </div>
@@ -1206,21 +1183,19 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {/* Data que entrou em cancelamento */}
         {projeto["Data: Início Cancelado"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Data que entrou em cancelamento:{" "}
-            {formatDate(projeto["Data: Início Cancelado"])}
+            Início: {formatDate(projeto["Data: Início Cancelado"])}
           </div>
         )}
         {/* Data que saiu do cancelamento */}
         {projeto["Data: Fim Cancelado"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Data que saiu do cancelamento:{" "}
-            {formatDate(projeto["Data: Fim Cancelado"])}
+            Fim: {formatDate(projeto["Data: Fim Cancelado"])}
           </div>
         )}
         {/* Tempo em cancelamento */}
         {diasCancelado !== null && (
           <div className="text-gray-600 dark:text-gray-200">
-            Tempo em cancelamento: {diasCancelado} dias
+            Tempo decorrido: {diasCancelado} dias
           </div>
         )}
         {/* Motivo do cancelamento */}
