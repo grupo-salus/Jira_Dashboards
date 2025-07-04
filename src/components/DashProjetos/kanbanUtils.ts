@@ -90,8 +90,12 @@ export const getStatusColor = (status: PrazoStatus | IdeacaoStatus): string => {
     return ideacaoColors[status as IdeacaoStatus];
   }
 
-  // Para status de prazo, retorna apenas a classe de texto (bg será aplicado via style)
-  return "text-white";
+  // Para status de prazo, retorna a classe de texto apropriada
+  if (status === "Em risco") {
+    return "text-black"; // Texto preto para "Em risco" (fundo amarelo)
+  }
+  
+  return "text-white"; // Texto branco para outros status de prazo
 };
 
 /**

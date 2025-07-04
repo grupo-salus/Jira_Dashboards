@@ -194,12 +194,12 @@ export const themeColors = {
       },
       emRisco: {
         bg: {
-          light: "#ffe700", // amber-600 - mais forte
-          dark: "#ffe700", // amber-400 - mais forte
+          light: "#ffe700", // amarelo
+          dark: "#ffe700", // amarelo
         },
         text: {
-          light: "#ffe700", // amber-600 - mais forte
-          dark: "##ffe700", // amber-400 - mais forte
+          light: "#000000", // preto para contraste com fundo amarelo
+          dark: "#000000", // preto para contraste com fundo amarelo
         },
       },
       foraPrazo: {

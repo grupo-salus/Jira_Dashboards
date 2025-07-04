@@ -391,7 +391,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label="Projetos Em Risco"
           value={projetosEmRisco}
           currentTheme={currentTheme}
-          valueColor={themeColors.status.prazo.emRisco.text[currentTheme]}
+          valueColor={themeColors.status.prazo.emRisco.bg[currentTheme]}
           onClickValue={
             onStatusPrazoClick
               ? () => onStatusPrazoClick("Em risco")
