@@ -220,6 +220,7 @@ const DashProjetos: React.FC = () => {
     if (valor1) {
       const dataValor1 = normalizarData(parseInputDate(valor1));
       const dataValor2 = valor2 ? normalizarData(parseInputDate(valor2)) : null;
+
       switch (operador) {
         case "maior_que":
           return dataItemNormalizada > dataValor1;
@@ -230,14 +231,19 @@ const DashProjetos: React.FC = () => {
         case "menor_igual":
           return dataItemNormalizada <= dataValor1;
         case "igual":
-          return dataItemNormalizada.getTime() === dataValor1.getTime();
+          // Comparação mais robusta para datas iguais
+          const dataItemStr = dataItemNormalizada.toISOString().split("T")[0];
+          const dataValor1Str = dataValor1.toISOString().split("T")[0];
+          return dataItemStr === dataValor1Str;
         case "entre":
           return dataValor2
             ? dataItemNormalizada >= dataValor1 &&
                 dataItemNormalizada <= dataValor2
             : false;
         case "nao_igual":
-          return dataItemNormalizada.getTime() !== dataValor1.getTime();
+          const dataItemStr2 = dataItemNormalizada.toISOString().split("T")[0];
+          const dataValor1Str2 = dataValor1.toISOString().split("T")[0];
+          return dataItemStr2 !== dataValor1Str2;
         default:
           return true;
       }
@@ -370,6 +376,7 @@ const DashProjetos: React.FC = () => {
       let matchesData = true;
       if (filtrosAtivos.filtroData.campo && filtrosAtivos.filtroData.operador) {
         const dataItem = getDataValue(item, filtrosAtivos.filtroData.campo);
+
         if (dataItem) {
           matchesData = aplicarOperadorData(
             dataItem,
@@ -378,6 +385,9 @@ const DashProjetos: React.FC = () => {
             filtrosAtivos.filtroData.valor2,
             filtrosAtivos.filtroData.opcaoRapida
           );
+        } else {
+          // Se não encontrou a data, não deve corresponder ao filtro
+          matchesData = false;
         }
       }
 
@@ -409,6 +419,70 @@ const DashProjetos: React.FC = () => {
       case "dataTermino":
         return item["Data de término"]
           ? new Date(item["Data de término"])
+          : null;
+      case "dataInicioBacklog":
+        return item["Data: Início Backlog"]
+          ? new Date(item["Data: Início Backlog"])
+          : null;
+      case "dataFimBacklog":
+        return item["Data: Fim Backlog"]
+          ? new Date(item["Data: Fim Backlog"])
+          : null;
+      case "dataInicioBacklogPriorizado":
+        return item["Data: Início Backlog priorizado"]
+          ? new Date(item["Data: Início Backlog priorizado"])
+          : null;
+      case "dataFimBacklogPriorizado":
+        return item["Data: Fim Backlog priorizado"]
+          ? new Date(item["Data: Fim Backlog priorizado"])
+          : null;
+      case "dataInicioEmAndamento":
+        return item["Data: Início Em andamento"]
+          ? new Date(item["Data: Início Em andamento"])
+          : null;
+      case "dataFimEmAndamento":
+        return item["Data: Fim Em andamento"]
+          ? new Date(item["Data: Fim Em andamento"])
+          : null;
+      case "dataInicioEmHomologacao":
+        return item["Data: Início Em homologação"]
+          ? new Date(item["Data: Início Em homologação"])
+          : null;
+      case "dataFimEmHomologacao":
+        return item["Data: Fim Em homologação"]
+          ? new Date(item["Data: Fim Em homologação"])
+          : null;
+      case "dataInicioOperacaoAssistida":
+        return item["Data: Início Operação assistida"]
+          ? new Date(item["Data: Início Operação assistida"])
+          : null;
+      case "dataFimOperacaoAssistida":
+        return item["Data: Fim Operação assistida"]
+          ? new Date(item["Data: Fim Operação assistida"])
+          : null;
+      case "dataInicioConcluido":
+        return item["Data: Início Concluído"]
+          ? new Date(item["Data: Início Concluído"])
+          : null;
+      case "dataFimConcluido":
+        return item["Data: Fim Concluído"]
+          ? new Date(item["Data: Fim Concluído"])
+          : null;
+      case "dataInicioCancelado":
+        return item["Data: Início Cancelado"]
+          ? new Date(item["Data: Início Cancelado"])
+          : null;
+      case "dataFimCancelado":
+        return item["Data: Fim Cancelado"]
+          ? new Date(item["Data: Fim Cancelado"])
+          : null;
+      case "dataInicioBloqueado":
+        return item["Data: Início Bloqueado"]
+          ? new Date(item["Data: Início Bloqueado"])
+          : null;
+      case "dataFimBloqueado":
+        return item["Data: Fim Bloqueado"]
+          ? new Date(item["Data: Fim Bloqueado"])
           : null;
       default:
         return null;
@@ -594,6 +668,34 @@ const DashProjetos: React.FC = () => {
     { value: "targetStart", label: "Target Start (Início Planejado)" },
     { value: "targetEnd", label: "Target End (Fim Planejado)" },
     { value: "dataTermino", label: "Data de Término" },
+    { value: "dataInicioBacklog", label: "Data: Início Backlog" },
+    { value: "dataFimBacklog", label: "Data: Fim Backlog" },
+    {
+      value: "dataInicioBacklogPriorizado",
+      label: "Data: Início Backlog Priorizado",
+    },
+    {
+      value: "dataFimBacklogPriorizado",
+      label: "Data: Fim Backlog Priorizado",
+    },
+    { value: "dataInicioEmAndamento", label: "Data: Início Em Andamento" },
+    { value: "dataFimEmAndamento", label: "Data: Fim Em Andamento" },
+    { value: "dataInicioEmHomologacao", label: "Data: Início Em Homologação" },
+    { value: "dataFimEmHomologacao", label: "Data: Fim Em Homologação" },
+    {
+      value: "dataInicioOperacaoAssistida",
+      label: "Data: Início Operação Assistida",
+    },
+    {
+      value: "dataFimOperacaoAssistida",
+      label: "Data: Fim Operação Assistida",
+    },
+    { value: "dataInicioConcluido", label: "Data: Início Concluído" },
+    { value: "dataFimConcluido", label: "Data: Fim Concluído" },
+    { value: "dataInicioCancelado", label: "Data: Início Cancelado" },
+    { value: "dataFimCancelado", label: "Data: Fim Cancelado" },
+    { value: "dataInicioBloqueado", label: "Data: Início Bloqueado" },
+    { value: "dataFimBloqueado", label: "Data: Fim Bloqueado" },
   ];
 
   const operadoresDataOptions = [
@@ -1688,44 +1790,46 @@ const DashProjetos: React.FC = () => {
                   />
                 </div>
 
-                {/* Data 2 (para operador "entre") */}
-                <div className="flex flex-col min-w-0">
-                  <label
-                    htmlFor="data2-filter"
-                    className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
-                    style={{ color: getTextColor("primary", currentTheme) }}
-                  >
-                    Data 2 (opcional)
-                  </label>
-                  <input
-                    type="date"
-                    id="data2-filter"
-                    value={filtros.filtroData.valor2}
-                    onChange={(e) =>
-                      setFiltros((f) => ({
-                        ...f,
-                        filtroData: {
-                          ...f.filtroData,
-                          valor2: e.target.value,
-                        },
-                      }))
-                    }
-                    className="px-3 py-2 rounded border transition-colors"
-                    style={{
-                      backgroundColor:
-                        currentTheme === "dark"
-                          ? themeColors.background.card.dark
-                          : themeColors.components.filtros.input.bg[
-                              currentTheme
-                            ],
-                      borderColor:
-                        themeColors.components.filtros.input.border[
-                          currentTheme
-                        ],
-                      color: getTextColor("primary", currentTheme),
-                    }}
-                  />
-                </div>
+                {/* Data 2 (para operador "entre") - Só aparece quando necessário */}
+                {filtros.filtroData.operador === "entre" && (
+                  <div className="flex flex-col min-w-0">
+                    <label
+                      htmlFor="data2-filter"
+                      className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                      style={{ color: getTextColor("primary", currentTheme) }}
+                    >
+                      Data 2
+                    </label>
+                    <input
+                      type="date"
+                      id="data2-filter"
+                      value={filtros.filtroData.valor2}
+                      onChange={(e) =>
+                        setFiltros((f) => ({
+                          ...f,
+                          filtroData: {
+                            ...f.filtroData,
+                            valor2: e.target.value,
+                          },
+                        }))
+                      }
+                      className="px-3 py-2 rounded border transition-colors"
+                      style={{
+                        backgroundColor:
+                          currentTheme === "dark"
+                            ? themeColors.background.card.dark
+                            : themeColors.components.filtros.input.bg[
+                                currentTheme
+                              ],
+                        borderColor:
+                          themeColors.components.filtros.input.border[
+                            currentTheme
+                          ],
+                        color: getTextColor("primary", currentTheme),
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
