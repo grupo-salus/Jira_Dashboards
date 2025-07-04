@@ -51,6 +51,14 @@ const statusNameMap: Record<string, string> = {
   Concluído: "Entregue",
 };
 
+// Adicione no topo do arquivo:
+declare global {
+  interface Window {
+    setProjetoFiltradoUnico?: (projeto: any) => void;
+    setFiltrosDashProjetos?: (f: any) => void;
+  }
+}
+
 const DashProjetos: React.FC = () => {
   const { projetosData, opcoesDepartamentoSolicitante } = useJira();
   const [visualizacao, setVisualizacao] = useState<"tabela" | "kanban">(
@@ -86,6 +94,10 @@ const DashProjetos: React.FC = () => {
 
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
+
+  // NOVO: Estado global para projeto filtrado único
+  const [projetoFiltradoUnico, setProjetoFiltradoUnico] =
+    useState<EspacoDeProjetos | null>(null);
 
   useEffect(() => {
     const updateTheme = () => {
@@ -492,8 +504,9 @@ const DashProjetos: React.FC = () => {
 
   // Dados filtrados finais
   const filteredData = useMemo(() => {
+    if (projetoFiltradoUnico) return [projetoFiltradoUnico];
     return aplicarFiltros(projetosData.rawData, filtros);
-  }, [projetosData.rawData, filtros]);
+  }, [projetosData.rawData, filtros, projetoFiltradoUnico]);
 
   // Opções para dropdowns baseadas nos dados
   const areaOptions = useMemo(() => {
@@ -764,6 +777,20 @@ const DashProjetos: React.FC = () => {
     );
   };
 
+  // NOVO: Função para filtrar por projeto
+  const filtrarPorProjeto = (projeto: EspacoDeProjetos) => {
+    setProjetoFiltradoUnico(projeto);
+  };
+
+  useEffect(() => {
+    window.setFiltrosDashProjetos = setFiltros;
+    window.setProjetoFiltradoUnico = setProjetoFiltradoUnico;
+    return () => {
+      window.setFiltrosDashProjetos = undefined;
+      window.setProjetoFiltradoUnico = undefined;
+    };
+  }, [setFiltros, setProjetoFiltradoUnico]);
+
   if (projetosData.loading) {
     return (
       <div
@@ -804,9 +831,12 @@ const DashProjetos: React.FC = () => {
       {/* Container de Filtros com botão Limpar acima, sempre reservando espaço */}
       <div className="mb-20">
         <div className="flex justify-end w-full mt-0 mb-4">
-          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) ? (
+          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) || projetoFiltradoUnico ? (
             <button
-              onClick={() => setFiltros(filtrosIniciais)}
+              onClick={() => {
+                setFiltros(filtrosIniciais);
+                setProjetoFiltradoUnico(null);
+              }}
               className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs ml-4"
               style={{ color: themeColors.text.error[currentTheme] }}
               title="Limpar todos os filtros"
@@ -1999,7 +2029,9 @@ const DashProjetos: React.FC = () => {
               setFiltros((f) => ({ ...f, squad: [squad] }))
             }
             filtroAtivo={filtros.squad.length > 0}
-            squadFiltrado={filtros.squad.length === 1 ? filtros.squad[0] : undefined}
+            squadFiltrado={
+              filtros.squad.length === 1 ? filtros.squad[0] : undefined
+            }
           />
         </div>
       </div>

@@ -10,6 +10,7 @@ interface AnaliseDemandasPorSquadProps {
   onSquadClick?: (squad: string) => void;
   filtroAtivo?: boolean;
   squadFiltrado?: string;
+  onProjetoClick?: (projeto: EspacoDeProjetos) => void;
 }
 
 const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
@@ -281,6 +282,12 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
         <TooltipProjetos
           areaLabel={tooltipData.squad}
           projetos={tooltipData.projetos}
+          onProjetoClick={(projeto) => {
+            if (typeof window.setProjetoFiltradoUnico === "function") {
+              window.setProjetoFiltradoUnico(projeto);
+            }
+            setShowTooltip(false);
+          }}
         />
       )}
     </div>
@@ -288,3 +295,5 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
 };
 
 export default AnaliseDemandasPorSquad;
+
+//teste

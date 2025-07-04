@@ -14,7 +14,7 @@ import { themeColors } from "../../utils/themeColors";
 import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
 
-interface ProjetosBarPorPrioridadeProps {
+export interface ProjetosBarPorPrioridadeProps {
   data: EspacoDeProjetos[];
   onPrioridadeClick?: (prioridade: string) => void;
 }
@@ -245,6 +245,12 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
         <TooltipProjetos
           areaLabel={tooltipData.prioridade}
           projetos={tooltipData.projetos}
+          onProjetoClick={(projeto) => {
+            if (typeof window.setProjetoFiltradoUnico === "function") {
+              window.setProjetoFiltradoUnico(projeto);
+            }
+            setShowTooltip(false);
+          }}
         />
       )}
     </div>

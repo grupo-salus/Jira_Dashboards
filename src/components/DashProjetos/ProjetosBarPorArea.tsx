@@ -17,7 +17,7 @@ import {
 import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 import TooltipProjetos from "./TooltipProjetos";
 
-interface ProjetosBarPorAreaProps {
+export interface ProjetosBarPorAreaProps {
   data: EspacoDeProjetos[];
   onAreaClick?: (area: string) => void;
 }
@@ -215,6 +215,12 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
         <TooltipProjetos
           areaLabel={tooltipData.area}
           projetos={tooltipData.projetos}
+          onProjetoClick={(projeto) => {
+            if (typeof window.setProjetoFiltradoUnico === "function") {
+              window.setProjetoFiltradoUnico(projeto);
+            }
+            setShowTooltip(false);
+          }}
         />
       )}
     </div>

@@ -10,11 +10,13 @@ import {
 interface TooltipProjetosProps {
   areaLabel: string;
   projetos: EspacoDeProjetos[];
+  onProjetoClick?: (projeto: EspacoDeProjetos) => void;
 }
 
 const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
   areaLabel,
   projetos,
+  onProjetoClick,
 }) => {
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
@@ -101,7 +103,7 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
             {projetos.map((proj, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-lg border transition-colors hover:shadow-md"
+                className="p-4 rounded-lg border transition-colors hover:shadow-md cursor-pointer"
                 style={{
                   backgroundColor:
                     idx % 2 === 0
@@ -112,6 +114,7 @@ const TooltipProjetos: React.FC<TooltipProjetosProps> = ({
                     currentTheme
                   )}`,
                 }}
+                onClick={() => onProjetoClick && onProjetoClick(proj)}
               >
                 <div className="font-semibold mb-2 text-base">
                   {proj.Título}
