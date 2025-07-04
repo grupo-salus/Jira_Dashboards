@@ -67,7 +67,7 @@ const DashProjetos: React.FC = () => {
     squad: [] as string[],
     grupoSolicitante: [] as string[],
     statusPrazo: [] as string[],
-    mesEntrega: "" as string,
+    mesEntrega: [] as string[],
     dataRapida: "" as string,
     filtroData: {
       campo: "" as string,
@@ -287,13 +287,13 @@ const DashProjetos: React.FC = () => {
 
       // Filtro por mês de entrega
       let matchesMesEntrega = true;
-      if (filtrosAtivos.mesEntrega) {
+      if (filtrosAtivos.mesEntrega.length > 0) {
         const dataFimConcluido = item["Data: Fim Concluído"];
         if (dataFimConcluido) {
           const data = new Date(dataFimConcluido);
           const mes = data.getMonth(); // 0-11 (janeiro = 0, dezembro = 11)
-          const mesSelecionado = parseInt(filtrosAtivos.mesEntrega);
-          matchesMesEntrega = mes === mesSelecionado;
+          const mesString = mes.toString();
+          matchesMesEntrega = filtrosAtivos.mesEntrega.includes(mesString);
         } else {
           matchesMesEntrega = false; // Se não tem data de fim concluído, não corresponde
         }
@@ -723,7 +723,6 @@ const DashProjetos: React.FC = () => {
 
   // Opções para filtro de mês de entrega
   const opcoesMesEntrega = [
-    { value: "", label: "Todos os meses" },
     { value: "0", label: "Janeiro" },
     { value: "1", label: "Fevereiro" },
     { value: "2", label: "Março" },
@@ -1393,19 +1392,17 @@ const DashProjetos: React.FC = () => {
               </label>
               <Select
                 inputId="mes-entrega-filter"
-                isClearable={true}
+                isMulti
                 options={opcoesMesEntrega}
-                value={
-                  filtros.mesEntrega
-                    ? opcoesMesEntrega.find(
-                        (opt) => opt.value === filtros.mesEntrega
-                      )
-                    : null
-                }
+                value={opcoesMesEntrega.filter((opt) =>
+                  filtros.mesEntrega.includes(opt.value)
+                )}
                 onChange={(selected) =>
                   setFiltros((f) => ({
                     ...f,
-                    mesEntrega: selected ? selected.value : "",
+                    mesEntrega: selected
+                      ? selected.map((s: any) => s.value)
+                      : [],
                   }))
                 }
                 placeholder="Todos"
@@ -1429,11 +1426,30 @@ const DashProjetos: React.FC = () => {
                       : undefined,
                     minWidth: 0,
                   }),
-                  clearIndicator: (base) => ({
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.secondary[800]
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  multiValueRemove: (base) => ({
                     ...base,
                     color: themeColors.text.error[currentTheme],
                     ":hover": {
-                      color: themeColors.text.error[currentTheme],
+                      backgroundColor:
+                        currentTheme === "dark"
+                          ? themeColors.error[700]
+                          : themeColors.error[100],
+                      color:
+                        currentTheme === "dark"
+                          ? themeColors.text.error.dark
+                          : themeColors.text.error.light,
                     },
                   }),
                   option: (base, state) => ({
