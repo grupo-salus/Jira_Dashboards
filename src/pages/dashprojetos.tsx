@@ -67,6 +67,7 @@ const DashProjetos: React.FC = () => {
     squad: [] as string[],
     grupoSolicitante: [] as string[],
     statusPrazo: [] as string[],
+    mesEntrega: "" as string,
     dataRapida: "" as string,
     filtroData: {
       campo: "" as string,
@@ -278,6 +279,20 @@ const DashProjetos: React.FC = () => {
         filtrosAtivos.statusPrazo.length === 0 ||
         filtrosAtivos.statusPrazo.includes(item["Status de prazo"] || "");
 
+      // Filtro por mês de entrega
+      let matchesMesEntrega = true;
+      if (filtrosAtivos.mesEntrega) {
+        const dataFimConcluido = item["Data: Fim Concluído"];
+        if (dataFimConcluido) {
+          const data = new Date(dataFimConcluido);
+          const mes = data.getMonth(); // 0-11 (janeiro = 0, dezembro = 11)
+          const mesSelecionado = parseInt(filtrosAtivos.mesEntrega);
+          matchesMesEntrega = mes === mesSelecionado;
+        } else {
+          matchesMesEntrega = false; // Se não tem data de fim concluído, não corresponde
+        }
+      }
+
       // Filtro de data rápida (por data de criação)
       let matchesDataRapida = true;
       if (
@@ -373,6 +388,7 @@ const DashProjetos: React.FC = () => {
         matchesSquad &&
         matchesGrupoSolicitante &&
         matchesStatusPrazo &&
+        matchesMesEntrega &&
         matchesDataRapida &&
         matchesData
       );
@@ -603,6 +619,23 @@ const DashProjetos: React.FC = () => {
     { value: "filtro_avancado", label: "Filtro Avançado" },
   ];
 
+  // Opções para filtro de mês de entrega
+  const opcoesMesEntrega = [
+    { value: "", label: "Todos os meses" },
+    { value: "0", label: "Janeiro" },
+    { value: "1", label: "Fevereiro" },
+    { value: "2", label: "Março" },
+    { value: "3", label: "Abril" },
+    { value: "4", label: "Maio" },
+    { value: "5", label: "Junho" },
+    { value: "6", label: "Julho" },
+    { value: "7", label: "Agosto" },
+    { value: "8", label: "Setembro" },
+    { value: "9", label: "Outubro" },
+    { value: "10", label: "Novembro" },
+    { value: "11", label: "Dezembro" },
+  ];
+
   // Componente customizado para o ClearIndicator
   const CustomClearIndicator = (props: any) => {
     return (
@@ -681,7 +714,7 @@ const DashProjetos: React.FC = () => {
           )}
         </div>
         <div className="p-0 shadow-none">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-7 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-7 w-full">
             {/* Filtro de Área */}
             <div className="flex flex-col min-w-0">
               <label
@@ -1206,6 +1239,99 @@ const DashProjetos: React.FC = () => {
                         currentTheme === "dark"
                           ? themeColors.text.error.dark
                           : themeColors.text.error.light,
+                    },
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : state.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
+                  }),
+                }}
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
+              />
+            </div>
+
+            {/* Filtro de Mês de Entrega */}
+            <div className="flex flex-col min-w-0">
+              <label
+                htmlFor="mes-entrega-filter"
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Mês de Entrega
+              </label>
+              <Select
+                inputId="mes-entrega-filter"
+                isClearable={true}
+                options={opcoesMesEntrega}
+                value={
+                  filtros.mesEntrega
+                    ? opcoesMesEntrega.find(
+                        (opt) => opt.value === filtros.mesEntrega
+                      )
+                    : null
+                }
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    mesEntrega: selected ? selected.value : "",
+                  }))
+                }
+                placeholder="Todos"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                    minWidth: 0,
+                  }),
+                  clearIndicator: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      color: themeColors.text.error[currentTheme],
                     },
                   }),
                   option: (base, state) => ({
