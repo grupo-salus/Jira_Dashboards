@@ -224,6 +224,8 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
+  const { theme } = useTheme();
+  
   // Cálculo do tempo bloqueado
   const inicioBloqueado = projeto["Data: Início Bloqueado"]
     ? new Date(projeto["Data: Início Bloqueado"])
@@ -302,6 +304,31 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <div className="text-gray-600 dark:text-gray-200">
             Saiu do bloqueio: {formatDate(projeto["Data: Fim Bloqueado"])}
           </div>
+        )}
+
+        {/* Status de prazo */}
+        {projeto["Status de prazo"] && (
+          <>
+            <hr className="my-1 border-gray-300 dark:border-gray-600" />
+            <div className="pt-2">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Status de prazo:</span>
+                <span
+                  className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                    projeto["Status de prazo"]
+                  )} ${fontSizes.statusCardKanban}`}
+                  style={{
+                    backgroundColor: getPrazoBackgroundColor(
+                      projeto["Status de prazo"],
+                      theme
+                    ),
+                  }}
+                >
+                  {projeto["Status de prazo"]}
+                </span>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </CustomTooltip>
