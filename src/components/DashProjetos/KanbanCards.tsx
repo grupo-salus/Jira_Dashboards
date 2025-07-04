@@ -612,17 +612,26 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
     totalDias = Math.floor(
       (fimHom.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
     );
-    // Se hoje passou do fim, conta até hoje, senão até hoje
-    if (hoje > fimHom) {
+
+    // Verifica se o projeto ainda está em homologação
+    const aindaEmHomologacao = projeto.Status === "Em Homologação";
+
+    if (aindaEmHomologacao) {
+      // Se ainda está em homologação, conta até hoje
       diasDecorridos = Math.floor(
         (hoje.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
       );
-      atraso = true;
+      // Se passou do prazo, marca como atrasado
+      if (hoje > fimHom) {
+        atraso = true;
+      }
     } else {
+      // Se já saiu da homologação, conta apenas até a data de fim
       diasDecorridos = Math.floor(
-        (hoje.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
+        (fimHom.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
       );
     }
+
     if (diasDecorridos < 0) diasDecorridos = 0;
   }
   const progresso =
@@ -698,6 +707,24 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
           Tempo em homologação: {diasDecorridos} dias
         </div>
       )}
+
+      {/* Data fim homologação - lógica condicional */}
+      {projeto["Data: Fim Em homologação"] && fimHom && (
+        <div className="text-gray-600 dark:text-gray-200">
+          {hoje < fimHom ? (
+            <>
+              Fim previsto homologação:{" "}
+              {formatDate(projeto["Data: Fim Em homologação"])}
+            </>
+          ) : (
+            <>
+              Saiu da homologação:{" "}
+              {formatDate(projeto["Data: Fim Em homologação"])}
+            </>
+          )}
+        </div>
+      )}
+
       <hr />
       {/* Progresso da homologação (padrão igual ao desenvolvimento) */}
       {inicioHom && fimHom && (
@@ -785,17 +812,26 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
     totalDias = Math.floor(
       (fimOp.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
     );
-    // Se hoje passou do fim, conta até hoje, senão até hoje
-    if (hoje > fimOp) {
+
+    // Verifica se o projeto ainda está em operação assistida
+    const aindaEmOperacaoAssistida = projeto.Status === "Operação Assistida";
+
+    if (aindaEmOperacaoAssistida) {
+      // Se ainda está em operação assistida, conta até hoje
       diasDecorridos = Math.floor(
         (hoje.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
       );
-      atraso = true;
+      // Se passou do prazo, marca como atrasado
+      if (hoje > fimOp) {
+        atraso = true;
+      }
     } else {
+      // Se já saiu da operação assistida, conta apenas até a data de fim
       diasDecorridos = Math.floor(
-        (hoje.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
+        (fimOp.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
       );
     }
+
     if (diasDecorridos < 0) diasDecorridos = 0;
   }
   const progresso =
@@ -883,6 +919,23 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {inicioOp && fimOp && (
         <div className="text-gray-600 dark:text-gray-200">
           Tempo em operação assistida: {diasDecorridos} dias
+        </div>
+      )}
+
+      {/* Data fim operação assistida - lógica condicional */}
+      {projeto["Data: Fim Operação assistida"] && fimOp && (
+        <div className="text-gray-600 dark:text-gray-200">
+          {hoje < fimOp ? (
+            <>
+              Fim previsto operação assistida:{" "}
+              {formatDate(projeto["Data: Fim Operação assistida"])}
+            </>
+          ) : (
+            <>
+              Saiu da operação assistida:{" "}
+              {formatDate(projeto["Data: Fim Operação assistida"])}
+            </>
+          )}
         </div>
       )}
 
