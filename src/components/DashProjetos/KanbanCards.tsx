@@ -91,16 +91,16 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const tooltipWidth = 400; // Largura máxima do tooltip
+    const tooltipWidth = 300; // Largura máxima do tooltip
     const padding = 16; // Espaçamento da borda da tela
 
     // Calcular posição horizontal
-    let left = rect.right + 8; // Posição padrão à direita
+    let left = rect.right - 100; // Posição padrão à direita
 
     // Verificar se o tooltip vai sair da tela pela direita
     if (left + tooltipWidth + padding > window.innerWidth) {
       // Se sair pela direita, posicionar à esquerda do elemento
-      left = rect.left - tooltipWidth - 8;
+      left = rect.left - tooltipWidth + 190;
 
       // Se ainda sair pela esquerda, centralizar na tela
       if (left < padding) {
@@ -110,7 +110,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
 
     // Calcular posição vertical
     let top = rect.top;
-    const tooltipHeight = 200; // Altura estimada do tooltip
+    const tooltipHeight = 150; // Altura estimada do tooltip
 
     // Verificar se o tooltip vai sair da tela por baixo
     if (top + tooltipHeight + padding > window.innerHeight) {
@@ -140,7 +140,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
       {isVisible && (
         <div
           ref={tooltipRef}
-          className="fixed px-4 py-3 text-sm rounded-lg shadow-lg max-w-md break-words"
+          className="fixed px-4 py-3 text-[10px] rounded-lg shadow-lg max-w-md break-words"
           style={{
             backgroundColor:
               theme === "dark"
@@ -152,8 +152,8 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
             zIndex: 9999,
             top: tooltipPosition.top,
             left: tooltipPosition.left,
-            minWidth: "300px",
-            maxWidth: "400px",
+            minWidth: "200px",
+            maxWidth: "300px",
           }}
         >
           {typeof content === "string" ? (
@@ -304,7 +304,7 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <div>
           <div>{descricao}</div>
           <div className="mt-4">
-            <strong>MOTIVO DO BLOQUEIO:</strong>
+            <strong>Justificativa:</strong>
             <br />
             {motivoBloqueio}
           </div>
@@ -1362,7 +1362,7 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <div>
           <div>{descricao}</div>
           <div className="mt-4">
-            <strong>MOTIVO DO CANCELAMENTO:</strong>
+            <strong>Justificativa:</strong>
             <br />
             {motivoCancelamento}
           </div>
