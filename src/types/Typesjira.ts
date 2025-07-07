@@ -46,6 +46,7 @@ export interface EspacoDeProjetos {
 
   "Grupo Solicitante": string; // Unidade, time ou grupo que solicitou o projeto
   "Departamento Solicitante": string; // Área ou diretoria à qual o grupo pertence
+  "Responsável Atual": string | null; // Pessoa responsável pelo projeto
   Solicitante: string | null; // Nome da pessoa que abriu o chamado
   "Telefone do Solicitante": string | null; // Telefone de contato
   "Email do Solicitante": string | null; // E-mail para retorno

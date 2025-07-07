@@ -340,6 +340,10 @@ export const themeColors = {
     },
     // Squads - Cores específicas para cada squad
     squads: {
+      "AI Dynamics": {
+        label: "AI Dynamics",
+        hex: "#21a46b", // Azul escuro médio (derivado dergb(61, 116, 137))
+      },
       BI: {
         label: "BI",
         hex: "#54595F", // Cinza escuro Salus
@@ -350,7 +354,7 @@ export const themeColors = {
       },
       Infraestrutura: {
         label: "Infraestrutura",
-        hex: "#6EC1E4", // Verde Escuro Salus
+        hex: "rgb(41, 190, 28)", // Verde Escuro Salus
       },
       PMO: {
         label: "PMO",
@@ -458,7 +462,7 @@ export const themeColors = {
       },
       naoDefinida: {
         label: "Não informado",
-        hex: "#6b7280", // gray-500
+        hex: "rgb(255, 1, 1)", // gray-500
       },
     },
 
@@ -746,6 +750,7 @@ export const getPriorityConfig = (priority: string) => {
  */
 export const getSquadConfig = (squad: string) => {
   const squadMap: Record<string, keyof typeof themeColors.components.squads> = {
+    "AI Dynamics": "AI Dynamics",
     BI: "BI",
     DITO: "DITO",
     Infraestrutura: "Infraestrutura",

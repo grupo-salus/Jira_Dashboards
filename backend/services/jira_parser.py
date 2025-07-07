@@ -192,6 +192,11 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
                 issue.get("fields", {}).get("customfield_10245")["value"]
                 if issue.get("fields", {}).get("customfield_10245") else None
             ),
+            "Responsável Atual": (
+                issue.get("fields", {}).get("customfield_10413", {}).get("value")
+                if issue.get("fields", {}).get("customfield_10413") else None
+            ),
+
             "Solicitante": (
                 issue.get("fields", {}).get("customfield_10093", {}).get("content", [{}])[0]
                 .get("content", [{}])[0].get("text")

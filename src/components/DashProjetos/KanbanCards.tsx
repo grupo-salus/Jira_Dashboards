@@ -215,9 +215,17 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 
         {/* Squads */}
         {projeto.Squads && projeto.Squads.length > 0 && (
-          <div className="text-gray-600 dark:text-gray-100">
-            Squads: {projeto.Squads.join(", ")}
-          </div>
+          <>
+            <div className="text-gray-600 dark:text-gray-200">
+              Squads: {projeto.Squads.join(", ")}
+            </div>
+            {/* Responsável Atual */}
+            {projeto["Responsável Atual"] && (
+              <div className="text-gray-600 dark:text-gray-200 mt-1">
+                Responsável: {projeto["Responsável Atual"]}
+              </div>
+            )}
+          </>
         )}
 
         <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -329,9 +337,17 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         )}
         {/* Squads */}
         {projeto.Squads && projeto.Squads.length > 0 && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Squads: {projeto.Squads.join(", ")}
-          </div>
+          <>
+            <div className="text-gray-600 dark:text-gray-200">
+              Squads: {projeto.Squads.join(", ")}
+            </div>
+            {/* Responsável Atual */}
+            {projeto["Responsável Atual"] && (
+              <div className="text-gray-600 dark:text-gray-200 mt-1">
+                Responsável: {projeto["Responsável Atual"]}
+              </div>
+            )}
+          </>
         )}
         {/* Datas planejadas */}
         {projeto["Target start"] && (
@@ -423,9 +439,17 @@ const CardAnaliseTecnicaNegocios: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
         {/* Squads */}
         {projeto.Squads && projeto.Squads.length > 0 && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Squads: {projeto.Squads.join(", ")}
-          </div>
+          <>
+            <div className="text-gray-600 dark:text-gray-200">
+              Squads: {projeto.Squads.join(", ")}
+            </div>
+            {/* Responsável Atual */}
+            {projeto["Responsável Atual"] && (
+              <div className="text-gray-600 dark:text-gray-200 mt-1">
+                Responsável: {projeto["Responsável Atual"]}
+              </div>
+            )}
+          </>
         )}
 
         <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -532,9 +556,17 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
         {/* Squads */}
         {projeto.Squads && projeto.Squads.length > 0 && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Squads: {projeto.Squads.join(", ")}
-          </div>
+          <>
+            <div className="text-gray-600 dark:text-gray-200">
+              Squads: {projeto.Squads.join(", ")}
+            </div>
+            {/* Responsável Atual */}
+            {projeto["Responsável Atual"] && (
+              <div className="text-gray-600 dark:text-gray-200 mt-1">
+                Responsável: {projeto["Responsável Atual"]}
+              </div>
+            )}
+          </>
         )}
 
         <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -628,9 +660,17 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       {/* Squads */}
       {projeto.Squads && projeto.Squads.length > 0 && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Squads: {projeto.Squads.join(", ")}
-        </div>
+        <>
+          <div className="text-gray-600 dark:text-gray-200">
+            Squads: {projeto.Squads.join(", ")}
+          </div>
+          {/* Responsável Atual */}
+          {projeto["Responsável Atual"] && (
+            <div className="text-gray-600 dark:text-gray-200 mt-1">
+              Responsável: {projeto["Responsável Atual"]}
+            </div>
+          )}
+        </>
       )}
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -830,9 +870,17 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       {/* Squads */}
       {projeto.Squads && projeto.Squads.length > 0 && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Squads: {projeto.Squads.join(", ")}
-        </div>
+        <>
+          <div className="text-gray-600 dark:text-gray-200">
+            Squads: {projeto.Squads.join(", ")}
+          </div>
+          {/* Responsável Atual */}
+          {projeto["Responsável Atual"] && (
+            <div className="text-gray-600 dark:text-gray-200 mt-1">
+              Responsável: {projeto["Responsável Atual"]}
+            </div>
+          )}
+        </>
       )}
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -1021,9 +1069,17 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       {/* Squads */}
       {projeto.Squads && projeto.Squads.length > 0 && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Squads: {projeto.Squads.join(", ")}
-        </div>
+        <>
+          <div className="text-gray-600 dark:text-gray-200">
+            Squads: {projeto.Squads.join(", ")}
+          </div>
+          {/* Responsável Atual */}
+          {projeto["Responsável Atual"] && (
+            <div className="text-gray-600 dark:text-gray-200 mt-1">
+              Responsável: {projeto["Responsável Atual"]}
+            </div>
+          )}
+        </>
       )}
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -1200,9 +1256,17 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
         )}
         {/* Squads */}
         {projeto.Squads && projeto.Squads.length > 0 && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Squads: {projeto.Squads.join(", ")}
-          </div>
+          <>
+            <div className="text-gray-600 dark:text-gray-200">
+              Squads: {projeto.Squads.join(", ")}
+            </div>
+            {/* Responsável Atual */}
+            {projeto["Responsável Atual"] && (
+              <div className="text-gray-600 dark:text-gray-200 mt-1">
+                Responsável: {projeto["Responsável Atual"]}
+              </div>
+            )}
+          </>
         )}
         {/* Target start */}
         {projeto["Target start"] && (
@@ -1331,9 +1395,17 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         )}
         {/* Squads */}
         {projeto.Squads && projeto.Squads.length > 0 && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Squads: {projeto.Squads.join(", ")}
-          </div>
+          <>
+            <div className="text-gray-600 dark:text-gray-200">
+              Squads: {projeto.Squads.join(", ")}
+            </div>
+            {/* Responsável Atual */}
+            {projeto["Responsável Atual"] && (
+              <div className="text-gray-600 dark:text-gray-200 mt-1">
+                Responsável: {projeto["Responsável Atual"]}
+              </div>
+            )}
+          </>
         )}
         {/* Datas planejadas */}
         {projeto["Target start"] && (
