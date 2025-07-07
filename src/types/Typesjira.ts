@@ -85,6 +85,7 @@ export interface EspacoDeProjetos {
   "Data: Fim Concluído"?: string | null;
   "Data: Início Cancelado"?: string | null;
   "Data: Fim Cancelado"?: string | null;
+  "Motivo para Cancelamento de Projeto"?: string | null;
   "Data: Início Bloqueado"?: string | null;
   "Data: Fim Bloqueado"?: string | null;
   "Motivo para Bloqueio de Projeto"?: string | null;

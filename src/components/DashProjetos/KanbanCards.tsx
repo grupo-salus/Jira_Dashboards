@@ -62,7 +62,7 @@ const JIRA_URL_BASE =
 // ============================================================================
 
 interface CustomTooltipProps {
-  content: string;
+  content: string | React.ReactNode;
   children: React.ReactNode;
   priority?: string;
 }
@@ -82,15 +82,50 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
   const priorityColor =
     priorityConfig?.hex || (theme === "dark" ? "#10b981" : "#3b82f6");
 
-  if (!content || content === "Sem descrição disponível") {
+  if (
+    !content ||
+    (typeof content === "string" && content === "Sem descrição disponível")
+  ) {
     return <>{children}</>;
   }
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    const tooltipWidth = 400; // Largura máxima do tooltip
+    const padding = 16; // Espaçamento da borda da tela
+
+    // Calcular posição horizontal
+    let left = rect.right + 8; // Posição padrão à direita
+
+    // Verificar se o tooltip vai sair da tela pela direita
+    if (left + tooltipWidth + padding > window.innerWidth) {
+      // Se sair pela direita, posicionar à esquerda do elemento
+      left = rect.left - tooltipWidth - 8;
+
+      // Se ainda sair pela esquerda, centralizar na tela
+      if (left < padding) {
+        left = Math.max(padding, (window.innerWidth - tooltipWidth) / 2);
+      }
+    }
+
+    // Calcular posição vertical
+    let top = rect.top;
+    const tooltipHeight = 200; // Altura estimada do tooltip
+
+    // Verificar se o tooltip vai sair da tela por baixo
+    if (top + tooltipHeight + padding > window.innerHeight) {
+      // Se sair por baixo, posicionar acima do elemento
+      top = rect.bottom - tooltipHeight;
+
+      // Se ainda sair por cima, centralizar verticalmente
+      if (top < padding) {
+        top = Math.max(padding, (window.innerHeight - tooltipHeight) / 2);
+      }
+    }
+
     setTooltipPosition({
-      top: rect.top,
-      left: rect.right + 8,
+      top: Math.max(padding, top),
+      left: Math.max(padding, left),
     });
     setIsVisible(true);
   };
@@ -121,7 +156,11 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
             maxWidth: "400px",
           }}
         >
-          {content}
+          {typeof content === "string" ? (
+            <div style={{ whiteSpace: "pre-line" }}>{content}</div>
+          ) : (
+            content
+          )}
         </div>
       )}
     </div>
@@ -247,12 +286,30 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
     );
   }
 
+  // Preparar conteúdo do tooltip incluindo motivo do bloqueio
+  const tooltipContent = (() => {
+    const descricao = projeto.Descrição || "Sem descrição disponível";
+    const motivoBloqueio = projeto["Motivo para Bloqueio de Projeto"];
+
+    if (motivoBloqueio) {
+      return (
+        <div>
+          <div>{descricao}</div>
+          <div className="mt-4">
+            <strong>MOTIVO DO BLOQUEIO:</strong>
+            <br />
+            {motivoBloqueio}
+          </div>
+        </div>
+      );
+    }
+
+    return descricao;
+  })();
+
   return withJiraLink(
     projeto,
-    <CustomTooltip
-      content={projeto.Descrição || "Sem descrição disponível"}
-      priority={projeto.Prioridade}
-    >
+    <CustomTooltip content={tooltipContent} priority={projeto.Prioridade}>
       <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
         {/* Cabeçalho */}
         <div
@@ -1231,12 +1288,30 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
     );
   }
 
+  // Preparar conteúdo do tooltip incluindo motivo do cancelamento
+  const tooltipContent = (() => {
+    const descricao = projeto.Descrição || "Sem descrição disponível";
+    const motivoCancelamento = projeto["Motivo para Cancelamento de Projeto"];
+
+    if (motivoCancelamento) {
+      return (
+        <div>
+          <div>{descricao}</div>
+          <div className="mt-4">
+            <strong>MOTIVO DO CANCELAMENTO:</strong>
+            <br />
+            {motivoCancelamento}
+          </div>
+        </div>
+      );
+    }
+
+    return descricao;
+  })();
+
   return withJiraLink(
     projeto,
-    <CustomTooltip
-      content={projeto.Descrição || "Sem descrição disponível"}
-      priority={projeto.Prioridade}
-    >
+    <CustomTooltip content={tooltipContent} priority={projeto.Prioridade}>
       <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
         {/* Cabeçalho */}
         <div

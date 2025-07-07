@@ -239,6 +239,10 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Data: Fim Concluído": issue.get("fields", {}).get("customfield_10356"),
             "Data: Início Cancelado": issue.get("fields", {}).get("customfield_10357"),
             "Data: Fim Cancelado": issue.get("fields", {}).get("customfield_10358"),
+            "Motivo para Cancelamento de Projeto": (
+                issue.get("fields", {}).get("customfield_10412", {}).get("value")
+                if issue.get("fields", {}).get("customfield_10412") else None
+            ),
             "Data: Início Bloqueado": issue.get("fields", {}).get("customfield_10359"),
             "Data: Fim Bloqueado": issue.get("fields", {}).get("customfield_10360"),
             "Motivo para Bloqueio de Projeto": (

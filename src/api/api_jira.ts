@@ -132,7 +132,9 @@ export async function fetchEspacoDeProjetos(filters?: {
       Responsável: decodeURIComponent(item.Responsável || ""),
       Relator: decodeURIComponent(item.Relator || ""),
       Prioridade: decodeURIComponent(item.Prioridade || ""),
-      Squad: item.Squad ? decodeURIComponent(item.Squad) : null,
+      Squads: item.Squads
+        ? item.Squads.map((squad) => decodeURIComponent(squad))
+        : [],
       PosicaoBacklog: item.PosicaoBacklog,
     }));
   } catch (error) {
