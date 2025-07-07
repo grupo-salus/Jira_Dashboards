@@ -10,6 +10,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { useJira } from "../../context/JiraContext";
 import {
@@ -29,6 +30,8 @@ const Navbar: React.FC<NavbarProps> = ({
   onViewChange,
   showHomeLink,
 }) => {
+  const location = useLocation();
+
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
     "light"
@@ -80,6 +83,32 @@ const Navbar: React.FC<NavbarProps> = ({
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  // Determina qual opção mostrar baseado na rota atual
+  const getCurrentRouteOption = () => {
+    if (location.pathname === "/") {
+      return {
+        view: "projetos" as const,
+        icon: Kanban,
+        label: "Status Report de Projetos",
+      };
+    } else if (location.pathname === "/sprint") {
+      return {
+        view: "sprint" as const,
+        icon: Sprint,
+        label: "Sprint Ativa",
+      };
+    } else if (location.pathname === "/ti") {
+      return {
+        view: "ti" as const,
+        icon: Users,
+        label: "Tasks TI",
+      };
+    }
+    return null;
+  };
+
+  const currentRouteOption = getCurrentRouteOption();
+
   return (
     <nav
       className="border-b shadow-sm relative"
@@ -101,89 +130,24 @@ const Navbar: React.FC<NavbarProps> = ({
               />
             </div>
 
-            {/* Menus de Navegação - Desktop */}
-            <div className="hidden md:flex items-center space-x-2">
-              {showHomeLink && (
+            {/* Menu de Navegação - Desktop - Mostra apenas a opção da rota atual */}
+            {currentRouteOption && (
+              <div className="hidden md:flex items-center space-x-2">
                 <button
-                  onClick={() => handleViewChange("home")}
+                  onClick={() => handleViewChange(currentRouteOption.view)}
                   className="px-4 py-2 rounded-md transition-colors font-semibold"
                   style={{
-                    backgroundColor:
-                      currentView === "home"
-                        ? getBackgroundColor("active", currentTheme)
-                        : "transparent",
-                    color:
-                      currentView === "home"
-                        ? getTextColor("primary", currentTheme)
-                        : getTextColor("secondary", currentTheme),
+                    backgroundColor: getBackgroundColor("active", currentTheme),
+                    color: getTextColor("primary", currentTheme),
                   }}
                 >
                   <span className="flex items-center gap-2">
-                    <HomeIcon className="h-4 w-4" />
-                    Home
+                    <currentRouteOption.icon className="h-4 w-4" />
+                    {currentRouteOption.label}
                   </span>
                 </button>
-              )}
-              <button
-                onClick={() => handleViewChange("projetos")}
-                className="px-4 py-2 rounded-md transition-colors font-semibold"
-                style={{
-                  backgroundColor:
-                    currentView === "projetos"
-                      ? getBackgroundColor("active", currentTheme)
-                      : "transparent",
-                  color:
-                    currentView === "projetos"
-                      ? getTextColor("primary", currentTheme)
-                      : getTextColor("secondary", currentTheme),
-                }}
-              >
-                <span className="flex items-center gap-2">
-                  <Kanban className="h-4 w-4" />
-                  Status Report de Projetos
-                </span>
-              </button>
-
-              <button
-                onClick={() => handleViewChange("sprint")}
-                className="px-4 py-2 rounded-md transition-colors font-semibold"
-                style={{
-                  backgroundColor:
-                    currentView === "sprint"
-                      ? getBackgroundColor("active", currentTheme)
-                      : "transparent",
-                  color:
-                    currentView === "sprint"
-                      ? getTextColor("primary", currentTheme)
-                      : getTextColor("secondary", currentTheme),
-                }}
-              >
-                <span className="flex items-center gap-2">
-                  <Sprint className="h-4 w-4" />
-                  Sprint Ativa
-                </span>
-              </button>
-
-              <button
-                onClick={() => handleViewChange("ti")}
-                className="px-4 py-2 rounded-md transition-colors font-semibold"
-                style={{
-                  backgroundColor:
-                    currentView === "ti"
-                      ? getBackgroundColor("active", currentTheme)
-                      : "transparent",
-                  color:
-                    currentView === "ti"
-                      ? getTextColor("primary", currentTheme)
-                      : getTextColor("secondary", currentTheme),
-                }}
-              >
-                <span className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Tasks TI
-                </span>
-              </button>
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Direita: Botões de Ação */}
@@ -237,8 +201,8 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Menu Mobile */}
-        {isMobileMenuOpen && (
+        {/* Menu Mobile - Mostra apenas a opção da rota atual */}
+        {isMobileMenuOpen && currentRouteOption && (
           <div
             className="md:hidden mt-4 pb-4"
             style={{
@@ -246,84 +210,17 @@ const Navbar: React.FC<NavbarProps> = ({
             }}
           >
             <div className="flex flex-col space-y-2 pt-4">
-              {showHomeLink && (
-                <button
-                  onClick={() => handleViewChange("home")}
-                  className="px-4 py-3 rounded-md transition-colors font-semibold text-left"
-                  style={{
-                    backgroundColor:
-                      currentView === "home"
-                        ? getBackgroundColor("active", currentTheme)
-                        : "transparent",
-                    color:
-                      currentView === "home"
-                        ? getTextColor("primary", currentTheme)
-                        : getTextColor("secondary", currentTheme),
-                  }}
-                >
-                  <span className="flex items-center gap-3">
-                    <HomeIcon className="h-5 w-5" />
-                    Home
-                  </span>
-                </button>
-              )}
               <button
-                onClick={() => handleViewChange("projetos")}
+                onClick={() => handleViewChange(currentRouteOption.view)}
                 className="px-4 py-3 rounded-md transition-colors font-semibold text-left"
                 style={{
-                  backgroundColor:
-                    currentView === "projetos"
-                      ? getBackgroundColor("active", currentTheme)
-                      : "transparent",
-                  color:
-                    currentView === "projetos"
-                      ? getTextColor("primary", currentTheme)
-                      : getTextColor("secondary", currentTheme),
+                  backgroundColor: getBackgroundColor("active", currentTheme),
+                  color: getTextColor("primary", currentTheme),
                 }}
               >
                 <span className="flex items-center gap-3">
-                  <Kanban className="h-5 w-5" />
-                  Status Report de Projetos
-                </span>
-              </button>
-
-              <button
-                onClick={() => handleViewChange("sprint")}
-                className="px-4 py-3 rounded-md transition-colors font-semibold text-left"
-                style={{
-                  backgroundColor:
-                    currentView === "sprint"
-                      ? getBackgroundColor("active", currentTheme)
-                      : "transparent",
-                  color:
-                    currentView === "sprint"
-                      ? getTextColor("primary", currentTheme)
-                      : getTextColor("secondary", currentTheme),
-                }}
-              >
-                <span className="flex items-center gap-3">
-                  <Sprint className="h-5 w-5" />
-                  Sprint Ativa
-                </span>
-              </button>
-
-              <button
-                onClick={() => handleViewChange("ti")}
-                className="px-4 py-3 rounded-md transition-colors font-semibold text-left"
-                style={{
-                  backgroundColor:
-                    currentView === "ti"
-                      ? getBackgroundColor("active", currentTheme)
-                      : "transparent",
-                  color:
-                    currentView === "ti"
-                      ? getTextColor("primary", currentTheme)
-                      : getTextColor("secondary", currentTheme),
-                }}
-              >
-                <span className="flex items-center gap-3">
-                  <Users className="h-5 w-5" />
-                  Tasks TI
+                  <currentRouteOption.icon className="h-5 w-5" />
+                  {currentRouteOption.label}
                 </span>
               </button>
             </div>
