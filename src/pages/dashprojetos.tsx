@@ -76,6 +76,7 @@ const DashProjetos: React.FC = () => {
     grupoSolicitante: [] as string[],
     statusPrazo: [] as string[],
     mesEntrega: [] as string[],
+    entreguesMes: false as boolean,
     dataRapida: "" as string,
     filtroData: {
       campo: "" as string,
@@ -298,6 +299,23 @@ const DashProjetos: React.FC = () => {
         filtrosAtivos.statusPrazo.length === 0 ||
         filtrosAtivos.statusPrazo.includes(item["Status de prazo"] || "");
 
+      // Filtro por projetos entregues no mês atual
+      let matchesEntreguesMes = true;
+      if (filtrosAtivos.entreguesMes) {
+        const dataTermino = item["Data de término"];
+        if (dataTermino) {
+          const data = new Date(dataTermino);
+          const mesAtual = new Date().getMonth();
+          const anoAtual = new Date().getFullYear();
+          matchesEntreguesMes = 
+            data.getMonth() === mesAtual && 
+            data.getFullYear() === anoAtual &&
+            item.Status === "Concluído";
+        } else {
+          matchesEntreguesMes = false;
+        }
+      }
+
       // Filtro por mês de entrega
       let matchesMesEntrega = true;
       if (filtrosAtivos.mesEntrega.length > 0) {
@@ -411,6 +429,7 @@ const DashProjetos: React.FC = () => {
         matchesSquad &&
         matchesGrupoSolicitante &&
         matchesStatusPrazo &&
+        matchesEntreguesMes &&
         matchesMesEntrega &&
         matchesDataRapida &&
         matchesData
@@ -831,7 +850,8 @@ const DashProjetos: React.FC = () => {
       {/* Container de Filtros com botão Limpar acima, sempre reservando espaço */}
       <div className="mb-20">
         <div className="flex justify-end w-full mt-0 mb-4">
-          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) || projetoFiltradoUnico ? (
+          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) ||
+          projetoFiltradoUnico ? (
             <button
               onClick={() => {
                 setFiltros(filtrosIniciais);
@@ -1901,11 +1921,20 @@ const DashProjetos: React.FC = () => {
           setFiltros((f) => ({
             ...f,
             statusPrazo: [status],
+            entreguesMes: false, // Limpa o filtro de entregues no mês
           }))
         }
         filtroStatusPrazoAtivo={
           filtros.statusPrazo.length > 0 ? filtros.statusPrazo[0] : null
         }
+        onEntreguesMesClick={() =>
+          setFiltros((f) => ({
+            ...f,
+            entreguesMes: !f.entreguesMes,
+            statusPrazo: [], // Limpa os filtros de status de prazo
+          }))
+        }
+        filtroEntreguesMesAtivo={filtros.entreguesMes}
       />
 
       {/* Gráficos do dashboard - 3 gráficos em linha */}

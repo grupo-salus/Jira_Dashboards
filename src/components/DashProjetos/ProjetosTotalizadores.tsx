@@ -24,6 +24,8 @@ interface ProjetosTotalizadoresProps {
   originalData: EspacoDeProjetos[];
   onStatusPrazoClick?: (status: string) => void;
   filtroStatusPrazoAtivo?: string | null;
+  onEntreguesMesClick?: () => void;
+  filtroEntreguesMesAtivo?: boolean;
 }
 
 // Função para converter CSS rem para pixels
@@ -138,6 +140,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
   onStatusPrazoClick,
   filtroStatusPrazoAtivo,
+  onEntreguesMesClick,
+  filtroEntreguesMesAtivo,
 }) => {
   const config = getTotalizadoresConfig();
 
@@ -201,8 +205,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     (p) => p.Status === "Backlog Priorizado"
   );
   const totalBacklogPriorizado = backlogPriorizado.length;
-
-
 
   // Métricas de Projetos Entregues no Mês
   const projetosEntregues = filteredData.filter(
@@ -346,6 +348,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label="Projetos Entregues no Mês"
           value={totalEntreguesNoMes}
           currentTheme={currentTheme}
+          onClickValue={onEntreguesMesClick}
+          clickable={!!onEntreguesMesClick}
+          isFiltered={filtroEntreguesMesAtivo}
           tooltipContent={
             <div className="text-xs max-w-xs">
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
