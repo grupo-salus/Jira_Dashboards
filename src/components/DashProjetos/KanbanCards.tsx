@@ -335,6 +335,98 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 };
 
 /**
+ * Card para projetos em ANÁLISE TÉCNICA E NEGÓCIOS
+ */
+const CardAnaliseTecnicaNegocios: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => {
+  return withJiraLink(
+    projeto,
+    <CustomTooltip
+      content={projeto.Descrição || "Sem descrição disponível"}
+      priority={projeto.Prioridade}
+    >
+      <div className={`space-y-2 ${fontSizes.corpoCardKanban}`}>
+        <div
+          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        >
+          <span>{projeto.Título}</span>
+        </div>
+
+        {/* Área (sem posição no backlog) */}
+        <div className="flex items-center gap-2">
+          {projeto["Departamento Solicitante"] && (
+            <span
+              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+            >
+              {projeto["Departamento Solicitante"]}
+            </span>
+          )}
+        </div>
+
+        {/* Squads */}
+        {projeto.Squads && projeto.Squads.length > 0 && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Squads: {projeto.Squads.join(", ")}
+          </div>
+        )}
+
+        <hr className="my-1 border-gray-300 dark:border-gray-600" />
+
+        {/* Data que entrou em análise técnica e negócios */}
+        {projeto["Data: Início Análise técnica e negócios"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Início:{" "}
+            {formatDate(projeto["Data: Início Análise técnica e negócios"])}
+          </div>
+        )}
+
+        {/* Dias em análise */}
+        {projeto["Tempo na fase Análise técnica e negócios (dias)"] !== null &&
+          projeto["Tempo na fase Análise técnica e negócios (dias)"] !==
+            undefined && (
+            <div className="text-gray-600 dark:text-gray-200">
+              Tempo decorrido:{" "}
+              {projeto["Tempo na fase Análise técnica e negócios (dias)"]} dias
+            </div>
+          )}
+
+        {/* Datas adicionais (se disponíveis) */}
+        {(projeto["Data: Fim Análise técnica e negócios"] ||
+          projeto["Target start"] ||
+          projeto["Target end"]) && (
+          <>
+            <hr className="my-1 border-gray-300 dark:border-gray-600" />
+
+            {/* Data fim análise técnica e negócios */}
+            {projeto["Data: Fim Análise técnica e negócios"] && (
+              <div className="text-gray-600 dark:text-gray-200">
+                Fim:{" "}
+                {formatDate(projeto["Data: Fim Análise técnica e negócios"])}
+              </div>
+            )}
+
+            {/* Data prevista de início */}
+            {projeto["Target start"] && (
+              <div className="text-gray-600 dark:text-gray-200">
+                Início previsto: {formatDate(projeto["Target start"])}
+              </div>
+            )}
+
+            {/* Data prevista para término */}
+            {projeto["Target end"] && (
+              <div className="text-gray-600 dark:text-gray-200">
+                Fim previsto: {formatDate(projeto["Target end"])}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </CustomTooltip>
+  );
+};
+
+/**
  * Card para projetos em BACKLOG PRIORIZADO
  */
 const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
@@ -1228,6 +1320,9 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
       return <CardBloqueado projeto={projeto} />;
     case "Backlog Priorizado":
       return <CardBacklogPriorizado projeto={projeto} />;
+    case "Análise técnica e negócios":
+    case "Análise Técnica E Negócios":
+      return <CardAnaliseTecnicaNegocios projeto={projeto} />;
     case "Em Andamento":
       return <CardEmDesenvolvimento projeto={projeto} />;
     case "Em Homologação":

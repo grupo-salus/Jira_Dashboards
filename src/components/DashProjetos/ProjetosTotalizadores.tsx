@@ -202,6 +202,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   );
   const totalBacklogPriorizado = backlogPriorizado.length;
 
+
+
   // Métricas de Projetos Entregues no Mês
   const projetosEntregues = filteredData.filter(
     (p) => p.Status === "Concluído"
@@ -330,6 +332,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             </div>
           }
         />
+
         <TotalizadorCard
           icon={
             <CalendarIcon

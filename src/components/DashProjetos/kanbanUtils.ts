@@ -10,6 +10,8 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
   Backlog: "Ideação",
   Bloqueado: "Bloqueado",
   "Backlog Priorizado": "Backlog Priorizado",
+  "Análise técnica e negócios": "Análise técnica e negócios",
+  "Análise Técnica E Negócios": "Análise técnica e negócios",
   "Em Andamento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
@@ -20,6 +22,7 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
 // Ordem fixa das colunas do Kanban
 export const COLUMN_ORDER: JiraStatus[] = [
   "Backlog",
+  "Análise Técnica E Negócios",
   "Backlog Priorizado",
   "Em Andamento",
   "Em Homologação",
@@ -34,6 +37,7 @@ export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
   backlog: "Backlog",
   "backlog priorizado": "Backlog Priorizado",
   "tarefas pendentes": "Backlog Priorizado",
+  "analise tecnica e negocios": "Análise Técnica E Negócios",
   bloqueado: "Bloqueado",
   "em andamento": "Em Andamento",
   "em homologação": "Em Homologação",
@@ -94,7 +98,7 @@ export const getStatusColor = (status: PrazoStatus | IdeacaoStatus): string => {
   if (status === "Em risco") {
     return "text-black"; // Texto preto para "Em risco" (fundo amarelo)
   }
-  
+
   return "text-white"; // Texto branco para outros status de prazo
 };
 
@@ -132,10 +136,23 @@ export const normalizarStatusDisplay = (status: string): string => {
  */
 export const normalizarStatus = (status: string): string => {
   if (!status) return "Backlog";
+
+  // Primeiro, tenta encontrar uma correspondência exata
+  const exactMatch = COLUMN_ORDER.find((col) => col === status);
+  if (exactMatch) return exactMatch;
+
+  // Se não encontrar, normaliza e procura
   const s = status.normalize("NFD").replace(/\p{Diacritic}/gu, "");
   const match = COLUMN_ORDER.find(
     (col) => col.toLowerCase() === s.toLowerCase()
   );
+
+  // Se ainda não encontrar, tenta mapear através do STATUS_MAP
+  if (!match) {
+    const mappedStatus = STATUS_MAP[status.toLowerCase()];
+    if (mappedStatus) return mappedStatus;
+  }
+
   return match || status;
 };
 

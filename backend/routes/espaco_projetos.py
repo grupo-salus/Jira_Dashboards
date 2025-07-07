@@ -31,6 +31,7 @@ def get_tabela_espaco_de_projetos(request: Request):
             "Investimento Esperado", "PosicaoBacklog", "Dias na fase atual",
             "Tempo na fase Backlog (dias)", "Tempo na fase Bloqueado (dias)", 
             "Tempo na fase Backlog priorizado (dias)", "Tempo na fase Em andamento (dias)",
+            "Tempo na fase Análise técnica e negócios (dias)",
             "Tempo na fase Em homologação (dias)", "Tempo na fase Operação assistida (dias)",
             "Tempo na fase Concluído (dias)", "Tempo na fase Cancelado (dias)"
         ]

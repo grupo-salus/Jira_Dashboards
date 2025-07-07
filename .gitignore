@@ -41,3 +41,4 @@ jira_export.xlsx
 __pycache__
 *.pyc
 /backend/services/__pycache__
+backend/database

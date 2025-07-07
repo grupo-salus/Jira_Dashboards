@@ -122,7 +122,7 @@ def verificar_risco_atual(row: pd.Series) -> str:
         return None
     dias_restantes = (target_end - hoje).days
     logger.debug(f"Dias restantes: {dias_restantes}")
-    fases_iniciais = ["ideação", "backlog priorizado", "em desenvolvimento"]
+    fases_iniciais = ["ideação", "backlog priorizado", "análise técnica e negócios", "em desenvolvimento"]
     if status in fases_iniciais and (dias_restantes <= 2 or hoje > target_end):
         logger.debug("Risco identificado")
         return "Sim"

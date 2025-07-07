@@ -486,6 +486,7 @@ export const themeColors = {
       colunas: {
         ideacao: "#8b5cf6", // purple-500
         backlogPriorizado: "#f97316", // orange-500
+        analiseTecnicaNegocios: "#8b5cf6", // purple-500 (mesma cor da ideação)
         emExecucao: "#3b82f6", // blue-500
         emhomologação: "#06b6d4", // cyan-500
         operacaoAssistida: "#10b981", // green-500

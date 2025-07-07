@@ -73,6 +73,8 @@ export interface EspacoDeProjetos {
   "Data: Fim Backlog"?: string | null;
   "Data: Início Backlog priorizado"?: string | null;
   "Data: Fim Backlog priorizado"?: string | null;
+  "Data: Início Análise técnica e negócios"?: string | null;
+  "Data: Fim Análise técnica e negócios"?: string | null;
   "Data: Início Em andamento"?: string | null;
   "Data: Fim Em andamento"?: string | null;
   "Data: Início Em homologação"?: string | null;
@@ -90,6 +92,7 @@ export interface EspacoDeProjetos {
   // Colunas calculadas de tempo por fase
   "Tempo na fase Ideação (dias)"?: number | null;
   "Tempo na fase Backlog Priorizado (dias)"?: number | null;
+  "Tempo na fase Análise técnica e negócios (dias)"?: number | null;
   "Tempo na fase Em andamento (dias)"?: number | null;
   "Tempo na fase Em homologação (dias)"?: number | null;
   "Tempo na fase Operação assistida (dias)"?: number | null;
@@ -106,6 +109,8 @@ export type JiraStatus =
   | "Backlog"
   | "Bloqueado"
   | "Backlog Priorizado"
+  | "Análise técnica e negócios"
+  | "Análise Técnica E Negócios"
   | "Cancelado"
   | "Em Andamento"
   | "Em Homologação"
