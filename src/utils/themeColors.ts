@@ -376,69 +376,85 @@ export const themeColors = {
 
     // Áreas/Departamentos - Cores específicas para cada área
     areas: {
-      TI: {
-        label: "TI",
-        hex: "#E3F2FD", // azul mais claro
-      },
-      Operações: {
-        label: "Operações",
-        hex: "#BBDEFB", // azul muito claro
-      },
-      Financeiro: {
-        label: "Financeiro",
-        hex: "#90CAF9", // azul claro
-      },
-      Marketing: {
-        label: "Marketing",
-        hex: "#64B5F6", // azul médio claro
-      },
-      Presidência: {
-        label: "Presidência",
-        hex: "#42A5F5", // azul médio
-      },
       Auditoria: {
         label: "Auditoria",
-        hex: "#2196F3", // azul médio forte
-      },
-      "Serviço de Atendimento ao Franqueado": {
-        label: "Serviço de Atendimento ao Franqueado",
-        hex: "#1E88E5", // azul forte
-      },
-      Jurídico: {
-        label: "Jurídico",
-        hex: "#1976D2", // azul mais forte
-      },
-      Crescera: {
-        label: "Crescera",
-        hex: "#1565C0", // azul escuro
-      },
-      "Recursos Humanos": {
-        label: "Recursos Humanos",
-        hex: "#0D47A1", // azul muito escuro
-      },
-      "Departamento Pessoal": {
-        label: "Departamento Pessoal",
-        hex: "#0A3880", // azul extremamente escuro
-      },
-      Expansão: {
-        label: "Expansão",
-        hex: "#072B60", // azul quase preto
-      },
-      CTS: {
-        label: "CTS",
-        hex: "#051940", // azul escuríssimo
-      },
-      Sorriden: {
-        label: "Sorriden",
-        hex: "#041230", // azul noite
+        hex: "#E3F2FD", // azul mais claro
       },
       "Bom D+": {
         label: "Bom D+",
-        hex: "#030C20", // azul profundo
+        hex: "#BBDEFB", // azul muito claro
       },
       Compras: {
         label: "Compras",
+        hex: "#90CAF9", // azul claro
+      },
+      Crescera: {
+        label: "Crescera",
+        hex: "#64B5F6", // azul médio claro
+      },
+      CTS: {
+        label: "CTS",
+        hex: "#64B5F6", // azul médio claro (compartilhado)
+      },
+      "Departamento Pessoal": {
+        label: "Departamento Pessoal",
+        hex: "#42A5F5", // azul médio
+      },
+      Expansão: {
+        label: "Expansão",
+        hex: "#42A5F5", // azul médio (compartilhado)
+      },
+      Faciliteis: {
+        label: "Faciliteis",
+        hex: "#2196F3", // azul médio forte
+      },
+      Financeiro: {
+        label: "Financeiro",
+        hex: "#1E88E5", // azul forte
+      },
+      Implantação: {
+        label: "Implantação",
+        hex: "#1976D2", // azul mais forte
+      },
+      "Instituto Salus": {
+        label: "Instituto Salus",
+        hex: "#1565C0", // azul escuro
+      },
+      Jurídico: {
+        label: "Jurídico",
+        hex: "#0D47A1", // azul muito escuro
+      },
+      Marketing: {
+        label: "Marketing",
+        hex: "#0A3880", // azul extremamente escuro
+      },
+      Operações: {
+        label: "Operações",
+        hex: "#072B60", // azul quase preto
+      },
+      Presidência: {
+        label: "Presidência",
+        hex: "#051940", // azul escuríssimo
+      },
+      Processos: {
+        label: "Processos",
+        hex: "#041230", // azul noite
+      },
+      "Recursos Humanos": {
+        label: "Recursos Humanos",
+        hex: "#030C20", // azul profundo
+      },
+      SAC: {
+        label: "SAC",
         hex: "#020610", // azul abissal
+      },
+      Sorriden: {
+        label: "Sorriden",
+        hex: "#01040A", // quase preto
+      },
+      TI: {
+        label: "TI",
+        hex: "#000000", // preto absoluto
       },
       naoDefinida: {
         label: "Não informado",
@@ -751,23 +767,27 @@ export const getSquadConfig = (squad: string) => {
  */
 export const getAreaConfig = (area: string) => {
   const areaMap: Record<string, keyof typeof themeColors.components.areas> = {
-    TI: "TI",
-    Operações: "Operações",
-    Financeiro: "Financeiro",
-    Marketing: "Marketing",
-    Presidência: "Presidência",
     Auditoria: "Auditoria",
-    "Serviço de Atendimento ao Franqueado":
-      "Serviço de Atendimento ao Franqueado",
-    Jurídico: "Jurídico",
-    Crescera: "Crescera",
-    "Recursos Humanos": "Recursos Humanos",
-    "Departamento Pessoal": "Departamento Pessoal",
-    Expansão: "Expansão",
-    CTS: "CTS",
-    Sorriden: "Sorriden",
     "Bom D+": "Bom D+",
     Compras: "Compras",
+    Crescera: "Crescera",
+    CTS: "CTS",
+    "Departamento Pessoal": "Departamento Pessoal",
+    Expansão: "Expansão",
+    Faciliteis: "Faciliteis",
+    Financeiro: "Financeiro",
+    Implantação: "Implantação",
+    "Instituto Salus": "Instituto Salus",
+    Jurídico: "Jurídico",
+    Marketing: "Marketing",
+    Operações: "Operações",
+    Presidência: "Presidência",
+    Processos: "Processos",
+    "Recursos Humanos": "Recursos Humanos",
+    SAC: "SAC",
+    Sorriden: "Sorriden",
+    TI: "TI",
+    naoDefinida: "naoDefinida",
   };
 
   const areaKey = areaMap[area];

@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Cell } from "recharts";
 import { EspacoDeProjetos } from "../../types/Typesjira";
-import { getTextColor, getSquadConfig } from "../../utils/themeColors";
+import {
+  getTextColor,
+  getSquadConfig,
+  getAreaConfig,
+} from "../../utils/themeColors";
 import TooltipProjetos from "./TooltipProjetos";
 import { getFontSizes, TOOLTIP_CONFIG } from "../../constants/styleConfig";
 
@@ -136,6 +140,19 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   const labelFontSize =
     windowWidth <= 1500 ? "0.600rem" : fontSizes.eixoGrafico;
 
+  // Função para obter a cor baseada no valor (squad ou área)
+  const getColorForValue = (value: string) => {
+    // Primeiro tenta como squad
+    const squadConfig = getSquadConfig(value);
+    if (squadConfig.label !== "Não informada") {
+      return squadConfig.hex;
+    }
+
+    // Se não for squad, tenta como área
+    const areaConfig = getAreaConfig(value);
+    return areaConfig.hex;
+  };
+
   // Agrupa projetos por squad
   const squadCount = React.useMemo(() => {
     const counts: Record<string, number> = {};
@@ -207,7 +224,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
               {pieData.map((entry) => (
                 <Cell
                   key={`cell-${entry.name}`}
-                  fill={getSquadConfig(entry.originalValue).hex}
+                  fill={getColorForValue(entry.originalValue)}
                 />
               ))}
             </Pie>
@@ -232,7 +249,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                       style={{
                         width: 14,
                         height: 14,
-                        backgroundColor: getSquadConfig(item.originalValue).hex,
+                        backgroundColor: getColorForValue(item.originalValue),
                       }}
                     ></span>
                     <span
