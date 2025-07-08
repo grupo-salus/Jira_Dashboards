@@ -289,28 +289,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
             </div>
           }
         />
-        <TotalizadorCard
-          icon={
-            <EpicIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.projetos.icon,
-              }}
-            />
-          }
-          label="Projetos em Andamento"
-          value={totalEmAndamento}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que estão ativamente sendo desenvolvidos: Em
-                desenvolvimento, em homologação e em operação assistida.
-              </div>
-            </div>
-          }
-        />
+
         <TotalizadorCard
           icon={
             <ClockIcon
@@ -330,6 +309,29 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               <div style={{ color: getTextColor("secondary", currentTheme) }}>
                 Projetos que já foram analisados e priorizados, prontos para
                 serem executados.
+              </div>
+            </div>
+          }
+        />
+
+        <TotalizadorCard
+          icon={
+            <EpicIcon
+              size={remToPx(config.icone)}
+              className="text-current flex-shrink-0"
+              style={{
+                color: themeColors.components.totalizadores.projetos.icon,
+              }}
+            />
+          }
+          label="Projetos em Andamento"
+          value={totalEmAndamento}
+          currentTheme={currentTheme}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                Projetos que estão ativamente sendo desenvolvidos: Em
+                desenvolvimento, em homologação e em operação assistida.
               </div>
             </div>
           }
