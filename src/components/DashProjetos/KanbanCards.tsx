@@ -689,8 +689,6 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-      
-
       {/* Data que entrou em homologação */}
       {projeto["Data: Início Em homologação"] && (
         <div className="text-gray-600 dark:text-gray-200">
@@ -728,10 +726,13 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 mb-1">
             <div
-              className={`h-2 rounded-full transition-all duration-300 ${
-                atraso ? "bg-red-500" : "bg-blue-400"
-              }`}
-              style={{ width: `${Math.min(progresso, 100)}%` }}
+              className="h-2 rounded-full transition-all duration-300"
+              style={{
+                width: `${Math.min(progresso, 100)}%`,
+                backgroundColor: atraso
+                  ? "#ff0707" // red-500 para atrasado
+                  : getPrazoBackgroundColor("No prazo", theme), // verde para no prazo
+              }}
             />
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -866,8 +867,6 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-      
-
       {/* Data que entrou em operação assistida */}
       {projeto["Data: Início Operação assistida"] && (
         <div className="text-gray-600 dark:text-gray-200">
@@ -909,10 +908,13 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 mb-1">
             <div
-              className={`h-2 rounded-full transition-all duration-300 ${
-                atraso ? "bg-red-500" : "bg-blue-400"
-              }`}
-              style={{ width: `${Math.min(progresso, 100)}%` }}
+              className="h-2 rounded-full transition-all duration-300"
+              style={{
+                width: `${Math.min(progresso, 100)}%`,
+                backgroundColor: atraso
+                  ? "#ff0707" // red-500 para atrasado
+                  : getPrazoBackgroundColor("No prazo", theme), // verde para no prazo
+              }}
             />
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
