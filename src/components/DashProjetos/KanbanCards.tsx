@@ -267,149 +267,9 @@ const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
 };
 
 /**
- * Card para projetos BLOQUEADOS
- */
-const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
-  projeto,
-}) => {
-  const { theme } = useTheme();
-
-  // Cálculo do tempo bloqueado
-  const inicioBloqueado = projeto["Data: Início Bloqueado"]
-    ? new Date(projeto["Data: Início Bloqueado"])
-    : null;
-  const fimBloqueado = projeto["Data: Fim Bloqueado"]
-    ? new Date(projeto["Data: Fim Bloqueado"])
-    : null;
-  const hoje = new Date();
-  let diasBloqueado = null;
-  if (inicioBloqueado) {
-    const dataFinal = fimBloqueado ? fimBloqueado : hoje;
-    diasBloqueado = Math.max(
-      0,
-      Math.floor(
-        (dataFinal.getTime() - inicioBloqueado.getTime()) /
-          (1000 * 60 * 60 * 24)
-      )
-    );
-  }
-
-  // Preparar conteúdo do tooltip incluindo motivo do bloqueio
-  const tooltipContent = (() => {
-    const descricao = projeto.Descrição || "Sem descrição disponível";
-    const motivoBloqueio = projeto["Motivo para Bloqueio de Projeto"];
-
-    if (motivoBloqueio) {
-      return (
-        <div>
-          <div>{descricao}</div>
-          <div className="mt-4">
-            <strong>Justificativa:</strong>
-            <br />
-            {motivoBloqueio}
-          </div>
-        </div>
-      );
-    }
-
-    return descricao;
-  })();
-
-  return withJiraLink(
-    projeto,
-    <CustomTooltip content={tooltipContent} priority={projeto.Prioridade}>
-      <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
-        {/* Cabeçalho */}
-        <div
-          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
-        >
-          <span>{projeto.Título}</span>
-        </div>
-        {/* Área */}
-        {projeto["Departamento Solicitante"] && (
-          <div className="flex items-center gap-2">
-            <span
-              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
-            >
-              {projeto["Departamento Solicitante"]}
-            </span>
-          </div>
-        )}
-        {/* Squads */}
-        {projeto.Squads && projeto.Squads.length > 0 && (
-          <>
-            <div className="text-gray-600 dark:text-gray-200">
-              Squads: {projeto.Squads.join(", ")}
-            </div>
-            {/* Responsável Atual */}
-            {projeto["Responsável Atual"] && (
-              <div className="text-gray-600 dark:text-gray-200 mt-1">
-                Responsável: {projeto["Responsável Atual"]}
-              </div>
-            )}
-          </>
-        )}
-        {/* Datas planejadas */}
-        {projeto["Target start"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Target start: {formatDate(projeto["Target start"])}
-          </div>
-        )}
-        {projeto["Target end"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Target end: {formatDate(projeto["Target end"])}
-          </div>
-        )}
-        <hr className="my-1 border-gray-300 dark:border-gray-600" />
-        {/* Data que entrou em bloqueado */}
-        {projeto["Data: Início Bloqueado"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Início: {formatDate(projeto["Data: Início Bloqueado"])}
-          </div>
-        )}
-        {/* Dias bloqueado */}
-        {diasBloqueado !== null && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Tempo decorrido: {diasBloqueado} dias
-          </div>
-        )}
-        {/* Data de fim do bloqueio */}
-        {projeto["Data: Fim Bloqueado"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Fim: {formatDate(projeto["Data: Fim Bloqueado"])}
-          </div>
-        )}
-
-        {/* Status de prazo */}
-        {projeto["Status de prazo"] && (
-          <>
-            <hr className="my-1 border-gray-300 dark:border-gray-600" />
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Status de prazo:</span>
-              <span
-                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
-                  projeto["Status de prazo"]
-                )} ${fontSizes.statusCardKanban}`}
-                style={{
-                  backgroundColor: getPrazoBackgroundColor(
-                    projeto["Status de prazo"],
-                    theme
-                  ),
-                }}
-              >
-                {projeto["Status de prazo"]}
-              </span>
-            </div>
-          </>
-        )}
-      </div>
-    </CustomTooltip>
-  );
-};
-
-/**
  * Card para projetos em ANÁLISE TÉCNICA E NEGÓCIOS
  */
+
 const CardAnaliseTecnicaNegocios: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
@@ -471,41 +331,21 @@ const CardAnaliseTecnicaNegocios: React.FC<{ projeto: EspacoDeProjetos }> = ({
               {projeto["Tempo na fase Análise técnica e negócios (dias)"]} dias
             </div>
           )}
-
         {/* Datas adicionais (se disponíveis) */}
-        {(projeto["Data: Fim Análise técnica e negócios"] ||
-          projeto["Target start"] ||
-          projeto["Target end"]) && (
+        {projeto["Data: Fim Análise técnica e negócios"] && (
           <>
-            <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
             {/* Data fim análise técnica e negócios */}
-            {projeto["Data: Fim Análise técnica e negócios"] && (
-              <div className="text-gray-600 dark:text-gray-200">
-                Fim:{" "}
-                {formatDate(projeto["Data: Fim Análise técnica e negócios"])}
-              </div>
-            )}
-
-            {/* Data prevista de início */}
-            {projeto["Target start"] && (
-              <div className="text-gray-600 dark:text-gray-200">
-                Início previsto: {formatDate(projeto["Target start"])}
-              </div>
-            )}
-
-            {/* Data prevista para término */}
-            {projeto["Target end"] && (
-              <div className="text-gray-600 dark:text-gray-200">
-                Fim previsto: {formatDate(projeto["Target end"])}
-              </div>
-            )}
+            <div className="text-gray-600 dark:text-gray-200">
+              Fim: {formatDate(projeto["Data: Fim Análise técnica e negócios"])}
+            </div>
           </>
         )}
       </div>
     </CustomTooltip>
   );
 };
+/**
+
 
 /**
  * Card para projetos em BACKLOG PRIORIZADO
@@ -587,32 +427,12 @@ const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           )}
 
         {/* Datas adicionais (se disponíveis) */}
-        {(projeto["Data: Fim Backlog priorizado"] ||
-          projeto["Target start"] ||
-          projeto["Target end"]) && (
+        {projeto["Data: Fim Backlog priorizado"] && (
           <>
-            <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
             {/* Data fim backlog priorizado */}
-            {projeto["Data: Fim Backlog priorizado"] && (
-              <div className="text-gray-600 dark:text-gray-200">
-                Fim: {formatDate(projeto["Data: Fim Backlog priorizado"])}
-              </div>
-            )}
-
-            {/* Data prevista de início */}
-            {projeto["Target start"] && (
-              <div className="text-gray-600 dark:text-gray-200">
-                Início previsto: {formatDate(projeto["Target start"])}
-              </div>
-            )}
-
-            {/* Data prevista para término */}
-            {projeto["Target end"] && (
-              <div className="text-gray-600 dark:text-gray-200">
-                Fim previsto: {formatDate(projeto["Target end"])}
-              </div>
-            )}
+            <div className="text-gray-600 dark:text-gray-200">
+              Fim: {formatDate(projeto["Data: Fim Backlog priorizado"])}
+            </div>
           </>
         )}
       </div>
@@ -671,22 +491,6 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
             </div>
           )}
         </>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Data prevista de início */}
-      {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target start: {formatDate(projeto["Target start"])}
-        </div>
-      )}
-
-      {/* Data prevista para término */}
-      {projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target end: {formatDate(projeto["Target end"])}
-        </div>
       )}
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
@@ -885,29 +689,7 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-      {/* Data prevista de início */}
-      {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target start: {formatDate(projeto["Target start"])}
-        </div>
-      )}
-
-      {/* Data prevista para término */}
-      {projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target end: {formatDate(projeto["Target end"])}
-        </div>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Data que entrou em desenvolvimento */}
-      {projeto["Data: Início Em andamento"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Entrou em desenvolvimento:{" "}
-          {formatDate(projeto["Data: Início Em andamento"])}
-        </div>
-      )}
+      
 
       {/* Data que entrou em homologação */}
       {projeto["Data: Início Em homologação"] && (
@@ -1084,43 +866,7 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
 
-      {/* Data prevista de início */}
-      {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target start: {formatDate(projeto["Target start"])}
-        </div>
-      )}
-
-      {/* Data prevista para término */}
-      {projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target end: {formatDate(projeto["Target end"])}
-        </div>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Data que entrou em desenvolvimento */}
-      {projeto["Data: Início Em andamento"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Entrou em desenvolvimento:{" "}
-          {formatDate(projeto["Data: Início Em andamento"])}
-        </div>
-      )}
-
-      {/* Data que saiu da homologação */}
-      {projeto["Data: Fim Em homologação"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Fim homologação: {formatDate(projeto["Data: Fim Em homologação"])}
-        </div>
-      )}
-
-      {/* Data de finalização (fim do desenvolvimento) */}
-      {projeto["Data: Fim Em andamento"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Fim desenvolvimento: {formatDate(projeto["Data: Fim Em andamento"])}
-        </div>
-      )}
+      
 
       {/* Data que entrou em operação assistida */}
       {projeto["Data: Início Operação assistida"] && (
@@ -1407,18 +1153,6 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             )}
           </>
         )}
-        {/* Datas planejadas */}
-        {projeto["Target start"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Target start: {formatDate(projeto["Target start"])}
-          </div>
-        )}
-        {projeto["Target end"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Target end: {formatDate(projeto["Target end"])}
-          </div>
-        )}
-        <hr className="my-1 border-gray-300 dark:border-gray-600" />
         {/* Data que entrou em cancelamento */}
         {projeto["Data: Início Cancelado"] && (
           <div className="text-gray-600 dark:text-gray-200">
@@ -1442,6 +1176,135 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <div className="text-gray-600 dark:text-gray-200">
             Motivo do cancelamento: {projeto["Motivo para Bloqueio de Projeto"]}
           </div>
+        )}
+      </div>
+    </CustomTooltip>
+  );
+};
+
+/**
+ * Card para projetos BLOQUEADOS
+ */
+const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
+  projeto,
+}) => {
+  const { theme } = useTheme();
+
+  // Cálculo do tempo bloqueado
+  const inicioBloqueado = projeto["Data: Início Bloqueado"]
+    ? new Date(projeto["Data: Início Bloqueado"])
+    : null;
+  const fimBloqueado = projeto["Data: Fim Bloqueado"]
+    ? new Date(projeto["Data: Fim Bloqueado"])
+    : null;
+  const hoje = new Date();
+  let diasBloqueado = null;
+  if (inicioBloqueado) {
+    const dataFinal = fimBloqueado ? fimBloqueado : hoje;
+    diasBloqueado = Math.max(
+      0,
+      Math.floor(
+        (dataFinal.getTime() - inicioBloqueado.getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
+    );
+  }
+
+  // Preparar conteúdo do tooltip incluindo motivo do bloqueio
+  const tooltipContent = (() => {
+    const descricao = projeto.Descrição || "Sem descrição disponível";
+    const motivoBloqueio = projeto["Motivo para Bloqueio de Projeto"];
+
+    if (motivoBloqueio) {
+      return (
+        <div>
+          <div>{descricao}</div>
+          <div className="mt-4">
+            <strong>Justificativa:</strong>
+            <br />
+            {motivoBloqueio}
+          </div>
+        </div>
+      );
+    }
+
+    return descricao;
+  })();
+
+  return withJiraLink(
+    projeto,
+    <CustomTooltip content={tooltipContent} priority={projeto.Prioridade}>
+      <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
+        {/* Cabeçalho */}
+        <div
+          className={`font-semibold text-gray-900 dark:text-white mb-2 break-words ${fontSizes.tituloCardKanban}`}
+        >
+          <span>{projeto.Título}</span>
+        </div>
+        {/* Área */}
+        {projeto["Departamento Solicitante"] && (
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-block bg-white text-gray-800 font-medium px-2 py-1 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${fontSizes.tagCardKanban}`}
+            >
+              {projeto["Departamento Solicitante"]}
+            </span>
+          </div>
+        )}
+        {/* Squads */}
+        {projeto.Squads && projeto.Squads.length > 0 && (
+          <>
+            <div className="text-gray-600 dark:text-gray-200">
+              Squads: {projeto.Squads.join(", ")}
+            </div>
+            {/* Responsável Atual */}
+            {projeto["Responsável Atual"] && (
+              <div className="text-gray-600 dark:text-gray-200 mt-1">
+                Responsável: {projeto["Responsável Atual"]}
+              </div>
+            )}
+          </>
+        )}
+        {/* Data que entrou em bloqueado */}
+        {projeto["Data: Início Bloqueado"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Início: {formatDate(projeto["Data: Início Bloqueado"])}
+          </div>
+        )}
+        {/* Dias bloqueado */}
+        {diasBloqueado !== null && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Tempo decorrido: {diasBloqueado} dias
+          </div>
+        )}
+        {/* Data de fim do bloqueio */}
+        {projeto["Data: Fim Bloqueado"] && (
+          <div className="text-gray-600 dark:text-gray-200">
+            Fim: {formatDate(projeto["Data: Fim Bloqueado"])}
+          </div>
+        )}
+
+        {/* Status de prazo */}
+        {projeto["Status de prazo"] && (
+          <>
+            <hr className="my-1 border-gray-300 dark:border-gray-600" />
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Status de prazo:</span>
+              <span
+                className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
+                  projeto["Status de prazo"]
+                )} ${fontSizes.statusCardKanban}`}
+                style={{
+                  backgroundColor: getPrazoBackgroundColor(
+                    projeto["Status de prazo"],
+                    theme
+                  ),
+                }}
+              >
+                {projeto["Status de prazo"]}
+              </span>
+            </div>
+          </>
         )}
       </div>
     </CustomTooltip>
