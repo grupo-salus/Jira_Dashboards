@@ -473,22 +473,13 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   />
 
                   <div
-                    className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 ${
-                      index === 0
-                        ? "w-6 h-6 sm:w-8 sm:h-8"
-                        : "w-5 h-5 sm:w-7 sm:h-7"
-                    }`}
+                    className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8`}
                     style={{
-                      backgroundColor:
-                        index === 0
-                          ? themeColors.components.totalizadores.ranking.bar
-                          : themeColors.components.totalizadores.ranking.bar,
+                      backgroundColor: themeColors.components.totalizadores.ranking.bar,
                     }}
                   >
                     <span
-                      className={`${
-                        index === 0 ? "text-xs sm:text-sm" : "text-xs"
-                      }`}
+                      className={`text-xs sm:text-sm`}
                       style={{ color: themeColors.utility.white }}
                     >
                       #{projeto.PosicaoBacklog}
@@ -496,9 +487,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   </div>
                   <div className="flex-1 min-w-0 pl-2">
                     <h4
-                      className={`font-semibold break-words whitespace-normal ${
-                        index === 0 ? "text-xs sm:text-sm" : "text-xs"
-                      }`}
+                      className={`font-semibold break-words whitespace-normal text-xs sm:text-sm`}
                       style={{ color: getTextColor("primary", currentTheme) }}
                       title={projeto.Título}
                     >
