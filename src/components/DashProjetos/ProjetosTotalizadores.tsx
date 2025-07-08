@@ -116,7 +116,7 @@ const TotalizadorCard: React.FC<{
             backgroundColor: getBackgroundColor("card", currentTheme),
             border: `1px solid ${getBorderColor("primary", currentTheme)}`,
             color: getTextColor("primary", currentTheme),
-            top: "calc(100% + 10px)",
+            top: "calc(80%)",
             left: "50%",
             transform: "translateX(-50%)",
             minWidth: "250px",
@@ -351,18 +351,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           onClickValue={onEntreguesMesClick}
           clickable={!!onEntreguesMesClick}
           isFiltered={filtroEntreguesMesAtivo}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos concluídos e formalmente entregues no mês vigente (
-                {new Date().toLocaleDateString("pt-BR", {
-                  month: "long",
-                  year: "numeric",
-                })}
-                ).
-              </div>
-            </div>
-          }
         />
         <TotalizadorCard
           icon={
