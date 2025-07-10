@@ -1,6 +1,10 @@
 import React from "react";
 import { EspacoDeProjetos } from "../../../types/Typesjira";
-import { formatDate, getStatusColor, getPrazoBackgroundColor } from "../kanbanUtils";
+import {
+  formatDate,
+  getStatusColor,
+  getPrazoBackgroundColor,
+} from "../kanbanUtils";
 import { useTheme } from "../../../context/ThemeContext";
 import { CardBase } from "./CardBase";
 import { withJiraLink } from "./withJiraLink";
@@ -61,7 +65,7 @@ export const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <>
             <hr className="my-1 border-gray-300 dark:border-gray-600" />
             <div className="flex items-center gap-2">
-              <span className="font-medium">Status de prazo:</span>
+              <span className="font-medium">Status do projeto:</span>
               <span
                 className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
                   projeto["Status de prazo"]
@@ -81,4 +85,4 @@ export const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       </CardBase>
     </CustomTooltip>
   );
-}; 
+};

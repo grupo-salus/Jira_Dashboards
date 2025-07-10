@@ -223,7 +223,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   });
   const totalEntreguesNoMes = projetosEntreguesNoMes.length;
 
-  // Métricas de Status de Prazo (baseadas na lógica do project_analysis_utils.py)
+  // Métricas de Status de Prazo do Projeto (baseadas na lógica do project_analysis_utils.py)
   const projetosNoPrazo = filteredData.filter(
     (p) => p["Status de prazo"] === "No prazo"
   ).length;
@@ -475,7 +475,8 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   <div
                     className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8`}
                     style={{
-                      backgroundColor: themeColors.components.totalizadores.ranking.bar,
+                      backgroundColor:
+                        themeColors.components.totalizadores.ranking.bar,
                     }}
                   >
                     <span

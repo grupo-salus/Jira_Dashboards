@@ -71,7 +71,7 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Status de prazo */}
       {projeto["Status de prazo"] && (
         <div className="flex items-center gap-2">
-          <span className="font-medium">Status de prazo:</span>
+          <span className="font-medium">Status do projeto:</span>
           <span
             className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
               projeto["Status de prazo"]

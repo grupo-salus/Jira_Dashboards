@@ -76,9 +76,11 @@ export const formatDate = (dateString: string | null): string => {
 };
 
 /**
- * Obtém a cor CSS para um status de prazo ou ideação
+ * Obtém a cor CSS para um status de prazo, ideação ou fase atual
  */
-export const getStatusColor = (status: PrazoStatus | IdeacaoStatus): string => {
+export const getStatusColor = (
+  status: PrazoStatus | IdeacaoStatus | string
+): string => {
   // Mapeamento dos status de ideação para classes CSS
   const ideacaoColors: Record<IdeacaoStatus, string> = {
     Recente:
@@ -94,28 +96,30 @@ export const getStatusColor = (status: PrazoStatus | IdeacaoStatus): string => {
     return ideacaoColors[status as IdeacaoStatus];
   }
 
-  // Para status de prazo, retorna a classe de texto apropriada
+  // Para status de prazo e fase atual, retorna a classe de texto apropriada
   if (status === "Em risco") {
     return "text-black"; // Texto preto para "Em risco" (fundo amarelo)
   }
 
-  return "text-white"; // Texto branco para outros status de prazo
+  return "text-white"; // Texto branco para outros status
 };
 
 /**
- * Obtém a cor de fundo para um status de prazo
+ * Obtém a cor de fundo para um status de prazo ou fase atual
  */
 export const getPrazoBackgroundColor = (
-  status: PrazoStatus,
+  status: PrazoStatus | string,
   theme: "light" | "dark"
 ): string => {
   const prazoColors = {
     "No prazo": themeColors.status.prazo.noPrazo.bg[theme],
     "Em risco": themeColors.status.prazo.emRisco.bg[theme],
     Atrasado: themeColors.status.prazo.foraPrazo.bg[theme],
+    "Em andamento": "#3b82f6", // Azul para "Em andamento"
+    "Não iniciado": "#6b7280", // Cinza para "Não iniciado"
   };
 
-  return prazoColors[status];
+  return prazoColors[status] || themeColors.status.prazo.noPrazo.bg[theme];
 };
 
 /**

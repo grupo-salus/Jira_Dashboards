@@ -5,6 +5,7 @@ from datetime import timedelta
 from .project_analysis_utils import (
     calcular_tempo_por_fase,
     calcular_dias_na_fase_atual,
+    calcular_status_fase_atual,
     classificar_status_ideacao,
     classificar_prazo,
     verificar_risco_atual,
@@ -100,6 +101,7 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
         df[col_name] = df.apply(lambda row: calcular_tempo_por_fase(row, fase), axis=1)
 
     df["Dias na fase atual"] = df.apply(calcular_dias_na_fase_atual, axis=1)
+    df["Status da fase atual"] = df.apply(calcular_status_fase_atual, axis=1)
 
     df["Status de ideação"] = df.apply(
         lambda row: classificar_status_ideacao(row["Dias na fase atual"])
