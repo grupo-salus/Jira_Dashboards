@@ -99,7 +99,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Tempo na fase Cancelado (dias)": 150,
     "Tempo na fase Bloqueado (dias)": 150,
     "Dias na fase atual": 150,
-    "Risco de atraso atual?": 150,
   });
 
   const [isResizing, setIsResizing] = useState(false);
@@ -196,7 +195,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Tempo na fase Cancelado (dias)",
     "Tempo na fase Bloqueado (dias)",
     "Dias na fase atual",
-    "Risco de atraso atual?",
   ];
 
   // Adicionar coluna de numeração
@@ -337,14 +335,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
       );
     }
 
-    // Adicionar formatação especial para as colunas booleanas de status
-    if (["Risco de atraso atual?"].includes(column)) {
-      if (value === true)
-        return <span style={{ color: "#dc2626", fontWeight: 600 }}>Sim</span>;
-      if (value === false)
-        return <span style={{ color: "#16a34a", fontWeight: 600 }}>Não</span>;
-      return "-";
-    }
 
     return String(value);
   };

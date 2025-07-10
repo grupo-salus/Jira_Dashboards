@@ -108,8 +108,7 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     df["Status de prazo"] = df.apply(classificar_prazo, axis=1)
-    df["Risco de atraso atual?"] = df.apply(verificar_risco_atual, axis=1)
-
+    
     # Limpar valores infinitos e NaN das colunas numéricas
     numeric_cols = df.select_dtypes(include=['number']).columns
     for col in numeric_cols:

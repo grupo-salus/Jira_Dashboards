@@ -104,7 +104,6 @@ export interface EspacoDeProjetos {
 
   // Colunas de status e controle
   "Dias na fase atual"?: number | null;
-  "Risco de atraso atual?"?: boolean | null;
 }
 
 export type JiraStatus =
