@@ -81,14 +81,14 @@ def is_final_status(status: str) -> bool:
     return resultado
 
 def classificar_prazo(row: pd.Series) -> str:
-    logger.debug(f"Classificando prazo do projeto: {row.get('key')}")
+    logger.debug(f"Classificando prazo do projeto: {row.get('Chave')}")
     target_end = row.get("Target end")
     logger.debug(f"Target end: {target_end}")
 
     # 1. Se existe data de finalização (preferencialmente Data de término, senão Data: Fim Em andamento)
-    data_finalizacao = row.get("Data: Fim Em andamento")
-    logger.debug(f"Data: Fim Em andamento: {data_finalizacao}")
-    if pd.notnull(data_finalizacao):
+    data_finalizacao = row.get("Data: Fim Concluído")
+    logger.debug(f"Data: Fim Concluído: {data_finalizacao}")
+    if pd.notnull(data_finalizacao): # Se existe data de finalização
         if pd.isnull(target_end):
             logger.debug("Target end ausente")
             return None
@@ -108,9 +108,14 @@ def classificar_prazo(row: pd.Series) -> str:
     logger.debug(f"Dias restantes: {dias_restantes}")
 
     if dias_restantes < 0:
+        logger.debug(f"Dias restantes: {dias_restantes}, retornando atrasado")
         return "Atrasado"
+    
     elif dias_restantes <= 2:
+        logger.debug(f"Dias restantes: {dias_restantes}, retornando em risco")
         return "Em risco"
+    
+    logger.debug(f"Dias restantes: {dias_restantes}, retornando no prazo")
     return "No prazo"
 
 def verificar_risco_atual(row: pd.Series) -> str:

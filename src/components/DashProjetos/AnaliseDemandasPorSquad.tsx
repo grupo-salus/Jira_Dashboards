@@ -197,81 +197,70 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   }));
 
   return (
-    <div className="w-full h-full flex-1 flex items-center justify-center">
-      <div className="flex flex-col 2xl:flex-row items-center 2xl:items-center justify-between w-full gap-4 2xl:gap-0">
-        <div className="flex-shrink-0">
-          <PieChart width={300} height={300}>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={"60%"}
-              startAngle={0}
-              endAngle={360}
-              stroke="none"
-              label={undefined}
-              labelLine={false}
-              isAnimationActive={false}
-              onClick={handlePieClick}
-              onMouseEnter={handlePieMouseEnter}
-              onMouseLeave={handlePieMouseLeave}
-              style={{ cursor: "pointer" }}
-              activeShape={{ r: 75 }}
-              activeIndex={[]}
-            >
-              {pieData.map((entry) => (
-                <Cell
-                  key={`cell-${entry.name}`}
-                  fill={getColorForValue(entry.originalValue)}
-                />
-              ))}
-            </Pie>
-            {/* Removido o Tooltip padrão do Recharts */}
-          </PieChart>
-        </div>
-
-        <div className="flex-shrink-0">
-          {pieData.length > 0 && (
-            <ul className="flex flex-row 2xl:flex-col flex-wrap 2xl:flex-nowrap gap-x-2 gap-y-2 max-h-60 overflow-y-auto w-full 2xl:w-auto justify-center 2xl:justify-start">
-              {pieData
-                .slice()
-                .sort((a, b) => b.value - a.value)
-                .map((item) => (
-                  <li
-                    key={item.label}
-                    className={`flex items-center gap-2 font-medium`}
-                    style={{ fontSize: labelFontSize }}
-                  >
-                    <span
-                      className="inline-block rounded-full"
-                      style={{
-                        width: 14,
-                        height: 14,
-                        backgroundColor: getColorForValue(item.originalValue),
-                      }}
-                    ></span>
-                    <span
-                      className="whitespace-nowrap"
-                      style={{ color: getTextColor("primary", currentTheme) }}
-                    >
-                      {item.label}
-                    </span>
-                    <span
-                      style={{
-                        color: getTextColor("secondary", currentTheme),
-                      }}
-                    >
-                      ({item.value})
-                    </span>
-                  </li>
-                ))}
-            </ul>
-          )}
-        </div>
+    <div className="w-full h-full flex-1 flex flex-col xl:flex-row items-center xl:items-center justify-between w-full gap-4 xl:gap-0">
+      <div className="flex-shrink-0">
+        <PieChart width={280} height={300}>
+          <Pie
+            data={pieData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={"70%"}
+            startAngle={0}
+            endAngle={360}
+            stroke="none"
+            label={({ value }) => `${value}`}
+            labelLine={true}
+            isAnimationActive={false}
+            onClick={handlePieClick}
+            onMouseEnter={handlePieMouseEnter}
+            onMouseLeave={handlePieMouseLeave}
+            style={{ cursor: "pointer" }}
+            activeShape={{ r: 75 }}
+            activeIndex={[]}
+          >
+            {pieData.map((entry) => (
+              <Cell
+                key={`cell-${entry.name}`}
+                fill={getColorForValue(entry.originalValue)}
+              />
+            ))}
+          </Pie>
+          {/* Removido o Tooltip padrão do Recharts */}
+        </PieChart>
       </div>
-
+      <div className="flex-shrink-0 w-full xl:w-48 xl:max-w-[160px]">
+        {pieData.length > 0 && (
+          <ul className="flex flex-row flex-wrap gap-x-2 gap-y-2 w-full overflow-x-auto xl:flex-col xl:w-48 xl:max-w-[160px] xl:h-full xl:overflow-x-auto xl:overflow-y-auto xl:justify-start">
+            {pieData
+              .slice()
+              .sort((a, b) => b.value - a.value)
+              .map((item) => (
+                <li
+                  key={item.label}
+                  className={`flex items-center gap-2 font-medium`}
+                  style={{ fontSize: labelFontSize }}
+                >
+                  <span
+                    className="inline-block rounded-full"
+                    style={{
+                      width: 14,
+                      height: 14,
+                      backgroundColor: getColorForValue(item.originalValue),
+                    }}
+                  ></span>
+                  <span
+                    className="whitespace-nowrap truncate max-w-[100px]"
+                    style={{ color: getTextColor("primary", currentTheme) }}
+                  >
+                    {item.label}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        )}
+      </div>
       {/* Tooltip Modal */}
       {showTooltip && tooltipData && (
         <TooltipProjetos
