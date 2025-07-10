@@ -139,6 +139,7 @@ def verificar_risco_atual(row: pd.Series) -> str:
 def calcular_status_fase_atual(row: pd.Series) -> str:
     """
     Calcula o status da fase atual do projeto baseado no status atual e nas datas de início/fim da fase.
+    Só calcula para os status: "Em Desenvolvimento", "Em Homologação" e "Operação Assistida".
     Retorna: "No prazo", "Atrasado", "Em risco", "Em andamento", "Não iniciado" ou None
     
     Lógica:
@@ -151,6 +152,15 @@ def calcular_status_fase_atual(row: pd.Series) -> str:
     logger.debug(f"Calculando status da fase atual para projeto: {row.get('Chave')}")
     status = str(row.get("Status", "")).strip().capitalize()
     logger.debug(f"Status atual: {status}")
+    
+    # Lista de status para os quais calcular o status da fase
+    # Usando os nomes após capitalização (.capitalize())
+    status_validos = ["Em andamento", "Em homologação", "Operação assistida"]
+    
+    # Se o status atual não está na lista de status válidos, retorna None
+    if status not in status_validos:
+        logger.debug(f"Status '{status}' não está na lista de status válidos para cálculo de fase. Status válidos: {status_validos}")
+        return None
     
     # Obter datas da fase atual
     inicio = row.get(f"Data: Início {status}")
