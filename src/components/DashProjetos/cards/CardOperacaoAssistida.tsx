@@ -68,9 +68,10 @@ export const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       )}
 
       {/* Data fim operação assistida */}
-      {projeto["Data: Fim Operação assistida"] && (
+      {projeto["Data: Fim Operação assistida"] && fimOp && (
         <div className="text-gray-600 dark:text-gray-200">
-          Fim previsto: {formatDate(projeto["Data: Fim Operação assistida"])}
+          {hoje < fimOp ? "Fim previsto:" : "Fim:"}{" "}
+          {formatDate(projeto["Data: Fim Operação assistida"])}
         </div>
       )}
 

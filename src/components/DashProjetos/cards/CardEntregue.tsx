@@ -32,7 +32,11 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data de fim da conclusão */}
       {projeto["Data: Fim Concluído"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Fim: {formatDate(projeto["Data: Fim Concluído"])}
+          {(() => {
+            const hoje = new Date();
+            const fimConcluido = new Date(projeto["Data: Fim Concluído"]);
+            return hoje < fimConcluido ? "Fim previsto:" : "Fim:";
+          })()} {formatDate(projeto["Data: Fim Concluído"])}
         </div>
       )}
 

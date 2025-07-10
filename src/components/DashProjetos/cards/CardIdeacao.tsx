@@ -31,7 +31,12 @@ export const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data fim de ideação */}
       {projeto["Data: Fim Backlog"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Fim: {formatDate(projeto["Data: Fim Backlog"])}
+          {(() => {
+            const hoje = new Date();
+            const fimBacklog = new Date(projeto["Data: Fim Backlog"]);
+            return hoje < fimBacklog ? "Fim previsto:" : "Fim:";
+          })()}{" "}
+          {formatDate(projeto["Data: Fim Backlog"])}
         </div>
       )}
 

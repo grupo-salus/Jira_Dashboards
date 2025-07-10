@@ -56,7 +56,12 @@ export const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {/* Data de fim do bloqueio */}
         {projeto["Data: Fim Bloqueado"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Fim: {formatDate(projeto["Data: Fim Bloqueado"])}
+            {(() => {
+              const hoje = new Date();
+              const fimBloqueado = new Date(projeto["Data: Fim Bloqueado"]);
+              return hoje < fimBloqueado ? "Fim previsto:" : "Fim:";
+            })()}{" "}
+            {formatDate(projeto["Data: Fim Bloqueado"])}
           </div>
         )}
 

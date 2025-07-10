@@ -45,7 +45,11 @@ export const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         {/* Data que saiu do cancelamento */}
         {projeto["Data: Fim Cancelado"] && (
           <div className="text-gray-600 dark:text-gray-200">
-            Fim: {formatDate(projeto["Data: Fim Cancelado"])}
+            {(() => {
+              const hoje = new Date();
+              const fimCancelado = new Date(projeto["Data: Fim Cancelado"]);
+              return hoje < fimCancelado ? "Fim previsto:" : "Fim:";
+            })()} {formatDate(projeto["Data: Fim Cancelado"])}
           </div>
         )}
 

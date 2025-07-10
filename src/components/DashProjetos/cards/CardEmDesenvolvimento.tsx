@@ -69,9 +69,10 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       )}
 
       {/* Data que saiu de desenvolvimento (se houver) */}
-      {projeto["Data: Fim Em andamento"] && (
+      {projeto["Data: Fim Em andamento"] && fimDev && (
         <div className="text-gray-600 dark:text-gray-200">
-          Fim: {formatDate(projeto["Data: Fim Em andamento"])}
+          {hoje < fimDev ? "Fim previsto:" : "Fim:"}{" "}
+          {formatDate(projeto["Data: Fim Em andamento"])}
         </div>
       )}
 

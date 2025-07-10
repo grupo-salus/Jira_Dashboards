@@ -67,9 +67,10 @@ export const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       )}
 
       {/* Data fim homologação */}
-      {projeto["Data: Fim Em homologação"] && (
+      {projeto["Data: Fim Em homologação"] && fimHom && (
         <div className="text-gray-600 dark:text-gray-200">
-          Fim previsto: {formatDate(projeto["Data: Fim Em homologação"])}
+          {hoje < fimHom ? "Fim previsto:" : "Fim:"}{" "}
+          {formatDate(projeto["Data: Fim Em homologação"])}
         </div>
       )}
 

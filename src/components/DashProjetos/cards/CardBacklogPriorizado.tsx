@@ -31,7 +31,11 @@ export const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data fim backlog priorizado */}
       {projeto["Data: Fim Backlog priorizado"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Fim: {formatDate(projeto["Data: Fim Backlog priorizado"])}
+          {(() => {
+            const hoje = new Date();
+            const fimBacklog = new Date(projeto["Data: Fim Backlog priorizado"]);
+            return hoje < fimBacklog ? "Fim previsto:" : "Fim:";
+          })()} {formatDate(projeto["Data: Fim Backlog priorizado"])}
         </div>
       )}
     </CardBase>

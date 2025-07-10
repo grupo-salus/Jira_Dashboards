@@ -155,7 +155,7 @@ def calcular_status_fase_atual(row: pd.Series) -> str:
     
     # Lista de status para os quais calcular o status da fase
     # Usando os nomes após capitalização (.capitalize())
-    status_validos = ["Em andamento", "Em homologação", "Operação assistida"]
+    status_validos = ["Em andamento", "Em homologação", "Operação assistida", "Análise técnica e negócios"]
     
     # Se o status atual não está na lista de status válidos, retorna None
     if status not in status_validos:
