@@ -19,6 +19,8 @@ import {
   getPriorityConfig,
 } from "../../utils/themeColors";
 
+type TipoFiltroStatus = "projeto" | "fase" | "ambos";
+
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
   originalData: EspacoDeProjetos[];
@@ -451,18 +453,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           clickable={!!onStatusPrazoClick}
           isFiltered={filtroStatusPrazoAtivo === "No prazo"}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                {tipoFiltroStatus === "projeto" &&
-                  "Projetos com status de prazo do projeto 'No prazo'"}
-                {tipoFiltroStatus === "fase" &&
-                  "Projetos com status de prazo da fase atual 'No prazo'"}
-                {tipoFiltroStatus === "ambos" &&
-                  "Projetos com status 'No prazo' no projeto OU na fase atual"}
-              </div>
-            </div>
-          }
         />
         <TotalizadorCard
           icon={
@@ -491,18 +481,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           clickable={!!onStatusPrazoClick}
           isFiltered={filtroStatusPrazoAtivo === "Em risco"}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                {tipoFiltroStatus === "projeto" &&
-                  "Projetos com status de prazo do projeto 'Em risco'"}
-                {tipoFiltroStatus === "fase" &&
-                  "Projetos com status de prazo da fase atual 'Em risco'"}
-                {tipoFiltroStatus === "ambos" &&
-                  "Projetos com status 'Em risco' no projeto OU na fase atual"}
-              </div>
-            </div>
-          }
         />
         <TotalizadorCard
           icon={
@@ -531,18 +509,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           clickable={!!onStatusPrazoClick}
           isFiltered={filtroStatusPrazoAtivo === "Atrasado"}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                {tipoFiltroStatus === "projeto" &&
-                  "Projetos com status de prazo do projeto 'Atrasado'"}
-                {tipoFiltroStatus === "fase" &&
-                  "Projetos com status de prazo da fase atual 'Atrasado'"}
-                {tipoFiltroStatus === "ambos" &&
-                  "Projetos com status 'Atrasado' no projeto OU na fase atual"}
-              </div>
-            </div>
-          }
         />
       </div>
 

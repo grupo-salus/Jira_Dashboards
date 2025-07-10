@@ -1,7 +1,7 @@
 import React from "react";
 import { EspacoDeProjetos } from "../../../types/Typesjira";
 import { getFontSizes } from "../../../constants/styleConfig";
-import { CustomTooltip } from "./CustomTooltip";
+import { CustomTooltip } from "./index";
 
 const fontSizes = getFontSizes();
 
@@ -63,7 +63,31 @@ export const CardBase: React.FC<CardBaseProps> = ({
       {projeto.Squads && projeto.Squads.length > 0 && (
         <>
           <div className="text-gray-600 dark:text-gray-200">
-            Squads: {projeto.Squads.join(", ")}
+            Squads:{" "}
+            {projeto.Squads.map((squad, index) => {
+              // Verificar se deve destacar a squad
+              const deveDestacar =
+                projeto["Responsável Atual"] &&
+                projeto["Status da fase atual"] &&
+                ["Atrasado", "Em risco"].includes(
+                  projeto["Status da fase atual"]
+                ) &&
+                squad === projeto["Responsável Atual"];
+
+              return (
+                <span
+                  key={index}
+                  className={`${
+                    deveDestacar
+                      ? "font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded"
+                      : ""
+                  }`}
+                >
+                  {squad}
+                  {index < projeto.Squads.length - 1 ? ", " : ""}
+                </span>
+              );
+            })}
           </div>
           {/* Responsável Atual */}
           {projeto["Responsável Atual"] && (

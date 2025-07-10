@@ -111,7 +111,7 @@ export const getPrazoBackgroundColor = (
   status: PrazoStatus | string,
   theme: "light" | "dark"
 ): string => {
-  const prazoColors = {
+  const prazoColors: Record<string, string> = {
     "No prazo": themeColors.status.prazo.noPrazo.bg[theme],
     "Em risco": themeColors.status.prazo.emRisco.bg[theme],
     Atrasado: themeColors.status.prazo.foraPrazo.bg[theme],

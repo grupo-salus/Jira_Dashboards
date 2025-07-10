@@ -80,7 +80,7 @@ interface CacheData {
   };
 }
 
-export const JiraContext = createContext<JiraContextType>({
+const JiraContext = createContext<JiraContextType>({
   projetosData: {
     rawData: [],
     loading: true,
@@ -112,13 +112,13 @@ export const JiraContext = createContext<JiraContextType>({
   refreshOpcoesDepartamentoSolicitante: async () => {},
 });
 
-export const useJira = () => useContext(JiraContext);
+const useJira = () => useContext(JiraContext);
 
 interface JiraProviderProps {
   children: ReactNode;
 }
 
-export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
+const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
   // Estado do Espaço de Projetos
   const [projetosRawData, setProjetosRawData] = useState<EspacoDeProjetos[]>(
     []
@@ -402,3 +402,5 @@ export const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
     </JiraContext.Provider>
   );
 };
+
+export { JiraContext, useJira, JiraProvider };

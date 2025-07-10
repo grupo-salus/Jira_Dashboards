@@ -845,11 +845,6 @@ const DashProjetos: React.FC = () => {
     );
   };
 
-  // NOVO: Função para filtrar por projeto
-  const filtrarPorProjeto = (projeto: EspacoDeProjetos) => {
-    setProjetoFiltradoUnico(projeto);
-  };
-
   useEffect(() => {
     window.setFiltrosDashProjetos = setFiltros;
     window.setProjetoFiltradoUnico = setProjetoFiltradoUnico;
@@ -896,11 +891,11 @@ const DashProjetos: React.FC = () => {
       className="p-6 pt-2 w-full max-w-none relative"
       style={{ backgroundColor: getBackgroundColor("page", currentTheme) }}
     >
-      {/* Container de Filtros com botão Limpar acima, sempre reservando espaço */}
+      {/* Container de Filtros */}
       <div className="mb-20">
-        <div className="flex justify-between items-center w-full mt-0 mb-4">
-          {/* Botão para mostrar/ocultar filtros no mobile */}
-          {isMobile && (
+        {/* Botão para mostrar/ocultar filtros no mobile */}
+        {isMobile && (
+          <div className="flex justify-between items-center w-full mt-0 mb-4">
             <button
               onClick={() => setFiltrosVisiveis(!filtrosVisiveis)}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -926,42 +921,36 @@ const DashProjetos: React.FC = () => {
               </svg>
               {filtrosVisiveis ? "Ocultar Filtros" : "Mostrar Filtros"}
             </button>
-          )}
-
-          <div className="flex justify-end">
-            {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) ||
-            projetoFiltradoUnico ? (
-              <button
-                onClick={() => {
-                  setFiltros(filtrosIniciais);
-                  setProjetoFiltradoUnico(null);
-                }}
-                className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs ml-4"
-                style={{ color: themeColors.text.error[currentTheme] }}
-                title="Limpar todos os filtros"
-              >
-                <FilterIcon size={16} />
-                <span className="font-semibold">Limpar filtros</span>
-              </button>
-            ) : (
-              <button
-                className="flex items-center gap-1 p-1 bg-transparent rounded-full border border-transparent font-semibold text-xs ml-4 opacity-0 select-none pointer-events-none"
-                tabIndex={-1}
-                aria-hidden="true"
-              >
-                <FilterIcon size={16} />
-                <span className="font-semibold">Limpar filtros</span>
-              </button>
-            )}
           </div>
-        </div>
+        )}
 
-        {/* Seção de Filtros - Ocultável no mobile - EM LINHA SEPARADA */}
+        {/* Seção de Filtros - Ocultável no mobile */}
         <div
           className={`p-0 shadow-none transition-all duration-300 ${
             isMobile && !filtrosVisiveis ? "hidden" : ""
           }`}
         >
+          {/* Cabeçalho da seção de filtros com botão Limpar */}
+          <div className="flex justify-between items-center mb-4">
+            <div></div> {/* Espaçador à esquerda */}
+            <button
+              onClick={() => {
+                setFiltros(filtrosIniciais);
+                setProjetoFiltradoUnico(null);
+              }}
+              className={`flex items-center gap-1 px-2 py-1 bg-transparent rounded-md transition-colors border border-transparent font-semibold text-xs ${
+                JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) ||
+                projetoFiltradoUnico
+                  ? "hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                  : "opacity-0 select-none pointer-events-none"
+              }`}
+              style={{ color: themeColors.text.error[currentTheme] }}
+              title="Limpar todos os filtros"
+            >
+              <FilterIcon size={16} />
+              <span className="font-semibold">Limpar filtros</span>
+            </button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-7 w-full">
             {/* Filtro de Área */}
             <div className="flex flex-col min-w-0">
