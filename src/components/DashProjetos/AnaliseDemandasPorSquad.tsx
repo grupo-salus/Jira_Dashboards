@@ -232,18 +232,20 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
       </div>
       <div className="flex-shrink-0 w-full xl:w-48 xl:max-w-[160px]">
         {pieData.length > 0 && (
-          <ul className="flex flex-row flex-wrap gap-x-2 gap-y-2 w-full overflow-x-auto xl:flex-col xl:w-48 xl:max-w-[160px] xl:h-full xl:overflow-x-auto xl:overflow-y-auto xl:justify-start">
+          <ul className="grid grid-cols-3 gap-4 w-full xl:flex xl:flex-col xl:w-48 xl:max-w-[160px] xl:h-full xl:overflow-y-auto">
             {pieData
               .slice()
               .sort((a, b) => b.value - a.value)
               .map((item) => (
                 <li
                   key={item.label}
+                  // Alterado para 'items-center' para centralizar verticalmente
                   className={`flex items-center gap-2 font-medium`}
                   style={{ fontSize: labelFontSize }}
                 >
                   <span
-                    className="inline-block rounded-full"
+                    // Removido 'mt-1'
+                    className="inline-block rounded-full flex-shrink-0"
                     style={{
                       width: 14,
                       height: 14,
@@ -251,7 +253,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                     }}
                   ></span>
                   <span
-                    className="whitespace-nowrap truncate max-w-[100px]"
+                    // Mantido sem 'truncate' para o texto quebrar a linha se necessário
                     style={{ color: getTextColor("primary", currentTheme) }}
                   >
                     {item.label}
@@ -279,5 +281,3 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
 };
 
 export default AnaliseDemandasPorSquad;
-
-//teste
