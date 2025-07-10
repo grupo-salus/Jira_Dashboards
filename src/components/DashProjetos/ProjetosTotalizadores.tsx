@@ -26,6 +26,7 @@ interface ProjetosTotalizadoresProps {
   filtroStatusPrazoAtivo?: string | null;
   onEntreguesMesClick?: () => void;
   filtroEntreguesMesAtivo?: boolean;
+  tipoFiltroStatus?: "projeto" | "fase" | "ambos";
 }
 
 // Função para converter CSS rem para pixels
@@ -142,6 +143,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filtroStatusPrazoAtivo,
   onEntreguesMesClick,
   filtroEntreguesMesAtivo,
+  tipoFiltroStatus = "projeto",
 }) => {
   const config = getTotalizadoresConfig();
 
@@ -223,18 +225,86 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   });
   const totalEntreguesNoMes = projetosEntreguesNoMes.length;
 
-  // Métricas de Status de Prazo do Projeto (baseadas na lógica do project_analysis_utils.py)
-  const projetosNoPrazo = filteredData.filter(
-    (p) => p["Status de prazo"] === "No prazo"
-  ).length;
+  // Função para calcular métricas baseada no tipo de filtro
+  const calcularMetricasStatus = (tipo: TipoFiltroStatus) => {
+    let projetosNoPrazo = 0;
+    let projetosEmRisco = 0;
+    let projetosForaDoPrazo = 0;
 
-  const projetosEmRisco = filteredData.filter(
-    (p) => p["Status de prazo"] === "Em risco"
-  ).length;
+    switch (tipo) {
+      case "projeto":
+        // Apenas status do projeto
+        projetosNoPrazo = filteredData.filter(
+          (p) => p["Status de prazo"] === "No prazo"
+        ).length;
+        projetosEmRisco = filteredData.filter(
+          (p) => p["Status de prazo"] === "Em risco"
+        ).length;
+        projetosForaDoPrazo = filteredData.filter(
+          (p) => p["Status de prazo"] === "Atrasado"
+        ).length;
+        break;
 
-  const projetosForaDoPrazo = filteredData.filter(
-    (p) => p["Status de prazo"] === "Atrasado"
-  ).length;
+      case "fase":
+        // Apenas status da fase atual
+        projetosNoPrazo = filteredData.filter(
+          (p) => p["Status da fase atual"] === "No prazo"
+        ).length;
+        projetosEmRisco = filteredData.filter(
+          (p) => p["Status da fase atual"] === "Em risco"
+        ).length;
+        projetosForaDoPrazo = filteredData.filter(
+          (p) => p["Status da fase atual"] === "Atrasado"
+        ).length;
+        break;
+
+      case "ambos":
+        // Ambos os status (união)
+        const projetosNoPrazoProjeto = filteredData.filter(
+          (p) => p["Status de prazo"] === "No prazo"
+        );
+        const projetosNoPrazoFase = filteredData.filter(
+          (p) => p["Status da fase atual"] === "No prazo"
+        );
+        const projetosEmRiscoProjeto = filteredData.filter(
+          (p) => p["Status de prazo"] === "Em risco"
+        );
+        const projetosEmRiscoFase = filteredData.filter(
+          (p) => p["Status da fase atual"] === "Em risco"
+        );
+        const projetosForaDoPrazoProjeto = filteredData.filter(
+          (p) => p["Status de prazo"] === "Atrasado"
+        );
+        const projetosForaDoPrazoFase = filteredData.filter(
+          (p) => p["Status da fase atual"] === "Atrasado"
+        );
+
+        // União dos conjuntos (sem duplicatas)
+        const todosProjetosNoPrazo = new Set([
+          ...projetosNoPrazoProjeto.map((p) => p.Chave),
+          ...projetosNoPrazoFase.map((p) => p.Chave),
+        ]);
+        const todosProjetosEmRisco = new Set([
+          ...projetosEmRiscoProjeto.map((p) => p.Chave),
+          ...projetosEmRiscoFase.map((p) => p.Chave),
+        ]);
+        const todosProjetosForaDoPrazo = new Set([
+          ...projetosForaDoPrazoProjeto.map((p) => p.Chave),
+          ...projetosForaDoPrazoFase.map((p) => p.Chave),
+        ]);
+
+        projetosNoPrazo = todosProjetosNoPrazo.size;
+        projetosEmRisco = todosProjetosEmRisco.size;
+        projetosForaDoPrazo = todosProjetosForaDoPrazo.size;
+        break;
+    }
+
+    return { projetosNoPrazo, projetosEmRisco, projetosForaDoPrazo };
+  };
+
+  // Calcular métricas baseada no tipo de filtro selecionado
+  const { projetosNoPrazo, projetosEmRisco, projetosForaDoPrazo } =
+    calcularMetricasStatus(tipoFiltroStatus);
 
   // Encontrar os próximos 3 projetos a serem executados
   const proximosExecucao = backlogPriorizado
@@ -364,7 +434,13 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Projetos No Prazo"
+          label={
+            tipoFiltroStatus === "projeto"
+              ? "Projetos No Prazo"
+              : tipoFiltroStatus === "fase"
+              ? "Fases No Prazo"
+              : "Projetos/Fases No Prazo"
+          }
           value={projetosNoPrazo}
           currentTheme={currentTheme}
           valueColor={themeColors.status.prazo.noPrazo.text[currentTheme]}
@@ -375,6 +451,18 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           clickable={!!onStatusPrazoClick}
           isFiltered={filtroStatusPrazoAtivo === "No prazo"}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                {tipoFiltroStatus === "projeto" &&
+                  "Projetos com status de prazo do projeto 'No prazo'"}
+                {tipoFiltroStatus === "fase" &&
+                  "Projetos com status de prazo da fase atual 'No prazo'"}
+                {tipoFiltroStatus === "ambos" &&
+                  "Projetos com status 'No prazo' no projeto OU na fase atual"}
+              </div>
+            </div>
+          }
         />
         <TotalizadorCard
           icon={
@@ -386,7 +474,13 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Projetos Em Risco"
+          label={
+            tipoFiltroStatus === "projeto"
+              ? "Projetos Em Risco"
+              : tipoFiltroStatus === "fase"
+              ? "Fases Em Risco"
+              : "Projetos/Fases Em Risco"
+          }
           value={projetosEmRisco}
           currentTheme={currentTheme}
           valueColor={themeColors.status.prazo.emRisco.bg[currentTheme]}
@@ -397,6 +491,18 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           clickable={!!onStatusPrazoClick}
           isFiltered={filtroStatusPrazoAtivo === "Em risco"}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                {tipoFiltroStatus === "projeto" &&
+                  "Projetos com status de prazo do projeto 'Em risco'"}
+                {tipoFiltroStatus === "fase" &&
+                  "Projetos com status de prazo da fase atual 'Em risco'"}
+                {tipoFiltroStatus === "ambos" &&
+                  "Projetos com status 'Em risco' no projeto OU na fase atual"}
+              </div>
+            </div>
+          }
         />
         <TotalizadorCard
           icon={
@@ -408,7 +514,13 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Projetos Atrasados"
+          label={
+            tipoFiltroStatus === "projeto"
+              ? "Projetos Atrasados"
+              : tipoFiltroStatus === "fase"
+              ? "Fases Atrasadas"
+              : "Projetos/Fases Atrasados"
+          }
           value={projetosForaDoPrazo}
           currentTheme={currentTheme}
           valueColor={themeColors.status.prazo.foraPrazo.text[currentTheme]}
@@ -419,6 +531,18 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           }
           clickable={!!onStatusPrazoClick}
           isFiltered={filtroStatusPrazoAtivo === "Atrasado"}
+          tooltipContent={
+            <div className="text-xs max-w-xs">
+              <div style={{ color: getTextColor("secondary", currentTheme) }}>
+                {tipoFiltroStatus === "projeto" &&
+                  "Projetos com status de prazo do projeto 'Atrasado'"}
+                {tipoFiltroStatus === "fase" &&
+                  "Projetos com status de prazo da fase atual 'Atrasado'"}
+                {tipoFiltroStatus === "ambos" &&
+                  "Projetos com status 'Atrasado' no projeto OU na fase atual"}
+              </div>
+            </div>
+          }
         />
       </div>
 

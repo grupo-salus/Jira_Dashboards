@@ -67,6 +67,9 @@ const DashProjetos: React.FC = () => {
   const [menuAberto, setMenuAberto] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Tipo para filtro de status
+  type TipoFiltroStatus = "projeto" | "fase" | "ambos";
+
   // Estado inicial dos filtros
   const filtrosIniciais = {
     area: [] as string[],
@@ -78,6 +81,8 @@ const DashProjetos: React.FC = () => {
     mesEntrega: [] as string[],
     entreguesMes: false as boolean,
     dataRapida: "" as string,
+    tipoFiltroStatus: "projeto" as TipoFiltroStatus,
+    colunaStatusPrazo: "Status de prazo" as string,
     filtroData: {
       campo: "" as string,
       operador: "" as string,
@@ -295,9 +300,26 @@ const DashProjetos: React.FC = () => {
           item["Grupo Solicitante"] || ""
         );
 
-      const matchesStatusPrazo =
-        filtrosAtivos.statusPrazo.length === 0 ||
-        filtrosAtivos.statusPrazo.includes(item["Status de prazo"] || "");
+      // Filtro de status de prazo baseado no tipo selecionado
+      let matchesStatusPrazo = true;
+      if (filtrosAtivos.statusPrazo.length > 0) {
+        if (filtrosAtivos.tipoFiltroStatus === "projeto") {
+          matchesStatusPrazo = filtrosAtivos.statusPrazo.includes(
+            item["Status de prazo"] || ""
+          );
+        } else if (filtrosAtivos.tipoFiltroStatus === "fase") {
+          matchesStatusPrazo = filtrosAtivos.statusPrazo.includes(
+            item["Status da fase atual"] || ""
+          );
+        } else if (filtrosAtivos.tipoFiltroStatus === "ambos") {
+          // Para "ambos", verifica se o status está presente em qualquer uma das colunas
+          const statusProjeto = item["Status de prazo"] || "";
+          const statusFase = item["Status da fase atual"] || "";
+          matchesStatusPrazo = filtrosAtivos.statusPrazo.some(
+            (status) => statusProjeto === status || statusFase === status
+          );
+        }
+      }
 
       // Filtro por projetos entregues no mês atual
       let matchesEntreguesMes = true;
@@ -307,8 +329,8 @@ const DashProjetos: React.FC = () => {
           const data = new Date(dataTermino);
           const mesAtual = new Date().getMonth();
           const anoAtual = new Date().getFullYear();
-          matchesEntreguesMes = 
-            data.getMonth() === mesAtual && 
+          matchesEntreguesMes =
+            data.getMonth() === mesAtual &&
             data.getFullYear() === anoAtual &&
             item.Status === "Concluído";
         } else {
@@ -1074,6 +1096,95 @@ const DashProjetos: React.FC = () => {
                           ? themeColors.text.error.dark
                           : themeColors.text.error.light,
                     },
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isSelected
+                      ? currentTheme === "dark"
+                        ? themeColors.components.buttons.primary.bg.dark
+                        : themeColors.components.buttons.primary.bg.light
+                      : state.isFocused
+                      ? currentTheme === "dark"
+                        ? themeColors.background.hover.dark
+                        : themeColors.background.hover.light
+                      : currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                    cursor: "pointer",
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg.light,
+                    color: getTextColor("primary", currentTheme),
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: getTextColor("primary", currentTheme),
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 160,
+                  }),
+                }}
+                noOptionsMessage={() => "Sem opções"}
+                components={{ ClearIndicator: CustomClearIndicator }}
+                closeMenuOnScroll={true}
+              />
+            </div>
+
+            {/* Seletor de Tipo de Filtro de Status */}
+            <div className="flex flex-col min-w-0">
+              <label
+                htmlFor="tipo-status-filter"
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Prazo por
+              </label>
+              <Select
+                inputId="tipo-status-filter"
+                options={[
+                  { value: "projeto", label: "Projeto" },
+                  { value: "fase", label: "Fase" },
+                  { value: "ambos", label: "Projeto/Fase" },
+                ]}
+                value={[
+                  { value: "projeto", label: "Projeto" },
+                  { value: "fase", label: "Fase" },
+                  { value: "ambos", label: "Projeto/Fase" },
+                ].find((opt) => opt.value === filtros.tipoFiltroStatus)}
+                onChange={(selected) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    tipoFiltroStatus:
+                      (selected?.value as TipoFiltroStatus) || "projeto",
+                    statusPrazo: [], // Limpa o filtro de status quando muda o tipo
+                  }))
+                }
+                placeholder="Selecione"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor:
+                      currentTheme === "dark"
+                        ? themeColors.background.card.dark
+                        : themeColors.components.filtros.input.bg[currentTheme],
+                    borderColor: base.isFocused
+                      ? themeColors.components.filtros.input.focus[currentTheme]
+                      : themeColors.components.filtros.input.border[
+                          currentTheme
+                        ],
+                    color: getTextColor("primary", currentTheme),
+                    minHeight: 40,
+                    boxShadow: base.isFocused
+                      ? `0 0 0 2px ${themeColors.components.filtros.input.focus[currentTheme]}`
+                      : undefined,
+                    minWidth: 0,
                   }),
                   option: (base, state) => ({
                     ...base,
@@ -1917,13 +2028,24 @@ const DashProjetos: React.FC = () => {
       <ProjetosTotalizadores
         filteredData={filteredData}
         originalData={projetosData.rawData}
-        onStatusPrazoClick={(status) =>
+        onStatusPrazoClick={(status) => {
+          // Determinar qual coluna filtrar baseado no tipo selecionado
+          let colunaFiltro = "Status de prazo";
+          if (filtros.tipoFiltroStatus === "fase") {
+            colunaFiltro = "Status da fase atual";
+          } else if (filtros.tipoFiltroStatus === "ambos") {
+            // Para "ambos", vamos criar um filtro customizado que verifica ambas as colunas
+            // Por enquanto, vamos filtrar pela coluna principal e adicionar uma lógica especial
+            colunaFiltro = "Status de prazo";
+          }
+
           setFiltros((f) => ({
             ...f,
             statusPrazo: [status],
+            colunaStatusPrazo: colunaFiltro,
             entreguesMes: false, // Limpa o filtro de entregues no mês
-          }))
-        }
+          }));
+        }}
         filtroStatusPrazoAtivo={
           filtros.statusPrazo.length > 0 ? filtros.statusPrazo[0] : null
         }
@@ -1935,6 +2057,7 @@ const DashProjetos: React.FC = () => {
           }))
         }
         filtroEntreguesMesAtivo={filtros.entreguesMes}
+        tipoFiltroStatus={filtros.tipoFiltroStatus}
       />
 
       {/* Gráficos do dashboard - 3 gráficos em linha */}
