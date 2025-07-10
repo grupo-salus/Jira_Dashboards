@@ -509,15 +509,6 @@ const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
 
-      {/* Dias em desenvolvimento */}
-      {projeto["Tempo na fase Em andamento (dias)"] !== null &&
-        projeto["Tempo na fase Em andamento (dias)"] !== undefined &&
-        projeto["Tempo na fase Em andamento (dias)"] !== 0 && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Tempo decorrido: {projeto["Tempo na fase Em andamento (dias)"]} dias
-          </div>
-        )}
-
       {/* Barra de progresso */}
       {progresso !== null && (
         <>
@@ -696,13 +687,6 @@ const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
 
-      {/* Tempo em homologação */}
-      {inicioHom && fimHom && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Tempo decorrido: {diasDecorridos} dias
-        </div>
-      )}
-
       {/* Data fim homologação - lógica condicional */}
       {projeto["Data: Fim Em homologação"] && fimHom && (
         <div className="text-gray-600 dark:text-gray-200">
@@ -874,12 +858,7 @@ const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
         </div>
       )}
 
-      {/* Tempo em operação assistida */}
-      {inicioOp && fimOp && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Tempo decorrido: {diasDecorridos} dias
-        </div>
-      )}
+
 
       {/* Data fim operação assistida - lógica condicional */}
       {projeto["Data: Fim Operação assistida"] && fimOp && (
@@ -1041,14 +1020,7 @@ const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({ projeto }) => {
             Fim: {formatDate(projeto["Data: Fim Em andamento"])}
           </div>
         )}
-        {/* Tempo em desenvolvimento */}
-        {projeto["Tempo na fase Em andamento (dias)"] !== null &&
-          projeto["Tempo na fase Em andamento (dias)"] !== undefined && (
-            <div className="text-gray-600 dark:text-gray-200">
-              Tempo decorrido: {projeto["Tempo na fase Em andamento (dias)"]}{" "}
-              dias
-            </div>
-          )}
+
         <hr className="my-1 border-gray-300 dark:border-gray-600" />
         {/* Status de prazo */}
         {projeto["Status de prazo"] && (
@@ -1167,12 +1139,7 @@ const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             Fim: {formatDate(projeto["Data: Fim Cancelado"])}
           </div>
         )}
-        {/* Tempo em cancelamento */}
-        {diasCancelado !== null && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Tempo decorrido: {diasCancelado} dias
-          </div>
-        )}
+
         {/* Motivo do cancelamento */}
         {projeto["Motivo para Bloqueio de Projeto"] && (
           <div className="text-gray-600 dark:text-gray-200">
@@ -1273,12 +1240,7 @@ const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
             Início: {formatDate(projeto["Data: Início Bloqueado"])}
           </div>
         )}
-        {/* Dias bloqueado */}
-        {diasBloqueado !== null && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Tempo decorrido: {diasBloqueado} dias
-          </div>
-        )}
+
         {/* Data de fim do bloqueio */}
         {projeto["Data: Fim Bloqueado"] && (
           <div className="text-gray-600 dark:text-gray-200">
