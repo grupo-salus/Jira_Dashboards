@@ -550,7 +550,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
       {proximosExecucao.length > 0 && (
         <div className="mb-20">
           <div
-            className={`rounded-lg shadow-md w-full p-6 relative overflow-hidden flex flex-col gap-3`}
+            className={`rounded-lg shadow-md w-full p-4 sm:p-6 relative overflow-hidden flex flex-col gap-3`}
             style={{
               backgroundColor: getBackgroundColor("card", currentTheme),
             }}
@@ -569,18 +569,16 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                 Fila ordenada por prioridade no backlog
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 sm:gap-3 w-full">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 w-full">
               {proximosExecucao.map((projeto, index) => (
                 <div
                   key={projeto.Título}
-                  className={`relative flex items-center gap-2 p-2 sm:p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 h-16 sm:h-20 lg:h-24 cursor-pointer`}
+                  className={`relative flex items-center gap-3 p-4 sm:p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 min-h-[100px] sm:h-24 lg:h-28 cursor-pointer w-full sm:flex-1 sm:min-w-[250px]`}
                   style={{
                     background:
                       themeColors.components.totalizadores.proximoExecucao.bg[
                         currentTheme
                       ],
-                    flex: "1 1 250px",
-                    minWidth: 0,
                   }}
                   onClick={() => {
                     if (projeto.Chave) {
@@ -597,14 +595,14 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   />
 
                   <div
-                    className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8`}
+                    className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-8 h-8 sm:w-8 sm:h-8`}
                     style={{
                       backgroundColor:
                         themeColors.components.totalizadores.ranking.bar,
                     }}
                   >
                     <span
-                      className={`text-xs sm:text-sm`}
+                      className={`text-sm sm:text-sm`}
                       style={{ color: themeColors.utility.white }}
                     >
                       #{projeto.PosicaoBacklog}
@@ -612,7 +610,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                   </div>
                   <div className="flex-1 min-w-0 pl-2">
                     <h4
-                      className={`font-semibold break-words whitespace-normal text-xs sm:text-sm`}
+                      className={`font-semibold break-words whitespace-normal text-sm sm:text-sm leading-tight`}
                       style={{ color: getTextColor("primary", currentTheme) }}
                       title={projeto.Título}
                     >
@@ -623,9 +621,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                       )}
                     </h4>
                     {projeto["Departamento Solicitante"] && (
-                      <div className="flex items-center gap-1 sm:gap-2 mt-1">
+                      <div className="flex items-center gap-2 sm:gap-2 mt-2">
                         <p
-                          className={`truncate text-xs`}
+                          className={`truncate text-sm`}
                           style={{
                             color: getTextColor("secondary", currentTheme),
                           }}
@@ -635,7 +633,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                         </p>
                         {projeto.Prioridade && (
                           <span
-                            className={`truncate text-xs font-medium px-1 sm:px-2 py-0.5 rounded inline-block flex-shrink-0 text-white`}
+                            className={`truncate text-sm font-medium px-2 sm:px-2 py-1 rounded inline-block flex-shrink-0 text-white`}
                             style={{
                               backgroundColor: getPriorityColor(
                                 projeto.Prioridade
@@ -651,7 +649,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
                     {!projeto["Departamento Solicitante"] &&
                       projeto.Prioridade && (
                         <span
-                          className={`truncate text-xs mt-1 font-medium px-1 sm:px-2 py-0.5 rounded inline-block text-white`}
+                          className={`truncate text-sm mt-2 font-medium px-2 sm:px-2 py-1 rounded inline-block text-white`}
                           style={{
                             backgroundColor: getPriorityColor(
                               projeto.Prioridade

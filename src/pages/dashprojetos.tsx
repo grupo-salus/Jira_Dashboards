@@ -101,6 +101,13 @@ const DashProjetos: React.FC = () => {
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
+  // Hook para detectar largura da tela
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const isMobile = windowWidth <= 768;
+
+  // Estado para controlar visibilidade dos filtros no mobile
+  const [filtrosVisiveis, setFiltrosVisiveis] = useState(!isMobile);
+
   // NOVO: Estado global para projeto filtrado único
   const [projetoFiltradoUnico, setProjetoFiltradoUnico] =
     useState<EspacoDeProjetos | null>(null);
@@ -121,6 +128,26 @@ const DashProjetos: React.FC = () => {
 
     return () => observer.disconnect();
   }, []);
+
+  // Hook para detectar mudanças de tamanho de tela
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+      setWindowWidth(newWidth);
+
+      // Se mudou de mobile para desktop, mostra os filtros
+      if (newWidth > 768 && !filtrosVisiveis) {
+        setFiltrosVisiveis(true);
+      }
+      // Se mudou de desktop para mobile, oculta os filtros
+      else if (newWidth <= 768 && filtrosVisiveis) {
+        setFiltrosVisiveis(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [filtrosVisiveis]);
 
   // Fechar menu quando clicar fora
   useEffect(() => {
@@ -871,33 +898,70 @@ const DashProjetos: React.FC = () => {
     >
       {/* Container de Filtros com botão Limpar acima, sempre reservando espaço */}
       <div className="mb-20">
-        <div className="flex justify-end w-full mt-0 mb-4">
-          {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) ||
-          projetoFiltradoUnico ? (
+        <div className="flex justify-between items-center w-full mt-0 mb-4">
+          {/* Botão para mostrar/ocultar filtros no mobile */}
+          {isMobile && (
             <button
-              onClick={() => {
-                setFiltros(filtrosIniciais);
-                setProjetoFiltradoUnico(null);
+              onClick={() => setFiltrosVisiveis(!filtrosVisiveis)}
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              style={{
+                backgroundColor: getBackgroundColor("hover", currentTheme),
+                color: getTextColor("primary", currentTheme),
               }}
-              className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs ml-4"
-              style={{ color: themeColors.text.error[currentTheme] }}
-              title="Limpar todos os filtros"
             >
-              <FilterIcon size={16} />
-              <span className="font-semibold">Limpar filtros</span>
-            </button>
-          ) : (
-            <button
-              className="flex items-center gap-1 p-1 bg-transparent rounded-full border border-transparent font-semibold text-xs ml-4 opacity-0 select-none pointer-events-none"
-              tabIndex={-1}
-              aria-hidden="true"
-            >
-              <FilterIcon size={16} />
-              <span className="font-semibold">Limpar filtros</span>
+              <svg
+                className={`w-4 h-4 transition-transform ${
+                  filtrosVisiveis ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+              {filtrosVisiveis ? "Ocultar Filtros" : "Mostrar Filtros"}
             </button>
           )}
+
+          <div className="flex justify-end">
+            {JSON.stringify(filtros) !== JSON.stringify(filtrosIniciais) ||
+            projetoFiltradoUnico ? (
+              <button
+                onClick={() => {
+                  setFiltros(filtrosIniciais);
+                  setProjetoFiltradoUnico(null);
+                }}
+                className="flex items-center gap-1 p-1 bg-transparent rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent font-semibold text-xs ml-4"
+                style={{ color: themeColors.text.error[currentTheme] }}
+                title="Limpar todos os filtros"
+              >
+                <FilterIcon size={16} />
+                <span className="font-semibold">Limpar filtros</span>
+              </button>
+            ) : (
+              <button
+                className="flex items-center gap-1 p-1 bg-transparent rounded-full border border-transparent font-semibold text-xs ml-4 opacity-0 select-none pointer-events-none"
+                tabIndex={-1}
+                aria-hidden="true"
+              >
+                <FilterIcon size={16} />
+                <span className="font-semibold">Limpar filtros</span>
+              </button>
+            )}
+          </div>
         </div>
-        <div className="p-0 shadow-none">
+
+        {/* Seção de Filtros - Ocultável no mobile - EM LINHA SEPARADA */}
+        <div
+          className={`p-0 shadow-none transition-all duration-300 ${
+            isMobile && !filtrosVisiveis ? "hidden" : ""
+          }`}
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-7 w-full">
             {/* Filtro de Área */}
             <div className="flex flex-col min-w-0">

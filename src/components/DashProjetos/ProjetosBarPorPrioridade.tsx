@@ -213,7 +213,7 @@ const ProjetosBarPorPrioridade: React.FC<ProjetosBarPorPrioridadeProps> = ({
           />
           <Bar
             dataKey="count"
-            radius={[8, 8, 0, 0]}
+            radius={isMobile ? [4, 4, 4, 4] : [8, 8, 0, 0]}
             cursor="pointer"
             onMouseEnter={handleBarMouseEnter}
             onMouseLeave={handleBarMouseLeave}

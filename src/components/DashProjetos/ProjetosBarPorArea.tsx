@@ -189,7 +189,7 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
             onMouseEnter={handleBarMouseEnter}
             onMouseLeave={handleBarMouseLeave}
             cursor="pointer"
-            radius={[8, 8, 0, 0]}
+            radius={isMobile ? [4, 4, 4, 4] : [8, 8, 0, 0]}
           >
             {areaCountFiltered.map((item) => (
               <Cell

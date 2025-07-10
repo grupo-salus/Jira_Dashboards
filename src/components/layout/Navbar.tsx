@@ -126,7 +126,8 @@ const Navbar: React.FC<NavbarProps> = ({
               <img
                 src="/assets/logo.png"
                 alt="Salus Logo"
-                className="h-12 w-full mr-2"
+                className="h-12 w-auto max-w-[120px] sm:max-w-[150px] mr-2"
+                style={{ objectFit: "contain" }}
               />
             </div>
 
