@@ -140,8 +140,11 @@ export const DashProjetos = () => {
     >
       {/* Header removido */}
 
+      {/* Informação da última atualização */}
+      <LastUpdateInfo />
+
       {/* Seção 1: Filtros */}
-      <section>
+      <section style={{ marginTop: "0px" }}>
         <FilterPanel projetos={projetos as any[]} />
       </section>
 
@@ -221,9 +224,6 @@ export const DashProjetos = () => {
           <ChevronUp size={24} />
         </button>
       )}
-
-      {/* Informação da última atualização */}
-      <LastUpdateInfo />
     </div>
   );
 };

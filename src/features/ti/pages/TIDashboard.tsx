@@ -71,13 +71,13 @@ export const TIDashboard = () => {
         </p>
       </div>
 
+      {/* Informação da última atualização */}
+      <LastUpdateInfo />
+
       {/* Tabela de TI */}
       <section>
         <TITable data={tiData} />
       </section>
-
-      {/* Informação da última atualização */}
-      <LastUpdateInfo />
     </div>
   );
 };
