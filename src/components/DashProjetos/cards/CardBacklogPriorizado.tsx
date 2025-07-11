@@ -41,7 +41,7 @@ export const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           <>
             <hr className="my-1 border-gray-300 dark:border-gray-600" />
             <div className="flex items-center gap-2">
-              <span className="font-medium">Prazo fase:</span>
+              <span className="font-medium">Status:</span>
               <span
                 className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
                   statusFaseAtual
@@ -64,7 +64,7 @@ export const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
           <div className="flex items-center gap-2">
-            <span className="font-medium">Prazo projeto:</span>
+            <span className="font-medium">Projeto:</span>
             <span
               className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
                 projeto["Status de prazo"]

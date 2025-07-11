@@ -36,7 +36,8 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
             const hoje = new Date();
             const fimConcluido = new Date(projeto["Data: Fim Concluído"]);
             return hoje < fimConcluido ? "Fim previsto:" : "Fim:";
-          })()} {formatDate(projeto["Data: Fim Concluído"])}
+          })()}{" "}
+          {formatDate(projeto["Data: Fim Concluído"])}
         </div>
       )}
 
@@ -74,8 +75,8 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
       <hr className="my-1 border-gray-300 dark:border-gray-600" />
       {/* Status de prazo */}
       {projeto["Status de prazo"] && (
-                  <div className="flex items-center gap-2">
-            <span className="font-medium">Prazo projeto:</span>
+        <div className="flex items-center gap-2">
+          <span className="font-medium">Projeto:</span>
           <span
             className={`ml-2 px-1 py-0.5 rounded font-medium ${getStatusColor(
               projeto["Status de prazo"]
