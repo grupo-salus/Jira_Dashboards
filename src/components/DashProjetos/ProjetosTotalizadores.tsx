@@ -19,7 +19,7 @@ import {
   getPriorityConfig,
 } from "../../utils/themeColors";
 
-type TipoFiltroStatus = "projeto" | "fase" | "ambos";
+type TipoFiltroStatus = "projeto" | "status" | "";
 
 interface ProjetosTotalizadoresProps {
   filteredData: EspacoDeProjetos[];
@@ -28,7 +28,7 @@ interface ProjetosTotalizadoresProps {
   filtroStatusPrazoAtivo?: string | null;
   onEntreguesMesClick?: () => void;
   filtroEntreguesMesAtivo?: boolean;
-  tipoFiltroStatus?: "projeto" | "fase" | "ambos";
+  tipoFiltroStatus?: "projeto" | "status" | "";
 }
 
 // Função para converter CSS rem para pixels
@@ -141,11 +141,12 @@ const TotalizadorCard: React.FC<{
 
 const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   filteredData,
+  originalData,
   onStatusPrazoClick,
   filtroStatusPrazoAtivo,
   onEntreguesMesClick,
   filtroEntreguesMesAtivo,
-  tipoFiltroStatus = "projeto",
+  tipoFiltroStatus = "",
 }) => {
   const config = getTotalizadoresConfig();
 
@@ -233,71 +234,48 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     let projetosEmRisco = 0;
     let projetosForaDoPrazo = 0;
 
+    // Calcular métricas de projeto (sempre dos dados originais)
+    const projetosNoPrazoProjeto = originalData.filter(
+      (p: EspacoDeProjetos) => p["Status de prazo"] === "No prazo"
+    ).length;
+    const projetosEmRiscoProjeto = originalData.filter(
+      (p: EspacoDeProjetos) => p["Status de prazo"] === "Em risco"
+    ).length;
+    const projetosForaDoPrazoProjeto = originalData.filter(
+      (p: EspacoDeProjetos) => p["Status de prazo"] === "Atrasado"
+    ).length;
+
+    // Calcular métricas de status (sempre dos dados originais)
+    const projetosNoPrazoStatus = originalData.filter(
+      (p: EspacoDeProjetos) => p["Status da fase atual"] === "No prazo"
+    ).length;
+    const projetosEmRiscoStatus = originalData.filter(
+      (p: EspacoDeProjetos) => p["Status da fase atual"] === "Em risco"
+    ).length;
+    const projetosForaDoPrazoStatus = originalData.filter(
+      (p: EspacoDeProjetos) => p["Status da fase atual"] === "Atrasado"
+    ).length;
+
     switch (tipo) {
       case "projeto":
-        // Apenas status do projeto
-        projetosNoPrazo = filteredData.filter(
-          (p) => p["Status de prazo"] === "No prazo"
-        ).length;
-        projetosEmRisco = filteredData.filter(
-          (p) => p["Status de prazo"] === "Em risco"
-        ).length;
-        projetosForaDoPrazo = filteredData.filter(
-          (p) => p["Status de prazo"] === "Atrasado"
-        ).length;
+        // Quando filtro por projeto, mostrar apenas os valores de projeto
+        projetosNoPrazo = projetosNoPrazoProjeto;
+        projetosEmRisco = projetosEmRiscoProjeto;
+        projetosForaDoPrazo = projetosForaDoPrazoProjeto;
         break;
 
-      case "fase":
-        // Apenas status da fase atual
-        projetosNoPrazo = filteredData.filter(
-          (p) => p["Status da fase atual"] === "No prazo"
-        ).length;
-        projetosEmRisco = filteredData.filter(
-          (p) => p["Status da fase atual"] === "Em risco"
-        ).length;
-        projetosForaDoPrazo = filteredData.filter(
-          (p) => p["Status da fase atual"] === "Atrasado"
-        ).length;
+      case "status":
+        // Quando filtro por status, mostrar apenas os valores de status
+        projetosNoPrazo = projetosNoPrazoStatus;
+        projetosEmRisco = projetosEmRiscoStatus;
+        projetosForaDoPrazo = projetosForaDoPrazoStatus;
         break;
-
-      case "ambos":
-        // Ambos os status (união)
-        const projetosNoPrazoProjeto = filteredData.filter(
-          (p) => p["Status de prazo"] === "No prazo"
-        );
-        const projetosNoPrazoFase = filteredData.filter(
-          (p) => p["Status da fase atual"] === "No prazo"
-        );
-        const projetosEmRiscoProjeto = filteredData.filter(
-          (p) => p["Status de prazo"] === "Em risco"
-        );
-        const projetosEmRiscoFase = filteredData.filter(
-          (p) => p["Status da fase atual"] === "Em risco"
-        );
-        const projetosForaDoPrazoProjeto = filteredData.filter(
-          (p) => p["Status de prazo"] === "Atrasado"
-        );
-        const projetosForaDoPrazoFase = filteredData.filter(
-          (p) => p["Status da fase atual"] === "Atrasado"
-        );
-
-        // União dos conjuntos (sem duplicatas)
-        const todosProjetosNoPrazo = new Set([
-          ...projetosNoPrazoProjeto.map((p) => p.Chave),
-          ...projetosNoPrazoFase.map((p) => p.Chave),
-        ]);
-        const todosProjetosEmRisco = new Set([
-          ...projetosEmRiscoProjeto.map((p) => p.Chave),
-          ...projetosEmRiscoFase.map((p) => p.Chave),
-        ]);
-        const todosProjetosForaDoPrazo = new Set([
-          ...projetosForaDoPrazoProjeto.map((p) => p.Chave),
-          ...projetosForaDoPrazoFase.map((p) => p.Chave),
-        ]);
-
-        projetosNoPrazo = todosProjetosNoPrazo.size;
-        projetosEmRisco = todosProjetosEmRisco.size;
-        projetosForaDoPrazo = todosProjetosForaDoPrazo.size;
+      case "":
+        // Quando não há filtro, mostrar a soma individual de cada tipo
+        projetosNoPrazo = projetosNoPrazoProjeto + projetosNoPrazoStatus;
+        projetosEmRisco = projetosEmRiscoProjeto + projetosEmRiscoStatus;
+        projetosForaDoPrazo =
+          projetosForaDoPrazoProjeto + projetosForaDoPrazoStatus;
         break;
     }
 
@@ -439,9 +417,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label={
             tipoFiltroStatus === "projeto"
               ? "Projetos No Prazo"
-              : tipoFiltroStatus === "fase"
-              ? "Fases No Prazo"
-              : "Projetos/Fases No Prazo"
+              : tipoFiltroStatus === "status"
+              ? "Status No Prazo"
+              : "No Prazo"
           }
           value={projetosNoPrazo}
           currentTheme={currentTheme}
@@ -467,9 +445,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label={
             tipoFiltroStatus === "projeto"
               ? "Projetos Em Risco"
-              : tipoFiltroStatus === "fase"
-              ? "Fases Em Risco"
-              : "Projetos/Fases Em Risco"
+              : tipoFiltroStatus === "status"
+              ? "Status Em Risco"
+              : "Em Risco"
           }
           value={projetosEmRisco}
           currentTheme={currentTheme}
@@ -495,9 +473,9 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
           label={
             tipoFiltroStatus === "projeto"
               ? "Projetos Atrasados"
-              : tipoFiltroStatus === "fase"
-              ? "Fases Atrasadas"
-              : "Projetos/Fases Atrasados"
+              : tipoFiltroStatus === "status"
+              ? "Status Atrasados"
+              : "Atrasados"
           }
           value={projetosForaDoPrazo}
           currentTheme={currentTheme}

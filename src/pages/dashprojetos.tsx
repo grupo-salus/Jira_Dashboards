@@ -68,7 +68,7 @@ const DashProjetos: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Tipo para filtro de status
-  type TipoFiltroStatus = "projeto" | "fase" | "ambos";
+  type TipoFiltroStatus = "projeto" | "status" | "";
 
   // Estado inicial dos filtros
   const filtrosIniciais = {
@@ -81,7 +81,7 @@ const DashProjetos: React.FC = () => {
     mesEntrega: [] as string[],
     entreguesMes: false as boolean,
     dataRapida: "" as string,
-    tipoFiltroStatus: "projeto" as TipoFiltroStatus,
+    tipoFiltroStatus: "" as TipoFiltroStatus,
     colunaStatusPrazo: "Status de prazo" as string,
     filtroData: {
       campo: "" as string,
@@ -334,12 +334,12 @@ const DashProjetos: React.FC = () => {
           matchesStatusPrazo = filtrosAtivos.statusPrazo.includes(
             item["Status de prazo"] || ""
           );
-        } else if (filtrosAtivos.tipoFiltroStatus === "fase") {
+        } else if (filtrosAtivos.tipoFiltroStatus === "status") {
           matchesStatusPrazo = filtrosAtivos.statusPrazo.includes(
             item["Status da fase atual"] || ""
           );
-        } else if (filtrosAtivos.tipoFiltroStatus === "ambos") {
-          // Para "ambos", verifica se o status está presente em qualquer uma das colunas
+        } else {
+          // Quando não há tipo específico selecionado (placeholder "Todos"), considera ambos os tipos
           const statusProjeto = item["Status de prazo"] || "";
           const statusFase = item["Status da fase atual"] || "";
           matchesStatusPrazo = filtrosAtivos.statusPrazo.some(
@@ -1200,25 +1200,28 @@ const DashProjetos: React.FC = () => {
               </label>
               <Select
                 inputId="tipo-status-filter"
+                isClearable={true}
                 options={[
                   { value: "projeto", label: "Projeto" },
-                  { value: "fase", label: "Fase" },
-                  { value: "ambos", label: "Projeto/Fase" },
+                  { value: "status", label: "Status" },
                 ]}
-                value={[
-                  { value: "projeto", label: "Projeto" },
-                  { value: "fase", label: "Fase" },
-                  { value: "ambos", label: "Projeto/Fase" },
-                ].find((opt) => opt.value === filtros.tipoFiltroStatus)}
+                value={
+                  filtros.tipoFiltroStatus
+                    ? [
+                        { value: "projeto", label: "Projeto" },
+                        { value: "status", label: "Status" },
+                      ].find((opt) => opt.value === filtros.tipoFiltroStatus)
+                    : null
+                }
                 onChange={(selected) =>
                   setFiltros((f) => ({
                     ...f,
                     tipoFiltroStatus:
-                      (selected?.value as TipoFiltroStatus) || "projeto",
+                      (selected?.value as TipoFiltroStatus) || "",
                     statusPrazo: [], // Limpa o filtro de status quando muda o tipo
                   }))
                 }
-                placeholder="Selecione"
+                placeholder="Todos"
                 classNamePrefix="react-select"
                 styles={{
                   control: (base) => ({
@@ -1270,6 +1273,13 @@ const DashProjetos: React.FC = () => {
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     maxWidth: 160,
+                  }),
+                  clearIndicator: (base) => ({
+                    ...base,
+                    color: themeColors.text.error[currentTheme],
+                    ":hover": {
+                      color: themeColors.text.error[currentTheme],
+                    },
                   }),
                 }}
                 noOptionsMessage={() => "Sem opções"}
@@ -2084,12 +2094,11 @@ const DashProjetos: React.FC = () => {
         onStatusPrazoClick={(status) => {
           // Determinar qual coluna filtrar baseado no tipo selecionado
           let colunaFiltro = "Status de prazo";
-          if (filtros.tipoFiltroStatus === "fase") {
+          if (filtros.tipoFiltroStatus === "status") {
             colunaFiltro = "Status da fase atual";
-          } else if (filtros.tipoFiltroStatus === "ambos") {
-            // Para "ambos", vamos criar um filtro customizado que verifica ambas as colunas
-            // Por enquanto, vamos filtrar pela coluna principal e adicionar uma lógica especial
-            colunaFiltro = "Status de prazo";
+          } else if (!filtros.tipoFiltroStatus) {
+            // Quando não há tipo selecionado, considera ambos
+            colunaFiltro = "ambos";
           }
 
           setFiltros((f) => ({
