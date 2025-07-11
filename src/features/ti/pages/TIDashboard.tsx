@@ -1,14 +1,15 @@
 import { useTheme } from "@/shared/context/ThemeContext";
-import { AlertCircle } from "lucide-react";
 import { TITable } from "@/features/ti/components/TITable";
 import { useTI } from "@/features/ti/hooks/useTI";
 import { LastUpdateInfo } from "@/shared/components/LastUpdateInfo";
 import { useAutoRefresh } from "@/shared/hooks/useAutoRefresh";
+import { ErrorScreen } from "@/shared/components/ErrorScreen";
+import { SUPPORT_CONFIG } from "@/shared/constants/support";
 
 export const TIDashboard = () => {
   const { theme } = useTheme();
-  const { data: tiData, loading, error, refetch } = useTI();
-  
+  const { data: tiData, loading, error, errorCode, refetch } = useTI();
+
   // Auto-refresh habilitado automaticamente para dashboards
   useAutoRefresh({ enabled: true });
 
@@ -32,37 +33,14 @@ export const TIDashboard = () => {
 
   if (error) {
     return (
-      <div
-        className="min-h-screen p-6 flex items-center justify-center"
-        style={{ backgroundColor: theme.bg.base }}
-      >
-        <div className="text-center max-w-md">
-          <AlertCircle
-            size={48}
-            className="mx-auto mb-4"
-            style={{ color: theme.text.base }}
-          />
-          <h2
-            className="text-xl font-semibold mb-2"
-            style={{ color: theme.text.title }}
-          >
-            Erro ao carregar dados
-          </h2>
-          <p className="mb-4" style={{ color: theme.text.base }}>
-            {error}
-          </p>
-          <button
-            onClick={refetch}
-            className="px-4 py-2 rounded-lg transition-colors"
-            style={{
-              backgroundColor: theme.brand.primary,
-              color: theme.text.inverse,
-            }}
-          >
-            Tentar novamente
-          </button>
-        </div>
-      </div>
+      <ErrorScreen
+        error={error}
+        errorCode={errorCode}
+        onRetry={refetch}
+        onContactSupport={() => {
+          window.open(SUPPORT_CONFIG.website, "_blank");
+        }}
+      />
     );
   }
 
