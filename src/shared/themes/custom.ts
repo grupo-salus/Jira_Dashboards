@@ -1,5 +1,5 @@
 export const customTheme = {
-  name: "custom",
+  name: "coca-cola",
   light: {
     bg: {
       base: "#ffffff",
@@ -8,22 +8,22 @@ export const customTheme = {
     },
     text: {
       base: "#212529",
-      title: "#0d6efd", // Azul Bootstrap
+      title: "#e60012", // Coca-Cola Red
       subtitle: "#495057",
       inverse: "#ffffff",
     },
     border: {
       base: "#dee2e6",
-      strong: "#0d6efd",
+      strong: "#e60012",
     },
     shadow: {
       base: "0 2px 6px rgba(0,0,0,0.08)",
     },
     brand: {
-      primary: "#0d6efd", // Azul Bootstrap
-      accent: "#6610f2", // Roxo Bootstrap
-      highlight: "#20c997", // Verde esmeralda
-      neutral: "#adb5bd", // Cinza neutro
+      primary: "#e60012", // Coca-Cola Red
+      accent: "#000000", // Black
+      highlight: "#f8f9fa", // Light Gray
+      neutral: "#adb5bd",
     },
     state: {
       success: "#198754",
@@ -33,12 +33,12 @@ export const customTheme = {
     },
     graphics: {
       palette: [
-        "#0d6efd",
-        "#6610f2",
-        "#20c997",
-        "#ffc107",
-        "#dc3545",
+        "#e60012",
+        "#000000",
+        "#495057",
         "#adb5bd",
+        "#ffc107",
+        "#198754",
       ],
       axis: "#495057",
       grid: "#dee2e6",
@@ -66,49 +66,49 @@ export const customTheme = {
 
   dark: {
     bg: {
-      base: "#1e1e2f",
-      surface: "#2c2c3a",
-      muted: "#3e3e4e",
+      base: "#1a1a1a", // Dark Charcoal
+      surface: "#2c2c2c",
+      muted: "#3e3e3e",
     },
     text: {
       base: "#f8f9fa",
-      title: "#0dcaf0",
+      title: "#f03e3e", // Brighter Red for dark mode
       subtitle: "#adb5bd",
-      inverse: "#1e1e2f",
+      inverse: "#1a1a1a",
     },
     border: {
       base: "#495057",
-      strong: "#0dcaf0",
+      strong: "#f03e3e",
     },
     shadow: {
       base: "0 2px 6px rgba(0,0,0,0.5)",
     },
     brand: {
-      primary: "#0dcaf0", // Azul ciano
-      accent: "#6f42c1", // Roxo escuro
-      highlight: "#20c997", // Verde esmeralda
+      primary: "#f03e3e", // Brighter Red for dark mode
+      accent: "#ffffff", // White
+      highlight: "#2c2c2c",
       neutral: "#adb5bd",
     },
     state: {
-      success: "#198754",
+      success: "#20c997",
       warning: "#ffc107",
-      error: "#f03e3e",
+      error: "#f06565",
       disabled: "#6c757d",
     },
     graphics: {
       palette: [
-        "#0dcaf0",
-        "#6f42c1",
-        "#20c997",
-        "#ffc107",
         "#f03e3e",
+        "#ffffff",
         "#adb5bd",
+        "#ffc107",
+        "#20c997",
+        "#6c757d",
       ],
       axis: "#adb5bd",
       grid: "#3e3e4e",
       label: "#f8f9fa",
       tooltip: {
-        background: "#2c2c3a",
+        background: "#2c2c2c",
         text: "#ffffff",
       },
     },
