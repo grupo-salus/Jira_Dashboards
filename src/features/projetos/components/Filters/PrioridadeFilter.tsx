@@ -1,32 +1,32 @@
 import Select from "react-select";
-import { AlertTriangle } from "lucide-react";
+import { Flag } from "lucide-react";
 import { useSelectTheme } from "@/shared/hooks/useSelectTheme";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { FilterBase } from "./FilterBase";
-
-const prioridadeOptions = [
-  { value: "Alta", label: "Alta" },
-  { value: "Média", label: "Média" },
-  { value: "Baixa", label: "Baixa" },
-  { value: "Crítica", label: "Crítica" },
-  { value: "Estratégica", label: "Estratégica" },
-];
+import { FilterBase, getUniqueOptions } from "./FilterBase";
 
 interface PrioridadeFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
+  projetos: any[];
 }
 
 export const PrioridadeFilter = ({
   value,
   onChange,
+  projetos,
 }: PrioridadeFilterProps) => {
   const selectTheme = useSelectTheme();
   const { theme } = useTheme();
+
+  // Extrai prioridades únicas do campo 'Prioridade' dos projetos
+  const prioridadeOptions = getUniqueOptions(projetos, "Prioridade").map(
+    (prioridade) => ({ value: prioridade, label: prioridade })
+  );
+
   return (
     <FilterBase
       label="Prioridade"
-      icon={<AlertTriangle size={16} />}
+      icon={<Flag size={16} />}
       htmlFor="prioridade-filter"
     >
       <Select
@@ -54,10 +54,10 @@ export const PrioridadeFilter = ({
           multiValueLabel: (base) => ({ ...base, color: theme.text.subtitle }),
           multiValueRemove: (base) => ({
             ...base,
-            color: "#ef4444",
+            color: theme.text.subtitle,
             ":hover": {
-              backgroundColor: "#fee2e2",
-              color: "#ef4444",
+              backgroundColor: theme.bg.muted,
+              color: theme.text.title,
             },
           }),
           placeholder: (base) => ({ ...base, color: theme.text.subtitle }),

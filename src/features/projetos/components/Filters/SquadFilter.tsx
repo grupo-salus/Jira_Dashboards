@@ -2,27 +2,28 @@ import Select from "react-select";
 import { Users } from "lucide-react";
 import { useSelectTheme } from "@/shared/hooks/useSelectTheme";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { FilterBase } from "./FilterBase";
-
-const squadOptions = [
-  { value: "Squad Alpha", label: "Squad Alpha" },
-  { value: "Squad Beta", label: "Squad Beta" },
-  { value: "Squad Gamma", label: "Squad Gamma" },
-  { value: "Squad Delta", label: "Squad Delta" },
-  { value: "Squad Echo", label: "Squad Echo" },
-  { value: "Squad Foxtrot", label: "Squad Foxtrot" },
-  { value: "Squad Golf", label: "Squad Golf" },
-  { value: "Squad Hotel", label: "Squad Hotel" },
-];
+import { FilterBase, getUniqueOptions } from "./FilterBase";
 
 interface SquadFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
+  projetos: any[];
 }
 
-export const SquadFilter = ({ value, onChange }: SquadFilterProps) => {
+export const SquadFilter = ({
+  value,
+  onChange,
+  projetos,
+}: SquadFilterProps) => {
   const selectTheme = useSelectTheme();
   const { theme } = useTheme();
+
+  // Extrai squads únicos do campo 'Squad' dos projetos
+  const squadOptions = getUniqueOptions(projetos, "Squad").map((squad) => ({
+    value: squad,
+    label: squad,
+  }));
+
   return (
     <FilterBase label="Squad" icon={<Users size={16} />} htmlFor="squad-filter">
       <Select
@@ -34,7 +35,7 @@ export const SquadFilter = ({ value, onChange }: SquadFilterProps) => {
         theme={selectTheme}
         isMulti
         isClearable
-        placeholder="Todas"
+        placeholder="Todos"
         closeMenuOnSelect={false}
         styles={{
           control: (base) => ({
@@ -50,8 +51,11 @@ export const SquadFilter = ({ value, onChange }: SquadFilterProps) => {
           multiValueLabel: (base) => ({ ...base, color: theme.text.subtitle }),
           multiValueRemove: (base) => ({
             ...base,
-            color: "#ef4444",
-            ":hover": { backgroundColor: "#fee2e2", color: "#ef4444" },
+            color: theme.text.subtitle,
+            ":hover": {
+              backgroundColor: theme.bg.muted,
+              color: theme.text.title,
+            },
           }),
           placeholder: (base) => ({ ...base, color: theme.text.subtitle }),
           menu: (base) => ({ ...base, backgroundColor: theme.bg.base }),

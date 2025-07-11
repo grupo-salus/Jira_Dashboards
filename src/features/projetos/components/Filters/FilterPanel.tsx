@@ -91,24 +91,29 @@ export const FilterPanel = ({ projetos }: FilterPanelProps) => {
           <AreaFilter
             value={filters.area}
             onChange={(v: any) => setFilters((f) => ({ ...f, area: v }))}
+            projetos={projetos}
           />
           <StatusFilter
             value={filters.status}
             onChange={(v: any) => setFilters((f) => ({ ...f, status: v }))}
+            projetos={projetos}
           />
           <PrioridadeFilter
             value={filters.prioridade}
             onChange={(v: any) => setFilters((f) => ({ ...f, prioridade: v }))}
+            projetos={projetos}
           />
           <SquadFilter
             value={filters.squad}
             onChange={(v: any) => setFilters((f) => ({ ...f, squad: v }))}
+            projetos={projetos}
           />
           <GrupoSolicitanteFilter
             value={filters.grupoSolicitante}
             onChange={(v: any) =>
               setFilters((f) => ({ ...f, grupoSolicitante: v }))
             }
+            projetos={projetos}
           />
           <PeriodoFilter
             value={filters.periodo}

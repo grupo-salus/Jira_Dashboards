@@ -2,27 +2,24 @@ import Select from "react-select";
 import { Building2 } from "lucide-react";
 import { useSelectTheme } from "@/shared/hooks/useSelectTheme";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { FilterBase } from "./FilterBase";
-
-const areaOptions = [
-  { value: "Desenvolvimento", label: "Desenvolvimento" },
-  { value: "Infraestrutura", label: "Infraestrutura" },
-  { value: "Segurança", label: "Segurança" },
-  { value: "Dados", label: "Dados" },
-  { value: "UX/UI", label: "UX/UI" },
-  { value: "DevOps", label: "DevOps" },
-  { value: "QA", label: "QA" },
-  { value: "Produto", label: "Produto" },
-];
+import { FilterBase, getUniqueOptions } from "./FilterBase";
 
 interface AreaFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
+  projetos: any[];
 }
 
-export const AreaFilter = ({ value, onChange }: AreaFilterProps) => {
+export const AreaFilter = ({ value, onChange, projetos }: AreaFilterProps) => {
   const selectTheme = useSelectTheme();
   const { theme } = useTheme();
+
+  // Extrai áreas únicas do campo 'Area' dos projetos
+  const areaOptions = getUniqueOptions(projetos, "Area").map((area) => ({
+    value: area,
+    label: area,
+  }));
+
   return (
     <FilterBase
       label="Área"
@@ -54,8 +51,11 @@ export const AreaFilter = ({ value, onChange }: AreaFilterProps) => {
           multiValueLabel: (base) => ({ ...base, color: theme.text.subtitle }),
           multiValueRemove: (base) => ({
             ...base,
-            color: "#ef4444",
-            ":hover": { backgroundColor: "#fee2e2", color: "#ef4444" },
+            color: theme.text.subtitle,
+            ":hover": {
+              backgroundColor: theme.bg.muted,
+              color: theme.text.title,
+            },
           }),
           placeholder: (base) => ({ ...base, color: theme.text.subtitle }),
           menu: (base) => ({ ...base, backgroundColor: theme.bg.base }),

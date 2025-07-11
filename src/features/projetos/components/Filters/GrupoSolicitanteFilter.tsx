@@ -1,33 +1,32 @@
 import Select from "react-select";
-import { Users } from "lucide-react";
+import { Users2 } from "lucide-react";
 import { useSelectTheme } from "@/shared/hooks/useSelectTheme";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { FilterBase } from "./FilterBase";
-
-const grupoOptions = [
-  { value: "TI", label: "TI" },
-  { value: "Financeiro", label: "Financeiro" },
-  { value: "Comercial", label: "Comercial" },
-  { value: "Vendas", label: "Vendas" },
-  { value: "RH", label: "RH" },
-  { value: "Operações", label: "Operações" },
-];
+import { FilterBase, getUniqueOptions } from "./FilterBase";
 
 interface GrupoSolicitanteFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
+  projetos: any[];
 }
 
 export const GrupoSolicitanteFilter = ({
   value,
   onChange,
+  projetos,
 }: GrupoSolicitanteFilterProps) => {
   const selectTheme = useSelectTheme();
   const { theme } = useTheme();
+
+  // Extrai grupos solicitantes únicos do campo 'Grupo Solicitante' dos projetos
+  const grupoOptions = getUniqueOptions(projetos, "Grupo Solicitante").map(
+    (grupo) => ({ value: grupo, label: grupo })
+  );
+
   return (
     <FilterBase
       label="Grupo Solicitante"
-      icon={<Users size={16} />}
+      icon={<Users2 size={16} />}
       htmlFor="grupo-solicitante-filter"
     >
       <Select
@@ -55,8 +54,11 @@ export const GrupoSolicitanteFilter = ({
           multiValueLabel: (base) => ({ ...base, color: theme.text.subtitle }),
           multiValueRemove: (base) => ({
             ...base,
-            color: "#ef4444",
-            ":hover": { backgroundColor: "#fee2e2", color: "#ef4444" },
+            color: theme.text.subtitle,
+            ":hover": {
+              backgroundColor: theme.bg.muted,
+              color: theme.text.title,
+            },
           }),
           placeholder: (base) => ({ ...base, color: theme.text.subtitle }),
           menu: (base) => ({ ...base, backgroundColor: theme.bg.base }),

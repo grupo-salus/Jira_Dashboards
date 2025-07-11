@@ -2,28 +2,28 @@ import Select from "react-select";
 import { ListChecks } from "lucide-react";
 import { useSelectTheme } from "@/shared/hooks/useSelectTheme";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { FilterBase } from "./FilterBase";
-
-const statusOptions = [
-  { value: "Em andamento", label: "Em andamento" },
-  { value: "Concluído", label: "Concluído" },
-  { value: "Aguardando", label: "Aguardando" },
-  { value: "Cancelado", label: "Cancelado" },
-  { value: "Backlog", label: "Backlog" },
-  { value: "Backlog Priorizado", label: "Backlog Priorizado" },
-  { value: "Bloqueado", label: "Bloqueado" },
-  { value: "Em Homologação", label: "Em Homologação" },
-  { value: "Operação Assistida", label: "Operação Assistida" },
-];
+import { FilterBase, getUniqueOptions } from "./FilterBase";
 
 interface StatusFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
+  projetos: any[];
 }
 
-export const StatusFilter = ({ value, onChange }: StatusFilterProps) => {
+export const StatusFilter = ({
+  value,
+  onChange,
+  projetos,
+}: StatusFilterProps) => {
   const selectTheme = useSelectTheme();
   const { theme } = useTheme();
+
+  // Extrai status únicos do campo 'Status' dos projetos
+  const statusOptions = getUniqueOptions(projetos, "Status").map((status) => ({
+    value: status,
+    label: status,
+  }));
+
   return (
     <FilterBase
       label="Status"
@@ -55,8 +55,11 @@ export const StatusFilter = ({ value, onChange }: StatusFilterProps) => {
           multiValueLabel: (base) => ({ ...base, color: theme.text.subtitle }),
           multiValueRemove: (base) => ({
             ...base,
-            color: "#ef4444",
-            ":hover": { backgroundColor: "#fee2e2", color: "#ef4444" },
+            color: theme.text.subtitle,
+            ":hover": {
+              backgroundColor: theme.bg.muted,
+              color: theme.text.title,
+            },
           }),
           placeholder: (base) => ({ ...base, color: theme.text.subtitle }),
           menu: (base) => ({ ...base, backgroundColor: theme.bg.base }),
