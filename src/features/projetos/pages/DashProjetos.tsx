@@ -14,6 +14,15 @@ import { LastUpdateInfo } from "@/shared/components/LastUpdateInfo";
 import { useAutoRefresh } from "@/shared/hooks/useAutoRefresh";
 import { ErrorScreen } from "@/shared/components/ErrorScreen";
 import { SUPPORT_CONFIG } from "@/shared/constants/support";
+// Importando funções de lógica dos totalizadores
+import { calcularProjetosBacklog } from "../components/Totalizadores/logic/calcularProjetosBacklog";
+import { calcularProjetosNoPrazo } from "../components/Totalizadores/logic/calcularProjetosNoPrazo";
+import { calcularProjetosAtrasados } from "../components/Totalizadores/logic/calcularProjetosAtrasados";
+import { calcularProjetosEmAndamento } from "../components/Totalizadores/logic/calcularProjetosEmAndamento";
+import { calcularProjetosIdeacao } from "../components/Totalizadores/logic/calcularProjetosIdeacao";
+import { calcularProjetosEntreguesMes } from "../components/Totalizadores/logic/calcularProjetosEntreguesMes";
+import { calcularProjetosEmRisco } from "../components/Totalizadores/logic/calcularProjetosEmRisco";
+import { calcularTotalProjetos } from "../components/Totalizadores/logic/calcularTotalProjetos";
 
 type ViewMode = "kanban" | "table";
 
@@ -40,7 +49,7 @@ export const DashProjetos = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Exemplo de cálculo de totalizadores a partir dos dados
+  // Cálculo dos totalizadores usando funções separadas
   const totalizadores = useMemo(() => {
     if (!projetos) {
       return {
@@ -54,36 +63,15 @@ export const DashProjetos = () => {
         projetosEmRisco: 0,
       };
     }
-
     return {
-      projetosNoPrazo: projetos.filter(
-        (p) => p["Status de prazo"] === "No prazo"
-      ).length,
-      projetosAtrasados: projetos.filter(
-        (p) => p["Status de prazo"] === "Atrasado"
-      ).length,
-      totalProjetos: projetos.length,
-      projetosEmAndamento: projetos.filter((p) => p.Status === "Em Andamento")
-        .length,
-      projetosIdeacao: projetos.filter(
-        (p) =>
-          p["Status de ideação"] === "Recente" ||
-          p["Status de ideação"] === "Rever"
-      ).length,
-      projetosBacklog: projetos.filter((p) => p.Status === "Backlog Priorizado")
-        .length,
-      projetosEntreguesMes: projetos.filter((p) => {
-        if (!p["Data de término"]) return false;
-        const data = new Date(p["Data de término"]);
-        const agora = new Date();
-        return (
-          data.getMonth() === agora.getMonth() &&
-          data.getFullYear() === agora.getFullYear()
-        );
-      }).length,
-      projetosEmRisco: projetos.filter(
-        (p) => p["Status de prazo"] === "Em risco"
-      ).length,
+      projetosNoPrazo: calcularProjetosNoPrazo(projetos),
+      projetosAtrasados: calcularProjetosAtrasados(projetos),
+      totalProjetos: calcularTotalProjetos(projetos),
+      projetosEmAndamento: calcularProjetosEmAndamento(projetos),
+      projetosIdeacao: calcularProjetosIdeacao(projetos),
+      projetosBacklog: calcularProjetosBacklog(projetos),
+      projetosEntreguesMes: calcularProjetosEntreguesMes(projetos),
+      projetosEmRisco: calcularProjetosEmRisco(projetos),
     };
   }, [projetos]);
 
