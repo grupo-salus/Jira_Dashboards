@@ -17,6 +17,11 @@ import {
   getFieldInfo,
   organizarCamposPorSecao,
 } from "../components/CriarProjeto/formUtils";
+import {
+  CAMPOS_FORMULARIO,
+  getCamposObrigatoriosSecao,
+  getNomeSecao,
+} from "../components/CriarProjeto/constants";
 
 const sections = [
   { id: 1, title: "Informações do Solicitante", icon: Users },
@@ -123,8 +128,102 @@ const CriarProjeto: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica de envio do formulário
-    console.log("Formulário válido:", formData);
+
+    // Validar todos os campos obrigatórios
+    const camposObrigatorios = CAMPOS_FORMULARIO.OBRIGATORIOS;
+
+    const camposVazios: string[] = [];
+    const camposPreenchidos: string[] = [];
+
+    camposObrigatorios.forEach((campoKey) => {
+      const valor = formData[campoKey];
+      const campo = campos.find((c) => c.key === campoKey);
+      const fieldInfo = getFieldInfo(campoKey, campo?.label || campoKey);
+
+      if (
+        !valor ||
+        (typeof valor === "string" && valor.trim() === "") ||
+        (Array.isArray(valor) && valor.length === 0)
+      ) {
+        camposVazios.push(fieldInfo.label);
+      } else {
+        camposPreenchidos.push(fieldInfo.label);
+      }
+    });
+
+    // Só mostrar alert se todos os campos obrigatórios estiverem preenchidos
+    if (camposVazios.length === 0) {
+      const mensagem =
+        `✅ VALIDAÇÃO CONCLUÍDA COM SUCESSO!\n\n` +
+        `Todos os ${camposPreenchidos.length} campos obrigatórios estão preenchidos:\n\n` +
+        camposPreenchidos.map((campo) => `• ${campo}`).join("\n") +
+        `\n\n📋 DADOS DO FORMULÁRIO:\n` +
+        `Total de campos: ${Object.keys(formData).length}\n` +
+        `Campos preenchidos: ${
+          Object.keys(formData).filter((key) => {
+            const valor = formData[key];
+            return (
+              valor &&
+              (typeof valor === "string" ? valor.trim() !== "" : true) &&
+              (Array.isArray(valor) ? valor.length > 0 : true)
+            );
+          }).length
+        }`;
+
+      // Mostrar alert de sucesso
+      alert(mensagem);
+
+      // Log no console para debug
+      console.log("=== VALIDAÇÃO CONCLUÍDA COM SUCESSO ===");
+      console.log("Campos obrigatórios:", camposObrigatorios);
+      console.log("Campos preenchidos:", camposPreenchidos);
+      console.log("Dados completos:", formData);
+    } else {
+      // Encontrar a primeira seção com campos obrigatórios faltando
+      let primeiraSecaoComFalta = 1;
+
+      // Verificar cada seção para encontrar a primeira com campos faltando
+      for (let secaoId = 1; secaoId <= 6; secaoId++) {
+        const camposObrigatoriosSecao = getCamposObrigatoriosSecao(secaoId);
+
+        if (camposObrigatoriosSecao.length > 0) {
+          const temCamposFaltando = camposObrigatoriosSecao.some((campoKey) => {
+            const valor = formData[campoKey];
+            return (
+              !valor ||
+              (typeof valor === "string" && valor.trim() === "") ||
+              (Array.isArray(valor) && valor.length === 0)
+            );
+          });
+
+          if (temCamposFaltando) {
+            primeiraSecaoComFalta = secaoId;
+            break;
+          }
+        }
+      }
+
+      // Navegar para a primeira seção com campos faltando
+      setCurrentSection(primeiraSecaoComFalta);
+
+      const mensagem =
+        `❌ FORMULÁRIO INCOMPLETO!\n\n` +
+        `Existem ${camposVazios.length} campos obrigatórios não preenchidos.\n\n` +
+        `📍 Redirecionando para a seção "${getNomeSecao(
+          primeiraSecaoComFalta
+        )}"\n\n` +
+        `Campos faltando:\n` +
+        camposVazios.map((campo) => `• ${campo}`).join("\n") +
+        `\n\nPor favor, preencha todos os campos obrigatórios antes de enviar.`;
+
+      alert(mensagem);
+
+      // Log no console para debug
+      console.log("=== VALIDAÇÃO FALHOU ===");
+      console.log("Primeira seção com falta:", primeiraSecaoComFalta);
+      console.log("Campos vazios:", camposVazios);
+      console.log("Campos preenchidos:", camposPreenchidos);
+    }
   };
 
   if (loading) {
@@ -208,6 +307,9 @@ const CriarProjeto: React.FC = () => {
               sections={sections}
               currentSection={currentSection}
               setCurrentSection={setCurrentSection}
+              formData={formData}
+              campos={campos}
+              getFieldInfo={getFieldInfo}
             />
           </div>
 

@@ -1,3 +1,5 @@
+import { CAMPOS_FORMULARIO } from "./constants";
+
 // Interface para os campos do Jira
 interface CampoJira {
   key: string;
@@ -7,26 +9,13 @@ interface CampoJira {
   options?: Array<{ id: string; label: string }>;
 }
 
-// Campos obrigatórios customizados (sobrescrevem a API do Jira)
-const CAMPOS_OBRIGATORIOS_CUSTOMIZADOS = [
-  "summary", // Título do Projeto (sempre obrigatório)
-  "customfield_10093", // Nome completo do solicitante
-  "customfield_10247", // E-mail corporativo
-  "customfield_10245", // Departamento / Unidade solicitante
-  "customfield_10481", // Objetivo do Projeto
-  "description", // Descrição do Projeto
-  "customfield_10478", // Tipo de Projeto
-  "priority", // Prioridade da Solicitação
-  "customfield_10486", // Confirmação de Responsabilidade
-];
-
 // Função para verificar se um campo é obrigatório (combinando API + customização)
 export const isCampoObrigatorio = (
   campoKey: string,
   requiredFromAPI: boolean
 ): boolean => {
   // Se está na lista de obrigatórios customizados, sempre é obrigatório
-  if (CAMPOS_OBRIGATORIOS_CUSTOMIZADOS.includes(campoKey)) {
+  if (CAMPOS_FORMULARIO.OBRIGATORIOS.includes(campoKey)) {
     return true;
   }
 
