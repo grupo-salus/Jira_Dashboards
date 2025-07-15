@@ -26,6 +26,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import DashProjetos from "./pages/dashprojetos";
 import SprintDashboard from "./pages/SprintDashboard";
 import TIDashboard from "./pages/TIDashboard";
+import CriarProjeto from "./pages/CriarProjeto";
 import Navbar from "./components/layout/Navbar";
 
 const AppContent: React.FC = () => {
@@ -70,6 +71,7 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<DashProjetos />} />
           <Route path="/sprint" element={<SprintDashboard />} />
           <Route path="/ti" element={<TIDashboard />} />
+          <Route path="/criar-projeto" element={<CriarProjeto />} />
         </Routes>
       </main>
     </div>

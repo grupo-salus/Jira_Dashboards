@@ -242,4 +242,45 @@ class JiraService:
         except Exception as e:
             logger.error(f"[get_issue_with_changelog] Erro ao buscar changelog da issue {issue_key}: {e}")
             return {}
+        
+    def get_fields_for_issue_type(self, project_key: str) -> list:
+        """
+        Retorna a lista de campos disponíveis para criação de issues de um tipo específico.
+        """
+        url = f"{self.jira_url}/rest/api/3/issue/createmeta?projectKeys={project_key}&expand=projects.issuetypes.fields"
+        response = requests.get(url, headers=self.headers, auth=self.auth)
+        response.raise_for_status()
+        data = response.json()
 
+        fields_raw = data["projects"][0]["issuetypes"][0]["fields"]
+        fields = []
+
+        for key, field in fields_raw.items():
+            field_type = field["schema"].get("type", "unknown")
+            allowed_values = field.get("allowedValues", [])
+            options = []
+
+            for opt in allowed_values:
+                # Lida com diferentes estruturas
+                label = opt.get("value") or opt.get("name") or opt.get("displayName") or opt.get("key") or "Desconhecido"
+                options.append({
+                    "id": opt.get("id") or opt.get("accountId") or opt.get("key") or label,
+                    "label": label
+                })
+
+            fields.append({
+                "key": key,
+                "label": field.get("name", key),
+                "type": field_type,
+                "required": field.get("required", False),
+                "options": options or None
+            })
+
+        return fields
+
+    def post_issue(self, issue: dict) -> dict:
+        """
+        Cria uma nova issue no Jira.
+        """
+
+        

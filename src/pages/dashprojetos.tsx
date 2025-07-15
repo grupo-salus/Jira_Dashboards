@@ -41,6 +41,7 @@ import {
   FilterIcon,
 } from "../components/icons/DashboardIcons";
 import Select, { components as selectComponents } from "react-select";
+import { useNavigate } from "react-router-dom";
 
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
@@ -61,6 +62,7 @@ declare global {
 
 const DashProjetos: React.FC = () => {
   const { projetosData, opcoesDepartamentoSolicitante } = useJira();
+  const navigate = useNavigate();
   const [visualizacao, setVisualizacao] = useState<"tabela" | "kanban">(
     "kanban"
   );
@@ -2395,6 +2397,39 @@ const DashProjetos: React.FC = () => {
           <ProjetosTable data={filteredData} />
         )}
       </div>
+
+      {/* Botão flutuante para criar projeto */}
+      <button
+        onClick={() => navigate("/criar-projeto")}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl z-50 flex items-center justify-center"
+        style={{
+          background: themeColors.components.buttons.primary.bg[currentTheme],
+          color: themeColors.components.buttons.primary.text,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background =
+            themeColors.components.buttons.primary.hover[currentTheme];
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background =
+            themeColors.components.buttons.primary.bg[currentTheme];
+        }}
+        title="Criar novo projeto"
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+      </button>
     </div>
   );
 };

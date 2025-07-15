@@ -539,12 +539,12 @@ export const themeColors = {
     buttons: {
       primary: {
         bg: {
-          light: "linear-gradient(to right, #3b82f6, #8b5cf6)", // blue-500 to purple-500
-          dark: "linear-gradient(to right, #1d4ed8, #7c3aed)", // blue-700 to purple-700
+          light: "linear-gradient(to right, #059669, #10b981)", // verde esmeralda
+          dark: "linear-gradient(to right, #047857, #065f46)", // verde escuro
         },
         hover: {
-          light: "linear-gradient(to right, #2563eb, #7c3aed)", // blue-600 to purple-600
-          dark: "linear-gradient(to right, #1e40af, #6d28d9)", // blue-800 to purple-800
+          light: "linear-gradient(to right, #10b981, #34d399)", // verde mais claro no hover
+          dark: "linear-gradient(to right, #065f46, #047857)", // verde escuro no hover
         },
         text: "#ffffff",
       },

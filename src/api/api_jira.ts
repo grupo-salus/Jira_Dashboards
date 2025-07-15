@@ -161,3 +161,20 @@ export async function fetchOpcoesCampoCustomizado(
     throw error;
   }
 }
+
+export async function fetchCamposProjeto(): Promise<any[]> {
+  try {
+    const url = `${API_URL}/api/espaco_de_projetos/campos_projeto`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch project fields");
+    }
+
+    const data = await response.json();
+    return data.fields ?? [];
+  } catch (error) {
+    console.error("Error fetching project fields:", error);
+    throw error;
+  }
+}

@@ -5,7 +5,9 @@ from services.jira_parser import (
     parse_issues_to_dataframe_espaco_de_projetos,
     prepare_dataframe_for_json_export,
 )
-
+from schemas.projeto_schema import ProjetoJiraInput
+from pydantic import BaseModel, Field
+from typing import Optional, List, Dict
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/espaco_de_projetos", tags=["Espaço de Projetos"])
 
@@ -46,3 +48,70 @@ def get_tabela_espaco_de_projetos(request: Request):
     except Exception as e:
         logger.exception("Erro ao processar /api/espaco_de_projetos/tabela")
         return {"erro": str(e)} 
+    
+
+@router.get("/campos_projeto")
+def listar_campos_projeto():
+    """
+    Retorna apenas os campos específicos para o formulário de criação de projeto.
+    """
+    service = JiraService()
+    all_fields = service.get_fields_for_issue_type(project_key="EP")
+    
+    # Lista de campos que queremos mostrar no formulário (baseado no HTML)
+    campos_desejados = [
+        "customfield_10093",          # Nome completo do solicitante
+        "customfield_10247",          # E-mail corporativo
+        "customfield_10245",          # Departamento / Unidade solicitante
+        "customfield_10250",          # Diretor responsável pela aprovação
+        "summary",                    # Nome ou Título do Projeto (obrigatório)
+        "customfield_10481",          # Objetivo do Projeto
+        "description",                # Descrição do Projeto
+        "customfield_10476",          # Escopo Inicial ou Solução Proposta pela Área
+        "customfield_10477",          # Stakeholders Diretos ou Equipes Envolvidas
+        "customfield_10478",          # Tipo de Projeto
+        "priority",                   # Prioridade da Solicitação
+        "customfield_10479",          # Prazo Desejado ou Restrição Temporal
+        "customfield_10480",          # Impacto Esperado
+        "customfield_10248",          # Benefícios Esperados
+        "customfield_10482",          # Riscos Conhecidos ou Percebidos pela Área
+        "customfield_10483",          # Estimativa de Custo
+        "customfield_10484",          # Existe orçamento reservado para este projeto?
+        "customfield_10485",          # Observações adicionais
+        "customfield_10486"           #confirmação 
+    ]
+    
+    # Filtra apenas os campos desejados
+    campos_filtrados = [
+        field for field in all_fields 
+        if field.get("key") in campos_desejados
+    ]
+    
+    # Ordena os campos na ordem desejada
+    campos_ordenados = []
+    for key in campos_desejados:
+        for field in campos_filtrados:
+            if field.get("key") == key:
+                campos_ordenados.append(field)
+                break
+    
+    return {"fields": campos_ordenados}
+
+
+@router.post("/criar_projeto")
+def criar_projeto(projeto: ProjetoJiraInput):
+    """
+    Cria um novo projeto no Jira com os campos validados.
+    """
+    logger.info("[criar_projeto] Recebendo dados para criar projeto no Jira.")
+
+    service = JiraService()
+    payload = {
+        "fields": {
+            "project": { "key": "EP" },
+            "issuetype": { "id": "10105" },
+            **projeto.model_dump(exclude_none=True)
+        }
+    }
+
+    return service.post_issue(payload)
