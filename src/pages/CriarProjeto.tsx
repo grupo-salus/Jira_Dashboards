@@ -231,18 +231,18 @@ const CriarProjeto: React.FC = () => {
                 {renderSection()}
               </div>
               {/* Botões de Navegação */}
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
                 <button
                   type="button"
                   onClick={() =>
                     setCurrentSection(Math.max(1, currentSection - 1))
                   }
                   disabled={currentSection === 1}
-                  className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Anterior
                 </button>
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
                   {currentSection < sections.length ? (
                     <button
                       type="button"
@@ -251,29 +251,26 @@ const CriarProjeto: React.FC = () => {
                           Math.min(sections.length, currentSection + 1)
                         )
                       }
-                      className="px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                      className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                     >
                       Próximo
                     </button>
                   ) : (
-                    <div className="flex space-x-4">
+                    <>
                       <button
                         type="button"
                         onClick={() => navigate("/")}
-                        className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        className="w-full sm:w-auto px-4 sm:px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center space-x-2"
+                        className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                       >
                         <span>Criar Projeto</span>
-                        <span className="text-xs bg-blue-500 dark:bg-blue-400 px-2 py-1 rounded">
-                          Em desenvolvimento
-                        </span>
                       </button>
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
