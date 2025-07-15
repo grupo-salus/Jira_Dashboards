@@ -89,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({
       return {
         view: "projetos" as const,
         icon: Kanban,
-        label: "Status Report de Projetos",
+        label: "Status Report | Projetos",
       };
     } else if (location.pathname === "/sprint") {
       return {
