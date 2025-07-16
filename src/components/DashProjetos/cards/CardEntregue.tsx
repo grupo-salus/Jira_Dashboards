@@ -23,56 +23,20 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
   return withJiraLink(
     projeto,
     <CardBase projeto={projeto}>
-      {/* Data que entrou em conclusão */}
-      {projeto["Data: Início Concluído"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Início: {formatDate(projeto["Data: Início Concluído"])}
-        </div>
-      )}
-      {/* Data de fim da conclusão */}
+      {/* 
+      Data de fim da conclusão 
       {projeto["Data: Fim Concluído"] && (
         <div className="text-gray-600 dark:text-gray-200">
           {(() => {
             const hoje = new Date();
             const fimConcluido = new Date(projeto["Data: Fim Concluído"]);
-            return hoje < fimConcluido ? "Fim previsto:" : "Fim:";
+            return hoje < fimConcluido ? "Entrega prevista:" : "Entregue:";
           })()}{" "}
           {formatDate(projeto["Data: Fim Concluído"])}
         </div>
       )}
+      */}
 
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Target start */}
-      {projeto["Target start"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target start: {formatDate(projeto["Target start"])}
-        </div>
-      )}
-      {/* Target end */}
-      {projeto["Target end"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Target end: {formatDate(projeto["Target end"])}
-        </div>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
-
-      {/* Entrou em desenvolvimento */}
-      {projeto["Data: Início Em andamento"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Início desenvolvimento:{" "}
-          {formatDate(projeto["Data: Início Em andamento"])}
-        </div>
-      )}
-      {/* Data de fim do desenvolvimento */}
-      {projeto["Data: Fim Em andamento"] && (
-        <div className="text-gray-600 dark:text-gray-200">
-          Fim desenvolvimento: {formatDate(projeto["Data: Fim Em andamento"])}
-        </div>
-      )}
-
-      <hr className="my-1 border-gray-300 dark:border-gray-600" />
       {/* Status de prazo */}
       {projeto["Status de prazo"] && (
         <div className="flex items-center gap-2">
