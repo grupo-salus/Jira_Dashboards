@@ -46,7 +46,7 @@ import { useNavigate } from "react-router-dom";
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
   Backlog: "Ideação",
-  "Em Andamento": "Em Desenvolvimento",
+  "Em Desenvolvimento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
   Concluído: "Entregue",
@@ -520,12 +520,12 @@ const DashProjetos: React.FC = () => {
           ? new Date(item["Data: Fim Backlog priorizado"])
           : null;
       case "dataInicioEmAndamento":
-        return item["Data: Início Em andamento"]
-          ? new Date(item["Data: Início Em andamento"])
+        return item["Data: Início Em desenvolvimento"]
+          ? new Date(item["Data: Início Em desenvolvimento"])
           : null;
       case "dataFimEmAndamento":
-        return item["Data: Fim Em andamento"]
-          ? new Date(item["Data: Fim Em andamento"])
+        return item["Data: Fim Em desenvolvimento"]
+          ? new Date(item["Data: Fim Em desenvolvimento"])
           : null;
       case "dataInicioEmHomologacao":
         return item["Data: Início Em homologação"]
@@ -772,8 +772,11 @@ const DashProjetos: React.FC = () => {
       value: "dataFimBacklogPriorizado",
       label: "Data: Fim Backlog Priorizado",
     },
-    { value: "dataInicioEmAndamento", label: "Data: Início Em Andamento" },
-    { value: "dataFimEmAndamento", label: "Data: Fim Em Andamento" },
+    {
+      value: "dataInicioEmAndamento",
+      label: "Data: Início Em Desenvolvimento",
+    },
+    { value: "dataFimEmAndamento", label: "Data: Fim Em Desenvolvimento" },
     { value: "dataInicioEmHomologacao", label: "Data: Início Em Homologação" },
     { value: "dataFimEmHomologacao", label: "Data: Fim Em Homologação" },
     {

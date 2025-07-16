@@ -26,11 +26,11 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   const statusFaseAtual = projeto["Status da fase atual"];
 
   // Calcular progresso da fase
-  const inicioDev = projeto["Data: Início Em andamento"]
-    ? new Date(projeto["Data: Início Em andamento"])
+  const inicioDev = projeto["Data: Início Em desenvolvimento"]
+    ? new Date(projeto["Data: Início Em desenvolvimento"])
     : null;
-  const fimDev = projeto["Data: Fim Em andamento"]
-    ? new Date(projeto["Data: Fim Em andamento"])
+  const fimDev = projeto["Data: Fim Em desenvolvimento"]
+    ? new Date(projeto["Data: Fim Em desenvolvimento"])
     : null;
   const hoje = new Date();
 
@@ -62,17 +62,17 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
     projeto,
     <CardBase projeto={projeto} showTooltip={false}>
       {/* Data que entrou em desenvolvimento */}
-      {projeto["Data: Início Em andamento"] && (
+      {projeto["Data: Início Em desenvolvimento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Início: {formatDate(projeto["Data: Início Em andamento"])}
+          Início: {formatDate(projeto["Data: Início Em desenvolvimento"])}
         </div>
       )}
 
       {/* Data que saiu de desenvolvimento (se houver) */}
-      {projeto["Data: Fim Em andamento"] && fimDev && (
+      {projeto["Data: Fim Em desenvolvimento"] && fimDev && (
         <div className="text-gray-600 dark:text-gray-200">
           {hoje < fimDev ? "Fim previsto:" : "Fim:"}{" "}
-          {formatDate(projeto["Data: Fim Em andamento"])}
+          {formatDate(projeto["Data: Fim Em desenvolvimento"])}
         </div>
       )}
 
@@ -120,7 +120,7 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Status da fase atual */}
       {statusFaseAtual &&
         statusFaseAtual !== "Não iniciado" &&
-        statusFaseAtual !== "Em andamento" && (
+        statusFaseAtual !== "Em desenvolvimento" && (
           <>
             <hr className="my-1 border-gray-300 dark:border-gray-600" />
             <div className="flex items-center gap-2">

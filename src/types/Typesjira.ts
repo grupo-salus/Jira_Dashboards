@@ -42,7 +42,7 @@ export interface EspacoDeProjetos {
   Descrição: string | null; // Descrição da issue (primeiro parágrafo do rich text)
   "Aprovador por (diretor)": string | null; // Diretor responsável pela aprovação (campo customizado)
   "Benefícios Esperados": string | null; // Texto inserido no campo de benefícios do projeto
-  Status: JiraStatus; // Status atual no fluxo do Jira (ex: Em andamento, Concluído)
+  Status: JiraStatus; // Status atual no fluxo do Jira (ex: Em desenvolvimento, Concluído)
 
   "Grupo Solicitante": string; // Unidade, time ou grupo que solicitou o projeto
   "Departamento Solicitante": string; // Área ou diretoria à qual o grupo pertence
@@ -76,8 +76,8 @@ export interface EspacoDeProjetos {
   "Data: Fim Backlog priorizado"?: string | null;
   "Data: Início Análise técnica e negócios"?: string | null;
   "Data: Fim Análise técnica e negócios"?: string | null;
-  "Data: Início Em andamento"?: string | null;
-  "Data: Fim Em andamento"?: string | null;
+  "Data: Início Em desenvolvimento"?: string | null;
+  "Data: Fim Em desenvolvimento"?: string | null;
   "Data: Início Em homologação"?: string | null;
   "Data: Fim Em homologação"?: string | null;
   "Data: Início Operação assistida"?: string | null;
@@ -95,7 +95,7 @@ export interface EspacoDeProjetos {
   "Tempo na fase Ideação (dias)"?: number | null;
   "Tempo na fase Backlog Priorizado (dias)"?: number | null;
   "Tempo na fase Análise técnica e negócios (dias)"?: number | null;
-  "Tempo na fase Em andamento (dias)"?: number | null;
+  "Tempo na fase Em desenvolvimento (dias)"?: number | null;
   "Tempo na fase Em homologação (dias)"?: number | null;
   "Tempo na fase Operação assistida (dias)"?: number | null;
   "Tempo na fase Entregue (dias)"?: number | null;
@@ -114,7 +114,7 @@ export type JiraStatus =
   | "Análise técnica e negócios"
   | "Análise Técnica E Negócios"
   | "Cancelado"
-  | "Em Andamento"
+  | "Em Desenvolvimento"
   | "Em Homologação"
   | "Operação Assistida"
   | "Concluído";

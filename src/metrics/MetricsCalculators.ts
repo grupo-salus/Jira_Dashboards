@@ -65,7 +65,7 @@ export function calcularStatusMetrics(
 ): StatusMetrics {
   const statusCounts = {
     pendentes: dados.filter((d) => d.Status === "Backlog").length,
-    emAndamento: dados.filter((d) => d.Status === "Em Andamento").length,
+    emAndamento: dados.filter((d) => d.Status === "Em Desenvolvimento").length,
     bloqueados: dados.filter((d) => d.Status === "Bloqueado").length,
     concluidos: dados.filter((d) => d.Status === "Concluído").length,
     total: dados.length,

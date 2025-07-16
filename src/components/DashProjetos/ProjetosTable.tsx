@@ -173,8 +173,8 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Data: Fim Backlog",
     "Data: Início Backlog priorizado",
     "Data: Fim Backlog priorizado",
-    "Data: Início Em andamento",
-    "Data: Fim Em andamento",
+    "Data: Início Em desenvolvimento",
+    "Data: Fim Em desenvolvimento",
     "Data: Início Em homologação",
     "Data: Fim Em homologação",
     "Data: Início Operação assistida",
@@ -188,7 +188,7 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
     "Motivo para Bloqueio de Projeto",
     "Tempo na fase Ideação (dias)",
     "Tempo na fase Backlog Priorizado (dias)",
-    "Tempo na fase Em andamento (dias)",
+    "Tempo na fase Em desenvolvimento (dias)",
     "Tempo na fase Em homologação (dias)",
     "Tempo na fase Operação assistida (dias)",
     "Tempo na fase Entregue (dias)",
@@ -334,7 +334,6 @@ const ProjetosTable: React.FC<ProjetosTableProps> = ({ data }) => {
         "-"
       );
     }
-
 
     return String(value);
   };

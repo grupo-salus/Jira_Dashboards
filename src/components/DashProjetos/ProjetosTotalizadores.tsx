@@ -199,9 +199,11 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     (p) => p.Status === "Backlog"
   ).length;
 
-  // Projetos em Andamento: apenas os status Em Andamento, Em Homologação e Operação Assistida
+  // Projetos em Desenvolvimento: apenas os status Em Desenvolvimento, Em Homologação e Operação Assistida
   const projetosEmAndamento = filteredData.filter((p) =>
-    ["Em Andamento", "Em Homologação", "Operação Assistida"].includes(p.Status)
+    ["Em Desenvolvimento", "Em Homologação", "Operação Assistida"].includes(
+      p.Status
+    )
   );
   const totalEmAndamento = projetosEmAndamento.length;
 
@@ -374,7 +376,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
               }}
             />
           }
-          label="Projetos em Andamento"
+          label="Projetos em Desenvolvimento"
           value={totalEmAndamento}
           currentTheme={currentTheme}
           tooltipContent={

@@ -119,7 +119,7 @@ export const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Status da fase atual */}
       {statusFaseAtual &&
         statusFaseAtual !== "Não iniciado" &&
-        statusFaseAtual !== "Em andamento" && (
+        statusFaseAtual !== "Em desenvolvimento" && (
           <>
             <hr className="my-1 border-gray-300 dark:border-gray-600" />
             <div className="flex items-center gap-2">

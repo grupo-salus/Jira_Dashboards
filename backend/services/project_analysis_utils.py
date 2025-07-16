@@ -140,14 +140,14 @@ def calcular_status_fase_atual(row: pd.Series) -> str:
     """
     Calcula o status da fase atual do projeto baseado no status atual e nas datas de início/fim da fase.
     Só calcula para os status: "Em Desenvolvimento", "Em Homologação" e "Operação Assistida".
-    Retorna: "No prazo", "Atrasado", "Em risco", "Em andamento", "Não iniciado" ou None
+    Retorna: "No prazo", "Atrasado", "Em risco", "Em desenvolvimento", "Não iniciado" ou None
     
     Lógica:
     - Data: Fim = Data prevista de fim (quando pretendo terminar)
     - Se hoje > Data: Fim = Está atrasado (passou da previsão)
     - Se hoje <= Data: Fim = Está no prazo (ainda não passou da previsão)
     - Se faltam <= 2 dias = Em risco (próximo do prazo)
-    - Se não tem Data: Fim = Em andamento (apenas conta dias corridos)
+    - Se não tem Data: Fim = Em desenvolvimento (apenas conta dias corridos)
     """
     logger.debug(f"Calculando status da fase atual para projeto: {row.get('Chave')}")
     status = str(row.get("Status", "")).strip().capitalize()
@@ -155,7 +155,7 @@ def calcular_status_fase_atual(row: pd.Series) -> str:
     
     # Lista de status para os quais calcular o status da fase
     # Usando os nomes após capitalização (.capitalize())
-    status_validos = ["Em andamento", "Em homologação", "Operação assistida", "Análise técnica e negócios", "Backlog priorizado"]
+    status_validos = ["Em desenvolvimento", "Em homologação", "Operação assistida", "Análise técnica e negócios", "Backlog priorizado"]
     
     # Se o status atual não está na lista de status válidos, retorna None
     if status not in status_validos:
@@ -201,9 +201,9 @@ def calcular_status_fase_atual(row: pd.Series) -> str:
         logger.debug(f"Dias decorridos na fase {status}: {dias_decorridos}")
         
         # Sem data de fim prevista, não é possível determinar se está atrasado
-        # Apenas retorna "Em andamento" para indicar que está sendo executado
-        logger.debug(f"Fase {status} em andamento há {dias_decorridos} dias")
-        return "Em andamento"
+        # Apenas retorna "Em desenvolvimento" para indicar que está sendo executado
+        logger.debug(f"Fase {status} em desenvolvimento há {dias_decorridos} dias")
+        return "Em desenvolvimento"
     
     logger.debug(f"Não foi possível calcular status para fase {status}")
     return None

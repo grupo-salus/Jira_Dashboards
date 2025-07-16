@@ -12,7 +12,7 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
   "Backlog Priorizado": "Backlog Priorizado",
   "Análise técnica e negócios": "Análise técnica e negócios",
   "Análise Técnica E Negócios": "Análise técnica e negócios",
-  "Em Andamento": "Em Desenvolvimento",
+  "Em Desenvolvimento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
   Concluído: "Entregue",
@@ -24,7 +24,7 @@ export const COLUMN_ORDER: JiraStatus[] = [
   "Backlog",
   "Análise Técnica E Negócios",
   "Backlog Priorizado",
-  "Em Andamento",
+  "Em Desenvolvimento",
   "Em Homologação",
   "Operação Assistida",
   "Concluído",
@@ -39,7 +39,7 @@ export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
   "tarefas pendentes": "Backlog Priorizado",
   "analise tecnica e negocios": "Análise Técnica E Negócios",
   bloqueado: "Bloqueado",
-  "em andamento": "Em Andamento",
+  "em desenvolvimento": "Em Desenvolvimento",
   "em homologação": "Em Homologação",
   "operação assistida": "Operação Assistida",
   concluído: "Concluído",
@@ -115,7 +115,7 @@ export const getPrazoBackgroundColor = (
     "No prazo": themeColors.status.prazo.noPrazo.bg[theme],
     "Em risco": themeColors.status.prazo.emRisco.bg[theme],
     Atrasado: themeColors.status.prazo.foraPrazo.bg[theme],
-    "Em andamento": "#3b82f6", // Azul para "Em andamento"
+    "Em desenvolvimento": "#3b82f6", // Azul para "Em desenvolvimento"
     "Não iniciado": "#6b7280", // Cinza para "Não iniciado"
   };
 
@@ -173,7 +173,7 @@ export const capitalizeFirst = (str: string): string => {
  */
 export const isProjetoEmExecucao = (status: JiraStatus): boolean => {
   return (
-    status === "Em Andamento" ||
+    status === "Em Desenvolvimento" ||
     status === "Em Homologação" ||
     status === "Operação Assistida"
   );
