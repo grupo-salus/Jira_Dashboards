@@ -13,8 +13,8 @@ interface FormSidebarProps {
   currentSection: number;
   setCurrentSection: (id: number) => void;
   formData: Record<string, any>;
-  campos: any[];
-  getFieldInfo: (key: string, originalLabel: string) => any;
+  _campos: any[];
+  _getFieldInfo: (key: string, originalLabel: string) => any;
 }
 
 const FormSidebar: React.FC<FormSidebarProps> = ({
@@ -22,8 +22,8 @@ const FormSidebar: React.FC<FormSidebarProps> = ({
   currentSection,
   setCurrentSection,
   formData,
-  campos,
-  getFieldInfo,
+  _campos,
+  _getFieldInfo,
 }) => {
   // Função para verificar se uma seção está completa (apenas campos obrigatórios)
   const isSecaoCompleta = (sectionId: number): boolean => {

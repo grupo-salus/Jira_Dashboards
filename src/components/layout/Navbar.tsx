@@ -5,7 +5,6 @@ import {
   Moon,
   Sun,
   Footprints as Sprint,
-  Home as HomeIcon,
   Users,
   Menu,
   X,
@@ -22,13 +21,13 @@ import {
 interface NavbarProps {
   currentView: "home" | "projetos" | "sprint" | "ti";
   onViewChange: (view: "home" | "projetos" | "sprint" | "ti") => void;
-  showHomeLink?: boolean;
+  _showHomeLink?: boolean;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   currentView,
   onViewChange,
-  showHomeLink,
+  _showHomeLink,
 }) => {
   const location = useLocation();
 

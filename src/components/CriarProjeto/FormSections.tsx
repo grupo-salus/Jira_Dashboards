@@ -28,10 +28,10 @@ const FormSections: React.FC<FormSectionsProps> = ({
       {campos.map((campo) => (
         <FormFields
           key={campo.key}
-          campo={campo}
+          field={campo}
           formData={formData}
           handleInputChange={handleInputChange}
-          getFieldInfo={getFieldInfo}
+          fieldInfo={getFieldInfo(campo.key, campo.label)}
         />
       ))}
     </div>

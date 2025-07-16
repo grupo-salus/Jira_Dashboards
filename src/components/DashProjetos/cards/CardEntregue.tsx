@@ -1,10 +1,6 @@
 import React from "react";
 import { EspacoDeProjetos } from "../../../types/Typesjira";
-import {
-  formatDate,
-  getStatusColor,
-  getPrazoBackgroundColor,
-} from "../kanbanUtils";
+import { getStatusColor, getPrazoBackgroundColor } from "../kanbanUtils";
 import { useTheme } from "../../../context/ThemeContext";
 import { CardBase } from "./CardBase";
 import { withJiraLink } from "./withJiraLink";

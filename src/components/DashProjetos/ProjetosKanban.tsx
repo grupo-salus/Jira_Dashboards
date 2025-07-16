@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { EspacoDeProjetos, JiraStatus } from "../../types/Typesjira";
 import { getPriorityConfig } from "../../utils/themeColors";
 import {
@@ -191,7 +191,7 @@ const ProjetosKanban: React.FC<ProjetosKanbanProps> = ({ data }) => {
   }, []);
 
   // Obter configurações atuais
-  const fontSizes = getFontSizes();
+  const _fontSizes = getFontSizes();
 
   // Agrupar projetos por status
   const projetosPorStatus = data.reduce((acc, projeto) => {

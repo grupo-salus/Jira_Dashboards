@@ -1,0 +1,52 @@
+# Pastas de dependências e build
+node_modules/
+dist/
+build/
+
+# Ambiente virtual Python
+.venv/
+venv/
+env/
+
+# Arquivos de configuração
+*.config.js
+*.config.ts
+vite.config.ts
+tailwind.config.js
+postcss.config.js
+
+# Arquivos de lock
+package-lock.json
+yarn.lock
+
+# IDE e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de log
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Arquivos de backup
+*.backup
+*.bak
+
+# Arquivos de teste específicos
+coverage/
+*.coverage
+.nyc_output/
+
+# Arquivos específicos do projeto
+backend/
+requirements.txt
+README.md 

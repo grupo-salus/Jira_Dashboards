@@ -1,46 +1,49 @@
 import React from "react";
 import { isCampoObrigatorio } from "./formUtils";
-
-interface CampoJira {
-  key: string;
-  label: string;
-  type: string;
-  required: boolean;
-  options?: Array<{ id: string; label: string }>;
-}
+import { TEXTAREA_FIELDS } from "./constants";
 
 interface FormFieldsProps {
-  campo: CampoJira;
+  field: any;
   formData: Record<string, any>;
   handleInputChange: (key: string, value: any) => void;
-  getFieldInfo: (key: string, originalLabel: string) => any;
+  fieldInfo: any;
 }
 
 const FormFields: React.FC<FormFieldsProps> = ({
-  campo,
+  field,
   formData,
   handleInputChange,
-  getFieldInfo,
+  fieldInfo,
 }) => {
-  const { key, type, required, options } = campo;
-  const fieldInfo = getFieldInfo(key, campo.label);
+  // Verificação defensiva para evitar erro se field for undefined
+  if (!field || !field.key) {
+    return null;
+  }
 
-  // Usa a função customizada para determinar se o campo é obrigatório
-  const isRequired = isCampoObrigatorio(key, required);
+  const isRequired = isCampoObrigatorio(field.key, field.required);
+  const type = field.type || "string";
+  const key = field.key;
+  const value = formData[key] || "";
+
+  const handleChange = (newValue: any) => {
+    handleInputChange(key, newValue);
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(e.target.value);
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    handleChange(e.target.value);
+  };
+
+  const handleSelectChange = (selectedOption: any) => {
+    handleChange(selectedOption);
+  };
 
   switch (type) {
     case "string":
-      if (
-        [
-          "description",
-          "customfield_10481",
-          "customfield_10476",
-          "customfield_10477",
-          "customfield_10248",
-          "customfield_10482",
-          "customfield_10485",
-        ].includes(key)
-      ) {
+      if (TEXTAREA_FIELDS.includes(key as any)) {
         return (
           <div key={key} className="mb-6">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -48,17 +51,20 @@ const FormFields: React.FC<FormFieldsProps> = ({
               {isRequired && <span className="text-red-500">*</span>}
             </label>
             {fieldInfo.description && (
-              <p className="mb-2 text-xs text-gray-500 dark:text-gray-400 italic">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 {fieldInfo.description}
               </p>
             )}
             <textarea
-              rows={fieldInfo.rows || 4}
-              value={formData[key] || ""}
-              onChange={(e) => handleInputChange(key, e.target.value)}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
-              required={isRequired}
+              value={value}
+              onChange={handleTextareaChange}
               placeholder={fieldInfo.placeholder}
+              rows={fieldInfo.rows || 3}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none ${
+                isRequired && !value
+                  ? "border-red-300 bg-red-50 dark:bg-red-900/10 dark:border-red-700"
+                  : "border-gray-300 dark:border-gray-600"
+              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
             />
           </div>
         );
@@ -76,8 +82,8 @@ const FormFields: React.FC<FormFieldsProps> = ({
           )}
           <input
             type="text"
-            value={formData[key] || ""}
-            onChange={(e) => handleInputChange(key, e.target.value)}
+            value={value}
+            onChange={handleTextChange}
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             required={isRequired}
             placeholder={fieldInfo.placeholder}
@@ -98,8 +104,8 @@ const FormFields: React.FC<FormFieldsProps> = ({
           )}
           <input
             type="date"
-            value={formData[key] || ""}
-            onChange={(e) => handleInputChange(key, e.target.value)}
+            value={value}
+            onChange={(e) => handleChange(e.target.value)}
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             required={isRequired}
           />
@@ -119,10 +125,8 @@ const FormFields: React.FC<FormFieldsProps> = ({
           )}
           <input
             type="number"
-            value={formData[key] || ""}
-            onChange={(e) =>
-              handleInputChange(key, parseFloat(e.target.value) || 0)
-            }
+            value={value}
+            onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             required={isRequired}
             placeholder={fieldInfo.placeholder}
@@ -142,22 +146,15 @@ const FormFields: React.FC<FormFieldsProps> = ({
             </p>
           )}
           <select
-            value={
-              typeof formData[key] === "object"
-                ? formData[key]?.id || ""
-                : formData[key] || ""
-            }
+            value={typeof value === "object" ? value?.id || "" : value || ""}
             onChange={(e) =>
-              handleInputChange(
-                key,
-                e.target.value ? { id: e.target.value } : null
-              )
+              handleSelectChange(e.target.value ? { id: e.target.value } : null)
             }
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             required={isRequired}
           >
             <option value="">{fieldInfo.placeholder}</option>
-            {options?.map((option) => (
+            {field.options?.map((option: any) => (
               <option key={option.id} value={option.id}>
                 {option.label}
               </option>
@@ -178,22 +175,15 @@ const FormFields: React.FC<FormFieldsProps> = ({
             </p>
           )}
           <select
-            value={
-              typeof formData[key] === "object"
-                ? formData[key]?.id || ""
-                : formData[key] || ""
-            }
+            value={typeof value === "object" ? value?.id || "" : value || ""}
             onChange={(e) =>
-              handleInputChange(
-                key,
-                e.target.value ? { id: e.target.value } : null
-              )
+              handleSelectChange(e.target.value ? { id: e.target.value } : null)
             }
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             required={isRequired}
           >
             <option value="">{fieldInfo.placeholder}</option>
-            {options?.map((option) => (
+            {field.options?.map((option: any) => (
               <option key={option.id} value={option.id}>
                 {option.label}
               </option>
@@ -208,16 +198,12 @@ const FormFields: React.FC<FormFieldsProps> = ({
             <div className="flex items-start space-x-3">
               <input
                 type="checkbox"
-                checked={
-                  Array.isArray(formData[key])
-                    ? formData[key].includes("10712")
-                    : false
-                }
+                checked={Array.isArray(value) ? value.includes("10712") : false}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    handleInputChange(key, ["10712"]);
+                    handleChange(["10712"]);
                   } else {
-                    handleInputChange(key, []);
+                    handleChange([]);
                   }
                 }}
                 className="mt-1 w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-gray-700"
@@ -252,8 +238,8 @@ const FormFields: React.FC<FormFieldsProps> = ({
           )}
           <input
             type="text"
-            value={formData[key] || ""}
-            onChange={(e) => handleInputChange(key, e.target.value)}
+            value={value}
+            onChange={handleTextChange}
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             required={isRequired}
             placeholder={fieldInfo.placeholder}

@@ -1,4 +1,4 @@
-import { CAMPOS_FORMULARIO } from "./constants";
+import { CAMPOS_FORMULARIO, CUSTOM_FIELDS, JIRA_FIELDS } from "./constants";
 
 // Interface para os campos do Jira
 interface CampoJira {
@@ -25,32 +25,32 @@ export const isCampoObrigatorio = (
 
 export const getFieldInfo = (key: string, originalLabel: string) => {
   const fieldInfo: Record<string, any> = {
-    customfield_10093: {
+    [CUSTOM_FIELDS.NOME_SOLICITANTE]: {
       label: "Nome completo do solicitante",
       placeholder: "Digite seu nome completo",
       description: "Nome completo da pessoa que está solicitando o projeto",
     },
-    customfield_10247: {
+    [CUSTOM_FIELDS.EMAIL_SOLICITANTE]: {
       label: "E-mail corporativo",
       placeholder: "seu.email@empresa.com",
       description: "E-mail corporativo para contato e acompanhamento",
     },
-    customfield_10245: {
+    [CUSTOM_FIELDS.DEPARTAMENTO_SOLICITANTE]: {
       label: "Departamento / Unidade solicitante",
       placeholder: "Selecione seu departamento",
       description: "Departamento ou unidade responsável pela solicitação",
     },
-    customfield_10250: {
+    [CUSTOM_FIELDS.DIRETOR_RESPONSAVEL]: {
       label: "Diretor responsável pela aprovação",
       placeholder: "Nome do diretor responsável",
       description: "Diretor que deve aprovar esta solicitação",
     },
-    summary: {
+    [JIRA_FIELDS.SUMMARY]: {
       label: "Nome ou Título do Projeto",
       placeholder: "Ex: Sistema de Gestão de Clientes",
       description: "Escolha um nome claro e objetivo para a demanda",
     },
-    customfield_10481: {
+    [CUSTOM_FIELDS.OBJETIVO_PROJETO]: {
       label: "Objetivo do Projeto",
       placeholder:
         "Descreva o problema ou oportunidade que deu origem à solicitação...",
@@ -58,7 +58,7 @@ export const getFieldInfo = (key: string, originalLabel: string) => {
         "Qual é o propósito? Que problema resolve ou que oportunidade aproveita?",
       rows: 4,
     },
-    description: {
+    [JIRA_FIELDS.DESCRIPTION]: {
       label: "Descrição do Projeto",
       placeholder:
         "Detalhe o que está sendo solicitado. Inclua áreas envolvidas, necessidades, contexto atual...",
@@ -66,7 +66,7 @@ export const getFieldInfo = (key: string, originalLabel: string) => {
         "Detalhe completo do que está sendo solicitado. Inclua áreas envolvidas, necessidades, contexto atual, origens da solicitação",
       rows: 6,
     },
-    customfield_10476: {
+    [CUSTOM_FIELDS.ESCOPO_INICIAL]: {
       label: "Escopo Inicial ou Solução Proposta pela Área",
       placeholder:
         "O que se espera como entrega? Há alguma sugestão de como a solução deve ser feita?",
@@ -74,40 +74,40 @@ export const getFieldInfo = (key: string, originalLabel: string) => {
         "O que se espera como entrega? Há alguma sugestão de como a solução deve ser feita?",
       rows: 4,
     },
-    customfield_10477: {
+    [CUSTOM_FIELDS.STAKEHOLDERS]: {
       label: "Stakeholders Diretos ou Equipes Envolvidas",
       placeholder: "Quem deverá participar ou será impactado diretamente?",
       description: "Quem deverá participar ou será impactado diretamente?",
       rows: 3,
     },
-    customfield_10478: {
+    [CUSTOM_FIELDS.TIPO_PROJETO]: {
       label: "Tipo de Projeto",
       placeholder: "Selecione o tipo de projeto",
       description: "Categoria que melhor define o tipo de projeto",
     },
-    priority: {
+    [JIRA_FIELDS.PRIORITY]: {
       label: "Prioridade da Solicitação",
       placeholder: "Selecione a prioridade",
       description: "Nível de urgência e importância da solicitação",
     },
-    customfield_10479: {
+    [CUSTOM_FIELDS.PRAZO_DESEJADO]: {
       label: "Prazo Desejado ou Restrição Temporal",
       placeholder: "Selecione a data limite",
       description:
         "Existe alguma data-limite ou evento atrelado a essa demanda?",
     },
-    customfield_10480: {
+    [CUSTOM_FIELDS.IMPACTO_ESPERADO]: {
       label: "Impacto Esperado",
       placeholder: "Selecione o impacto esperado",
       description: "Área principal que será impactada com a implementação",
     },
-    customfield_10248: {
+    [CUSTOM_FIELDS.BENEFICIOS_ESPERADOS]: {
       label: "Benefícios Esperados (Resumo)",
       placeholder: "Resultados positivos esperados após a implementação...",
       description: "Resultados positivos esperados após a implementação",
       rows: 4,
     },
-    customfield_10482: {
+    [CUSTOM_FIELDS.RISCOS_CONHECIDOS]: {
       label: "Riscos Conhecidos ou Percebidos pela Área",
       placeholder:
         "Existe algum risco previsto, interno ou externo, com essa solicitação?",
@@ -115,18 +115,18 @@ export const getFieldInfo = (key: string, originalLabel: string) => {
         "Existe algum risco previsto, interno ou externo, com essa solicitação?",
       rows: 4,
     },
-    customfield_10483: {
+    [CUSTOM_FIELDS.ESTIMATIVA_CUSTO]: {
       label: "Estimativa de Custo (se conhecido)",
       placeholder: "0.00",
       description:
         "Pode incluir valores aproximados ou limitações orçamentárias",
     },
-    customfield_10484: {
+    [CUSTOM_FIELDS.ORCAMENTO_RESERVADO]: {
       label: "Existe orçamento reservado para este projeto?",
       placeholder: "Selecione uma opção",
       description: "Informe se já existe orçamento aprovado para este projeto",
     },
-    customfield_10485: {
+    [CUSTOM_FIELDS.OBSERVACOES_ADICIONAIS]: {
       label: "Observações adicionais",
       placeholder:
         "Use este campo para incluir qualquer informação relevante que não foi contemplada acima...",
@@ -134,7 +134,7 @@ export const getFieldInfo = (key: string, originalLabel: string) => {
         "Use este campo para incluir qualquer informação relevante que não foi contemplada acima",
       rows: 4,
     },
-    customfield_10486: {
+    [CUSTOM_FIELDS.CONFIRMACAO_RESPONSABILIDADE]: {
       label: "Confirmação de Responsabilidade",
       placeholder: "",
       description:
@@ -169,43 +169,22 @@ export const organizarCamposPorSecao = (campos: CampoJira[]) => {
 
   campos.forEach((campo) => {
     const key = campo.key;
-    if (
-      [
-        "customfield_10093",
-        "customfield_10247",
-        "customfield_10245",
-        "customfield_10250",
-      ].includes(key)
-    ) {
+
+    // Usar as constantes centralizadas para organizar os campos
+    if (CAMPOS_FORMULARIO.SECOES.SOLICITANTE.campos.includes(key)) {
       secoes.solicitante.push(campo);
-    } else if (
-      [
-        "summary",
-        "customfield_10481",
-        "description",
-        "customfield_10476",
-        "customfield_10477",
-      ].includes(key)
-    ) {
+    } else if (CAMPOS_FORMULARIO.SECOES.SOLICITACAO.campos.includes(key)) {
       secoes.solicitacao.push(campo);
-    } else if (
-      [
-        "customfield_10478",
-        "priority",
-        "customfield_10479",
-        "customfield_10480",
-        "customfield_10248",
-        "customfield_10482",
-      ].includes(key)
-    ) {
+    } else if (CAMPOS_FORMULARIO.SECOES.ESTRATEGIA.campos.includes(key)) {
       secoes.estrategia.push(campo);
-    } else if (["customfield_10483", "customfield_10484"].includes(key)) {
+    } else if (CAMPOS_FORMULARIO.SECOES.VIABILIDADE.campos.includes(key)) {
       secoes.viabilidade.push(campo);
-    } else if (["customfield_10485"].includes(key)) {
+    } else if (CAMPOS_FORMULARIO.SECOES.COMPLEMENTAR.campos.includes(key)) {
       secoes.complementar.push(campo);
-    } else if (["customfield_10486"].includes(key)) {
+    } else if (CAMPOS_FORMULARIO.SECOES.CONFIRMACAO.campos.includes(key)) {
       secoes.confirmacao.push(campo);
     }
   });
+
   return secoes;
 };

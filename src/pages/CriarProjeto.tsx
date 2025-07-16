@@ -21,7 +21,6 @@ import {
 import {
   CAMPOS_FORMULARIO,
   getCamposObrigatoriosSecao,
-  getNomeSecao,
 } from "../components/CriarProjeto/constants";
 
 const sections = [
@@ -336,8 +335,8 @@ const CriarProjeto: React.FC = () => {
               currentSection={currentSection}
               setCurrentSection={setCurrentSection}
               formData={formData}
-              campos={campos}
-              getFieldInfo={getFieldInfo}
+              _campos={campos}
+              _getFieldInfo={getFieldInfo}
             />
           </div>
 
