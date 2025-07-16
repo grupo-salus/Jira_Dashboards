@@ -2400,7 +2400,7 @@ const DashProjetos: React.FC = () => {
 
       {/* Botão flutuante para criar projeto */}
       <button
-        onClick={() => navigate("/criar-projeto")}
+        onClick={() => navigate("/formulario-projeto")}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl z-50 flex items-center justify-center"
         style={{
           background: themeColors.components.buttons.primary.bg[currentTheme],

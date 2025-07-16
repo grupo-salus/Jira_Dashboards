@@ -71,7 +71,7 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<DashProjetos />} />
           <Route path="/sprint" element={<SprintDashboard />} />
           <Route path="/ti" element={<TIDashboard />} />
-          <Route path="/criar-projeto" element={<CriarProjeto />} />
+          <Route path="/formulario-projeto" element={<CriarProjeto />} />
         </Routes>
       </main>
     </div>
