@@ -49,7 +49,7 @@ const statusNameMap: Record<string, string> = {
   "Em Desenvolvimento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
-  Concluído: "Entregue",
+  Entregue: "Entregue",
 };
 
 // Adicione no topo do arquivo:
@@ -361,7 +361,7 @@ const DashProjetos: React.FC = () => {
           matchesEntreguesMes =
             data.getMonth() === mesAtual &&
             data.getFullYear() === anoAtual &&
-            item.Status === "Concluído";
+            item.Status === "Entregue";
         } else {
           matchesEntreguesMes = false;
         }
@@ -370,14 +370,14 @@ const DashProjetos: React.FC = () => {
       // Filtro por mês de entrega
       let matchesMesEntrega = true;
       if (filtrosAtivos.mesEntrega.length > 0) {
-        const dataFimConcluido = item["Data: Fim Concluído"];
-        if (dataFimConcluido) {
-          const data = new Date(dataFimConcluido);
+        const dataFimEntregue = item["Data: Fim Entregue"];
+        if (dataFimEntregue) {
+          const data = new Date(dataFimEntregue);
           const mes = data.getMonth(); // 0-11 (janeiro = 0, dezembro = 11)
           const mesString = mes.toString();
           matchesMesEntrega = filtrosAtivos.mesEntrega.includes(mesString);
         } else {
-          matchesMesEntrega = false; // Se não tem data de fim concluído, não corresponde
+          matchesMesEntrega = false; // Se não tem data de fim entregue, não corresponde
         }
       }
 
@@ -543,13 +543,13 @@ const DashProjetos: React.FC = () => {
         return item["Data: Fim Operação assistida"]
           ? new Date(item["Data: Fim Operação assistida"])
           : null;
-      case "dataInicioConcluido":
-        return item["Data: Início Concluído"]
-          ? new Date(item["Data: Início Concluído"])
+      case "dataInicioEntregue":
+        return item["Data: Início Entregue"]
+          ? new Date(item["Data: Início Entregue"])
           : null;
-      case "dataFimConcluido":
-        return item["Data: Fim Concluído"]
-          ? new Date(item["Data: Fim Concluído"])
+      case "dataFimEntregue":
+        return item["Data: Fim Entregue"]
+          ? new Date(item["Data: Fim Entregue"])
           : null;
       case "dataInicioCancelado":
         return item["Data: Início Cancelado"]
@@ -787,8 +787,8 @@ const DashProjetos: React.FC = () => {
       value: "dataFimOperacaoAssistida",
       label: "Data: Fim Operação Assistida",
     },
-    { value: "dataInicioConcluido", label: "Data: Início Concluído" },
-    { value: "dataFimConcluido", label: "Data: Fim Concluído" },
+    { value: "dataInicioEntregue", label: "Data: Início Entregue" },
+    { value: "dataFimEntregue", label: "Data: Fim Entregue" },
     { value: "dataInicioCancelado", label: "Data: Início Cancelado" },
     { value: "dataFimCancelado", label: "Data: Fim Cancelado" },
     { value: "dataInicioBloqueado", label: "Data: Início Bloqueado" },

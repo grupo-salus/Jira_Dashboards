@@ -5,11 +5,12 @@ import { useTheme } from "../../../context/ThemeContext";
 import { CardBase } from "./CardBase";
 import { withJiraLink } from "./withJiraLink";
 import { getFontSizes } from "../../../constants/styleConfig";
+import { formatDate } from "../../../utils/formatters";
 
 const fontSizes = getFontSizes();
 
 /**
- * Card para projetos ENTREGUE (Concluído)
+ * Card para projetos ENTREGUE
  */
 export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
@@ -19,19 +20,17 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
   return withJiraLink(
     projeto,
     <CardBase projeto={projeto}>
-      {/* 
-      Data de fim da conclusão 
-      {projeto["Data: Fim Concluído"] && (
+      {/* Data de fim da entrega */}
+      {projeto["Data: Fim Entregue"] && (
         <div className="text-gray-600 dark:text-gray-200">
           {(() => {
             const hoje = new Date();
-            const fimConcluido = new Date(projeto["Data: Fim Concluído"]);
-            return hoje < fimConcluido ? "Entrega prevista:" : "Entregue:";
+            const fimEntregue = new Date(projeto["Data: Fim Entregue"]);
+            return hoje < fimEntregue ? "Entrega prevista:" : "Entregue:";
           })()}{" "}
-          {formatDate(projeto["Data: Fim Concluído"])}
+          {formatDate(projeto["Data: Fim Entregue"])}
         </div>
       )}
-      */}
 
       {/* Status de prazo */}
       {projeto["Status de prazo"] && (

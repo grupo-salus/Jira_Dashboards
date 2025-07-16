@@ -60,7 +60,7 @@ def get_tabela_espaco_de_projetos(request: Request):
             "Tempo na fase Backlog priorizado (dias)", "Tempo na fase Em desenvolvimento (dias)",
             "Tempo na fase Análise técnica e negócios (dias)",
             "Tempo na fase Em homologação (dias)", "Tempo na fase Operação assistida (dias)",
-            "Tempo na fase Concluído (dias)", "Tempo na fase Cancelado (dias)"
+            "Tempo na fase Entregue (dias)", "Tempo na fase Cancelado (dias)"
         ]
         df = prepare_dataframe_for_json_export(df, cols_to_normalize)
 

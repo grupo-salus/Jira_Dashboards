@@ -92,7 +92,7 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
         "Em desenvolvimento",
         "Em homologação",
         "Operação assistida",
-        "Concluído",
+        "Entregue",
         "Cancelado",
     ]
 
@@ -241,8 +241,8 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Data: Fim Em homologação": issue.get("fields", {}).get("customfield_10352"),
             "Data: Início Operação assistida": issue.get("fields", {}).get("customfield_10353"),
             "Data: Fim Operação assistida": issue.get("fields", {}).get("customfield_10354"),
-            "Data: Início Concluído": issue.get("fields", {}).get("customfield_10355"),
-            "Data: Fim Concluído": issue.get("fields", {}).get("customfield_10356"),
+                    "Data: Início Entregue": issue.get("fields", {}).get("customfield_10355"),
+        "Data: Fim Entregue": issue.get("fields", {}).get("customfield_10356"),
             "Data: Início Cancelado": issue.get("fields", {}).get("customfield_10357"),
             "Data: Fim Cancelado": issue.get("fields", {}).get("customfield_10358"),
             "Motivo para Cancelamento de Projeto": (
@@ -270,7 +270,7 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
                  "Data: Início Em desenvolvimento", "Data: Fim Em desenvolvimento", 
                  "Data: Início Em homologação", "Data: Fim Em homologação", 
                  "Data: Início Operação assistida", "Data: Fim Operação assistida", 
-                 "Data: Início Concluído", "Data: Fim Concluído", 
+                 "Data: Início Entregue", "Data: Fim Entregue", 
                  "Data: Início Cancelado", "Data: Fim Cancelado", 
                  "Data: Início Bloqueado", "Data: Fim Bloqueado"]
     

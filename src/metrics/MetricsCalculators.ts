@@ -41,7 +41,7 @@ export function calcularVisaoGeral(
   }
 
   return {
-    concluidos: dadosFiltrados.filter((d) => d.Status === "Concluído").length,
+    entregues: dadosFiltrados.filter((d) => d.Status === "Entregue").length,
     atualizados7d: dadosFiltrados.filter(
       (d) => new Date(d["Atualizado em"]) >= seteDiasAtras
     ).length,
@@ -52,7 +52,7 @@ export function calcularVisaoGeral(
       (d) =>
         d["Data Prevista de Término"] &&
         new Date(d["Data Prevista de Término"]) <= amanha &&
-        d.Status !== "Concluído"
+        d.Status !== "Entregue"
     ).length,
   };
 }
@@ -67,7 +67,7 @@ export function calcularStatusMetrics(
     pendentes: dados.filter((d) => d.Status === "Backlog").length,
     emAndamento: dados.filter((d) => d.Status === "Em Desenvolvimento").length,
     bloqueados: dados.filter((d) => d.Status === "Bloqueado").length,
-    concluidos: dados.filter((d) => d.Status === "Concluído").length,
+    entregues: dados.filter((d) => d.Status === "Entregue").length,
     total: dados.length,
   };
 

@@ -15,7 +15,7 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
   "Em Desenvolvimento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
-  Concluído: "Entregue",
+  Entregue: "Entregue",
   Cancelado: "Cancelado",
 } as const;
 
@@ -27,7 +27,7 @@ export const COLUMN_ORDER: JiraStatus[] = [
   "Em Desenvolvimento",
   "Em Homologação",
   "Operação Assistida",
-  "Concluído",
+  "Entregue",
   "Cancelado",
   "Bloqueado",
 ];
@@ -42,8 +42,7 @@ export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
   "em desenvolvimento": "Em Desenvolvimento",
   "em homologação": "Em Homologação",
   "operação assistida": "Operação Assistida",
-  concluído: "Concluído",
-  concluido: "Concluído",
+  entregue: "Entregue",
   cancelado: "Cancelado",
 };
 

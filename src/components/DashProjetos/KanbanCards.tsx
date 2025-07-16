@@ -44,7 +44,7 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
       return <CardEmHomologacao projeto={projeto} />;
     case "Operação Assistida":
       return <CardOperacaoAssistida projeto={projeto} />;
-    case "Concluído":
+    case "Entregue":
       return <CardEntregue projeto={projeto} />;
     case "Cancelado":
       return <CardCancelado projeto={projeto} />;

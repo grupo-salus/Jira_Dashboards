@@ -4,7 +4,7 @@ import { JiraStatus } from "./Typesjira";
  * Interface para as métricas de visão geral (Top Cards Resumo)
  */
 export interface VisaoGeralMetrics {
-  concluidos: number;
+  entregues: number;
   atualizados7d: number;
   criados7d: number;
   entregar24h: number;
@@ -17,7 +17,7 @@ export interface StatusMetrics {
   pendentes: number;
   emAndamento: number;
   bloqueados: number;
-  concluidos: number;
+  entregues: number;
   total: number;
 }
 

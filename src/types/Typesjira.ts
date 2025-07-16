@@ -42,7 +42,7 @@ export interface EspacoDeProjetos {
   Descrição: string | null; // Descrição da issue (primeiro parágrafo do rich text)
   "Aprovador por (diretor)": string | null; // Diretor responsável pela aprovação (campo customizado)
   "Benefícios Esperados": string | null; // Texto inserido no campo de benefícios do projeto
-  Status: JiraStatus; // Status atual no fluxo do Jira (ex: Em desenvolvimento, Concluído)
+  Status: JiraStatus; // Status atual no fluxo do Jira (ex: Em desenvolvimento, Entregue)
 
   "Grupo Solicitante": string; // Unidade, time ou grupo que solicitou o projeto
   "Departamento Solicitante": string; // Área ou diretoria à qual o grupo pertence
@@ -82,8 +82,8 @@ export interface EspacoDeProjetos {
   "Data: Fim Em homologação"?: string | null;
   "Data: Início Operação assistida"?: string | null;
   "Data: Fim Operação assistida"?: string | null;
-  "Data: Início Concluído"?: string | null;
-  "Data: Fim Concluído"?: string | null;
+  "Data: Início Entregue"?: string | null;
+  "Data: Fim Entregue"?: string | null;
   "Data: Início Cancelado"?: string | null;
   "Data: Fim Cancelado"?: string | null;
   "Motivo para Cancelamento de Projeto"?: string | null;
@@ -117,7 +117,7 @@ export type JiraStatus =
   | "Em Desenvolvimento"
   | "Em Homologação"
   | "Operação Assistida"
-  | "Concluído";
+  | "Entregue";
 
 // Status de ideação
 export type IdeacaoStatus = "Recente" | "Rever" | "Quase obsoleto" | "Obsoleto";

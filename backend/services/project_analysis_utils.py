@@ -75,7 +75,7 @@ def classificar_status_ideacao(dias: int) -> str:
     return "Obsoleto"
 
 def is_final_status(status: str) -> bool:
-    finais = ["concluído"]
+    finais = ["entregue"]
     resultado = status.strip().lower() in finais
     logger.debug(f"Verificando se {status} é status final: {resultado}")
     return resultado
@@ -86,9 +86,9 @@ def classificar_prazo(row: pd.Series) -> str:
     target_end = row.get("Target end")
     logger.debug(f"Target end: {target_end}")
 
-    # 1. Se existe data de finalização (preferencialmente Data de término, senão Data: Fim Concluído)
-    data_entrega = row.get("Data: Fim Concluído")
-    logger.debug(f"Data: Fim Concluído: {data_entrega}")
+    # 1. Se existe data de finalização (preferencialmente Data de término, senão Data: Fim Entregue)
+    data_entrega = row.get("Data: Fim Entregue")
+    logger.debug(f"Data: Fim Entregue: {data_entrega}")
     if pd.notnull(data_entrega): # Se existe data de finalização
         if pd.isnull(target_end):
             logger.debug("Target end ausente")

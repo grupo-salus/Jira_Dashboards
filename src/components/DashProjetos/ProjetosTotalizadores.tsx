@@ -215,7 +215,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
 
   // Métricas de Projetos Entregues no Mês
   const projetosEntregues = filteredData.filter(
-    (p) => p.Status === "Concluído"
+    (p) => p.Status === "Entregue"
   );
   const mesAtual = new Date().getMonth();
   const anoAtual = new Date().getFullYear();
