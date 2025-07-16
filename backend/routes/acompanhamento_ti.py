@@ -27,7 +27,7 @@ def get_tabela_acompanhamento_ti(request: Request):
 
         cols_to_normalize = [
             "Tempo Gasto (segundos)", "Estimativa (segundos)", "Esforço Registrado Total",
-            "Dias no Backlog", "Dias até Entrega (estimado)"
+            "Dias na Ideação", "Dias até Entrega (estimado)"
         ]
         df = prepare_dataframe_for_json_export(df, cols_to_normalize)
 

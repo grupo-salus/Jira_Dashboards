@@ -29,7 +29,7 @@ export const KanbanCardContent: React.FC<{ projeto: EspacoDeProjetos }> = ({
   const statusNormalizado = normalizarStatus(projeto.Status);
 
   switch (statusNormalizado) {
-    case "Backlog":
+    case "Ideação":
       return <CardIdeacao projeto={projeto} />;
     case "Bloqueado":
       return <CardBloqueado projeto={projeto} />;

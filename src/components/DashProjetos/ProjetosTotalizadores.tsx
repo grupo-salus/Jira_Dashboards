@@ -196,7 +196,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   // Métricas Chave
   const total = filteredData.length; // Total no Board: dados filtrados (acompanha filtros)
   const totalIdeacao = filteredData.filter(
-    (p) => p.Status === "Backlog"
+    (p) => p.Status === "Ideação"
   ).length;
 
   // Projetos em Desenvolvimento: apenas os status Em Desenvolvimento, Em Homologação e Operação Assistida
@@ -214,9 +214,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   const totalBacklogPriorizado = backlogPriorizado.length;
 
   // Métricas de Projetos Entregues no Mês
-  const projetosEntregues = filteredData.filter(
-    (p) => p.Status === "Entregue"
-  );
+  const projetosEntregues = filteredData.filter((p) => p.Status === "Entregue");
   const mesAtual = new Date().getMonth();
   const anoAtual = new Date().getFullYear();
 

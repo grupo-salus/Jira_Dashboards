@@ -7,7 +7,7 @@ import { themeColors } from "../../utils/themeColors";
 
 // Mapeamento de status para nomes das colunas
 export const STATUS_COLUMNS: Record<JiraStatus, string> = {
-  Backlog: "Ideação",
+  Ideação: "Ideação",
   Bloqueado: "Bloqueado",
   "Backlog Priorizado": "Backlog Priorizado",
   "Análise técnica e negócios": "Análise técnica e negócios",
@@ -21,7 +21,7 @@ export const STATUS_COLUMNS: Record<JiraStatus, string> = {
 
 // Ordem fixa das colunas do Kanban
 export const COLUMN_ORDER: JiraStatus[] = [
-  "Backlog",
+  "Ideação",
   "Análise Técnica E Negócios",
   "Backlog Priorizado",
   "Em Desenvolvimento",
@@ -34,7 +34,7 @@ export const COLUMN_ORDER: JiraStatus[] = [
 
 // Mapeamento de status para nomes das colunas (normalização)
 export const STATUS_MAP: Record<string, keyof typeof STATUS_COLUMNS> = {
-  backlog: "Backlog",
+  ideação: "Ideação",
   "backlog priorizado": "Backlog Priorizado",
   "tarefas pendentes": "Backlog Priorizado",
   "analise tecnica e negocios": "Análise Técnica E Negócios",
@@ -138,7 +138,7 @@ export const normalizarStatusDisplay = (status: string): string => {
  * Normaliza status removendo acentos e encontrando correspondência
  */
 export const normalizarStatus = (status: string): string => {
-  if (!status) return "Backlog";
+  if (!status) return "Ideação";
 
   // Primeiro, tenta encontrar uma correspondência exata
   const exactMatch = COLUMN_ORDER.find((col) => col === status);

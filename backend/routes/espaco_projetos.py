@@ -56,7 +56,7 @@ def get_tabela_espaco_de_projetos(request: Request):
         cols_to_normalize = [   
             "Estimativa original (segundos)", "Tempo registrado (segundos)", "Tempo restante (segundos)",
             "Investimento Esperado", "PosicaoBacklog", "Dias na fase atual", "Status da fase atual",
-            "Tempo na fase Backlog (dias)", "Tempo na fase Bloqueado (dias)", 
+            "Tempo na fase Ideação (dias)", "Tempo na fase Bloqueado (dias)", 
             "Tempo na fase Backlog priorizado (dias)", "Tempo na fase Em desenvolvimento (dias)",
             "Tempo na fase Análise técnica e negócios (dias)",
             "Tempo na fase Em homologação (dias)", "Tempo na fase Operação assistida (dias)",

@@ -58,7 +58,7 @@ export interface KanbanCard {
   titulo: string;
   chave: string;
   status: JiraStatus;
-  diasNoBacklog: number;
+  diasNaIdeacao: number;
   tempoGasto: string;
   dataInicio: string | null;
   dataPrevistaTermino: string | null;

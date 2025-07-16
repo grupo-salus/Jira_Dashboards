@@ -64,7 +64,7 @@ export function calcularStatusMetrics(
   dados: AcompanhamentoTI[]
 ): StatusMetrics {
   const statusCounts = {
-    pendentes: dados.filter((d) => d.Status === "Backlog").length,
+    pendentes: dados.filter((d) => d.Status === "Ideação").length,
     emAndamento: dados.filter((d) => d.Status === "Em Desenvolvimento").length,
     bloqueados: dados.filter((d) => d.Status === "Bloqueado").length,
     entregues: dados.filter((d) => d.Status === "Entregue").length,
@@ -114,7 +114,7 @@ export function converterParaKanbanCards(
     titulo: d.Título,
     chave: d.Chave,
     status: d.Status,
-    diasNoBacklog: d["Dias no Backlog"],
+    diasNaIdeacao: d["Dias na Ideação"],
     tempoGasto: d["Controle de tempo"] || "0h",
     dataInicio: d["Data de Início"],
     dataPrevistaTermino: d["Data Prevista de Término"],

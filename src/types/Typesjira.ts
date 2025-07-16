@@ -24,7 +24,7 @@ export interface AcompanhamentoTI {
   "Estimativa (segundos)": number;
   "Esforço Registrado Total": number;
   Labels: string | null;
-  "Dias no Backlog": number;
+  "Dias na Ideação": number;
   "Dias até Entrega (estimado)": number | null;
 }
 
@@ -70,8 +70,8 @@ export interface EspacoDeProjetos {
   "Status de ideação": IdeacaoStatus | null;
   "Status de prazo": PrazoStatus | null;
 
-  "Data: Início Backlog"?: string | null;
-  "Data: Fim Backlog"?: string | null;
+  "Data: Início Ideação"?: string | null;
+  "Data: Fim Ideação"?: string | null;
   "Data: Início Backlog priorizado"?: string | null;
   "Data: Fim Backlog priorizado"?: string | null;
   "Data: Início Análise técnica e negócios"?: string | null;
@@ -108,7 +108,7 @@ export interface EspacoDeProjetos {
 }
 
 export type JiraStatus =
-  | "Backlog"
+  | "Ideação"
   | "Bloqueado"
   | "Backlog Priorizado"
   | "Análise técnica e negócios"

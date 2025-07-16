@@ -14,9 +14,9 @@ export const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
     projeto,
     <CardBase projeto={projeto}>
       {/* Data de ideação */}
-      {projeto["Data: Início Backlog"] && (
+      {projeto["Data: Início Ideação"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          Início: {formatDate(projeto["Data: Início Backlog"])}
+          Início: {formatDate(projeto["Data: Início Ideação"])}
         </div>
       )}
 
@@ -29,14 +29,14 @@ export const CardIdeacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
         )}
 
       {/* Data fim de ideação */}
-      {projeto["Data: Fim Backlog"] && (
+      {projeto["Data: Fim Ideação"] && (
         <div className="text-gray-600 dark:text-gray-200">
           {(() => {
             const hoje = new Date();
-            const fimBacklog = new Date(projeto["Data: Fim Backlog"]);
-            return hoje < fimBacklog ? "Fim previsto:" : "Fim:";
+            const fimIdeacao = new Date(projeto["Data: Fim Ideação"]);
+            return hoje < fimIdeacao ? "Fim previsto:" : "Fim:";
           })()}{" "}
-          {formatDate(projeto["Data: Fim Backlog"])}
+          {formatDate(projeto["Data: Fim Ideação"])}
         </div>
       )}
 

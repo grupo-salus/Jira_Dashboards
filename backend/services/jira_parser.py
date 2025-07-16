@@ -77,7 +77,7 @@ def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
 
     # Cálculo de métricas temporais
     logger.debug("Calculando métricas temporais")
-    df["Dias no Backlog"] = (pd.Timestamp.today() - df["Criado em"]).dt.days
+    df["Dias na Ideação"] = (pd.Timestamp.today() - df["Criado em"]).dt.days
     df["Dias até Entrega (estimado)"] = (df["Data Prevista de Término"] - df["Data de Início"]).dt.days
 
     logger.info(f"DataFrame de Acompanhamento T.I. criado com sucesso: {len(df)} issues, {len(df.columns)} colunas")
@@ -85,7 +85,7 @@ def parse_issues_to_dataframe_acompanhamento_ti(issues: list) -> pd.DataFrame:
 
 def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     fases = [
-        "Backlog",
+        "Ideação",
         "Bloqueado",
         "Backlog priorizado",
         "Análise técnica e negócios",
@@ -229,8 +229,8 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Data de término": issue.get("fields", {}).get("resolutiondate"),
 
             # Datas por fase
-            "Data: Início Backlog": issue.get("fields", {}).get("customfield_10345"),
-            "Data: Fim Backlog": issue.get("fields", {}).get("customfield_10346"),
+                    "Data: Início Ideação": issue.get("fields", {}).get("customfield_10345"),
+        "Data: Fim Ideação": issue.get("fields", {}).get("customfield_10346"),
             "Data: Início Análise técnica e negócios": issue.get("fields", {}).get("customfield_10410"),
             "Data: Fim Análise técnica e negócios": issue.get("fields", {}).get("customfield_10411"),
             "Data: Início Backlog priorizado": issue.get("fields", {}).get("customfield_10347"),
@@ -264,7 +264,7 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
     # Converter colunas de data/hora para o tipo datetime do Pandas e remover timezone
     logger.debug("Convertendo colunas de data/hora para datetime")
     date_cols = ["Data de criação", "Data de atualização", "Target start", "Target end", "Data de término", 
-                 "Data: Início Backlog", "Data: Fim Backlog", 
+                 "Data: Início Ideação", "Data: Fim Ideação", 
                  "Data: Início Backlog priorizado", "Data: Fim Backlog priorizado", 
                  "Data: Início Análise técnica e negócios", "Data: Fim Análise técnica e negócios",
                  "Data: Início Em desenvolvimento", "Data: Fim Em desenvolvimento", 

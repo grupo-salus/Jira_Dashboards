@@ -36,7 +36,7 @@ def calcular_tempo_por_fase(row: pd.Series, fase: str) -> int:
     return None
 
 def calcular_dias_na_fase_atual(row: pd.Series) -> int:
-    logger.debug(f"testando maunalnte: {row.get('Data: Início Backlog')}")
+    logger.debug(f"testando maunalnte: {row.get('Data: Início Ideação')}")
     status = str(row.get("Status", "")).strip().capitalize()
     logger.debug(f"Calculando dias na fase atual: {status}")
     logger.debug(f"Data: Início {status}: {row.get(f'Data: Início {status}')}")

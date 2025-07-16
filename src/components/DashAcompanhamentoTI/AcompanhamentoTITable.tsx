@@ -86,7 +86,7 @@ const AcompanhamentoTITable: React.FC<AcompanhamentoTITableProps> = ({
     "Estimativa (segundos)": 180,
     "Esforço Registrado Total": 180,
     Labels: 120,
-    "Dias no Backlog": 120,
+    "Dias na Ideação": 120,
     "Dias até Entrega (estimado)": 180,
   });
 
@@ -164,7 +164,7 @@ const AcompanhamentoTITable: React.FC<AcompanhamentoTITableProps> = ({
     "Estimativa (segundos)",
     "Esforço Registrado Total",
     "Labels",
-    "Dias no Backlog",
+    "Dias na Ideação",
     "Dias até Entrega (estimado)",
   ];
 

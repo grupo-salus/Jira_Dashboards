@@ -45,7 +45,7 @@ import { useNavigate } from "react-router-dom";
 
 // Mapeamento de nomes de status para exibição
 const statusNameMap: Record<string, string> = {
-  Backlog: "Ideação",
+  Ideação: "Ideação",
   "Em Desenvolvimento": "Em Desenvolvimento",
   "Em Homologação": "Em Homologação",
   "Operação Assistida": "Operação Assistida",
@@ -503,13 +503,13 @@ const DashProjetos: React.FC = () => {
         return item["Data de término"]
           ? new Date(item["Data de término"])
           : null;
-      case "dataInicioBacklog":
-        return item["Data: Início Backlog"]
-          ? new Date(item["Data: Início Backlog"])
+      case "dataInicioIdeacao":
+        return item["Data: Início Ideação"]
+          ? new Date(item["Data: Início Ideação"])
           : null;
-      case "dataFimBacklog":
-        return item["Data: Fim Backlog"]
-          ? new Date(item["Data: Fim Backlog"])
+      case "dataFimIdeacao":
+        return item["Data: Fim Ideação"]
+          ? new Date(item["Data: Fim Ideação"])
           : null;
       case "dataInicioBacklogPriorizado":
         return item["Data: Início Backlog priorizado"]
@@ -762,8 +762,8 @@ const DashProjetos: React.FC = () => {
     { value: "targetStart", label: "Target Start (Início Planejado)" },
     { value: "targetEnd", label: "Target End (Fim Planejado)" },
     { value: "dataTermino", label: "Data de Término" },
-    { value: "dataInicioBacklog", label: "Data: Início Backlog" },
-    { value: "dataFimBacklog", label: "Data: Fim Backlog" },
+    { value: "dataInicioIdeacao", label: "Data: Início Ideação" },
+    { value: "dataFimIdeacao", label: "Data: Fim Ideação" },
     {
       value: "dataInicioBacklogPriorizado",
       label: "Data: Início Backlog Priorizado",
