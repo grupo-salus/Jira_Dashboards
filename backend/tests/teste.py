@@ -1,7 +1,7 @@
 import requests
 import json
 
-BASE_URL = "http://127.0.0.1:8001"
+BASE_URL = "http://192.168.0.133:8001"
 
 # ----------- Teste resumo backlog -----------
 def testar_resumo_backlog(filtros=None, nome_arquivo="backlog_summary.json"):

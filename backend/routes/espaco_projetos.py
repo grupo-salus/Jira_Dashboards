@@ -12,6 +12,30 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/espaco_de_projetos", tags=["Espaço de Projetos"])
 
 
+def convert_text_to_adf(text: str) -> Dict:
+    """
+    Converte texto simples para o formato ADF (Atlassian Document Format).
+    """
+    if not text:
+        return None
+    
+    return {
+        "version": 1,
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": str(text)
+                    }
+                ]
+            }
+        ]
+    }
+
+
 @router.get("/tabela")
 def get_tabela_espaco_de_projetos(request: Request):
     """
@@ -99,20 +123,45 @@ def listar_campos_projeto():
 
 
 @router.post("/criar_projeto")
-def criar_projeto(projeto: ProjetoJiraInput):
+def criar_projeto(projeto: Dict):
     """
     Cria um novo projeto no Jira com os campos validados.
     """
     logger.info("[criar_projeto] Recebendo dados para criar projeto no Jira.")
-    logger.debug(f"[criar_projeto] Dados recebidos: {projeto.model_dump()}")
+    logger.debug(f"[criar_projeto] Dados recebidos: {projeto}")
 
     try:
+        # Campos que precisam ser convertidos para ADF
+        text_fields_to_convert = [
+            "customfield_10093",  # Nome completo do solicitante
+            "customfield_10481",  # Objetivo do Projeto
+            "description",        # Descrição do Projeto
+            "customfield_10476",  # Escopo Inicial ou Solução Proposta
+            "customfield_10477",  # Stakeholders Diretos ou Equipes Envolvidas
+            "customfield_10248",  # Benefícios Esperados
+            "customfield_10482",  # Riscos Conhecidos
+            "customfield_10485"   # Observações adicionais
+        ]
+        
+        # Converter campos de texto para ADF
+        projeto_convertido = projeto.copy()
+        for field in text_fields_to_convert:
+            if field in projeto_convertido and projeto_convertido[field]:
+                projeto_convertido[field] = convert_text_to_adf(projeto_convertido[field])
+        
+        # Tratar campo customfield_10486 (Confirmação)
+        if "customfield_10486" in projeto_convertido:
+            # Converter lista de strings para lista de objetos com id
+            confirmacao_list = projeto_convertido["customfield_10486"]
+            if isinstance(confirmacao_list, list):
+                projeto_convertido["customfield_10486"] = [{"id": item} for item in confirmacao_list]
+        
         service = JiraService()
         payload = {
             "fields": {
                 "project": { "key": "EP" },
                 "issuetype": { "id": "10105" },
-                **projeto.model_dump(exclude_none=True)
+                **projeto_convertido
             }
         }
         

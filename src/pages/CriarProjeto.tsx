@@ -238,8 +238,28 @@ const CriarProjeto: React.FC = () => {
     try {
       // O backend espera os campos do projeto diretamente (payload do Pydantic)
       const response = await criarProjetoJira(formData);
-      setFeedback({ success: true, message: "Projeto criado com sucesso!" });
-      // Opcional: resetar formulário ou redirecionar
+
+      // Verificar se o projeto foi criado com sucesso
+      if (response.success === true && response.data) {
+        setFeedback({
+          success: true,
+          message: `Projeto criado com sucesso!\n\nChave: ${response.data.key}\nID: ${response.data.id}`,
+        });
+
+        // Limpar todos os campos do formulário
+        setFormData({});
+
+        // Voltar para a primeira seção
+        setCurrentSection(1);
+
+        console.log("Projeto criado com sucesso:", response.data);
+      } else {
+        // Caso o response não tenha o formato esperado de sucesso
+        setFeedback({
+          success: false,
+          message: response.error || "Erro desconhecido ao criar projeto.",
+        });
+      }
     } catch (err: any) {
       console.error("Erro detalhado:", err);
       const errorMessage = err.message || "Erro desconhecido ao criar projeto.";
@@ -299,7 +319,7 @@ const CriarProjeto: React.FC = () => {
               </h1>
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-                Espaço de Projetos
+              Espaço de Projetos
             </div>
           </div>
         </div>
@@ -382,15 +402,15 @@ const CriarProjeto: React.FC = () => {
                     </button>
                   ) : (
                     <>
-              <button
-                type="button"
-                onClick={() => navigate("/")}
+                      <button
+                        type="button"
+                        onClick={() => navigate("/")}
                         className="w-full sm:w-auto px-4 sm:px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
                         className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                       >
                         <span>Criar Projeto</span>
@@ -467,8 +487,8 @@ const CriarProjeto: React.FC = () => {
                 Entendi
               </button>
             </div>
+          </div>
         </div>
-      </div>
       )}
 
       {/* Botão Flutuante para Dados de Exemplo */}
