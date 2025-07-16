@@ -239,7 +239,6 @@ const JiraProvider: React.FC<JiraProviderProps> = ({ children }) => {
 
   const refreshSprintData = async () => {
     // Será implementado depois
-    console.log("Refresh sprint data - a ser implementado");
   };
 
   const refreshAcompanhamentoTIData = async () => {

@@ -11,9 +11,7 @@ import {
   Target,
   DollarSign,
   MessageSquare,
-  Zap,
 } from "lucide-react";
-import { preencherDadosExemplo } from "../components/CriarProjeto/testData";
 import FormSidebar from "../components/CriarProjeto/FormSidebar";
 import FormSections from "../components/CriarProjeto/FormSections";
 import {
@@ -173,10 +171,6 @@ const CriarProjeto: React.FC = () => {
 
       if (estaVazio) {
         camposVazios.push(fieldInfo.label);
-        console.log(
-          `Campo vazio: ${campoKey} (${fieldInfo.label}) - Valor:`,
-          valor
-        );
       } else {
         camposPreenchidos.push(fieldInfo.label);
       }
@@ -223,12 +217,6 @@ const CriarProjeto: React.FC = () => {
 
     setFeedback({ success: false, message: mensagem });
     setCurrentSection(primeiraSecaoComFalta);
-
-    // Log no console para debug
-    console.log("=== VALIDAÇÃO FALHOU ===");
-    console.log("Primeira seção com falta:", primeiraSecaoComFalta);
-    console.log("Campos vazios:", camposVazios);
-    console.log("Campos preenchidos:", camposPreenchidos);
   };
 
   // Função para enviar para o backend
@@ -251,8 +239,6 @@ const CriarProjeto: React.FC = () => {
 
         // Voltar para a primeira seção
         setCurrentSection(1);
-
-        console.log("Projeto criado com sucesso:", response.data);
       } else {
         // Caso o response não tenha o formato esperado de sucesso
         setFeedback({
@@ -261,7 +247,6 @@ const CriarProjeto: React.FC = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erro detalhado:", err);
       const errorMessage = err.message || "Erro desconhecido ao criar projeto.";
       setFeedback({ success: false, message: errorMessage });
     } finally {
@@ -490,18 +475,6 @@ const CriarProjeto: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Botão Flutuante para Dados de Exemplo */}
-      <button
-        onClick={() => preencherDadosExemplo(setFormData)}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
-        title="Preencher dados de exemplo"
-      >
-        <Zap className="w-6 h-6" />
-        <span className="absolute right-full mr-3 bg-gray-900 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          Preencher dados de exemplo
-        </span>
-      </button>
     </div>
   );
 };
