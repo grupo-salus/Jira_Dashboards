@@ -1,6 +1,5 @@
 import requests
 import json
-from services.jira_service import JiraService
 
 BASE_URL = "http://127.0.0.1:8001"
 
@@ -106,6 +105,79 @@ def testar_opcoes_campo_customizado(nome_arquivo="opcoes_campo_customizado.json"
         print(f"Erro ao requisitar opções do campo customizado: {e}")
         return
 
+
+def testar_criar_projeto(nome_arquivo="projeto_criado.json"):
+    url = f"{BASE_URL}/api/espaco_de_projetos/criar_projeto"
+    projeto = {
+        # Campos obrigatórios
+        "summary": "TESTE VIA PYTHON CAMPO SUMMARY",
+        
+        # 1. Informações do Solicitante
+        "customfield_10093": "Luis Henrique Gomes da Fonseca",
+        "customfield_10247": "luis.fonseca@empresa.com",
+        "customfield_10245": {"id": "10467", "label": "TI"},
+        "customfield_10250": "Caio Livier",
+        
+        # 2. Sobre a Solicitação
+        "customfield_10481": "TESTE VIA PYTHON CAMPO 10481 OBJETIVO",
+        "description": "TESTE VIA PYTHON CAMPO 10476 DESCRIÇÃO",
+        "customfield_10476": "TESTE VIA PYTHON CAMPO 10476 ESCopo Inicial ou Solução Proposta",
+        "customfield_10477": "TESTE VIA PYTHON CAMPO 10477 Stakeholders Diretos ou Equipes Envolvidas",
+        
+        # 3. Estratégia e Priorização
+        "customfield_10478": {"id": "10698", "label": "Estratégico"},
+        "priority": {"id": "2", "label": "Alta"},
+        "customfield_10479": "2024-06-30",
+        "customfield_10480": {"id": "10702", "label": "Financeiro"},
+        "customfield_10248": "TESTE VIA PYTHON CAMPO 10248 BENEFÍCIOS ESPERADOS",
+        
+        # 4. Viabilidade
+        "customfield_10482": "TESTE VIA PYTHON CAMPO 10482 RISCOS CONHECIDOS",
+        "customfield_10483": 150000.0,
+        "customfield_10484": {"id": "10709", "label": "Sim"},
+        
+        # 5. Complementar
+        "customfield_10485": "TESTE VIA PYTHON CAMPO 10485 OBSERVAÇÕES ADICIONAIS",
+        
+        # 6. Confirmação de Recebimento
+        "customfield_10486": ["10712"]
+    }
+    
+    print("Enviando projeto para o Jira...")
+    print(f"URL: {url}")
+    print(f"Payload: {json.dumps(projeto, indent=2, ensure_ascii=False)}")
+    
+    try:
+        response = requests.post(url, json=projeto)
+        print(f"Status Code: {response.status_code}")
+        print(f"Response Headers: {dict(response.headers)}")
+        
+        if response.status_code == 201:
+            data = response.json()
+            print(f"\n✅ Projeto criado com sucesso!")
+            print(f"Projeto Key: {data.get('key', 'N/A')}")
+            print(f"Projeto ID: {data.get('id', 'N/A')}")
+            
+            # Salvar resposta em arquivo
+            with open(nome_arquivo, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+            print(f"Resposta salva em '{nome_arquivo}'")
+            
+            return data
+        else:
+            print(f"\n❌ Erro ao criar projeto:")
+            print(f"Status: {response.status_code}")
+            try:
+                error_data = response.json()
+                print(f"Erro: {json.dumps(error_data, indent=2, ensure_ascii=False)}")
+            except:
+                print(f"Erro: {response.text}")
+            return None
+            
+    except requests.RequestException as e:
+        print(f"\n❌ Erro de conexão: {e}")
+        return None
+
 # ----------- Execução dos testes -----------
 if __name__ == "__main__":
     # print("Teste 1 - Resumo backlog (sem filtros):")
@@ -132,5 +204,8 @@ if __name__ == "__main__":
     #print("\nTeste 6 - Espacos de projetos:")
     #testar_espacos_de_projetos()
 
-    print("\nTeste 7 - Opções do campo customizado:")
-    testar_opcoes_campo_customizado()
+    # print("\nTeste 7 - Opções do campo customizado:")
+    # testar_opcoes_campo_customizado()
+
+    print("\nTeste 8 - Criar projeto:")
+    testar_criar_projeto()

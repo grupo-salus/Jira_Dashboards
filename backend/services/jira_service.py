@@ -281,6 +281,29 @@ class JiraService:
     def post_issue(self, issue: dict) -> dict:
         """
         Cria uma nova issue no Jira.
+        :param issue: dicionário com os dados do payload da issue (deve conter 'fields').
+        :return: resposta da API como dicionário.
         """
+        url = f"{self.jira_url}/rest/api/3/issue"
+        logger.debug(f"[post_issue] Enviando issue para: {url}")
+        logger.debug(f"[post_issue] Payload: {issue}")
+
+        try:
+            response = requests.post(
+                url=url,
+                headers=self.headers,
+                auth=self.auth,
+                json=issue
+            )
+            if response.status_code == 201:
+                logger.info("[post_issue] Issue criada com sucesso.")
+                return {"success": True, "data": response.json()}
+            else:
+                logger.error(f"[post_issue] Erro {response.status_code}: {response.text}")
+                return {"success": False, "error": response.text}
+
+        except Exception as e:
+            logger.exception(f"[post_issue] Falha ao criar issue: {e}")
+            return {"success": False, "error": str(e)}
 
         

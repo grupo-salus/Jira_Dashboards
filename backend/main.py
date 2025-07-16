@@ -48,6 +48,10 @@ if os.path.exists(dist_path):
         if request.url.path.startswith("/assets/"):
             return await call_next(request)
         
+        # Se a requisição é para a documentação do FastAPI, deixa passar
+        if request.url.path.startswith("/docs") or request.url.path.startswith("/openapi.json"):
+            return await call_next(request)
+        
         # Para todas as outras rotas, serve o index.html (SPA routing)
         index_path = os.path.join(dist_path, "index.html")
         if os.path.exists(index_path):
@@ -67,8 +71,8 @@ if os.path.exists(dist_path):
     # Rota para servir o index.html em qualquer rota não-API
     @app.get("/{full_path:path}")
     async def serve_spa_routes(full_path: str):
-        # Se a rota não começa com /api/, serve o index.html
-        if not full_path.startswith("api/"):
+        # Se a rota não começa com /api/, /docs, ou /openapi.json, serve o index.html
+        if not (full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("openapi.json")):
             index_path = os.path.join(dist_path, "index.html")
             if os.path.exists(index_path):
                 return FileResponse(index_path)

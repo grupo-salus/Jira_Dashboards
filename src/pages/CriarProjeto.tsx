@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCamposProjeto } from "../api/api_jira";
+import { criarProjetoJira } from "../api/api_jira";
 import {
   ArrowLeft,
   AlertCircle,
@@ -10,7 +11,9 @@ import {
   Target,
   DollarSign,
   MessageSquare,
+  Zap,
 } from "lucide-react";
+import { preencherDadosExemplo } from "../components/CriarProjeto/testData";
 import FormSidebar from "../components/CriarProjeto/FormSidebar";
 import FormSections from "../components/CriarProjeto/FormSections";
 import {
@@ -39,6 +42,12 @@ const CriarProjeto: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [currentSection, setCurrentSection] = useState(1);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchCamposProjetoData();
@@ -140,12 +149,34 @@ const CriarProjeto: React.FC = () => {
       const campo = campos.find((c) => c.key === campoKey);
       const fieldInfo = getFieldInfo(campoKey, campo?.label || campoKey);
 
-      if (
-        !valor ||
-        (typeof valor === "string" && valor.trim() === "") ||
-        (Array.isArray(valor) && valor.length === 0)
-      ) {
+      // Verificar se o campo está vazio
+      let estaVazio = false;
+
+      if (!valor) {
+        estaVazio = true;
+      } else if (typeof valor === "string" && valor.trim() === "") {
+        estaVazio = true;
+      } else if (Array.isArray(valor) && valor.length === 0) {
+        estaVazio = true;
+      } else if (typeof valor === "object" && valor !== null) {
+        // Para campos de select (objetos com id/label)
+        if (Array.isArray(valor)) {
+          // Para arrays (como checkbox)
+          if (valor.length === 0) {
+            estaVazio = true;
+          }
+        } else if (!valor.id && !valor.label) {
+          // Para objetos de select sem id ou label
+          estaVazio = true;
+        }
+      }
+
+      if (estaVazio) {
         camposVazios.push(fieldInfo.label);
+        console.log(
+          `Campo vazio: ${campoKey} (${fieldInfo.label}) - Valor:`,
+          valor
+        );
       } else {
         camposPreenchidos.push(fieldInfo.label);
       }
@@ -153,76 +184,68 @@ const CriarProjeto: React.FC = () => {
 
     // Só mostrar alert se todos os campos obrigatórios estiverem preenchidos
     if (camposVazios.length === 0) {
-      const mensagem =
-        `✅ VALIDAÇÃO CONCLUÍDA COM SUCESSO!\n\n` +
-        `Todos os ${camposPreenchidos.length} campos obrigatórios estão preenchidos:\n\n` +
-        camposPreenchidos.map((campo) => `• ${campo}`).join("\n") +
-        `\n\n📋 DADOS DO FORMULÁRIO:\n` +
-        `Total de campos: ${Object.keys(formData).length}\n` +
-        `Campos preenchidos: ${
-          Object.keys(formData).filter((key) => {
-            const valor = formData[key];
-            return (
-              valor &&
-              (typeof valor === "string" ? valor.trim() !== "" : true) &&
-              (Array.isArray(valor) ? valor.length > 0 : true)
-            );
-          }).length
-        }`;
+      setShowConfirmModal(true);
+      return;
+    }
 
-      // Mostrar alert de sucesso
-      alert(mensagem);
+    // Encontrar a primeira seção com campos obrigatórios faltando
+    let primeiraSecaoComFalta = 1;
 
-      // Log no console para debug
-      console.log("=== VALIDAÇÃO CONCLUÍDA COM SUCESSO ===");
-      console.log("Campos obrigatórios:", camposObrigatorios);
-      console.log("Campos preenchidos:", camposPreenchidos);
-      console.log("Dados completos:", formData);
-    } else {
-      // Encontrar a primeira seção com campos obrigatórios faltando
-      let primeiraSecaoComFalta = 1;
+    // Verificar cada seção para encontrar a primeira com campos faltando
+    for (let secaoId = 1; secaoId <= 6; secaoId++) {
+      const camposObrigatoriosSecao = getCamposObrigatoriosSecao(secaoId);
 
-      // Verificar cada seção para encontrar a primeira com campos faltando
-      for (let secaoId = 1; secaoId <= 6; secaoId++) {
-        const camposObrigatoriosSecao = getCamposObrigatoriosSecao(secaoId);
+      if (camposObrigatoriosSecao.length > 0) {
+        const temCamposFaltando = camposObrigatoriosSecao.some((campoKey) => {
+          const valor = formData[campoKey];
+          return (
+            !valor ||
+            (typeof valor === "string" && valor.trim() === "") ||
+            (Array.isArray(valor) && valor.length === 0)
+          );
+        });
 
-        if (camposObrigatoriosSecao.length > 0) {
-          const temCamposFaltando = camposObrigatoriosSecao.some((campoKey) => {
-            const valor = formData[campoKey];
-            return (
-              !valor ||
-              (typeof valor === "string" && valor.trim() === "") ||
-              (Array.isArray(valor) && valor.length === 0)
-            );
-          });
-
-          if (temCamposFaltando) {
-            primeiraSecaoComFalta = secaoId;
-            break;
-          }
+        if (temCamposFaltando) {
+          primeiraSecaoComFalta = secaoId;
+          break;
         }
       }
+    }
 
-      // Navegar para a primeira seção com campos faltando
-      setCurrentSection(primeiraSecaoComFalta);
+    // Navegar para a primeira seção com campos faltando
+    setCurrentSection(primeiraSecaoComFalta);
 
-      const mensagem =
-        `❌ FORMULÁRIO INCOMPLETO!\n\n` +
-        `Existem ${camposVazios.length} campos obrigatórios não preenchidos.\n\n` +
-        `📍 Redirecionando para a seção "${getNomeSecao(
-          primeiraSecaoComFalta
-        )}"\n\n` +
-        `Campos faltando:\n` +
-        camposVazios.map((campo) => `• ${campo}`).join("\n") +
-        `\n\nPor favor, preencha todos os campos obrigatórios antes de enviar.`;
+    const mensagem =
+      `Existem ${camposVazios.length} campos obrigatórios não preenchidos.\n\n` +
+      `Campos faltando:\n` +
+      camposVazios.map((campo) => `• ${campo}`).join("\n") +
+      `\n\nPor favor, preencha todos os campos obrigatórios antes de enviar.`;
 
-      alert(mensagem);
+    setFeedback({ success: false, message: mensagem });
+    setCurrentSection(primeiraSecaoComFalta);
 
-      // Log no console para debug
-      console.log("=== VALIDAÇÃO FALHOU ===");
-      console.log("Primeira seção com falta:", primeiraSecaoComFalta);
-      console.log("Campos vazios:", camposVazios);
-      console.log("Campos preenchidos:", camposPreenchidos);
+    // Log no console para debug
+    console.log("=== VALIDAÇÃO FALHOU ===");
+    console.log("Primeira seção com falta:", primeiraSecaoComFalta);
+    console.log("Campos vazios:", camposVazios);
+    console.log("Campos preenchidos:", camposPreenchidos);
+  };
+
+  // Função para enviar para o backend
+  const enviarProjeto = async () => {
+    setSending(true);
+    setShowConfirmModal(false);
+    try {
+      // O backend espera os campos do projeto diretamente (payload do Pydantic)
+      const response = await criarProjetoJira(formData);
+      setFeedback({ success: true, message: "Projeto criado com sucesso!" });
+      // Opcional: resetar formulário ou redirecionar
+    } catch (err: any) {
+      console.error("Erro detalhado:", err);
+      const errorMessage = err.message || "Erro desconhecido ao criar projeto.";
+      setFeedback({ success: false, message: errorMessage });
+    } finally {
+      setSending(false);
     }
   };
 
@@ -276,7 +299,7 @@ const CriarProjeto: React.FC = () => {
               </h1>
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Espaço de Projetos
+                Espaço de Projetos
             </div>
           </div>
         </div>
@@ -359,15 +382,15 @@ const CriarProjeto: React.FC = () => {
                     </button>
                   ) : (
                     <>
-                      <button
-                        type="button"
-                        onClick={() => navigate("/")}
+              <button
+                type="button"
+                onClick={() => navigate("/")}
                         className="w-full sm:w-auto px-4 sm:px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        type="submit"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
                         className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                       >
                         <span>Criar Projeto</span>
@@ -380,6 +403,85 @@ const CriarProjeto: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Confirmação */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+              Confirmar abertura de projeto
+            </h2>
+            <p className="mb-6 text-gray-700 dark:text-gray-300">
+              Deseja realmente abrir este projeto?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+                disabled={sending}
+              >
+                Não
+              </button>
+              <button
+                onClick={enviarProjeto}
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                disabled={sending}
+              >
+                Sim, abrir projeto
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Feedback */}
+      {feedback && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-lg w-full">
+            <div className="flex items-center mb-4">
+              {feedback.success ? (
+                <CheckCircle className="w-6 h-6 text-green-600 mr-3" />
+              ) : (
+                <AlertCircle className="w-6 h-6 text-red-600 mr-3" />
+              )}
+              <h2
+                className={`text-xl font-bold ${
+                  feedback.success ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {feedback.success
+                  ? "Projeto criado com sucesso"
+                  : "Formulário incompleto"}
+              </h2>
+            </div>
+            <div className="mb-6">
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line text-left">
+                {feedback.message}
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setFeedback(null)}
+                className="px-6 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Entendi
+              </button>
+            </div>
+        </div>
+      </div>
+      )}
+
+      {/* Botão Flutuante para Dados de Exemplo */}
+      <button
+        onClick={() => preencherDadosExemplo(setFormData)}
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
+        title="Preencher dados de exemplo"
+      >
+        <Zap className="w-6 h-6" />
+        <span className="absolute right-full mr-3 bg-gray-900 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          Preencher dados de exemplo
+        </span>
+      </button>
     </div>
   );
 };

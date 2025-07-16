@@ -142,7 +142,11 @@ const FormFields: React.FC<FormFieldsProps> = ({
             </p>
           )}
           <select
-            value={formData[key]?.id || ""}
+            value={
+              typeof formData[key] === "object"
+                ? formData[key]?.id || ""
+                : formData[key] || ""
+            }
             onChange={(e) =>
               handleInputChange(
                 key,
@@ -174,7 +178,11 @@ const FormFields: React.FC<FormFieldsProps> = ({
             </p>
           )}
           <select
-            value={formData[key]?.id || ""}
+            value={
+              typeof formData[key] === "object"
+                ? formData[key]?.id || ""
+                : formData[key] || ""
+            }
             onChange={(e) =>
               handleInputChange(
                 key,
@@ -200,7 +208,11 @@ const FormFields: React.FC<FormFieldsProps> = ({
             <div className="flex items-start space-x-3">
               <input
                 type="checkbox"
-                checked={formData[key]?.includes("10712") || false}
+                checked={
+                  Array.isArray(formData[key])
+                    ? formData[key].includes("10712")
+                    : false
+                }
                 onChange={(e) => {
                   if (e.target.checked) {
                     handleInputChange(key, ["10712"]);

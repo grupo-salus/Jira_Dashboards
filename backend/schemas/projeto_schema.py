@@ -4,7 +4,7 @@ from typing import Optional, List, Dict
 
 class ProjetoJiraInput(BaseModel):
     # Campos obrigatórios
-    summary: str = Field(..., example="Título do projeto")
+    summary: str = Field(..., description="Título do projeto")
     
     # 1. Informações do Solicitante
     customfield_10093: Optional[str] = Field(None, description="Nome completo do solicitante")
@@ -34,4 +34,4 @@ class ProjetoJiraInput(BaseModel):
     customfield_10485: Optional[str] = Field(None, description="Observações adicionais")
 
     # 6. Confirmação de Recebimento
-    customfield_10486: Optional[str] = Field(None, description="Confirmação de Recebimento")
+    customfield_10486: Optional[List[str]] = Field(None, description="Confirmação de Recebimento")

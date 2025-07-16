@@ -143,6 +143,35 @@ export async function fetchEspacoDeProjetos(filters?: {
   }
 }
 
+export async function criarProjetoJira(dadosProjeto: any): Promise<any> {
+  try {
+    const url = `${API_URL}/api/espaco_de_projetos/criar_projeto`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dadosProjeto),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      const errorMessage =
+        errorData.detail ||
+        errorData.erro ||
+        errorData.message ||
+        JSON.stringify(errorData) ||
+        "Erro ao criar projeto";
+      throw new Error(errorMessage);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao criar projeto Jira:", error);
+    throw error;
+  }
+}
+
 export async function fetchOpcoesCampoCustomizado(
   fieldId: string
 ): Promise<string[]> {

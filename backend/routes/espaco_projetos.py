@@ -104,14 +104,28 @@ def criar_projeto(projeto: ProjetoJiraInput):
     Cria um novo projeto no Jira com os campos validados.
     """
     logger.info("[criar_projeto] Recebendo dados para criar projeto no Jira.")
+    logger.debug(f"[criar_projeto] Dados recebidos: {projeto.model_dump()}")
 
-    service = JiraService()
-    payload = {
-        "fields": {
-            "project": { "key": "EP" },
-            "issuetype": { "id": "10105" },
-            **projeto.model_dump(exclude_none=True)
+    try:
+        service = JiraService()
+        payload = {
+            "fields": {
+                "project": { "key": "EP" },
+                "issuetype": { "id": "10105" },
+                **projeto.model_dump(exclude_none=True)
+            }
         }
-    }
-
-    return service.post_issue(payload)
+        
+        logger.debug(f"[criar_projeto] Payload para Jira: {payload}")
+        result = service.post_issue(payload)
+        
+        if "erro" in result:
+            logger.error(f"[criar_projeto] Erro retornado pelo serviço: {result['erro']}")
+            return {"detail": result["erro"]}
+        
+        logger.info(f"[criar_projeto] Projeto criado com sucesso: {result.get('key', 'N/A')}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"[criar_projeto] Erro inesperado: {e}")
+        return {"detail": f"Erro interno do servidor: {str(e)}"}
