@@ -92,6 +92,7 @@ const DashProjetos: React.FC = () => {
       valor2: "" as string,
       opcaoRapida: "" as string,
     },
+    buscaProjeto: "" as string, // Novo filtro de busca por nome/key
   };
 
   // Filtros expandidos com sistema de data avançado
@@ -473,6 +474,17 @@ const DashProjetos: React.FC = () => {
         }
       }
 
+      const matchesBuscaProjeto =
+        !filtrosAtivos.buscaProjeto ||
+        (item.Título &&
+          item.Título.toLowerCase().includes(
+            filtrosAtivos.buscaProjeto.toLowerCase()
+          )) ||
+        (item.Chave &&
+          item.Chave.toLowerCase().includes(
+            filtrosAtivos.buscaProjeto.toLowerCase()
+          ));
+
       return (
         matchesArea &&
         matchesPrioridade &&
@@ -483,7 +495,8 @@ const DashProjetos: React.FC = () => {
         matchesEntreguesMes &&
         matchesMesEntrega &&
         matchesDataRapida &&
-        matchesData
+        matchesData &&
+        matchesBuscaProjeto // Adiciona o novo filtro
       );
     });
   };
@@ -1821,6 +1834,36 @@ const DashProjetos: React.FC = () => {
                 noOptionsMessage={() => "Sem opções"}
                 components={{ ClearIndicator: CustomClearIndicator }}
                 closeMenuOnScroll={true}
+              />
+            </div>
+
+            {/* Filtro de Busca de Projeto */}
+            <div className="flex flex-col min-w-0">
+              <label
+                htmlFor="busca-projeto-filter"
+                className={`block mb-3 font-semibold ${fontSizes.labelFiltro}`}
+                style={{ color: getTextColor("primary", currentTheme) }}
+              >
+                Buscar Projeto
+              </label>
+              <input
+                id="busca-projeto-filter"
+                type="text"
+                value={filtros.buscaProjeto}
+                onChange={(e) =>
+                  setFiltros((f) => ({ ...f, buscaProjeto: e.target.value }))
+                }
+                placeholder="Digite o nome ou key (EP-0)"
+                className="px-3 py-2 rounded border transition-colors"
+                style={{
+                  backgroundColor:
+                    currentTheme === "dark"
+                      ? themeColors.background.card.dark
+                      : themeColors.components.filtros.input.bg[currentTheme],
+                  borderColor:
+                    themeColors.components.filtros.input.border[currentTheme],
+                  color: getTextColor("primary", currentTheme),
+                }}
               />
             </div>
           </div>
