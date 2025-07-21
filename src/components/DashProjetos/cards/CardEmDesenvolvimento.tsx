@@ -12,8 +12,6 @@ import { getFontSizes } from "../../../constants/styleConfig";
 
 const fontSizes = getFontSizes();
 
-// Removido o cálculo de progresso local - agora usa o status da fase atual do backend
-
 /**
  * Card para projetos em DESENVOLVIMENTO
  */
@@ -25,38 +23,11 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
   // Usar o status da fase atual calculado no backend
   const statusFaseAtual = projeto["Status da fase atual"];
 
-  // Calcular progresso da fase
-  const inicioDev = projeto["Data: Início Em desenvolvimento"]
-    ? new Date(projeto["Data: Início Em desenvolvimento"])
-    : null;
-  const fimDev = projeto["Data: Fim Em desenvolvimento"]
-    ? new Date(projeto["Data: Fim Em desenvolvimento"])
-    : null;
-  const hoje = new Date();
-
-  let diasDecorridos = 0;
-  let totalDias = 0;
-  let progresso = 0;
-  let temDataFim = false;
-
-  if (inicioDev) {
-    // Calcular dias decorridos
-    diasDecorridos = Math.floor(
-      (hoje.getTime() - inicioDev.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (diasDecorridos < 0) diasDecorridos = 0;
-
-    // Se tem data de fim prevista, calcular progresso
-    if (fimDev) {
-      temDataFim = true;
-      totalDias = Math.floor(
-        (fimDev.getTime() - inicioDev.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (totalDias > 0) {
-        progresso = Math.min((diasDecorridos / totalDias) * 100, 100);
-      }
-    }
-  }
+  // Dados de dias úteis calculados no backend
+  const diasDecorridos = projeto["Dias úteis decorridos Em desenvolvimento"];
+  const diasRestantes = projeto["Dias úteis restantes Em desenvolvimento"];
+  const totalDias = projeto["Total dias úteis Em desenvolvimento"];
+  const progresso = projeto["Progresso Em desenvolvimento"];
 
   return withJiraLink(
     projeto,
@@ -69,19 +40,21 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
       )}
 
       {/* Data que saiu de desenvolvimento (se houver) */}
-      {projeto["Data: Fim Em desenvolvimento"] && fimDev && (
+      {projeto["Data: Fim Em desenvolvimento"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          {hoje < fimDev ? "Fim previsto:" : "Fim:"}{" "}
+          {new Date() < new Date(projeto["Data: Fim Em desenvolvimento"])
+            ? "Fim previsto:"
+            : "Fim:"}{" "}
           {formatDate(projeto["Data: Fim Em desenvolvimento"])}
         </div>
       )}
 
       {/* Barra de progresso */}
-      {inicioDev && (
+      {diasDecorridos !== null && diasDecorridos !== undefined && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
           <div className="space-y-2">
-            {temDataFim ? (
+            {progresso !== null && progresso !== undefined ? (
               <>
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">Progresso:</span>
@@ -102,7 +75,7 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
                   />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Dias decorridos:{" "}
+                  Dias úteis decorridos:{" "}
                   <b>
                     {diasDecorridos} / {totalDias} dias
                   </b>
@@ -110,7 +83,7 @@ export const CardEmDesenvolvimento: React.FC<{ projeto: EspacoDeProjetos }> = ({
               </>
             ) : (
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                Dias decorridos: <b>{diasDecorridos} dias</b>
+                Dias úteis decorridos: <b>{diasDecorridos} dias</b>
               </div>
             )}
           </div>

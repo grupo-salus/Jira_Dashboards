@@ -23,38 +23,11 @@ export const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
   // Usar o status da fase atual calculado no backend
   const statusFaseAtual = projeto["Status da fase atual"];
 
-  // Calcular progresso da fase
-  const inicioHom = projeto["Data: Início Em homologação"]
-    ? new Date(projeto["Data: Início Em homologação"])
-    : null;
-  const fimHom = projeto["Data: Fim Em homologação"]
-    ? new Date(projeto["Data: Fim Em homologação"])
-    : null;
-  const hoje = new Date();
-
-  let diasDecorridos = 0;
-  let totalDias = 0;
-  let progresso = 0;
-  let temDataFim = false;
-
-  if (inicioHom) {
-    // Calcular dias decorridos
-    diasDecorridos = Math.floor(
-      (hoje.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (diasDecorridos < 0) diasDecorridos = 0;
-
-    // Se tem data de fim prevista, calcular progresso
-    if (fimHom) {
-      temDataFim = true;
-      totalDias = Math.floor(
-        (fimHom.getTime() - inicioHom.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (totalDias > 0) {
-        progresso = Math.min((diasDecorridos / totalDias) * 100, 100);
-      }
-    }
-  }
+  // Dados de dias úteis calculados no backend
+  const diasDecorridos = projeto["Dias úteis decorridos Em homologação"];
+  const diasRestantes = projeto["Dias úteis restantes Em homologação"];
+  const totalDias = projeto["Total dias úteis Em homologação"];
+  const progresso = projeto["Progresso Em homologação"];
 
   return withJiraLink(
     projeto,
@@ -67,20 +40,21 @@ export const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
       )}
 
       {/* Data fim homologação */}
-      {projeto["Data: Fim Em homologação"] && fimHom && (
+      {projeto["Data: Fim Em homologação"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          {hoje < fimHom ? "Fim previsto:" : "Fim:"}{" "}
+          {new Date() < new Date(projeto["Data: Fim Em homologação"])
+            ? "Fim previsto:"
+            : "Fim:"}{" "}
           {formatDate(projeto["Data: Fim Em homologação"])}
         </div>
       )}
 
-      <hr />
       {/* Barra de progresso */}
-      {inicioHom && (
+      {diasDecorridos !== null && diasDecorridos !== undefined && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
           <div className="space-y-2">
-            {temDataFim ? (
+            {progresso !== null && progresso !== undefined ? (
               <>
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">Progresso:</span>
@@ -101,7 +75,7 @@ export const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
                   />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Dias decorridos:{" "}
+                  Dias úteis decorridos:{" "}
                   <b>
                     {diasDecorridos} / {totalDias} dias
                   </b>
@@ -109,7 +83,7 @@ export const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
               </>
             ) : (
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                Dias decorridos: <b>{diasDecorridos} dias</b>
+                Dias úteis decorridos: <b>{diasDecorridos} dias</b>
               </div>
             )}
           </div>

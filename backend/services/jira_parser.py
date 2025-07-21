@@ -8,7 +8,7 @@ from .project_analysis_utils import (
     calcular_status_fase_atual,
     classificar_status_ideacao,
     classificar_prazo,
-    verificar_risco_atual,
+    calcular_todos_dias_uteis,
 )
 import logging 
 logger = logging.getLogger(__name__)
@@ -110,6 +110,13 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     df["Status de prazo"] = df.apply(classificar_prazo, axis=1)
+    
+    # Calcular todos os campos de dias úteis para cada fase
+    logger.info("Calculando campos de dias úteis para todas as fases")
+    for index, row in df.iterrows():
+        dias_uteis_data = calcular_todos_dias_uteis(row)
+        for campo, valor in dias_uteis_data.items():
+            df.at[index, campo] = valor
     
     # Limpar valores infinitos e NaN das colunas numéricas
     numeric_cols = df.select_dtypes(include=['number']).columns

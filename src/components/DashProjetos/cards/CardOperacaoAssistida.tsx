@@ -24,38 +24,11 @@ export const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
   // Usar o status da fase atual calculado no backend
   const statusFaseAtual = projeto["Status da fase atual"];
 
-  // Calcular progresso da fase
-  const inicioOp = projeto["Data: Início Operação assistida"]
-    ? new Date(projeto["Data: Início Operação assistida"])
-    : null;
-  const fimOp = projeto["Data: Fim Operação assistida"]
-    ? new Date(projeto["Data: Fim Operação assistida"])
-    : null;
-  const hoje = new Date();
-
-  let diasDecorridos = 0;
-  let totalDias = 0;
-  let progresso = 0;
-  let temDataFim = false;
-
-  if (inicioOp) {
-    // Calcular dias decorridos
-    diasDecorridos = Math.floor(
-      (hoje.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (diasDecorridos < 0) diasDecorridos = 0;
-
-    // Se tem data de fim prevista, calcular progresso
-    if (fimOp) {
-      temDataFim = true;
-      totalDias = Math.floor(
-        (fimOp.getTime() - inicioOp.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (totalDias > 0) {
-        progresso = Math.min((diasDecorridos / totalDias) * 100, 100);
-      }
-    }
-  }
+  // Dados de dias úteis calculados no backend
+  const diasDecorridos = projeto["Dias úteis decorridos Operação assistida"];
+  const diasRestantes = projeto["Dias úteis restantes Operação assistida"];
+  const totalDias = projeto["Total dias úteis Operação assistida"];
+  const progresso = projeto["Progresso Operação assistida"];
 
   return withJiraLink(
     projeto,
@@ -68,19 +41,21 @@ export const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
       )}
 
       {/* Data fim operação assistida */}
-      {projeto["Data: Fim Operação assistida"] && fimOp && (
+      {projeto["Data: Fim Operação assistida"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          {hoje < fimOp ? "Fim previsto:" : "Fim:"}{" "}
+          {new Date() < new Date(projeto["Data: Fim Operação assistida"])
+            ? "Fim previsto:"
+            : "Fim:"}{" "}
           {formatDate(projeto["Data: Fim Operação assistida"])}
         </div>
       )}
 
       {/* Barra de progresso */}
-      {inicioOp && (
+      {diasDecorridos !== null && diasDecorridos !== undefined && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
           <div className="space-y-2">
-            {temDataFim ? (
+            {progresso !== null && progresso !== undefined ? (
               <>
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">Progresso:</span>
@@ -101,7 +76,7 @@ export const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
                   />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Dias decorridos:{" "}
+                  Dias úteis decorridos:{" "}
                   <b>
                     {diasDecorridos} / {totalDias} dias
                   </b>
@@ -109,7 +84,7 @@ export const CardOperacaoAssistida: React.FC<{ projeto: EspacoDeProjetos }> = ({
               </>
             ) : (
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                Dias decorridos: <b>{diasDecorridos} dias</b>
+                Dias úteis decorridos: <b>{diasDecorridos} dias</b>
               </div>
             )}
           </div>

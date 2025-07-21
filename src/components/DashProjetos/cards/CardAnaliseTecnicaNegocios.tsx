@@ -23,38 +23,13 @@ export const CardAnaliseTecnicaNegocios: React.FC<{
   // Usar o status da fase atual calculado no backend
   const statusFaseAtual = projeto["Status da fase atual"];
 
-  // Calcular progresso da fase
-  const inicioAnalise = projeto["Data: Início Análise técnica e negócios"]
-    ? new Date(projeto["Data: Início Análise técnica e negócios"])
-    : null;
-  const fimAnalise = projeto["Data: Fim Análise técnica e negócios"]
-    ? new Date(projeto["Data: Fim Análise técnica e negócios"])
-    : null;
-  const hoje = new Date();
-
-  let diasDecorridos = 0;
-  let totalDias = 0;
-  let progresso = 0;
-  let temDataFim = false;
-
-  if (inicioAnalise) {
-    // Calcular dias decorridos
-    diasDecorridos = Math.floor(
-      (hoje.getTime() - inicioAnalise.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (diasDecorridos < 0) diasDecorridos = 0;
-
-    // Se tem data de fim prevista, calcular progresso
-    if (fimAnalise) {
-      temDataFim = true;
-      totalDias = Math.floor(
-        (fimAnalise.getTime() - inicioAnalise.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (totalDias > 0) {
-        progresso = Math.min((diasDecorridos / totalDias) * 100, 100);
-      }
-    }
-  }
+  // Dados de dias úteis calculados no backend
+  const diasDecorridos =
+    projeto["Dias úteis decorridos Análise técnica e negócios"];
+  const diasRestantes =
+    projeto["Dias úteis restantes Análise técnica e negócios"];
+  const totalDias = projeto["Total dias úteis Análise técnica e negócios"];
+  const progresso = projeto["Progresso Análise técnica e negócios"];
 
   return withJiraLink(
     projeto,
@@ -68,19 +43,22 @@ export const CardAnaliseTecnicaNegocios: React.FC<{
       )}
 
       {/* Data fim análise técnica e negócios */}
-      {projeto["Data: Fim Análise técnica e negócios"] && fimAnalise && (
+      {projeto["Data: Fim Análise técnica e negócios"] && (
         <div className="text-gray-600 dark:text-gray-200">
-          {hoje < fimAnalise ? "Fim previsto:" : "Fim:"}{" "}
+          {new Date() <
+          new Date(projeto["Data: Fim Análise técnica e negócios"])
+            ? "Fim previsto:"
+            : "Fim:"}{" "}
           {formatDate(projeto["Data: Fim Análise técnica e negócios"])}
         </div>
       )}
 
       {/* Barra de progresso */}
-      {inicioAnalise && (
+      {diasDecorridos !== null && diasDecorridos !== undefined && (
         <>
           <hr className="my-1 border-gray-300 dark:border-gray-600" />
           <div className="space-y-2">
-            {temDataFim ? (
+            {progresso !== null && progresso !== undefined ? (
               <>
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">Progresso:</span>
@@ -101,7 +79,7 @@ export const CardAnaliseTecnicaNegocios: React.FC<{
                   />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Dias decorridos:{" "}
+                  Dias úteis decorridos:{" "}
                   <b>
                     {diasDecorridos} / {totalDias} dias
                   </b>
@@ -109,7 +87,7 @@ export const CardAnaliseTecnicaNegocios: React.FC<{
               </>
             ) : (
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                Dias decorridos: <b>{diasDecorridos} dias</b>
+                Dias úteis decorridos: <b>{diasDecorridos} dias</b>
               </div>
             )}
           </div>

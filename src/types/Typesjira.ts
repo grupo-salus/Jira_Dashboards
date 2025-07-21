@@ -105,6 +105,31 @@ export interface EspacoDeProjetos {
   // Colunas de status e controle
   "Dias na fase atual"?: number | null;
   "Status da fase atual"?: string | null;
+  // Novos campos de dias úteis
+  "Dias úteis decorridos Ideação"?: number;
+  "Dias úteis restantes Ideação"?: number;
+  "Total dias úteis Ideação"?: number;
+  "Progresso Ideação"?: number;
+  "Dias úteis decorridos Análise técnica e negócios"?: number;
+  "Dias úteis restantes Análise técnica e negócios"?: number;
+  "Total dias úteis Análise técnica e negócios"?: number;
+  "Progresso Análise técnica e negócios"?: number;
+  "Dias úteis decorridos Backlog priorizado"?: number;
+  "Dias úteis restantes Backlog priorizado"?: number;
+  "Total dias úteis Backlog priorizado"?: number;
+  "Progresso Backlog priorizado"?: number;
+  "Dias úteis decorridos Em desenvolvimento"?: number;
+  "Dias úteis restantes Em desenvolvimento"?: number;
+  "Total dias úteis Em desenvolvimento"?: number;
+  "Progresso Em desenvolvimento"?: number;
+  "Dias úteis decorridos Em homologação"?: number;
+  "Dias úteis restantes Em homologação"?: number;
+  "Total dias úteis Em homologação"?: number;
+  "Progresso Em homologação"?: number;
+  "Dias úteis decorridos Operação assistida"?: number;
+  "Dias úteis restantes Operação assistida"?: number;
+  "Total dias úteis Operação assistida"?: number;
+  "Progresso Operação assistida"?: number;
 }
 
 export type JiraStatus =

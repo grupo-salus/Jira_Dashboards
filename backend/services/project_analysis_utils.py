@@ -2,9 +2,47 @@
 from datetime import date
 import pandas as pd
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
 hoje = pd.Timestamp(date.today())
+
+# Lista de feriados nacionais fixos (pode ser expandida ou parametrizada)
+FERIADOS_FIXOS = [
+    (1, 1),    # Confraternização Universal
+    (4, 21),   # Tiradentes
+    (5, 1),    # Dia do Trabalho
+    (9, 7),    # Independência
+    (10, 12),  # Nossa Senhora Aparecida
+    (11, 2),   # Finados
+    (11, 15),  # Proclamação da República
+    (12, 25),  # Natal
+]
+
+def obter_feriados_ano(ano):
+    """
+    Retorna uma lista de datas de feriados nacionais para o ano informado.
+    (Apenas feriados fixos, sem móveis como Carnaval, Páscoa, etc)
+    """
+    return [pd.Timestamp(year=ano, month=mes, day=dia) for mes, dia in FERIADOS_FIXOS]
+
+
+def dias_uteis_entre_datas(inicio, fim, feriados=None):
+    """
+    Calcula o número de dias úteis entre duas datas, desconsiderando sábados, domingos e feriados.
+    O cálculo é inclusivo do início e exclusivo do fim (igual ao padrão numpy.busday_count).
+    """
+    if pd.isnull(inicio) or pd.isnull(fim):
+        return None
+    if feriados is None:
+        # Gera feriados para todos os anos entre inicio e fim
+        anos = range(inicio.year, fim.year + 1)
+        feriados = []
+        for ano in anos:
+            feriados.extend(obter_feriados_ano(ano))
+    # Converter para string no formato 'YYYY-MM-DD' para numpy
+    feriados_str = [d.strftime('%Y-%m-%d') for d in feriados]
+    return np.busday_count(inicio.date(), fim.date(), holidays=feriados_str)
 
 def calcular_tempo_por_fase(row: pd.Series, fase: str) -> int:
     logger.debug(f"Calculando tempo para fase: {fase}")
@@ -93,7 +131,8 @@ def classificar_prazo(row: pd.Series) -> str:
         if pd.isnull(target_end):
             logger.debug("Target end ausente")
             return None
-        if data_entrega <= target_end:
+        dias_uteis = dias_uteis_entre_datas(data_entrega, target_end)
+        if dias_uteis >= 0:
             logger.debug(f"Projeto finalizado no prazo: {data_entrega} <= {target_end}")
             return "No prazo"
         else:
@@ -105,105 +144,133 @@ def classificar_prazo(row: pd.Series) -> str:
         logger.debug("Target end ausente")
         return None
 
-    dias_restantes = (target_end - hoje).days
-    logger.debug(f"Dias restantes: {dias_restantes}")
+    dias_restantes = dias_uteis_entre_datas(hoje, target_end)
+    logger.debug(f"Dias úteis restantes: {dias_restantes}")
 
     if dias_restantes < 0:
         logger.debug(f"Dias restantes: {dias_restantes}, retornando atrasado")
         return "Atrasado"
-    
     elif dias_restantes <= 2:
         logger.debug(f"Dias restantes: {dias_restantes}, retornando em risco")
         return "Em risco"
-    
     logger.debug(f"Dias restantes: {dias_restantes}, retornando no prazo")
     logger.debug(f"--------------------------------")
     return "No prazo"
 
-def verificar_risco_atual(row: pd.Series) -> str:
-    logger.debug("Verificando risco atual")
-    target_end = row.get("Target end")
-    status = str(row.get("Status", "")).strip().lower()
-    if pd.isnull(target_end):
-        logger.debug("Target end ausente")
-        return None
-    dias_restantes = (target_end - hoje).days
-    logger.debug(f"Dias restantes: {dias_restantes}")
-    fases_iniciais = ["ideação", "backlog priorizado", "análise técnica e negócios", "em desenvolvimento"]
-    if status in fases_iniciais and (dias_restantes <= 2 or hoje > target_end):
-        logger.debug("Risco identificado")
-        return "Sim"
-    logger.debug("Sem risco identificado")
-    return "Não"
 
 def calcular_status_fase_atual(row: pd.Series) -> str:
     """
     Calcula o status da fase atual do projeto baseado no status atual e nas datas de início/fim da fase.
     Só calcula para os status: "Em Desenvolvimento", "Em Homologação" e "Operação Assistida".
     Retorna: "No prazo", "Atrasado", "Em risco", "Em desenvolvimento", "Não iniciado" ou None
-    
-    Lógica:
-    - Data: Fim = Data prevista de fim (quando pretendo terminar)
-    - Se hoje > Data: Fim = Está atrasado (passou da previsão)
-    - Se hoje <= Data: Fim = Está no prazo (ainda não passou da previsão)
-    - Se faltam <= 2 dias = Em risco (próximo do prazo)
-    - Se não tem Data: Fim = Em desenvolvimento (apenas conta dias corridos)
     """
     logger.debug(f"Calculando status da fase atual para projeto: {row.get('Chave')}")
     status = str(row.get("Status", "")).strip().capitalize()
     logger.debug(f"Status atual: {status}")
     
-    # Lista de status para os quais calcular o status da fase
-    # Usando os nomes após capitalização (.capitalize())
     status_validos = ["Em desenvolvimento", "Em homologação", "Operação assistida", "Análise técnica e negócios", "Backlog priorizado"]
-    
-    # Se o status atual não está na lista de status válidos, retorna None
     if status not in status_validos:
         logger.debug(f"Status '{status}' não está na lista de status válidos para cálculo de fase. Status válidos: {status_validos}")
         return None
     
-    # Obter datas da fase atual
     inicio = row.get(f"Data: Início {status}")
     fim_previsto = row.get(f"Data: Fim {status}")
-    
     logger.debug(f"Data: Início {status}: {inicio}")
     logger.debug(f"Data: Fim previsto {status}: {fim_previsto}")
     
-    # Se não tem data de início, não foi iniciado
     if pd.isnull(inicio):
         logger.debug(f"Fase {status} não foi iniciada")
         return "Não iniciado"
     
-    # Se tem data de fim prevista, verificar se passou da previsão
     if pd.notnull(fim_previsto):
         logger.debug(f"Fase {status} tem data de fim prevista: {fim_previsto}")
-        
-        # Se hoje passou da data prevista, está atrasado
-        if hoje > fim_previsto:
+        dias_restantes = dias_uteis_entre_datas(hoje, fim_previsto)
+        logger.debug(f"Dias úteis restantes para fim previsto: {dias_restantes}")
+        if dias_restantes < 0:
             logger.debug(f"Fase {status} está atrasada - hoje ({hoje}) > fim previsto ({fim_previsto})")
             return "Atrasado"
+        elif dias_restantes <= 2:
+            logger.debug(f"Fase {status} está em risco - faltam {dias_restantes} dias úteis")
+            return "Em risco"
         else:
-            # Calcular quantos dias faltam para o prazo
-            dias_restantes = (fim_previsto - hoje).days
-            logger.debug(f"Dias restantes para fim previsto: {dias_restantes}")
-            
-            if dias_restantes <= 2:
-                logger.debug(f"Fase {status} está em risco - faltam {dias_restantes} dias")
-                return "Em risco"
-            else:
-                logger.debug(f"Fase {status} está no prazo - faltam {dias_restantes} dias")
-                return "No prazo"
+            logger.debug(f"Fase {status} está no prazo - faltam {dias_restantes} dias úteis")
+            return "No prazo"
     
-    # Se não tem data de fim prevista, apenas contar dias corridos
     if pd.notnull(inicio):
-        # Calcular dias decorridos na fase atual
-        dias_decorridos = (hoje - inicio).days
-        logger.debug(f"Dias decorridos na fase {status}: {dias_decorridos}")
-        
-        # Sem data de fim prevista, não é possível determinar se está atrasado
-        # Apenas retorna "Em desenvolvimento" para indicar que está sendo executado
-        logger.debug(f"Fase {status} em desenvolvimento há {dias_decorridos} dias")
+        dias_decorridos = dias_uteis_entre_datas(inicio, hoje)
+        logger.debug(f"Dias úteis decorridos na fase {status}: {dias_decorridos}")
+        logger.debug(f"Fase {status} em desenvolvimento há {dias_decorridos} dias úteis")
         return "Em desenvolvimento"
     
     logger.debug(f"Não foi possível calcular status para fase {status}")
     return None
+
+def calcular_dias_uteis_fase(row: pd.Series, fase: str) -> dict:
+    """
+    Calcula os dias úteis para uma fase específica.
+    Retorna um dicionário com: dias_decorridos, dias_restantes, total_dias, progresso
+    """
+    inicio = row.get(f"Data: Início {fase}")
+    fim = row.get(f"Data: Fim {fase}")
+    
+    if pd.isnull(inicio):
+        return {
+            "dias_decorridos": None,
+            "dias_restantes": None,
+            "total_dias": None,
+            "progresso": None
+        }
+    
+    # Calcular dias decorridos (do início até hoje)
+    dias_decorridos = dias_uteis_entre_datas(inicio, hoje)
+    if dias_decorridos is None or dias_decorridos < 0:
+        dias_decorridos = 0
+    
+    # Se tem data de fim prevista
+    if pd.notnull(fim):
+        total_dias = dias_uteis_entre_datas(inicio, fim)
+        if total_dias and total_dias > 0:
+            dias_restantes = dias_uteis_entre_datas(hoje, fim)
+            if dias_restantes is None or dias_restantes < 0:
+                dias_restantes = 0
+            progresso = min((dias_decorridos / total_dias) * 100, 100)
+        else:
+            total_dias = None
+            dias_restantes = None
+            progresso = None
+    else:
+        total_dias = None
+        dias_restantes = None
+        progresso = None
+    
+    return {
+        "dias_decorridos": dias_decorridos,
+        "dias_restantes": dias_restantes,
+        "total_dias": total_dias,
+        "progresso": progresso
+    }
+
+
+def calcular_todos_dias_uteis(row: pd.Series) -> dict:
+    """
+    Calcula todos os campos de dias úteis para todas as fases do projeto.
+    """
+    fases = [
+        "Ideação",
+        "Análise técnica e negócios", 
+        "Backlog priorizado",
+        "Em desenvolvimento",
+        "Em homologação",
+        "Operação assistida"
+    ]
+    
+    resultado = {}
+    
+    for fase in fases:
+        dados_fase = calcular_dias_uteis_fase(row, fase)
+        resultado[f"Dias úteis decorridos {fase}"] = dados_fase["dias_decorridos"]
+        resultado[f"Dias úteis restantes {fase}"] = dados_fase["dias_restantes"]
+        resultado[f"Total dias úteis {fase}"] = dados_fase["total_dias"]
+        resultado[f"Progresso {fase}"] = dados_fase["progresso"]
+    
+    return resultado
