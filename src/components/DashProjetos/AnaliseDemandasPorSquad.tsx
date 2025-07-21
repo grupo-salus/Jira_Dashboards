@@ -197,7 +197,7 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
   }));
 
   return (
-    <div className="w-full h-full flex-1 flex flex-col xl:flex-row items-center xl:items-center justify-between w-full gap-4 xl:gap-0">
+    <div className="w-full h-full flex-1 flex flex-col items-center justify-start gap-2">
       <div className="flex-shrink-0">
         <PieChart width={280} height={300}>
           <Pie
@@ -230,37 +230,39 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
           {/* Removido o Tooltip padrão do Recharts */}
         </PieChart>
       </div>
-      <div className="flex-shrink-0 w-full xl:w-48 xl:max-w-[160px]">
+      <div className="flex-shrink-0 w-full h-32">
         {pieData.length > 0 && (
-          <ul className="grid grid-cols-3 gap-4 w-full xl:flex xl:flex-col xl:w-48 xl:max-w-[160px] xl:h-full xl:overflow-y-auto">
-            {pieData
-              .slice()
-              .sort((a, b) => b.value - a.value)
-              .map((item) => (
-                <li
-                  key={item.label}
-                  // Alterado para 'items-center' para centralizar verticalmente
-                  className={`flex items-center gap-2 font-medium`}
-                  style={{ fontSize: labelFontSize }}
-                >
-                  <span
-                    // Removido 'mt-1'
-                    className="inline-block rounded-full flex-shrink-0"
-                    style={{
-                      width: 14,
-                      height: 14,
-                      backgroundColor: getColorForValue(item.originalValue),
-                    }}
-                  ></span>
-                  <span
-                    // Mantido sem 'truncate' para o texto quebrar a linha se necessário
-                    style={{ color: getTextColor("primary", currentTheme) }}
+          <div className="overflow-x-auto h-full">
+            <ul className="grid grid-cols-5 grid-rows-4 gap-4 w-max h-full">
+              {pieData
+                .slice()
+                .sort((a, b) => b.value - a.value)
+                .map((item) => (
+                  <li
+                    key={item.label}
+                    // Alterado para 'items-center' para centralizar verticalmente
+                    className={`flex items-center gap-2 font-medium`}
+                    style={{ fontSize: labelFontSize }}
                   >
-                    {item.label}
-                  </span>
-                </li>
-              ))}
-          </ul>
+                    <span
+                      // Removido 'mt-1'
+                      className="inline-block rounded-full flex-shrink-0"
+                      style={{
+                        width: 14,
+                        height: 14,
+                        backgroundColor: getColorForValue(item.originalValue),
+                      }}
+                    ></span>
+                    <span
+                      // Mantido sem 'truncate' para o texto quebrar a linha se necessário
+                      style={{ color: getTextColor("primary", currentTheme) }}
+                    >
+                      {item.label}
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </div>
         )}
       </div>
       {/* Tooltip Modal */}
