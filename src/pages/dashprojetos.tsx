@@ -28,6 +28,7 @@ import {
 import ProjetosBarPorArea from "../components/DashProjetos/ProjetosBarPorArea";
 import ProjetosBarPorPrioridade from "../components/DashProjetos/ProjetosBarPorPrioridade";
 import ProjetosTotalizadores from "../components/DashProjetos/ProjetosTotalizadores";
+import ProximosExecucao from "../components/DashProjetos/ProximosExecucao";
 import AnaliseDemandasPorSquad from "../components/DashProjetos/AnaliseDemandasPorSquad";
 import { getFontSizes } from "../constants/styleConfig";
 import {
@@ -2169,6 +2170,9 @@ const DashProjetos: React.FC = () => {
         filtroEntreguesMesAtivo={filtros.entreguesMes}
         tipoFiltroStatus={filtros.tipoFiltroStatus}
       />
+
+      {/* Próximos Projetos a Serem Executados */}
+      <ProximosExecucao filteredData={filteredData} />
 
       {/* Gráficos do dashboard - 3 gráficos em linha */}
       <div className="mb-6 w-full flex flex-wrap gap-6 justify-center">

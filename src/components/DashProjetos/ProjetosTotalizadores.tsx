@@ -37,10 +37,6 @@ const remToPx = (rem: string): number => {
   return Math.round(remValue * 16); // 1rem = 16px
 };
 
-// URL base do Jira (igual ao KanbanCards.tsx)
-const JIRA_URL_BASE =
-  "https://tigruposalus.atlassian.net/jira/software/c/projects/EP/boards/323?selectedIssue=";
-
 const TotalizadorCard: React.FC<{
   icon: React.ReactNode;
   label: string;
@@ -172,27 +168,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // Função para obter a cor da prioridade (mesma lógica do Kanban)
-  const getPriorityColor = (prioridade: string) => {
-    const prioridadeConfig = getPriorityConfig(prioridade);
-    const label = prioridadeConfig.label;
-
-    switch (label) {
-      case "Estratégica":
-        return themeColors.components.prioridades.estrategica.hex;
-      case "Alta":
-        return themeColors.components.prioridades.alta.hex;
-      case "Média":
-        return themeColors.components.prioridades.media.hex;
-      case "Baixa":
-        return themeColors.components.prioridades.baixa.hex;
-      case "Baixíssima":
-        return themeColors.components.prioridades.muitoBaixa.hex;
-      default:
-        return themeColors.components.prioridades.naoDefinida.hex;
-    }
-  };
-
   // Métricas Chave
   const total = filteredData.length; // Total no Board: dados filtrados (acompanha filtros)
   const totalIdeacao = filteredData.filter(
@@ -286,331 +261,195 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
   const { projetosNoPrazo, projetosEmRisco, projetosForaDoPrazo } =
     calcularMetricasStatus(tipoFiltroStatus);
 
-  // Encontrar os próximos 3 projetos a serem executados
-  const proximosExecucao = backlogPriorizado
-    .filter((p) => p.PosicaoBacklog !== null)
-    .sort((a, b) => (a.PosicaoBacklog || 0) - (b.PosicaoBacklog || 0))
-    .slice(0, 3);
-
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 w-full mb-20">
-        <TotalizadorCard
-          icon={
-            <CardsIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
-            />
-          }
-          label="Total de Projetos no Board"
-          value={total}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Total de projetos registrados no board, considerando todos os
-                status
-              </div>
-            </div>
-          }
-        />
-        <TotalizadorCard
-          icon={
-            <LightbulbIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.ideacao.icon,
-              }}
-            />
-          }
-          label="Projetos em Ideação"
-          value={totalIdeacao}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que estão na etapa inicial, em análise ou validação
-                antes de serem priorizados para execução
-              </div>
-            </div>
-          }
-        />
-
-        <TotalizadorCard
-          icon={
-            <ClockIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color:
-                  themeColors.components.totalizadores.backlogPriorizado.icon,
-              }}
-            />
-          }
-          label="Projetos no Backlog Priorizado"
-          value={totalBacklogPriorizado}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que já foram analisados e priorizados, prontos para
-                serem executados.
-              </div>
-            </div>
-          }
-        />
-
-        <TotalizadorCard
-          icon={
-            <EpicIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.projetos.icon,
-              }}
-            />
-          }
-          label="Projetos em Desenvolvimento"
-          value={totalEmAndamento}
-          currentTheme={currentTheme}
-          tooltipContent={
-            <div className="text-xs max-w-xs">
-              <div style={{ color: getTextColor("secondary", currentTheme) }}>
-                Projetos que estão ativamente sendo desenvolvidos: Em
-                desenvolvimento, em homologação e em operação assistida.
-              </div>
-            </div>
-          }
-        />
-
-        <TotalizadorCard
-          icon={
-            <CalendarIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
-            />
-          }
-          label="Projetos Entregues no Mês"
-          value={totalEntreguesNoMes}
-          currentTheme={currentTheme}
-          onClickValue={onEntreguesMesClick}
-          clickable={!!onEntreguesMesClick}
-          isFiltered={filtroEntreguesMesAtivo}
-        />
-        <TotalizadorCard
-          icon={
-            <CompassIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
-            />
-          }
-          label={
-            tipoFiltroStatus === "projeto"
-              ? "Projetos No Prazo"
-              : tipoFiltroStatus === "status"
-              ? "Status No Prazo"
-              : "No Prazo"
-          }
-          value={projetosNoPrazo}
-          currentTheme={currentTheme}
-          valueColor={themeColors.status.prazo.noPrazo.text[currentTheme]}
-          onClickValue={
-            onStatusPrazoClick
-              ? () => onStatusPrazoClick("No prazo")
-              : undefined
-          }
-          clickable={!!onStatusPrazoClick}
-          isFiltered={filtroStatusPrazoAtivo === "No prazo"}
-        />
-        <TotalizadorCard
-          icon={
-            <ExclamationTriangleIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
-            />
-          }
-          label={
-            tipoFiltroStatus === "projeto"
-              ? "Projetos Em Risco"
-              : tipoFiltroStatus === "status"
-              ? "Status Em Risco"
-              : "Em Risco"
-          }
-          value={projetosEmRisco}
-          currentTheme={currentTheme}
-          valueColor={themeColors.status.prazo.emRisco.bg[currentTheme]}
-          onClickValue={
-            onStatusPrazoClick
-              ? () => onStatusPrazoClick("Em risco")
-              : undefined
-          }
-          clickable={!!onStatusPrazoClick}
-          isFiltered={filtroStatusPrazoAtivo === "Em risco"}
-        />
-        <TotalizadorCard
-          icon={
-            <FireIcon
-              size={remToPx(config.icone)}
-              className="text-current flex-shrink-0"
-              style={{
-                color: themeColors.components.totalizadores.total.icon,
-              }}
-            />
-          }
-          label={
-            tipoFiltroStatus === "projeto"
-              ? "Projetos Atrasados"
-              : tipoFiltroStatus === "status"
-              ? "Status Atrasados"
-              : "Atrasados"
-          }
-          value={projetosForaDoPrazo}
-          currentTheme={currentTheme}
-          valueColor={themeColors.status.prazo.foraPrazo.text[currentTheme]}
-          onClickValue={
-            onStatusPrazoClick
-              ? () => onStatusPrazoClick("Atrasado")
-              : undefined
-          }
-          clickable={!!onStatusPrazoClick}
-          isFiltered={filtroStatusPrazoAtivo === "Atrasado"}
-        />
-      </div>
-
-      {/* Seção dos próximos projetos */}
-      {proximosExecucao.length > 0 && (
-        <div className="mb-20">
-          <div
-            className={`rounded-lg shadow-md w-full p-4 sm:p-6 relative overflow-hidden flex flex-col gap-3`}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 w-full mb-20">
+      <TotalizadorCard
+        icon={
+          <CardsIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
             style={{
-              backgroundColor: getBackgroundColor("card", currentTheme),
+              color: themeColors.components.totalizadores.total.icon,
             }}
-          >
-            <div className="w-full mb-3">
-              <h3
-                className={`font-bold ${config.titulo}`}
-                style={{ color: getTextColor("primary", currentTheme) }}
-              >
-                Próximos Projetos a Serem Executados
-              </h3>
-              <p
-                className={`text-sm ${config.label}`}
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
-                Fila ordenada por prioridade no backlog
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 w-full">
-              {proximosExecucao.map((projeto, index) => (
-                <div
-                  key={projeto.Título}
-                  className={`relative flex items-center gap-3 p-4 sm:p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 min-h-[100px] sm:h-24 lg:h-28 cursor-pointer w-full sm:flex-1 sm:min-w-[250px]`}
-                  style={{
-                    background:
-                      themeColors.components.totalizadores.proximoExecucao.bg[
-                        currentTheme
-                      ],
-                  }}
-                  onClick={() => {
-                    if (projeto.Chave) {
-                      window.open(`${JIRA_URL_BASE}${projeto.Chave}`, "_blank");
-                    }
-                  }}
-                >
-                  {/* Barra de prioridade lateral */}
-                  <div
-                    className="absolute left-0 top-0 h-full w-1 rounded-l-lg"
-                    style={{
-                      background: getPriorityColor(projeto.Prioridade || ""),
-                    }}
-                  />
-
-                  <div
-                    className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-8 h-8 sm:w-8 sm:h-8`}
-                    style={{
-                      backgroundColor:
-                        themeColors.components.totalizadores.ranking.bar,
-                    }}
-                  >
-                    <span
-                      className={`text-sm sm:text-sm`}
-                      style={{ color: themeColors.utility.white }}
-                    >
-                      #{projeto.PosicaoBacklog}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0 pl-2">
-                    <h4
-                      className={`font-semibold break-words whitespace-normal text-sm sm:text-sm leading-tight`}
-                      style={{ color: getTextColor("primary", currentTheme) }}
-                      title={projeto.Título}
-                    >
-                      {index === 0 ? (
-                        <>Próximo: {projeto.Título}</>
-                      ) : (
-                        projeto.Título
-                      )}
-                    </h4>
-                    {projeto["Departamento Solicitante"] && (
-                      <div className="flex items-center gap-2 sm:gap-2 mt-2">
-                        <p
-                          className={`truncate text-sm`}
-                          style={{
-                            color: getTextColor("secondary", currentTheme),
-                          }}
-                          title={projeto["Departamento Solicitante"]}
-                        >
-                          {projeto["Departamento Solicitante"]}
-                        </p>
-                        {projeto.Prioridade && (
-                          <span
-                            className={`truncate text-sm font-medium px-2 sm:px-2 py-1 rounded inline-block flex-shrink-0 text-white`}
-                            style={{
-                              backgroundColor: getPriorityColor(
-                                projeto.Prioridade
-                              ),
-                            }}
-                            title={`Prioridade: ${projeto.Prioridade}`}
-                          >
-                            {projeto.Prioridade}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    {!projeto["Departamento Solicitante"] &&
-                      projeto.Prioridade && (
-                        <span
-                          className={`truncate text-sm mt-2 font-medium px-2 sm:px-2 py-1 rounded inline-block text-white`}
-                          style={{
-                            backgroundColor: getPriorityColor(
-                              projeto.Prioridade
-                            ),
-                          }}
-                          title={`Prioridade: ${projeto.Prioridade}`}
-                        >
-                          {projeto.Prioridade}
-                        </span>
-                      )}
-                  </div>
-                </div>
-              ))}
+          />
+        }
+        label="Total de Projetos no Board"
+        value={total}
+        currentTheme={currentTheme}
+        tooltipContent={
+          <div className="text-xs max-w-xs">
+            <div style={{ color: getTextColor("secondary", currentTheme) }}>
+              Total de projetos registrados no board, considerando todos os
+              status
             </div>
           </div>
-        </div>
-      )}
+        }
+      />
+      <TotalizadorCard
+        icon={
+          <LightbulbIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
+            style={{
+              color: themeColors.components.totalizadores.ideacao.icon,
+            }}
+          />
+        }
+        label="Projetos em Ideação"
+        value={totalIdeacao}
+        currentTheme={currentTheme}
+        tooltipContent={
+          <div className="text-xs max-w-xs">
+            <div style={{ color: getTextColor("secondary", currentTheme) }}>
+              Projetos que estão na etapa inicial, em análise ou validação antes
+              de serem priorizados para execução
+            </div>
+          </div>
+        }
+      />
+
+      <TotalizadorCard
+        icon={
+          <ClockIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
+            style={{
+              color:
+                themeColors.components.totalizadores.backlogPriorizado.icon,
+            }}
+          />
+        }
+        label="Projetos no Backlog Priorizado"
+        value={totalBacklogPriorizado}
+        currentTheme={currentTheme}
+        tooltipContent={
+          <div className="text-xs max-w-xs">
+            <div style={{ color: getTextColor("secondary", currentTheme) }}>
+              Projetos que já foram analisados e priorizados, prontos para serem
+              executados.
+            </div>
+          </div>
+        }
+      />
+
+      <TotalizadorCard
+        icon={
+          <EpicIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
+            style={{
+              color: themeColors.components.totalizadores.projetos.icon,
+            }}
+          />
+        }
+        label="Projetos em Desenvolvimento"
+        value={totalEmAndamento}
+        currentTheme={currentTheme}
+        tooltipContent={
+          <div className="text-xs max-w-xs">
+            <div style={{ color: getTextColor("secondary", currentTheme) }}>
+              Projetos que estão ativamente sendo desenvolvidos: Em
+              desenvolvimento, em homologação e em operação assistida.
+            </div>
+          </div>
+        }
+      />
+
+      <TotalizadorCard
+        icon={
+          <CalendarIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
+            style={{
+              color: themeColors.components.totalizadores.total.icon,
+            }}
+          />
+        }
+        label="Projetos Entregues no Mês"
+        value={totalEntreguesNoMes}
+        currentTheme={currentTheme}
+        onClickValue={onEntreguesMesClick}
+        clickable={!!onEntreguesMesClick}
+        isFiltered={filtroEntreguesMesAtivo}
+      />
+      <TotalizadorCard
+        icon={
+          <CompassIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
+            style={{
+              color: themeColors.components.totalizadores.total.icon,
+            }}
+          />
+        }
+        label={
+          tipoFiltroStatus === "projeto"
+            ? "Projetos No Prazo"
+            : tipoFiltroStatus === "status"
+            ? "Status No Prazo"
+            : "No Prazo"
+        }
+        value={projetosNoPrazo}
+        currentTheme={currentTheme}
+        valueColor={themeColors.status.prazo.noPrazo.text[currentTheme]}
+        onClickValue={
+          onStatusPrazoClick ? () => onStatusPrazoClick("No prazo") : undefined
+        }
+        clickable={!!onStatusPrazoClick}
+        isFiltered={filtroStatusPrazoAtivo === "No prazo"}
+      />
+      <TotalizadorCard
+        icon={
+          <ExclamationTriangleIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
+            style={{
+              color: themeColors.components.totalizadores.total.icon,
+            }}
+          />
+        }
+        label={
+          tipoFiltroStatus === "projeto"
+            ? "Projetos Em Risco"
+            : tipoFiltroStatus === "status"
+            ? "Status Em Risco"
+            : "Em Risco"
+        }
+        value={projetosEmRisco}
+        currentTheme={currentTheme}
+        valueColor={themeColors.status.prazo.emRisco.bg[currentTheme]}
+        onClickValue={
+          onStatusPrazoClick ? () => onStatusPrazoClick("Em risco") : undefined
+        }
+        clickable={!!onStatusPrazoClick}
+        isFiltered={filtroStatusPrazoAtivo === "Em risco"}
+      />
+      <TotalizadorCard
+        icon={
+          <FireIcon
+            size={remToPx(config.icone)}
+            className="text-current flex-shrink-0"
+            style={{
+              color: themeColors.components.totalizadores.total.icon,
+            }}
+          />
+        }
+        label={
+          tipoFiltroStatus === "projeto"
+            ? "Projetos Atrasados"
+            : tipoFiltroStatus === "status"
+            ? "Status Atrasados"
+            : "Atrasados"
+        }
+        value={projetosForaDoPrazo}
+        currentTheme={currentTheme}
+        valueColor={themeColors.status.prazo.foraPrazo.text[currentTheme]}
+        onClickValue={
+          onStatusPrazoClick ? () => onStatusPrazoClick("Atrasado") : undefined
+        }
+        clickable={!!onStatusPrazoClick}
+        isFiltered={filtroStatusPrazoAtivo === "Atrasado"}
+      />
     </div>
   );
 };
