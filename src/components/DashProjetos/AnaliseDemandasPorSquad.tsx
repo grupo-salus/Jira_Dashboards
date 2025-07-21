@@ -86,6 +86,13 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
     }
   };
 
+  // Novo handler para clique nas legendas
+  const handleLegendClick = (squad: string) => {
+    if (onSquadClick) {
+      onSquadClick(squad);
+    }
+  };
+
   const handlePieMouseEnter = (entry: any) => {
     if (entry && entry.name) {
       // Limpar timeout anterior se existir
@@ -240,12 +247,12 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                 .map((item) => (
                   <li
                     key={item.label}
-                    // Alterado para 'items-center' para centralizar verticalmente
-                    className={`flex items-center gap-2 font-medium`}
+                    className={`group flex items-center gap-2 font-medium cursor-pointer transition-opacity relative w-fit hover:opacity-80`}
                     style={{ fontSize: labelFontSize }}
+                    onClick={() => handleLegendClick(item.label)}
+                    title={`Clique para filtrar por ${item.label}`}
                   >
                     <span
-                      // Removido 'mt-1'
                       className="inline-block rounded-full flex-shrink-0"
                       style={{
                         width: 14,
@@ -254,11 +261,20 @@ const AnaliseDemandasPorSquad: React.FC<AnaliseDemandasPorSquadProps> = ({
                       }}
                     ></span>
                     <span
-                      // Mantido sem 'truncate' para o texto quebrar a linha se necessário
                       style={{ color: getTextColor("primary", currentTheme) }}
                     >
                       {item.label}
                     </span>
+                    {/* Linha discreta no hover */}
+                    <span
+                      className="absolute -bottom-0.5 h-0.5 opacity-0 pointer-events-none rounded-full transition-opacity duration-200 group-hover:opacity-60"
+                      style={{
+                        left: "0px",
+                        right: "0px",
+                        backgroundColor:
+                          currentTheme === "dark" ? "#9ca3af" : "#6b7280",
+                      }}
+                    ></span>
                   </li>
                 ))}
             </ul>
