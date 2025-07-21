@@ -25,7 +25,7 @@ export const CardBacklogPriorizado: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
   return withJiraLink(
     projeto,
-    <CardBase projeto={projeto} showBacklogPosition={true}>
+    <CardBase projeto={projeto} showTooltip={false} showBacklogPosition={true}>
       {/* Data prevista para entrar em desenvolvimento */}
       {projeto["Data: Fim Backlog priorizado"] && (
         <div className="text-gray-600 dark:text-gray-200">

@@ -106,12 +106,15 @@ export const CardBase: React.FC<CardBaseProps> = ({
     </div>
   );
 
-  if (showTooltip) {
+  // Novo: buscar justificativa (motivo de bloqueio ou cancelamento)
+  let justificativa =
+    projeto["Motivo para Bloqueio de Projeto"] ||
+    projeto["Motivo para Cancelamento de Projeto"] ||
+    "";
+
+  if (showTooltip && justificativa) {
     return (
-      <CustomTooltip
-        content={projeto.Descrição || "Sem descrição disponível"}
-        priority={projeto.Prioridade}
-      >
+      <CustomTooltip content={justificativa} priority={projeto.Prioridade}>
         {cardContent}
       </CustomTooltip>
     );
