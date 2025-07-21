@@ -91,20 +91,28 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
 
   // Componente customizado para o tick do eixo X
   const CustomXAxisTick = ({ x, y, payload }: any) => {
+    const value = payload.value;
+    // Quebra o texto em duas linhas se for muito grande
+    const firstLine = value.length > 14 ? value.slice(0, 14) : value;
+    const secondLine = value.length > 14 ? value.slice(14) : null;
     return (
       <g transform={`translate(${x},${y})`}>
         <text
           x={0}
-          y={0}
-          dy={16}
-          textAnchor="middle"
+          y={10}
+          dy={0}
+          textAnchor="end"
           fill={getTextColor("primary", currentTheme)}
           fontSize={eixoFontSize}
           style={{ fontSize: eixoFontSize }}
+          transform="rotate(-35)"
         >
-          {payload.value.length > 12
-            ? payload.value.substring(0, 12) + "..."
-            : payload.value}
+          {firstLine}
+          {secondLine && (
+            <tspan x={0} dy={14}>
+              {secondLine}
+            </tspan>
+          )}
         </text>
       </g>
     );
@@ -158,57 +166,62 @@ const ProjetosBarPorArea: React.FC<ProjetosBarPorAreaProps> = ({
   const areaCountFiltered = areaCount.filter((a) => a.area !== "Não informado");
 
   return (
-    <div className="w-full h-full flex-1">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={areaCountFiltered}
-          margin={{ left: 0, right: 0, top: 25, bottom: 20 }}
-          layout={isMobile ? "vertical" : "horizontal"}
-        >
-          <XAxis
-            dataKey={isMobile ? "count" : "area"}
-            type={isMobile ? "number" : "category"}
-            tick={<CustomXAxisTick />}
-            interval={0}
-          />
-          <YAxis
-            dataKey={isMobile ? "area" : undefined}
-            type={isMobile ? "category" : "number"}
-            fontSize={eixoFontSize}
-            tick={{ fill: themeColors.secondary[500], fontSize: eixoFontSize }}
-            axisLine={{ stroke: themeColors.secondary[400] }}
-            tickLine={{ stroke: themeColors.secondary[400] }}
-          />
-          <Bar
-            dataKey="count"
-            onClick={(data) => {
-              if (onAreaClick && data && data.area) {
-                onAreaClick(data.area);
-              }
-            }}
-            onMouseEnter={handleBarMouseEnter}
-            onMouseLeave={handleBarMouseLeave}
-            cursor="pointer"
-            radius={isMobile ? [4, 4, 4, 4] : [8, 8, 0, 0]}
+    <div className="w-full h-full flex-1 sm:overflow-x-auto">
+      <div className="w-full h-full sm:min-w-max">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={areaCountFiltered}
+            margin={{ left: 0, right: 0, top: 40, bottom: 40 }}
+            layout={isMobile ? "vertical" : "horizontal"}
           >
-            {areaCountFiltered.map((item) => (
-              <Cell
-                key={`cell-${item.area}`}
-                fill={getAreaConfig(item.area).hex}
-                cursor="pointer"
-              />
-            ))}
-            <LabelList
-              dataKey="count"
-              position={isMobile ? "right" : "top"}
-              style={{
-                fill: getTextColor("primary", currentTheme),
+            <XAxis
+              dataKey={isMobile ? "count" : "area"}
+              type={isMobile ? "number" : "category"}
+              tick={<CustomXAxisTick />}
+              interval={0}
+            />
+            <YAxis
+              dataKey={isMobile ? "area" : undefined}
+              type={isMobile ? "category" : "number"}
+              fontSize={eixoFontSize}
+              tick={{
+                fill: themeColors.secondary[500],
                 fontSize: eixoFontSize,
               }}
+              axisLine={{ stroke: themeColors.secondary[400] }}
+              tickLine={{ stroke: themeColors.secondary[400] }}
             />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+            <Bar
+              dataKey="count"
+              onClick={(data) => {
+                if (onAreaClick && data && data.area) {
+                  onAreaClick(data.area);
+                }
+              }}
+              onMouseEnter={handleBarMouseEnter}
+              onMouseLeave={handleBarMouseLeave}
+              cursor="pointer"
+              radius={isMobile ? [4, 4, 4, 4] : [8, 8, 0, 0]}
+            >
+              {areaCountFiltered.map((item) => (
+                <Cell
+                  key={`cell-${item.area}`}
+                  fill={getAreaConfig(item.area).hex}
+                  cursor="pointer"
+                />
+              ))}
+              <LabelList
+                dataKey="count"
+                position={isMobile ? "right" : "top"}
+                style={{
+                  fill: getTextColor("primary", currentTheme),
+                  fontSize: eixoFontSize,
+                }}
+              />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Tooltip Modal */}
       {showTooltip && tooltipData && (

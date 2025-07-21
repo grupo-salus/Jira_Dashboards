@@ -75,17 +75,18 @@ export const CardBase: React.FC<CardBaseProps> = ({
                 squad === projeto["Responsável Atual"];
 
               return (
-                <span
-                  key={index}
-                  className={`${
-                    deveDestacar
-                      ? "font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded"
-                      : ""
-                  }`}
-                >
-                  {squad}
+                <React.Fragment key={index}>
+                  <span
+                    className={`${
+                      deveDestacar
+                        ? "font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-1 py-0.5 rounded"
+                        : ""
+                    }`}
+                  >
+                    {squad}
+                  </span>
                   {index < projeto.Squads.length - 1 ? ", " : ""}
-                </span>
+                </React.Fragment>
               );
             })}
           </div>
@@ -105,12 +106,15 @@ export const CardBase: React.FC<CardBaseProps> = ({
     </div>
   );
 
-  if (showTooltip) {
+  // Novo: buscar justificativa (motivo de bloqueio ou cancelamento)
+  let justificativa =
+    projeto["Motivo para Bloqueio de Projeto"] ||
+    projeto["Motivo para Cancelamento de Projeto"] ||
+    "";
+
+  if (showTooltip && justificativa) {
     return (
-      <CustomTooltip
-        content={projeto.Descrição || "Sem descrição disponível"}
-        priority={projeto.Prioridade}
-      >
+      <CustomTooltip content={justificativa} priority={projeto.Prioridade}>
         {cardContent}
       </CustomTooltip>
     );

@@ -11,55 +11,33 @@ import { CustomTooltip } from "./CustomTooltip";
 export const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  // Preparar conteúdo do tooltip incluindo motivo do cancelamento
-  const tooltipContent = (() => {
-    const descricao = projeto.Descrição || "Sem descrição disponível";
-    const motivoCancelamento = projeto["Motivo para Cancelamento de Projeto"];
+  const justificativa = projeto["Motivo para Cancelamento de Projeto"];
 
-    if (motivoCancelamento) {
-      return (
-        <div>
-          <div>{descricao}</div>
-          <div className="mt-4">
-            <strong>Justificativa:</strong>
-            <br />
-            {motivoCancelamento}
-          </div>
-        </div>
-      );
-    }
-
-    return descricao;
-  })();
+  if (justificativa) {
+    return withJiraLink(
+      projeto,
+      <CustomTooltip content={justificativa} priority={projeto.Prioridade}>
+        <CardBase projeto={projeto} showTooltip={false}>
+          {/* Data que entrou em cancelamento */}
+          {projeto["Data: Início Cancelado"] && (
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              Cancelado em: {projeto["Data: Início Cancelado"]}
+            </div>
+          )}
+        </CardBase>
+      </CustomTooltip>
+    );
+  }
 
   return withJiraLink(
     projeto,
-    <CustomTooltip content={tooltipContent} priority={projeto.Prioridade}>
-      <CardBase projeto={projeto} showTooltip={false}>
-        {/* Data que entrou em cancelamento */}
-        {projeto["Data: Início Cancelado"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Início: {formatDate(projeto["Data: Início Cancelado"])}
-          </div>
-        )}
-        {/* Data que saiu do cancelamento */}
-        {projeto["Data: Fim Cancelado"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            {(() => {
-              const hoje = new Date();
-              const fimCancelado = new Date(projeto["Data: Fim Cancelado"]);
-              return hoje < fimCancelado ? "Fim previsto:" : "Fim:";
-            })()} {formatDate(projeto["Data: Fim Cancelado"])}
-          </div>
-        )}
-
-        {/* Motivo do cancelamento */}
-        {projeto["Motivo para Bloqueio de Projeto"] && (
-          <div className="text-gray-600 dark:text-gray-200">
-            Motivo do cancelamento: {projeto["Motivo para Bloqueio de Projeto"]}
-          </div>
-        )}
-      </CardBase>
-    </CustomTooltip>
+    <CardBase projeto={projeto} showTooltip={false}>
+      {/* Data que entrou em cancelamento */}
+      {projeto["Data: Início Cancelado"] && (
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          Cancelado em: {projeto["Data: Início Cancelado"]}
+        </div>
+      )}
+    </CardBase>
   );
-}; 
+};
