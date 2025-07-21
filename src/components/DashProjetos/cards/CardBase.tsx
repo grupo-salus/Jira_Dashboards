@@ -1,6 +1,7 @@
 import React from "react";
 import { EspacoDeProjetos } from "../../../types/Typesjira";
 import { getFontSizes } from "../../../constants/styleConfig";
+import { getSquadConfig } from "../../../utils/themeColors";
 import { CustomTooltip } from "./index";
 
 const fontSizes = getFontSizes();
@@ -21,6 +22,16 @@ export const CardBase: React.FC<CardBaseProps> = ({
   showTooltip = true,
   showBacklogPosition = false,
 }) => {
+  // Função para obter a cor da squad
+  const getSquadColor = (squads: string[]) => {
+    if (!squads || squads.length === 0) {
+      const squadConfig = getSquadConfig("naoDefinida");
+      return squadConfig.hex;
+    }
+    const squadConfig = getSquadConfig(squads[0]);
+    return squadConfig.hex;
+  };
+
   const cardContent = (
     <div className={`space-y-3 ${fontSizes.corpoCardKanban}`}>
       {/* Cabeçalho */}
@@ -38,7 +49,7 @@ export const CardBase: React.FC<CardBaseProps> = ({
             <span
               className="font-bold text-sm flex items-center justify-center rounded-full aspect-square overflow-hidden"
               style={{
-                background: "#10b981",
+                background: "#6b7280", // Cor neutra cinza
                 color: "#fff",
                 width: 28,
                 height: 28,

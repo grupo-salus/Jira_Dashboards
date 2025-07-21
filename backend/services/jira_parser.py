@@ -128,9 +128,10 @@ def project_specific_columns(df: pd.DataFrame) -> pd.DataFrame:
 def position_in_backlog(df: pd.DataFrame) -> pd.DataFrame:
     """
     Adiciona coluna de posição apenas para issues com status 'Backlog Priorizado',
-    numerando conforme a ordem em que aparecem no DataFrame.
+    criando filas separadas por responsável atual.
+    Cada responsável terá sua própria numeração (1, 2, 3, etc.).
     """
-    logger.info("Iniciando cálculo de posição no backlog")
+    logger.info("Iniciando cálculo de posição no backlog por responsável")
     
     # Primeiro, limpar todas as posições existentes
     df["PosicaoBacklog"] = None
@@ -140,11 +141,23 @@ def position_in_backlog(df: pd.DataFrame) -> pd.DataFrame:
     
     logger.debug(f"Encontradas {len(backlog_priorizado_issues)} issues com status 'Backlog Priorizado'")
     
-    # Numerar apenas as issues do backlog priorizado
-    for pos, (index, _) in enumerate(backlog_priorizado_issues.iterrows(), start=1):
-        df.at[index, "PosicaoBacklog"] = pos
+    # Agrupar por responsável atual e numerar cada grupo separadamente
+    for responsavel in backlog_priorizado_issues["Responsável Atual"].unique():
+        if pd.isna(responsavel):
+            continue
+            
+        # Filtrar issues do responsável atual
+        issues_responsavel = backlog_priorizado_issues[
+            backlog_priorizado_issues["Responsável Atual"] == responsavel
+        ]
+        
+        logger.debug(f"Responsável '{responsavel}': {len(issues_responsavel)} issues no backlog priorizado")
+        
+        # Numerar as issues do responsável (1, 2, 3, etc.)
+        for pos, (index, _) in enumerate(issues_responsavel.iterrows(), start=1):
+            df.at[index, "PosicaoBacklog"] = pos
 
-    logger.info(f"Posição no backlog adicionada para {len(backlog_priorizado_issues)} issues com status 'Backlog Priorizado'")
+    logger.info(f"Posição no backlog por responsável adicionada para {len(backlog_priorizado_issues)} issues com status 'Backlog Priorizado'")
     return df
 
 def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
