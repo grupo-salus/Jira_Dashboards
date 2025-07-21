@@ -72,7 +72,7 @@ const ProximosExecucaoLinhas: React.FC<ProximosExecucaoLinhasProps> = ({
                 >
                   {responsavel}
                 </h4>
-                <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex-shrink-0">
+                <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-500 text-white flex-shrink-0">
                   {projetosDoResponsavel.length}
                 </span>
               </div>
