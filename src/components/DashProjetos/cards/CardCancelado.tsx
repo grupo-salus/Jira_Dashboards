@@ -20,8 +20,8 @@ export const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
         <CardBase projeto={projeto} showTooltip={false}>
           {/* Data que entrou em cancelamento */}
           {projeto["Data: Início Cancelado"] && (
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Cancelado em: {projeto["Data: Início Cancelado"]}
+            <div className="text-gray-600 dark:text-gray-200">
+              Cancelado em: {formatDate(projeto["Data: Início Cancelado"])}
             </div>
           )}
         </CardBase>
@@ -34,8 +34,8 @@ export const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
     <CardBase projeto={projeto} showTooltip={false}>
       {/* Data que entrou em cancelamento */}
       {projeto["Data: Início Cancelado"] && (
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          Cancelado em: {projeto["Data: Início Cancelado"]}
+        <div className="text-gray-600 dark:text-gray-200">
+          Cancelado em: {formatDate(projeto["Data: Início Cancelado"])}
         </div>
       )}
     </CardBase>

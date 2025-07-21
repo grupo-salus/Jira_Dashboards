@@ -31,7 +31,7 @@ export const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
           {/* Data que entrou em bloqueado */}
           {projeto["Data: Início Bloqueado"] && (
             <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Bloqueado em: {projeto["Data: Início Bloqueado"]}
+              Bloqueado em: {formatDate(projeto["Data: Início Bloqueado"])}
             </div>
           )}
         </CardBase>
@@ -45,7 +45,7 @@ export const CardBloqueado: React.FC<{ projeto: EspacoDeProjetos }> = ({
       {/* Data que entrou em bloqueado */}
       {projeto["Data: Início Bloqueado"] && (
         <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          Bloqueado em: {projeto["Data: Início Bloqueado"]}
+          Bloqueado em: {formatDate(projeto["Data: Início Bloqueado"])}
         </div>
       )}
     </CardBase>
