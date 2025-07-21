@@ -151,7 +151,7 @@ themeColors.components.areas["Serviço de Atendimento ao Franqueado"].label /
   hex;
 themeColors.components.areas.Jurídico.label / hex;
 themeColors.components.areas.Crescera.label / hex;
-themeColors.components.areas["Recursos Humanos"].label / hex;
+themeColors.components.areas["RH"].label / hex;
 themeColors.components.areas["Departamento Pessoal"].label / hex;
 themeColors.components.areas.Expansão.label / hex;
 themeColors.components.areas.CTS.label / hex;

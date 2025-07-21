@@ -444,8 +444,8 @@ export const themeColors = {
         label: "Processos",
         hex: "#041230", // azul noite
       },
-      "Recursos Humanos": {
-        label: "Recursos Humanos",
+      RH: {
+        label: "RH",
         hex: "#030C20", // azul profundo
       },
       SAC: {
@@ -788,7 +788,7 @@ export const getAreaConfig = (area: string) => {
     Operações: "Operações",
     Presidência: "Presidência",
     Processos: "Processos",
-    "Recursos Humanos": "Recursos Humanos",
+    RH: "RH",
     SAC: "SAC",
     Sorriden: "Sorriden",
     TI: "TI",
