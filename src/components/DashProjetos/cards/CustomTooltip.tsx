@@ -98,7 +98,17 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({
           }}
         >
           {typeof content === "string" ? (
-            <div style={{ whiteSpace: "pre-line" }}>{content}</div>
+            <div 
+              style={{ 
+                whiteSpace: "pre-line",
+                lineHeight: "1.4"
+              }}
+              dangerouslySetInnerHTML={{
+                __html: content
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  .replace(/\n/g, '<br>')
+              }}
+            />
           ) : (
             content
           )}

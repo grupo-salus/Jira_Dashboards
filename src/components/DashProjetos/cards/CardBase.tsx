@@ -117,12 +117,34 @@ export const CardBase: React.FC<CardBaseProps> = ({
     </div>
   );
 
-  // Novo: buscar justificativa (motivo de bloqueio ou cancelamento)
-  let justificativa =
-    projeto["Motivo para Bloqueio de Projeto"] ||
-    projeto["Motivo para Cancelamento de Projeto"] ||
-    "";
+  // Buscar justificativas apenas para cards que não têm implementação própria de tooltip
+  // Cards "Bloqueado" e "Cancelado" têm suas próprias implementações
+  const motivos = [];
 
+  // Não processar motivos para status que têm implementação própria
+  if (projeto.Status !== "Bloqueado" && projeto.Status !== "Cancelado") {
+    if (projeto["Motivo para Bloqueio de Projeto"]) {
+      motivos.push(
+        `**Motivo de Bloqueio:** ${projeto["Motivo para Bloqueio de Projeto"]}`
+      );
+    }
+
+    if (projeto["Motivo para Cancelamento de Projeto"]) {
+      motivos.push(
+        `**Motivo de Cancelamento:** ${projeto["Motivo para Cancelamento de Projeto"]}`
+      );
+    }
+
+    if (projeto["Motivo de Repriorização"]) {
+      motivos.push(
+        `**Motivo de Repriorização:** ${projeto["Motivo de Repriorização"]}`
+      );
+    }
+  }
+
+  const justificativa = motivos.length > 0 ? motivos.join("\n\n") : "";
+
+  // Mostrar tooltip apenas se showTooltip for true E houver motivos
   if (showTooltip && justificativa) {
     return (
       <CustomTooltip content={justificativa} priority={projeto.Prioridade}>

@@ -90,6 +90,7 @@ export interface EspacoDeProjetos {
   "Data: Início Bloqueado"?: string | null;
   "Data: Fim Bloqueado"?: string | null;
   "Motivo para Bloqueio de Projeto"?: string | null;
+  "Motivo de Repriorização"?: string | null;
 
   // Colunas calculadas de tempo por fase
   "Tempo na fase Ideação (dias)"?: number | null;

@@ -11,7 +11,22 @@ import { CustomTooltip } from "./CustomTooltip";
 export const CardCancelado: React.FC<{ projeto: EspacoDeProjetos }> = ({
   projeto,
 }) => {
-  const justificativa = projeto["Motivo para Cancelamento de Projeto"];
+  // Buscar todos os motivos disponíveis
+  const motivos = [];
+  
+    if (projeto["Motivo para Bloqueio de Projeto"]) {
+    motivos.push(`**Motivo de Bloqueio:** ${projeto["Motivo para Bloqueio de Projeto"]}`);
+  }
+
+  if (projeto["Motivo para Cancelamento de Projeto"]) {
+    motivos.push(`**Motivo de Cancelamento:** ${projeto["Motivo para Cancelamento de Projeto"]}`);
+  }
+
+  if (projeto["Motivo de Repriorização"]) {
+    motivos.push(`**Motivo de Repriorização:** ${projeto["Motivo de Repriorização"]}`);
+  }
+
+  const justificativa = motivos.length > 0 ? motivos.join('\n\n') : "";
 
   if (justificativa) {
     return withJiraLink(

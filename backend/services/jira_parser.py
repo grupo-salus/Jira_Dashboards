@@ -274,6 +274,10 @@ def parse_issues_to_dataframe_espaco_de_projetos(issues: list) -> pd.DataFrame:
             "Motivo para Bloqueio de Projeto": (
                 issue.get("fields", {}).get("customfield_10344", {}).get("value")
                 if issue.get("fields", {}).get("customfield_10344") else None
+            ),
+            "Motivo de Repriorização": (
+                issue.get("fields", {}).get("customfield_10542", {}).get("value")
+                if issue.get("fields", {}).get("customfield_10542") else None
             )
         }
         rows.append(row)

@@ -68,6 +68,8 @@ def get_tabela_espaco_de_projetos(request: Request):
             "Dias úteis decorridos Em desenvolvimento", "Dias úteis restantes Em desenvolvimento", "Total dias úteis Em desenvolvimento", "Progresso Em desenvolvimento",
             "Dias úteis decorridos Em homologação", "Dias úteis restantes Em homologação", "Total dias úteis Em homologação", "Progresso Em homologação",
             "Dias úteis decorridos Operação assistida", "Dias úteis restantes Operação assistida", "Total dias úteis Operação assistida", "Progresso Operação assistida",
+            # Campos de motivo
+            "Motivo para Bloqueio de Projeto", "Motivo para Cancelamento de Projeto", "Motivo de Repriorização",
         ]
         df = prepare_dataframe_for_json_export(df, cols_to_normalize)
 

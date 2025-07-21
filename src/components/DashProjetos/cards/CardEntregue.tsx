@@ -19,7 +19,7 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
   return withJiraLink(
     projeto,
-    <CardBase projeto={projeto} showTooltip={false}>
+    <CardBase projeto={projeto} showTooltip={true}>
       {/* Data de fim da entrega */}
       {projeto["Data: Fim Entregue"] && (
         <div className="text-gray-600 dark:text-gray-200">

@@ -113,30 +113,45 @@ export async function fetchEspacoDeProjetos(filters?: {
 
     // Decodifica os caracteres especiais nos dados retornados
     return (data.tabela_dashboard_ep ?? []).map((item: EspacoDeProjetos) => ({
-      ...item,
-      Status: normalizarStatusDisplay(
-        item.Status
-      ) as import("../types/Typesjira").JiraStatus,
-      Título: decodeURIComponent(item.Título || ""),
-      Descrição: item.Descrição ? decodeURIComponent(item.Descrição) : null,
-      "Benefícios Esperados": item["Benefícios Esperados"]
-        ? decodeURIComponent(item["Benefícios Esperados"])
-        : null,
-      "Grupo Solicitante": decodeURIComponent(item["Grupo Solicitante"] || ""),
-      "Departamento Solicitante": decodeURIComponent(
-        item["Departamento Solicitante"] || ""
-      ),
-      Solicitante: item.Solicitante
-        ? decodeURIComponent(item.Solicitante)
-        : null,
-      Responsável: decodeURIComponent(item.Responsável || ""),
-      Relator: decodeURIComponent(item.Relator || ""),
-      Prioridade: decodeURIComponent(item.Prioridade || ""),
-      Squads: item.Squads
-        ? item.Squads.map((squad) => decodeURIComponent(squad))
-        : [],
-      PosicaoBacklog: item.PosicaoBacklog,
-    }));
+        ...item,
+        Status: normalizarStatusDisplay(
+          item.Status
+        ) as import("../types/Typesjira").JiraStatus,
+        Título: decodeURIComponent(item.Título || ""),
+        Descrição: item.Descrição ? decodeURIComponent(item.Descrição) : null,
+        "Benefícios Esperados": item["Benefícios Esperados"]
+          ? decodeURIComponent(item["Benefícios Esperados"])
+          : null,
+        "Grupo Solicitante": decodeURIComponent(
+          item["Grupo Solicitante"] || ""
+        ),
+        "Departamento Solicitante": decodeURIComponent(
+          item["Departamento Solicitante"] || ""
+        ),
+        Solicitante: item.Solicitante
+          ? decodeURIComponent(item.Solicitante)
+          : null,
+        Responsável: decodeURIComponent(item.Responsável || ""),
+        Relator: decodeURIComponent(item.Relator || ""),
+        Prioridade: decodeURIComponent(item.Prioridade || ""),
+        Squads: item.Squads
+          ? item.Squads.map((squad) => decodeURIComponent(squad))
+          : [],
+        PosicaoBacklog: item.PosicaoBacklog,
+        "Motivo para Bloqueio de Projeto": item[
+          "Motivo para Bloqueio de Projeto"
+        ]
+          ? decodeURIComponent(item["Motivo para Bloqueio de Projeto"])
+          : null,
+        "Motivo para Cancelamento de Projeto": item[
+          "Motivo para Cancelamento de Projeto"
+        ]
+          ? decodeURIComponent(item["Motivo para Cancelamento de Projeto"])
+          : null,
+        "Motivo de Repriorização": item["Motivo de Repriorização"]
+          ? decodeURIComponent(item["Motivo de Repriorização"])
+          : null,
+      }));
   } catch (error) {
     console.error("Error fetching espaco de projetos table:", error);
     throw error;

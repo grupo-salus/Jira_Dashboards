@@ -33,7 +33,7 @@ export const CardAnaliseTecnicaNegocios: React.FC<{
 
   return withJiraLink(
     projeto,
-    <CardBase projeto={projeto} showTooltip={false}>
+    <CardBase projeto={projeto} showTooltip={true}>
       {/* Data que entrou em análise técnica e negócios */}
       {projeto["Data: Início Análise técnica e negócios"] && (
         <div className="text-gray-600 dark:text-gray-200">

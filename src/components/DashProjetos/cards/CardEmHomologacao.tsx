@@ -31,7 +31,7 @@ export const CardEmHomologacao: React.FC<{ projeto: EspacoDeProjetos }> = ({
 
   return withJiraLink(
     projeto,
-    <CardBase projeto={projeto} showTooltip={false}>
+    <CardBase projeto={projeto} showTooltip={true}>
       {/* Data que entrou em homologação */}
       {projeto["Data: Início Em homologação"] && (
         <div className="text-gray-600 dark:text-gray-200">
