@@ -8,6 +8,7 @@ import {
   getPriorityConfig,
   getSquadConfig,
 } from "../../utils/themeColors";
+import ProximosExecucaoLinhas from "./ProximosExecucaoLinhas";
 
 interface ProximosExecucaoProps {
   filteredData: EspacoDeProjetos[];
@@ -22,6 +23,7 @@ const ProximosExecucao: React.FC<ProximosExecucaoProps> = ({
 }) => {
   const config = getTotalizadoresConfig();
   const [responsavelSelecionado, setResponsavelSelecionado] = useState("Todos");
+  const [visualizacao, setVisualizacao] = useState<"abas" | "linhas">("abas");
 
   // Hook para detectar o tema atual
   const [currentTheme, setCurrentTheme] = React.useState<"light" | "dark">(
@@ -115,147 +117,209 @@ const ProximosExecucao: React.FC<ProximosExecucaoProps> = ({
           backgroundColor: getBackgroundColor("card", currentTheme),
         }}
       >
-        <div className="w-full mb-3">
-          <h3
-            className={`font-bold ${config.titulo}`}
-            style={{ color: getTextColor("primary", currentTheme) }}
+        <div className="w-full mb-3 flex justify-between items-start">
+          <div>
+            <h3
+              className={`font-bold ${config.titulo}`}
+              style={{ color: getTextColor("primary", currentTheme) }}
+            >
+              Fila de Projetos por Responsável
+            </h3>
+            <p
+              className={`text-sm ${config.label}`}
+              style={{ color: getTextColor("secondary", currentTheme) }}
+            >
+              Fila ordenada por backlog priorizado
+            </p>
+          </div>
+
+          {/* Botão de alternância de visualização */}
+          <button
+            onClick={() =>
+              setVisualizacao(visualizacao === "abas" ? "linhas" : "abas")
+            }
+            className="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 active:bg-opacity-80"
+            style={{
+              backgroundColor: getBackgroundColor("hover", currentTheme),
+              color: getTextColor("primary", currentTheme),
+            }}
+            title={
+              visualizacao === "abas"
+                ? "Alternar para visualização em linhas"
+                : "Alternar para visualização em abas"
+            }
           >
-            Fila de Projetos por Responsável
-          </h3>
-          <p
-            className={`text-sm ${config.label}`}
-            style={{ color: getTextColor("secondary", currentTheme) }}
-          >
-            Fila ordenada por backlog priorizado
-          </p>
+            <svg
+              className={`w-5 h-5 transition-transform duration-300 ${
+                visualizacao === "linhas" ? "rotate-180" : "rotate-0"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7l4-4m0 0l4 4m-4-4v18"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 17l-4 4m0 0l-4-4m4 4V3"
+              />
+            </svg>
+          </button>
         </div>
 
-        {/* Abas de responsável */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {responsaveisDisponiveis.map((responsavel) => {
-            // Calcular o total para cada responsável
-            const totalResponsavel =
-              responsavel === "Todos"
-                ? proximosExecucao.length
-                : backlogPriorizado.filter(
-                    (p) => p["Responsável Atual"] === responsavel
-                  ).length;
+        {/* Visualização por Abas */}
+        {visualizacao === "abas" && (
+          <div className="animate-fadeIn">
+            {/* Abas de responsável */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {responsaveisDisponiveis.map((responsavel) => {
+                // Calcular o total para cada responsável
+                const totalResponsavel =
+                  responsavel === "Todos"
+                    ? proximosExecucao.length
+                    : backlogPriorizado.filter(
+                        (p) => p["Responsável Atual"] === responsavel
+                      ).length;
 
-            return (
-              <button
-                key={responsavel}
-                onClick={() => setResponsavelSelecionado(responsavel)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 relative ${
-                  responsavelSelecionado === responsavel
-                    ? "bg-gray-500 text-white shadow-md"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                }`}
-              >
-                {responsavel}
-                {responsavelSelecionado === responsavel &&
-                  totalResponsavel > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {totalResponsavel}
-                    </span>
-                  )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Cards dos projetos ou mensagem quando vazio */}
-        <div className="flex flex-wrap gap-4 w-full">
-          {naoTemProjetos ? (
-            <div className="w-full text-center py-8">
-              <p
-                className={`text-lg font-medium ${config.label}`}
-                style={{ color: getTextColor("secondary", currentTheme) }}
-              >
-                {backlogPriorizado.length === 0
-                  ? "Nenhum projeto encontrado no backlog priorizado com os filtros aplicados"
-                  : "Nenhum projeto encontrado para o responsável selecionado"}
-              </p>
+                return (
+                  <button
+                    key={responsavel}
+                    onClick={() => setResponsavelSelecionado(responsavel)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 relative ${
+                      responsavelSelecionado === responsavel
+                        ? "bg-gray-500 text-white shadow-md"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                    }`}
+                  >
+                    {responsavel}
+                    {responsavelSelecionado === responsavel &&
+                      totalResponsavel > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                          {totalResponsavel}
+                        </span>
+                      )}
+                  </button>
+                );
+              })}
             </div>
-          ) : (
-            proximosExecucao.map((projeto, index) => (
-              <div
-                key={projeto.Título}
-                className="relative flex items-center gap-3 p-4 sm:p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 min-h-[100px] sm:h-24 lg:h-28 cursor-pointer w-full sm:flex-1 sm:min-w-[250px]"
-                style={{
-                  background:
-                    themeColors.components.totalizadores.proximoExecucao.bg[
-                      currentTheme
-                    ],
-                }}
-                onClick={() => {
-                  if (projeto.Chave) {
-                    window.open(`${JIRA_URL_BASE}${projeto.Chave}`, "_blank");
-                  }
-                }}
-              >
-                {/* Barra de prioridade lateral */}
-                <div
-                  className="absolute left-0 top-0 h-full w-1 rounded-l-lg"
-                  style={{
-                    background: getPriorityColor(projeto.Prioridade || ""),
-                  }}
-                />
 
-                <div
-                  className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-8 h-8 sm:w-8 sm:h-8`}
-                  style={{
-                    backgroundColor: "#6b7280", // Cor neutra cinza
-                  }}
-                >
-                  <span
-                    className={`text-sm sm:text-sm`}
-                    style={{ color: themeColors.utility.white }}
+            {/* Cards dos projetos ou mensagem quando vazio */}
+            <div className="flex gap-4 overflow-x-auto pb-2 w-full">
+              {naoTemProjetos ? (
+                <div className="w-full text-center py-8">
+                  <p
+                    className={`text-lg font-medium ${config.label}`}
+                    style={{ color: getTextColor("secondary", currentTheme) }}
                   >
-                    #{projeto.PosicaoBacklog}
-                  </span>
+                    {backlogPriorizado.length === 0
+                      ? "Nenhum projeto encontrado no backlog priorizado com os filtros aplicados"
+                      : "Nenhum projeto encontrado para o responsável selecionado"}
+                  </p>
                 </div>
-                <div className="flex-1 min-w-0 pl-2">
-                  <h4
-                    className={`font-semibold break-words whitespace-normal text-xs sm:text-xs leading-tight`}
-                    style={{ color: getTextColor("primary", currentTheme) }}
-                    title={projeto.Título}
+              ) : (
+                proximosExecucao.map((projeto, index) => (
+                  <div
+                    key={projeto.Título}
+                    className="relative flex items-center gap-3 p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 h-20 cursor-pointer flex-shrink-0 min-w-[280px]"
+                    style={{
+                      background:
+                        themeColors.components.totalizadores.proximoExecucao.bg[
+                          currentTheme
+                        ],
+                    }}
+                    onClick={() => {
+                      if (projeto.Chave) {
+                        window.open(
+                          `${JIRA_URL_BASE}${projeto.Chave}`,
+                          "_blank"
+                        );
+                      }
+                    }}
                   >
-                    {projeto.Título}
-                  </h4>
-                  <div className="flex items-center gap-2 sm:gap-2 mt-1 flex-wrap">
-                    {projeto["Departamento Solicitante"] && (
-                      <p
-                        className={`truncate text-xs`}
-                        style={{
-                          color: getTextColor("secondary", currentTheme),
-                        }}
-                        title={projeto["Departamento Solicitante"]}
-                      >
-                        {projeto["Departamento Solicitante"]}
-                      </p>
-                    )}
-                    {projeto["Responsável Atual"] && (
-                      <span className="text-xs font-bold px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 flex-shrink-0">
-                        {projeto["Responsável Atual"]}
-                      </span>
-                    )}
-                    {projeto.Prioridade && (
+                    {/* Barra de prioridade lateral */}
+                    <div
+                      className="absolute left-0 top-0 h-full w-1 rounded-l-lg"
+                      style={{
+                        background: getPriorityColor(projeto.Prioridade || ""),
+                      }}
+                    />
+
+                    <div
+                      className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-6 h-6`}
+                      style={{
+                        backgroundColor: "#6b7280", // Cor neutra cinza
+                      }}
+                    >
                       <span
-                        className={`truncate text-xs font-medium px-1 sm:px-1 py-0.5 rounded inline-block flex-shrink-0 text-white`}
-                        style={{
-                          backgroundColor: getPriorityColor(projeto.Prioridade),
-                        }}
-                        title={`Prioridade: ${projeto.Prioridade}`}
+                        className={`text-xs font-bold`}
+                        style={{ color: themeColors.utility.white }}
                       >
-                        {projeto.Prioridade}
+                        #{projeto.PosicaoBacklog}
                       </span>
-                    )}
+                    </div>
+                    <div className="flex-1 min-w-0 pl-2">
+                      <h4
+                        className={`font-semibold break-words whitespace-normal text-xs sm:text-xs leading-tight`}
+                        style={{ color: getTextColor("primary", currentTheme) }}
+                        title={projeto.Título}
+                      >
+                        {projeto.Título}
+                      </h4>
+                      <div className="flex items-center gap-2 sm:gap-2 mt-1 flex-wrap">
+                        {projeto["Departamento Solicitante"] && (
+                          <p
+                            className={`truncate text-xs`}
+                            style={{
+                              color: getTextColor("secondary", currentTheme),
+                            }}
+                            title={projeto["Departamento Solicitante"]}
+                          >
+                            {projeto["Departamento Solicitante"]}
+                          </p>
+                        )}
+                        {projeto["Responsável Atual"] && (
+                          <span className="text-xs font-bold px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 flex-shrink-0">
+                            {projeto["Responsável Atual"]}
+                          </span>
+                        )}
+                        {projeto.Prioridade && (
+                          <span
+                            className={`truncate text-xs font-medium px-1 sm:px-1 py-0.5 rounded inline-block flex-shrink-0 text-white`}
+                            style={{
+                              backgroundColor: getPriorityColor(
+                                projeto.Prioridade
+                              ),
+                            }}
+                            title={`Prioridade: ${projeto.Prioridade}`}
+                          >
+                            {projeto.Prioridade}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Visualização por Linhas */}
+        {visualizacao === "linhas" && (
+          <div className="animate-fadeIn">
+            <ProximosExecucaoLinhas
+              responsaveisDisponiveis={responsaveisDisponiveis}
+              backlogPriorizado={backlogPriorizado}
+              currentTheme={currentTheme}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
