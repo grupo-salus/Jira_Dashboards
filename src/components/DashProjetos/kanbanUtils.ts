@@ -114,6 +114,7 @@ export const getPrazoBackgroundColor = (
     "No prazo": themeColors.status.prazo.noPrazo.bg[theme],
     "Em risco": themeColors.status.prazo.emRisco.bg[theme],
     Atrasado: themeColors.status.prazo.foraPrazo.bg[theme],
+    Repriorizado: themeColors.status.prazo.repropriado.bg[theme],
     "Em desenvolvimento": "#3b82f6", // Azul para "Em desenvolvimento"
     "Não iniciado": "#6b7280", // Cinza para "Não iniciado"
   };

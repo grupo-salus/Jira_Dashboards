@@ -162,7 +162,7 @@ def calcular_status_fase_atual(row: pd.Series) -> str:
     """
     Calcula o status da fase atual do projeto baseado no status atual e nas datas de início/fim da fase.
     Só calcula para os status: "Em Desenvolvimento", "Em Homologação" e "Operação Assistida".
-    Retorna: "No prazo", "Atrasado", "Em risco", "Em desenvolvimento", "Não iniciado" ou None
+    Retorna: "No prazo", "Atrasado", "Em risco", "Em desenvolvimento", "Não iniciado", "Repriorizado" ou None
     """
     logger.debug(f"Calculando status da fase atual para projeto: {row.get('Chave')}")
     status = str(row.get("Status", "")).strip().capitalize()
@@ -172,6 +172,15 @@ def calcular_status_fase_atual(row: pd.Series) -> str:
     if status not in status_validos:
         logger.debug(f"Status '{status}' não está na lista de status válidos para cálculo de fase. Status válidos: {status_validos}")
         return None
+    
+    # Verificar se o projeto foi repropriado
+    motivo_repriorizacao = row.get("Motivo de Repriorização")
+    posicao_backlog = row.get("PosicaoBacklog")
+    
+    # Se tem motivo de repropriação e não é o primeiro no backlog, retorna "Repriorizado"
+    if motivo_repriorizacao and posicao_backlog is not None and posicao_backlog != 1:
+        logger.debug(f"Projeto {row.get('Chave')} foi repropriado - posição {posicao_backlog}, motivo: {motivo_repriorizacao}")
+        return "Repriorizado"
     
     inicio = row.get(f"Data: Início {status}")
     fim_previsto = row.get(f"Data: Fim {status}")

@@ -149,4 +149,4 @@ export type JiraStatus =
 export type IdeacaoStatus = "Recente" | "Rever" | "Quase obsoleto" | "Obsoleto";
 
 // Status de prazo
-export type PrazoStatus = "No prazo" | "Em risco" | "Atrasado";
+export type PrazoStatus = "No prazo" | "Em risco" | "Atrasado" | "Repriorizado";

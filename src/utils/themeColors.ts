@@ -212,6 +212,16 @@ export const themeColors = {
           dark: " #ff0707", // red-400 - mais forte
         },
       },
+      repropriado: {
+        bg: {
+          light: "#8b5cf6", // purple-500
+          dark: "#8b5cf6", // purple-500
+        },
+        text: {
+          light: "#8b5cf6", // purple-500
+          dark: "#8b5cf6", // purple-500
+        },
+      },
     },
 
     // Status de Ideação
@@ -710,6 +720,7 @@ export const getStatusColor = (
       "No prazo": themeColors.status.prazo.noPrazo,
       "Em risco": themeColors.status.prazo.emRisco,
       Atrasado: themeColors.status.prazo.foraPrazo,
+      Repriorizado: themeColors.status.prazo.repropriado,
     },
     ideacao: {
       Recente: themeColors.status.ideacao.recente,
