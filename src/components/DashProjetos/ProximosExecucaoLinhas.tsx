@@ -104,13 +104,13 @@ const ProximosExecucaoLinhas: React.FC<ProximosExecucaoLinhasProps> = ({
                     />
 
                     <div
-                      className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-6 h-6`}
+                      className={`text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 w-8 h-8`}
                       style={{
                         backgroundColor: "#6b7280", // Cor neutra cinza
                       }}
                     >
                       <span
-                        className={`text-xs font-bold`}
+                        className={`text-sm font-bold`}
                         style={{ color: themeColors.utility.white }}
                       >
                         #{projeto.PosicaoBacklog}
