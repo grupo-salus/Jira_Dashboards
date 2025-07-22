@@ -135,6 +135,11 @@ export const CardAnaliseTecnicaNegocios: React.FC<{
                   theme
                 ),
               }}
+              title={
+                projeto["Target end"]
+                  ? `Target end: ${formatDate(projeto["Target end"])}`
+                  : "Data prevista de término não definida"
+              }
             >
               {projeto["Status de prazo"]}
             </span>

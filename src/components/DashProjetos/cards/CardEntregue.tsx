@@ -46,6 +46,11 @@ export const CardEntregue: React.FC<{ projeto: EspacoDeProjetos }> = ({
                 theme
               ),
             }}
+            title={
+              projeto["Target end"]
+                ? `Target end: ${formatDate(projeto["Target end"])}`
+                : "Data prevista de término não definida"
+            }
           >
             {projeto["Status de prazo"]}
           </span>
