@@ -8,7 +8,6 @@ import {
   FireIcon,
   CompassIcon,
   EpicIcon,
-  ArrowPathIcon,
 } from "../icons/DashboardIcons";
 import { EspacoDeProjetos } from "../../types/Typesjira";
 import { getTotalizadoresConfig } from "../../constants/styleConfig";
@@ -209,7 +208,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     let projetosNoPrazo = 0;
     let projetosEmRisco = 0;
     let projetosForaDoPrazo = 0;
-    let projetosRepriorizados = 0;
 
     // Calcular métricas de projeto (sempre dos dados originais)
     const projetosNoPrazoProjeto = originalData.filter(
@@ -220,9 +218,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     ).length;
     const projetosForaDoPrazoProjeto = originalData.filter(
       (p: EspacoDeProjetos) => p["Status de prazo"] === "Atrasado"
-    ).length;
-    const projetosRepriorizadosProjeto = originalData.filter(
-      (p: EspacoDeProjetos) => p["Status de prazo"] === "Repriorizado"
     ).length;
 
     // Calcular métricas de status (sempre dos dados originais)
@@ -235,9 +230,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
     const projetosForaDoPrazoStatus = originalData.filter(
       (p: EspacoDeProjetos) => p["Status da fase atual"] === "Atrasado"
     ).length;
-    const projetosRepriorizadosStatus = originalData.filter(
-      (p: EspacoDeProjetos) => p["Status da fase atual"] === "Repriorizado"
-    ).length;
 
     switch (tipo) {
       case "projeto":
@@ -245,7 +237,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         projetosNoPrazo = projetosNoPrazoProjeto;
         projetosEmRisco = projetosEmRiscoProjeto;
         projetosForaDoPrazo = projetosForaDoPrazoProjeto;
-        projetosRepriorizados = projetosRepriorizadosProjeto;
         break;
 
       case "status":
@@ -253,7 +244,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         projetosNoPrazo = projetosNoPrazoStatus;
         projetosEmRisco = projetosEmRiscoStatus;
         projetosForaDoPrazo = projetosForaDoPrazoStatus;
-        projetosRepriorizados = projetosRepriorizadosStatus;
         break;
       case "":
         // Quando não há filtro, mostrar a soma individual de cada tipo
@@ -261,8 +251,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         projetosEmRisco = projetosEmRiscoProjeto + projetosEmRiscoStatus;
         projetosForaDoPrazo =
           projetosForaDoPrazoProjeto + projetosForaDoPrazoStatus;
-        projetosRepriorizados =
-          projetosRepriorizadosProjeto + projetosRepriorizadosStatus;
         break;
     }
 
@@ -270,17 +258,12 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
       projetosNoPrazo,
       projetosEmRisco,
       projetosForaDoPrazo,
-      projetosRepriorizados,
     };
   };
 
   // Calcular métricas baseada no tipo de filtro selecionado
-  const {
-    projetosNoPrazo,
-    projetosEmRisco,
-    projetosForaDoPrazo,
-    projetosRepriorizados,
-  } = calcularMetricasStatus(tipoFiltroStatus);
+  const { projetosNoPrazo, projetosEmRisco, projetosForaDoPrazo } =
+    calcularMetricasStatus(tipoFiltroStatus);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 w-full mb-20">
@@ -376,7 +359,6 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         }
       />
 
-
       <TotalizadorCard
         icon={
           <CompassIcon
@@ -455,34 +437,7 @@ const ProjetosTotalizadores: React.FC<ProjetosTotalizadoresProps> = ({
         clickable={!!onStatusPrazoClick}
         isFiltered={filtroStatusPrazoAtivo === "Atrasado"}
       />
-      <TotalizadorCard
-        icon={
-          <ArrowPathIcon
-            size={remToPx(config.icone)}
-            className="text-current flex-shrink-0"
-            style={{
-              color: themeColors.components.totalizadores.total.icon,
-            }}
-          />
-        }
-        label={
-          tipoFiltroStatus === "projeto"
-            ? "Projetos Repriorizados"
-            : tipoFiltroStatus === "status"
-            ? "Status Repriorizados"
-            : "Repriorizados"
-        }
-        value={projetosRepriorizados}
-        currentTheme={currentTheme}
-        valueColor={themeColors.status.prazo.repropriado.text[currentTheme]}
-        onClickValue={
-          onStatusPrazoClick
-            ? () => onStatusPrazoClick("Repriorizado")
-            : undefined
-        }
-        clickable={!!onStatusPrazoClick}
-        isFiltered={filtroStatusPrazoAtivo === "Repriorizado"}
-      />
+
       <TotalizadorCard
         icon={
           <CalendarIcon
