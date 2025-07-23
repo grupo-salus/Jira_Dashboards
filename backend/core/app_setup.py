@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.settings import settings
 from core.database import create_tables
 from core.logging_config import setup_logging
+from middleware.rate_limiting import setup_rate_limiting
 
 
 @asynccontextmanager
@@ -40,6 +41,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    
+    # Configurar Rate Limiting
+    setup_rate_limiting(app)
 
     # Configurar rotas básicas
     @app.get("/")

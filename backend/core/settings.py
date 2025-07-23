@@ -21,6 +21,16 @@ class Settings(BaseSettings):
     # Secret key para JWT
     SECRET_KEY: str = "your-secret-key-change-in-production"
     
+    # JWT Configuration
+    JWT_ALGORITHM: str = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    
+    # Rate Limiting Configuration
+    RATE_LIMIT_DEFAULT: str = "100/minute"
+    RATE_LIMIT_AUTH: str = "5/minute"
+    RATE_LIMIT_STRICT: str = "10/minute"
+    
     # =============================================================================
     # BANCO DE DADOS
     # =============================================================================

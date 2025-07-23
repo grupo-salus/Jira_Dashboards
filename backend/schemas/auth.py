@@ -26,12 +26,33 @@ class UserInfo(BaseModel):
     account_control: Optional[int] = None
 
 
+class TokenResponse(BaseModel):
+    """Schema para resposta de tokens JWT."""
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+
+class RefreshTokenRequest(BaseModel):
+    """Schema para requisição de refresh token."""
+    refresh_token: str
+
+
+class TokenData(BaseModel):
+    """Schema para dados do token."""
+    user_id: Optional[int] = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+    is_superuser: bool = False
+
+
 class LoginResponse(BaseModel):
     """Schema para resposta de login."""
     success: bool
     message: str
     user: Optional[UserInfo] = None
-    token: Optional[str] = None
+    tokens: Optional[TokenResponse] = None
 
 
 class AuthStatus(BaseModel):

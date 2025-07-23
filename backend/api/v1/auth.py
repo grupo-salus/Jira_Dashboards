@@ -6,7 +6,13 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import logging
 
 from services.auth_service import auth_service
-from schemas.auth import LoginRequest, LoginResponse, UserInfo, AuthStatus
+from services.jwt_service import jwt_service
+from core.settings import settings
+from middleware.rate_limiting import rate_limit_auth, rate_limit_auth_by_user
+from schemas.auth import (
+    LoginRequest, LoginResponse, UserInfo, AuthStatus,
+    TokenResponse, RefreshTokenRequest
+)
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +21,7 @@ security = HTTPBearer()
 
 
 @router.post("/login", response_model=LoginResponse)
+@rate_limit_auth()
 async def login(login_data: LoginRequest, request: Request):
     """
     Endpoint para autenticação de usuário via LDAP com verificação no banco de dados.
@@ -46,8 +53,24 @@ async def login(login_data: LoginRequest, request: Request):
                 detail="Credenciais inválidas ou usuário desabilitado"
             )
         
+        # Criar tokens JWT
+        token_data = {
+            "sub": str(user_info["id"]),
+            "username": user_info["username"],
+            "email": user_info["email"],
+            "is_superuser": user_info["is_superuser"]
+        }
+        
+        tokens = jwt_service.create_token_pair(token_data)
+        
         # Converter para schema Pydantic
         user = UserInfo(**user_info)
+        token_response = TokenResponse(
+            access_token=tokens["access_token"],
+            refresh_token=tokens["refresh_token"],
+            token_type=tokens["token_type"],
+            expires_in=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        )
         
         logger.info(f"Login bem-sucedido para usuário: {login_data.username}")
         
@@ -55,7 +78,7 @@ async def login(login_data: LoginRequest, request: Request):
             success=True,
             message="Login realizado com sucesso",
             user=user,
-            token="dummy_token"  # TODO: Implementar JWT
+            tokens=token_response
         )
         
     except HTTPException:
@@ -95,6 +118,57 @@ async def auth_status():
         )
 
 
+@router.post("/refresh", response_model=TokenResponse)
+@rate_limit_auth()
+async def refresh_token(refresh_request: RefreshTokenRequest, request: Request):
+    """
+    Endpoint para renovar access token usando refresh token.
+    
+    Args:
+        refresh_request: Dados do refresh token
+        
+    Returns:
+        Novo par de tokens
+    """
+    try:
+        # Verificar refresh token
+        payload = jwt_service.verify_token(refresh_request.refresh_token)
+        
+        if payload is None or payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=401,
+                detail="Refresh token inválido"
+            )
+        
+        # Criar novo par de tokens
+        token_data = {
+            "sub": payload.get("sub"),
+            "username": payload.get("username"),
+            "email": payload.get("email"),
+            "is_superuser": payload.get("is_superuser", False)
+        }
+        
+        tokens = jwt_service.create_token_pair(token_data)
+        
+        logger.info(f"Token renovado para usuário: {payload.get('username')}")
+        
+        return TokenResponse(
+            access_token=tokens["access_token"],
+            refresh_token=tokens["refresh_token"],
+            token_type=tokens["token_type"],
+            expires_in=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro durante refresh token: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Erro interno do servidor"
+        )
+
+
 @router.post("/logout")
 async def logout():
     """
@@ -104,7 +178,7 @@ async def logout():
         Mensagem de confirmação
     """
     try:
-        # TODO: Implementar invalidação de token/sessão
+        # TODO: Implementar blacklist de tokens (opcional)
         logger.info("Logout realizado")
         
         return {
