@@ -95,13 +95,13 @@ export const ProximosProjetos = ({ projetos }: Props) => {
 
       {/* Container com altura fixa e scroll */}
       <div
-        className="h-80 md:h-[400px] overflow-auto"
+        className="h-60 md:h-80 overflow-auto"
         style={{
           backgroundColor: theme.bg.base,
           borderRadius: "12px",
           border: `1px solid ${theme.border.base}`,
           // Estilo personalizado para scrollbar
-          scrollbarWidth: 'thin',
+          scrollbarWidth: "thin",
           scrollbarColor: `${theme.border.base} transparent`,
         }}
       >

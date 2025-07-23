@@ -26,7 +26,7 @@ export const ProjetoCard = ({
 
   return (
     <div
-      className={`p-2 rounded-lg border-l-4 transition-all duration-200 hover:shadow-sm ${className}`}
+      className={`p-1.5 rounded-lg border-l-4 transition-all duration-200 hover:shadow-sm ${className}`}
       style={{
         backgroundColor: theme.bg.base,
         borderLeftColor: prioridadeColor(prioridade),
@@ -35,7 +35,7 @@ export const ProjetoCard = ({
     >
       <div className="flex items-center gap-2">
         <span
-          className="rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+          className="rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
           style={{ background: theme.brand.neutral }}
         >
           #{posicao}
@@ -84,7 +84,7 @@ export const ResponsavelHeader = ({
 
   return (
     <div
-      className={`p-3 border-b font-semibold text-sm ${className}`}
+      className={`p-2 border-b font-semibold text-sm ${className}`}
       style={{
         borderColor: theme.border.base,
         color: theme.text.title,
@@ -131,7 +131,7 @@ export const ResponsavelCard = ({
 
   return (
     <div
-      className={`min-w-[280px] max-w-[320px] ${className}`}
+      className={`min-w-[240px] max-w-[280px] ${className}`}
       style={{
         backgroundColor: theme.bg.surface,
         borderRadius: "8px",
@@ -139,10 +139,10 @@ export const ResponsavelCard = ({
       }}
     >
       <ResponsavelHeader nome={nome} quantidade={projetos.length} />
-      <div 
-        className="p-3 space-y-2 max-h-64 overflow-y-auto"
+      <div
+        className="p-2 space-y-1 max-h-48 overflow-y-auto"
         style={{
-          scrollbarWidth: 'thin',
+          scrollbarWidth: "thin",
           scrollbarColor: `${theme.border.base} transparent`,
         }}
       >
