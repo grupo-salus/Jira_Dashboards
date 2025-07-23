@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { projetosApi } from "../api/jira";
-import { ProjetosTableData, ProjetosApiError } from "../types/index";
+import { ProjetosTableData } from "../types/index";
 import { useDataSync } from "../../../shared/context/DataSyncContext";
 import { mapErrorWithCode } from "../../../shared/utils/errorMapper";
 import { useApiCache } from "../../../shared/hooks/useApiCache";
-import { useNavigationCache } from "../../../shared/hooks/useNavigationCache";
+// import { useNavigationCache } from "../../../shared/hooks/useNavigationCache";
 
 interface UseProjetosReturn {
   data: ProjetosTableData | null;
@@ -16,7 +16,7 @@ interface UseProjetosReturn {
 
 export const useProjetos = (): UseProjetosReturn => {
   const { lastRefresh } = useDataSync();
-  const { isQuickNavigation } = useNavigationCache();
+  // const { isQuickNavigation } = useNavigationCache();
 
   // Hook de cache para projetos
   const {
@@ -26,10 +26,10 @@ export const useProjetos = (): UseProjetosReturn => {
     setIsLoading: setLoading,
     error,
     setError,
-    lastUpdated,
     loadFromCache,
     saveToCache,
-    clearCache,
+    // lastUpdated,
+    // clearCache,
   } = useApiCache<ProjetosTableData>({
     key: "projetos_data",
     ttl: 5 * 60 * 1000, // 5 minutos

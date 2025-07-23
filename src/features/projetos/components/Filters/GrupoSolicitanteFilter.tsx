@@ -7,7 +7,7 @@ import { FilterBase, getUniqueOptions } from "./FilterBase";
 interface GrupoSolicitanteFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
-  projetos: any[];
+  projetos: Record<string, unknown>[];
 }
 
 export const GrupoSolicitanteFilter = ({
@@ -33,8 +33,8 @@ export const GrupoSolicitanteFilter = ({
         inputId="grupo-solicitante-filter"
         classNamePrefix="react-select"
         options={grupoOptions}
-        value={grupoOptions.filter((opt) => value?.includes(opt.value))}
-        onChange={(opts) => onChange(opts ? opts.map((o) => o.value) : [])}
+        value={grupoOptions.filter((opt) => value?.includes(opt.value as string))}
+        onChange={(opts) => onChange(opts ? opts.map((o) => o.value as string) : [])}
         theme={selectTheme}
         isMulti
         isClearable

@@ -2,10 +2,10 @@ import { useTheme } from "@/shared/context/ThemeContext";
 import { Table } from "lucide-react";
 
 interface ProjetosTableProps {
-  projetos: any[];
+  projetos: unknown[];
 }
 
-export const ProjetosTable = ({ projetos }: ProjetosTableProps) => {
+export const ProjetosTable = (_props: ProjetosTableProps) => {
   const { theme } = useTheme();
 
   return (

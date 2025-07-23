@@ -7,7 +7,7 @@ import { FilterBase, getUniqueOptions } from "./FilterBase";
 interface StatusFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
-  projetos: any[];
+  projetos: Record<string, unknown>[];
 }
 
 export const StatusFilter = ({
@@ -34,8 +34,12 @@ export const StatusFilter = ({
         inputId="status-filter"
         classNamePrefix="react-select"
         options={statusOptions}
-        value={statusOptions.filter((opt) => value?.includes(opt.value))}
-        onChange={(opts) => onChange(opts ? opts.map((o) => o.value) : [])}
+        value={statusOptions.filter((opt) =>
+          value?.includes(opt.value as string)
+        )}
+        onChange={(opts) =>
+          onChange(opts ? opts.map((o) => o.value as string) : [])
+        }
         theme={selectTheme}
         isMulti
         isClearable

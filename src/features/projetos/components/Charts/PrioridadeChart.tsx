@@ -3,10 +3,10 @@ import { BaseChart } from "./BaseChart";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 interface PrioridadeChartProps {
-  projetos: any[];
+  projetos: unknown[];
 }
 
-export const PrioridadeChart = ({ projetos }: PrioridadeChartProps) => {
+export const PrioridadeChart = (_props: PrioridadeChartProps) => {
   const { theme } = useTheme();
 
   return (

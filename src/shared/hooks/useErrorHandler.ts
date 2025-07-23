@@ -1,14 +1,6 @@
 import { useState, useCallback } from "react";
-import {
-  SUPPORT_CONFIG,
-  getSupportEmailBody,
-  getSupportEmailSubject,
-} from "@/shared/constants/support";
-import {
-  mapErrorMessage,
-  mapErrorWithCode,
-  getErrorType,
-} from "@/shared/utils/errorMapper";
+import { SUPPORT_CONFIG } from "@/shared/constants/support";
+import { mapErrorWithCode } from "@/shared/utils/errorMapper";
 
 interface ErrorState {
   hasError: boolean;
@@ -68,7 +60,7 @@ export const useErrorHandler = () => {
     [handleError]
   );
 
-  const contactSupport = useCallback((dashboard?: string) => {
+  const contactSupport = useCallback(() => {
     // Abre o site de suporte em uma nova aba
     window.open(SUPPORT_CONFIG.website, "_blank");
   }, []);

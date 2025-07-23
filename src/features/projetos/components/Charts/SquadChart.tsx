@@ -3,10 +3,10 @@ import { BaseChart } from "./BaseChart";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 interface SquadChartProps {
-  projetos: any[];
+  projetos: unknown[];
 }
 
-export const SquadChart = ({ projetos }: SquadChartProps) => {
+export const SquadChart = (_props: SquadChartProps) => {
   const { theme } = useTheme();
 
   return (

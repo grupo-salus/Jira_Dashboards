@@ -7,7 +7,7 @@ import { FilterBase, getUniqueOptions } from "./FilterBase";
 interface AreaFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
-  projetos: any[];
+  projetos: Record<string, unknown>[];
 }
 
 export const AreaFilter = ({ value, onChange, projetos }: AreaFilterProps) => {
@@ -30,8 +30,12 @@ export const AreaFilter = ({ value, onChange, projetos }: AreaFilterProps) => {
         inputId="area-filter"
         classNamePrefix="react-select"
         options={areaOptions}
-        value={areaOptions.filter((opt) => value?.includes(opt.value))}
-        onChange={(opts) => onChange(opts ? opts.map((o) => o.value) : [])}
+        value={areaOptions.filter((opt) =>
+          value?.includes(opt.value as string)
+        )}
+        onChange={(opts) =>
+          onChange(opts ? opts.map((o) => o.value as string) : [])
+        }
         theme={selectTheme}
         isMulti
         isClearable

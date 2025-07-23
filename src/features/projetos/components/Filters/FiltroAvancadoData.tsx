@@ -21,7 +21,7 @@ interface FiltroAvancadoDataProps {
   operador: string | null;
   data1: string | null;
   data2: string | null;
-  onChange: (obj: any) => void;
+  onChange: (obj: Record<string, string | null>) => void;
 }
 
 export const FiltroAvancadoData = ({

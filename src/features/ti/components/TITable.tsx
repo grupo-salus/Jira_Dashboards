@@ -2,10 +2,10 @@
 import { useTheme } from "@/shared/context/ThemeContext";
 
 interface TITableProps {
-  data: any[];
+  data: unknown[];
 }
 
-export const TITable = ({ data }: TITableProps) => {
+export const TITable = (_props: TITableProps) => {
   const { theme } = useTheme();
 
   return (

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { BarChart3, Kanban, Table, Eye, ChevronUp } from "lucide-react";
+import { BarChart3, Kanban, Table, ChevronUp } from "lucide-react";
 import { FilterPanel } from "@/features/projetos/components/Filters/FilterPanel";
 import { TotalizadoresWrapper } from "@/features/projetos/components/Totalizadores/TotalizadoresWrapper";
 import {
@@ -12,7 +12,7 @@ import { KanbanWrapper } from "@/features/projetos/components/Kanban/KanbanWrapp
 import { ProjetosTable } from "@/features/projetos/components/Tabela/ProjetosTable";
 import { ProximosProjetos } from "@/features/projetos/components/Proximos/ProximosProjetos";
 import { useProjetos } from "@/features/projetos/hooks/useProjetos";
-import { EspacoDeProjetos } from "../types/index";
+// import { EspacoDeProjetos } from "../types/index";
 import { LastUpdateInfo } from "@/shared/components/LastUpdateInfo";
 import { useAutoRefresh } from "@/shared/hooks/useAutoRefresh";
 import { ErrorScreen } from "@/shared/components/ErrorScreen";
@@ -31,7 +31,7 @@ type ViewMode = "kanban" | "table";
 
 export const DashProjetos = () => {
   const { theme } = useTheme();
-  const [viewMode, setViewMode] = useState<ViewMode>("kanban");
+  const [viewMode] = useState<ViewMode>("kanban");
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Hook para buscar dados reais da API

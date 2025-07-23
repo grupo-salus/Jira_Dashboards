@@ -11,7 +11,7 @@ interface UseAutoRefreshOptions {
  * Ideal para uso em TV ou quando você quer que os dados sejam atualizados automaticamente
  */
 export const useAutoRefresh = (options: UseAutoRefreshOptions = {}) => {
-  const { enabled = true, interval = 3600000 } = options; // 1 hora por padrão
+  const { enabled = true } = options; // 1 hora por padrão
   const { enableAutoRefresh, isAutoRefreshEnabled } = useDataSync();
 
   useEffect(() => {

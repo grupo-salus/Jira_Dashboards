@@ -8,7 +8,7 @@ import { TotalizadorProjetosAndamento } from "./TotalizadorProjetosAndamento";
 import { TotalizadorProjetosBacklog } from "./TotalizadorProjetosBacklog";
 import { TotalizadorProjetosEntreguesMes } from "./TotalizadorProjetosEntreguesMes";
 import { TotalizadorProjetosEmRisco } from "./TotalizadorProjetosEmRisco";
-import { BaseTotalizador } from "./BaseTotalizador";
+// import { BaseTotalizador } from "./BaseTotalizador";
 
 interface Props {
   projetosNoPrazo: number;

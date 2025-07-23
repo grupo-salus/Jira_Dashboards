@@ -7,7 +7,7 @@ import { FilterBase, getUniqueOptions } from "./FilterBase";
 interface PrioridadeFilterProps {
   value: string[];
   onChange: (value: string[]) => void;
-  projetos: any[];
+  projetos: Record<string, unknown>[];
 }
 
 export const PrioridadeFilter = ({
@@ -33,8 +33,8 @@ export const PrioridadeFilter = ({
         inputId="prioridade-filter"
         classNamePrefix="react-select"
         options={prioridadeOptions}
-        value={prioridadeOptions.filter((opt) => value?.includes(opt.value))}
-        onChange={(opts) => onChange(opts ? opts.map((o) => o.value) : [])}
+        value={prioridadeOptions.filter((opt) => value?.includes(opt.value as string))}
+        onChange={(opts) => onChange(opts ? opts.map((o) => o.value as string) : [])}
         theme={selectTheme}
         isMulti
         isClearable

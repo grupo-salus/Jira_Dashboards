@@ -1,5 +1,5 @@
 import { BaseTotalizador } from "./BaseTotalizador";
-import { useTheme } from "@/shared/context/ThemeContext";
+// import { useTheme } from "@/shared/context/ThemeContext";
 import { coreColors } from "@/shared/constants/coreColors";
 import { CheckCircle } from "lucide-react";
 
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const TotalizadorProjetosNoPrazo = ({ valor }: Props) => {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   return (
     <BaseTotalizador
       icon={<CheckCircle size={20} />}

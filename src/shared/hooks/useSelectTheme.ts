@@ -1,8 +1,9 @@
 import { useTheme } from "@/shared/context/ThemeContext";
+import type { Theme } from "react-select";
 
 export const useSelectTheme = () => {
   const { theme } = useTheme();
-  return (base: any) => ({
+  return (base: Theme) => ({
     ...base,
     colors: {
       ...base.colors,

@@ -3,10 +3,10 @@ import { BaseChart } from "./BaseChart";
 import { useTheme } from "@/shared/context/ThemeContext";
 
 interface ProjetosPorAreaChartProps {
-  projetos: any[];
+  projetos: unknown[];
 }
 
-export const ProjetosPorAreaChart = ({ projetos }: ProjetosPorAreaChartProps) => {
+export const ProjetosPorAreaChart = (_props: ProjetosPorAreaChartProps) => {
   const { theme } = useTheme();
 
   return (

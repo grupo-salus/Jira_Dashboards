@@ -1,6 +1,6 @@
 // Hook temporariamente desabilitado - Dashboard TI em desenvolvimento
 interface UseTIReturn {
-  data: any | null;
+  data: unknown | null;
   loading: boolean;
   error: string | null;
   errorCode: string | null;

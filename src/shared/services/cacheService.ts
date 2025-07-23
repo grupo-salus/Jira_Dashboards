@@ -224,7 +224,7 @@ class CacheService {
               cleanedCount++;
             }
           }
-        } catch (error) {
+        } catch {
           // Remove item corrompido
           localStorage.removeItem(key);
           cleanedCount++;

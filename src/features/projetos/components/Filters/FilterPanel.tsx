@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { FilterBase } from "./FilterBase";
 import { AreaFilter } from "./AreaFilter";
 import { StatusFilter } from "./StatusFilter";
 import { PrioridadeFilter } from "./PrioridadeFilter";
 import { SquadFilter } from "./SquadFilter";
 import { GrupoSolicitanteFilter } from "./GrupoSolicitanteFilter";
 import { PeriodoFilter } from "./PeriodoFilter";
-import { Filter, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Filter, ChevronDown, ChevronUp } from "lucide-react";
 import { CampoDataFilter } from "./CampoDataFilter";
 import { OperadorFilter } from "./OperadorFilter";
 import { Data1Filter } from "./Data1Filter";
@@ -15,7 +14,7 @@ import { Data2Filter } from "./Data2Filter";
 import { coreColors } from "@/shared/constants/coreColors";
 
 interface FilterPanelProps {
-  projetos: any[];
+  projetos: Record<string, unknown>[];
 }
 
 export const FilterPanel = ({ projetos }: FilterPanelProps) => {
@@ -90,34 +89,34 @@ export const FilterPanel = ({ projetos }: FilterPanelProps) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-7 w-full">
           <AreaFilter
             value={filters.area}
-            onChange={(v: any) => setFilters((f) => ({ ...f, area: v }))}
+            onChange={(v: string[]) => setFilters((f) => ({ ...f, area: v }))}
             projetos={projetos}
           />
           <StatusFilter
             value={filters.status}
-            onChange={(v: any) => setFilters((f) => ({ ...f, status: v }))}
+            onChange={(v: string[]) => setFilters((f) => ({ ...f, status: v }))}
             projetos={projetos}
           />
           <PrioridadeFilter
             value={filters.prioridade}
-            onChange={(v: any) => setFilters((f) => ({ ...f, prioridade: v }))}
+            onChange={(v: string[]) => setFilters((f) => ({ ...f, prioridade: v }))}
             projetos={projetos}
           />
           <SquadFilter
             value={filters.squad}
-            onChange={(v: any) => setFilters((f) => ({ ...f, squad: v }))}
+            onChange={(v: string[]) => setFilters((f) => ({ ...f, squad: v }))}
             projetos={projetos}
           />
           <GrupoSolicitanteFilter
             value={filters.grupoSolicitante}
-            onChange={(v: any) =>
+            onChange={(v: string[]) =>
               setFilters((f) => ({ ...f, grupoSolicitante: v }))
             }
             projetos={projetos}
           />
           <PeriodoFilter
             value={filters.periodo}
-            onChange={(v: any) => setFilters((f) => ({ ...f, periodo: v }))}
+            onChange={(v: string) => setFilters((f) => ({ ...f, periodo: v }))}
           />
         </div>
         {showAdvanced && (

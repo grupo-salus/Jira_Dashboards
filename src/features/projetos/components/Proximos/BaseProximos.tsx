@@ -14,10 +14,8 @@ interface ProjetoCardProps {
 }
 
 export const ProjetoCard = ({
-  id,
   titulo,
   grupo,
-  responsavel,
   prioridade,
   posicao,
   children,

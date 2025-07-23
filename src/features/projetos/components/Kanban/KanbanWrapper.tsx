@@ -2,10 +2,10 @@ import { useTheme } from "@/shared/context/ThemeContext";
 import { Kanban } from "lucide-react";
 
 interface KanbanWrapperProps {
-  projetos: any[];
+  projetos: unknown[];
 }
 
-export const KanbanWrapper = ({ projetos }: KanbanWrapperProps) => {
+export const KanbanWrapper = (_props: KanbanWrapperProps) => {
   const { theme } = useTheme();
 
   return (

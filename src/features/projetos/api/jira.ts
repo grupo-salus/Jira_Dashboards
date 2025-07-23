@@ -1,4 +1,4 @@
-import { ProjetosApiResponse, ProjetosApiError } from "../types/index";
+import { ProjetosApiResponse } from "../types/index";
 
 // Configuração base da API
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -23,7 +23,7 @@ async function safeFetch<T>(url: string, options?: RequestInit): Promise<T> {
     const data = await response.json();
     return data as T;
   } catch (error) {
-    throw error;
+    throw new Error(`Erro na requisição: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
   }
 }
 

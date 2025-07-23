@@ -18,7 +18,7 @@ import {
   Palette,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
-import { availableThemes, ThemeName } from "@/shared/themes";
+import { ThemeName } from "@/shared/themes";
 
 export const Navbar = () => {
   const { toggleMode, mode, theme, themeName, setThemeName } = useTheme();

@@ -2,7 +2,6 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   ReactNode,
 } from "react";
 import { availableThemes, DEFAULT_THEME, ThemeName } from "../themes";

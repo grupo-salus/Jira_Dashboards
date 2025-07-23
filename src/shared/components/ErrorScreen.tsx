@@ -29,10 +29,7 @@ export const ErrorScreen = ({
             className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4"
             style={{ backgroundColor: theme.bg.muted }}
           >
-            <AlertTriangle
-              size={32}
-              style={{ color: theme.text.error || "#ef4444" }}
-            />
+            <AlertTriangle size={32} style={{ color: theme.state.error }} />
           </div>
         </div>
 

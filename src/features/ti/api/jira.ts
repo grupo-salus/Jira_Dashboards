@@ -1,8 +1,8 @@
 // API temporariamente desabilitada - Dashboard TI em desenvolvimento
-import { TIApiResponse, TIApiError } from "../types";
+import { TIApiResponse } from "../types";
 
 // Configuração base da API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // API específica para Acompanhamento TI (desabilitada)
 export const tiApi = {
