@@ -8,9 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from core.settings import settings
-
-# Base para os models
-Base = declarative_base()
+from models import Base  # Importar Base dos models
 
 
 def get_database_url() -> str:

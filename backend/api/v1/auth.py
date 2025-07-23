@@ -1,7 +1,7 @@
 """
 Rotas de autenticação.
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import logging
 
@@ -15,12 +15,13 @@ security = HTTPBearer()
 
 
 @router.post("/login", response_model=LoginResponse)
-async def login(login_data: LoginRequest):
+async def login(login_data: LoginRequest, request: Request):
     """
-    Endpoint para autenticação de usuário via LDAP.
+    Endpoint para autenticação de usuário via LDAP com verificação no banco de dados.
     
     Args:
         login_data: Dados de login (username e password)
+        request: Objeto de requisição para obter IP do cliente
         
     Returns:
         LoginResponse com informações do usuário autenticado
@@ -28,17 +29,21 @@ async def login(login_data: LoginRequest):
     try:
         logger.info(f"Tentativa de login para usuário: {login_data.username}")
         
-        # Autenticar usuário no LDAP
-        user_info = auth_service.authenticate_user(
+        # Obter IP do cliente
+        client_ip = request.client.host if request.client else None
+        
+        # Autenticar usuário no LDAP e verificar no banco de dados
+        user_info = auth_service.authenticate_user_with_db_check(
             username=login_data.username,
-            password=login_data.password
+            password=login_data.password,
+            ip_address=client_ip
         )
         
         if not user_info:
             logger.warning(f"Falha na autenticação do usuário: {login_data.username}")
             raise HTTPException(
                 status_code=401,
-                detail="Credenciais inválidas"
+                detail="Credenciais inválidas ou usuário desabilitado"
             )
         
         # Converter para schema Pydantic
