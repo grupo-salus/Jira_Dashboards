@@ -1,21 +1,18 @@
-import { AlertTriangle } from "lucide-react";
+import { Users } from "lucide-react";
 import { BaseChart } from "./BaseChart";
 import { useTheme } from "@/shared/context/ThemeContext";
 
-interface PrioridadeChartProps {
+interface SquadChartProps {
   projetos: any[];
 }
 
-export const PrioridadeChart = ({ projetos }: PrioridadeChartProps) => {
+export const SquadChart = ({ projetos }: SquadChartProps) => {
   const { theme } = useTheme();
 
   return (
-    <BaseChart
-      title="Prioridade dos Projetos"
-      icon={<AlertTriangle size={20} />}
-    >
+    <BaseChart title="Distribuição por Squad" icon={<Users size={20} />}>
       <div className="text-center" style={{ color: theme.text.subtitle }}>
-        <p className="text-lg mb-2">Gráfico de Prioridades</p>
+        <p className="text-lg mb-2">Gráfico de Distribuição por Squad</p>
         <p className="text-sm">Será implementado com biblioteca de gráficos</p>
       </div>
     </BaseChart>

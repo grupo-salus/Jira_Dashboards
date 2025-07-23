@@ -3,8 +3,11 @@ import { useTheme } from "@/shared/context/ThemeContext";
 import { BarChart3, Kanban, Table, Eye, ChevronUp } from "lucide-react";
 import { FilterPanel } from "@/features/projetos/components/Filters/FilterPanel";
 import { TotalizadoresWrapper } from "@/features/projetos/components/Totalizadores/TotalizadoresWrapper";
-import { ProjetosPorAreaChart } from "@/features/projetos/components/Charts/ProjetosPorAreaChart";
-import { PrioridadeChart } from "@/features/projetos/components/Charts/PrioridadeChart";
+import {
+  ProjetosPorAreaChart,
+  PrioridadeChart,
+  SquadChart,
+} from "@/features/projetos/components/Charts";
 import { KanbanWrapper } from "@/features/projetos/components/Kanban/KanbanWrapper";
 import { ProjetosTable } from "@/features/projetos/components/Tabela/ProjetosTable";
 import { ProximosProjetos } from "@/features/projetos/components/Proximos/ProximosProjetos";
@@ -167,9 +170,10 @@ export const DashProjetos = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <ProjetosPorAreaChart projetos={projetos as any[]} />
           <PrioridadeChart projetos={projetos as any[]} />
+          <SquadChart projetos={projetos as any[]} />
         </div>
       </section>
 
