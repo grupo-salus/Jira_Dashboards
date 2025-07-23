@@ -1,89 +1,114 @@
+import { useState } from "react";
 import { useTheme } from "@/shared/context/ThemeContext";
-import { usePrioridadeColor } from "@/shared/hooks/usePrioridadeColor";
-
-interface Projeto {
-  Título: string;
-  Grupo: string;
-  Prioridade: string;
-  PosicaoBacklog: number;
-  [key: string]: any;
-}
+import { EspacoDeProjetos } from "../../types/index";
+import { Grid3X3, List } from "lucide-react";
+import { ProximosColunas } from "./ProximosColunas";
+import { ProximosLinhas } from "./ProximosLinhas";
+import {
+  processarProximosProjetos,
+  ResponsavelProcessado,
+} from "./logic/processarProximosProjetos";
 
 interface Props {
-  projetos: Projeto[];
+  projetos: EspacoDeProjetos[];
 }
 
-const filaLabel = ["Próximo:", "Segundo da fila:", "Terceiro da fila:"];
+type ViewMode = "columns" | "rows";
 
 export const ProximosProjetos = ({ projetos }: Props) => {
   const { theme } = useTheme();
-  const prioridadeColor = usePrioridadeColor();
-  const proximos = projetos
-    .filter((p) => p.Status === "Backlog Priorizado")
-    .sort((a, b) => (a.PosicaoBacklog ?? 999) - (b.PosicaoBacklog ?? 999))
-    .slice(0, 3);
+  const [viewMode, setViewMode] = useState<ViewMode>("columns");
+
+  // Processa os dados usando a lógica
+  const responsaveisProcessados: ResponsavelProcessado[] =
+    processarProximosProjetos(projetos);
 
   return (
     <div
-      className="w-full rounded-2xl p-8"
+      className="w-full rounded-2xl p-4 md:p-6"
       style={{ background: theme.bg.surface }}
     >
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold" style={{ color: theme.text.title }}>
-          Próximos Projetos a Serem Executados
-        </h2>
-        <p className="text-base" style={{ color: theme.text.subtitle }}>
-          Fila ordenada por prioridade no backlog
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {proximos.map((p, idx) => (
+      {/* Header com título e toggle */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2
+            className="text-xl md:text-2xl font-bold mb-2"
+            style={{ color: theme.text.title }}
+          >
+            Fila de Projetos por Responsável
+          </h2>
+          <p
+            className="text-sm md:text-base"
+            style={{ color: theme.text.subtitle }}
+          >
+            Fila ordenada por backlog priorizado
+          </p>
+        </div>
+
+        {/* Toggle de visualização */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm mr-2" style={{ color: theme.text.subtitle }}>
+            Visualização:
+          </span>
           <div
-            key={p.ID || idx}
-            className="flex flex-row items-center p-4 rounded-lg shadow-sm h-full relative"
+            className="flex rounded-lg p-1"
             style={{
-              backgroundColor: theme.bg.base,
-              borderLeft: `6px solid ${prioridadeColor(p.Prioridade)}`,
+              backgroundColor: theme.bg.muted,
+              border: `1px solid ${theme.border.base}`,
             }}
           >
-            <div className="flex flex-col items-center mr-4 min-w-[48px]">
-              <span
-                className="rounded-full px-3 py-1 text-white font-bold text-base"
-                style={{ background: theme.state.success }}
-              >
-                #{idx + 1}
-              </span>
-            </div>
-            <div className="flex flex-col flex-1">
-              <span
-                className="font-semibold text-base mb-1"
-                style={{ color: theme.text.title }}
-              >
-                <span style={{ color: prioridadeColor(p.Prioridade) }}>
-                  {filaLabel[idx]}{" "}
-                </span>
-                {p["Título"]}
-              </span>
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-sm"
-                  style={{ color: theme.text.subtitle }}
-                >
-                  {p["Grupo Solicitante"] || p.Grupo}
-                </span>
-                <span
-                  className="rounded px-2 py-1 text-xs font-semibold"
-                  style={{
-                    background: prioridadeColor(p.Prioridade),
-                    color: theme.text.inverse,
-                  }}
-                >
-                  {p.Prioridade}
-                </span>
-              </div>
-            </div>
+            <button
+              onClick={() => setViewMode("columns")}
+              className={`p-2 rounded-md transition-all duration-200 ${
+                viewMode === "columns" ? "shadow-sm" : "hover:bg-white/50"
+              }`}
+              style={{
+                backgroundColor:
+                  viewMode === "columns" ? theme.bg.base : "transparent",
+                color:
+                  viewMode === "columns"
+                    ? theme.text.title
+                    : theme.text.subtitle,
+              }}
+              title="Visualização em colunas"
+            >
+              <Grid3X3 size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode("rows")}
+              className={`p-2 rounded-md transition-all duration-200 ${
+                viewMode === "rows" ? "shadow-sm" : "hover:bg-white/50"
+              }`}
+              style={{
+                backgroundColor:
+                  viewMode === "rows" ? theme.bg.base : "transparent",
+                color:
+                  viewMode === "rows" ? theme.text.title : theme.text.subtitle,
+              }}
+              title="Visualização em linhas"
+            >
+              <List size={16} />
+            </button>
           </div>
-        ))}
+        </div>
+      </div>
+
+      {/* Container com altura fixa e scroll */}
+      <div
+        className="h-80 md:h-[400px] overflow-auto"
+        style={{
+          backgroundColor: theme.bg.base,
+          borderRadius: "12px",
+          border: `1px solid ${theme.border.base}`,
+        }}
+      >
+        <div className="p-4">
+          {viewMode === "columns" ? (
+            <ProximosColunas responsaveis={responsaveisProcessados} />
+          ) : (
+            <ProximosLinhas responsaveis={responsaveisProcessados} />
+          )}
+        </div>
       </div>
     </div>
   );
