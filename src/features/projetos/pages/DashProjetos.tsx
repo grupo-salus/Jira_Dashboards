@@ -9,7 +9,7 @@ import { KanbanWrapper } from "@/features/projetos/components/Kanban/KanbanWrapp
 import { ProjetosTable } from "@/features/projetos/components/Tabela/ProjetosTable";
 import { ProximosProjetos } from "@/features/projetos/components/Proximos/ProximosProjetos";
 import { useProjetos } from "@/features/projetos/hooks/useProjetos";
-import { EspacoDeProjetos } from "@/types/Typesjira";
+import { EspacoDeProjetos } from "../types/index";
 import { LastUpdateInfo } from "@/shared/components/LastUpdateInfo";
 import { useAutoRefresh } from "@/shared/hooks/useAutoRefresh";
 import { ErrorScreen } from "@/shared/components/ErrorScreen";

@@ -1,32 +1,5 @@
-/**
- * Interface para os dados do acompanhamento TI
- * Representa os dados retornados pela API de acompanhamento
- */
-export interface AcompanhamentoTI {
-  ID: string;
-  Chave: string;
-  Título: string;
-  Status: JiraStatus;
-  Tipo: string;
-  Prioridade: string;
-  Responsável: string;
-  Relator: string;
-  Time: string;
-  Squad: string;
-  "Criado em": string;
-  "Atualizado em": string;
-  "Data de Início": string | null;
-  "Data Prevista de Término": string | null;
-  "Data Limite": string | null;
-  "Data de Conclusão": string | null;
-  "Tempo Gasto (segundos)": number;
-  "Controle de tempo": string | null;
-  "Estimativa (segundos)": number;
-  "Esforço Registrado Total": number;
-  Labels: string | null;
-  "Dias no Backlog": number;
-  "Dias até Entrega (estimado)": number | null;
-}
+// Importa tipos compartilhados da feature TI
+import type { JiraStatus } from "../../ti/types";
 
 /**
  * Interface para os dados do Espaço de Projetos
@@ -102,18 +75,22 @@ export interface EspacoDeProjetos {
   "Risco de atraso atual?"?: boolean | null;
 }
 
-export type JiraStatus =
-  | "Backlog"
-  | "Bloqueado"
-  | "Backlog Priorizado"
-  | "Cancelado"
-  | "Em Andamento"
-  | "Em Homologação"
-  | "Operação Assistida"
-  | "Concluído";
+// Re-export de tipos compartilhados
+export type { JiraStatus } from "../../ti/types";
 
 // Status de ideação
 export type IdeacaoStatus = "Recente" | "Rever" | "Quase obsoleto" | "Obsoleto";
 
 // Status de prazo
 export type PrazoStatus = "No prazo" | "Em risco" | "Atrasado";
+
+// Tipos específicos para a API de projetos
+export type ProjetosTableData = EspacoDeProjetos[];
+
+export interface ProjetosApiResponse {
+  tabela_dashboard_ep: ProjetosTableData;
+}
+
+export interface ProjetosApiError {
+  erro: string;
+}

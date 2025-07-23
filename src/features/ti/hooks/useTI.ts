@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { tiApi } from "../../../api/jira";
+import { tiApi } from "../api/jira";
 import { TITableData, TIApiError } from "../types";
 import { useDataSync } from "../../../shared/context/DataSyncContext";
 import { mapErrorWithCode } from "../../../shared/utils/errorMapper";

@@ -1,4 +1,4 @@
-import { EspacoDeProjetos } from "@/types/Typesjira";
+import { EspacoDeProjetos } from "../../../types/index";
 
 export function calcularProjetosEmAndamento(
   projetos: EspacoDeProjetos[]

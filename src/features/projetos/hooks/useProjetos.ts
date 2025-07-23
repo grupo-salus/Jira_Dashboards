@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { projetosApi } from "../../../api/jira";
-import { ProjetosTableData, ProjetosApiError } from "../types";
+import { projetosApi } from "../api/jira";
+import { ProjetosTableData, ProjetosApiError } from "../types/index";
 import { useDataSync } from "../../../shared/context/DataSyncContext";
 import { mapErrorWithCode } from "../../../shared/utils/errorMapper";
 
