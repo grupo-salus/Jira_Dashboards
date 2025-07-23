@@ -1,3 +1,4 @@
+// Componente temporariamente desabilitado - Dashboard TI em desenvolvimento
 import { useTheme } from "@/shared/context/ThemeContext";
 
 interface TITableProps {

@@ -3,6 +3,8 @@ import { projetosApi } from "../api/jira";
 import { ProjetosTableData, ProjetosApiError } from "../types/index";
 import { useDataSync } from "../../../shared/context/DataSyncContext";
 import { mapErrorWithCode } from "../../../shared/utils/errorMapper";
+import { useApiCache } from "../../../shared/hooks/useApiCache";
+import { useNavigationCache } from "../../../shared/hooks/useNavigationCache";
 
 interface UseProjetosReturn {
   data: ProjetosTableData | null;
@@ -13,20 +15,51 @@ interface UseProjetosReturn {
 }
 
 export const useProjetos = (): UseProjetosReturn => {
-  const [data, setData] = useState<ProjetosTableData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
   const { lastRefresh } = useDataSync();
+  const { isQuickNavigation } = useNavigationCache();
 
-  const fetchData = async () => {
+  // Hook de cache para projetos
+  const {
+    data,
+    setData,
+    isLoading: loading,
+    setIsLoading: setLoading,
+    error,
+    setError,
+    lastUpdated,
+    loadFromCache,
+    saveToCache,
+    clearCache,
+  } = useApiCache<ProjetosTableData>({
+    key: "projetos_data",
+    ttl: 5 * 60 * 1000, // 5 minutos
+    enabled: true,
+  });
+
+  const [errorCode, setErrorCode] = useState<string | null>(null);
+
+  const fetchData = async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError(null);
       setErrorCode(null);
 
+      // Tenta carregar do cache primeiro (se não for refresh forçado)
+      if (!forceRefresh) {
+        const cachedData = loadFromCache();
+        if (cachedData) {
+          setData(cachedData);
+          setLoading(false);
+          return;
+        }
+      }
+
       const response = await projetosApi.getTabelaProjetos();
-      setData(response.tabela_dashboard_ep);
+      const projetosData = response.tabela_dashboard_ep;
+
+      // Salva no cache
+      saveToCache(projetosData);
+      setData(projetosData);
     } catch (err) {
       const { message, code } = mapErrorWithCode(err);
       setError(message);
@@ -38,13 +71,23 @@ export const useProjetos = (): UseProjetosReturn => {
   };
 
   useEffect(() => {
-    fetchData();
+    // Tenta carregar do cache primeiro
+    const cachedData = loadFromCache();
+    if (cachedData) {
+      setData(cachedData);
+      setLoading(false);
+      console.log("Dados carregados do cache");
+    } else {
+      // Só faz requisição se não há cache
+      console.log("Nenhum cache encontrado, fazendo requisição à API");
+      fetchData();
+    }
   }, []);
 
-  // Reagir à sincronização global
+  // Reagir à sincronização global (sempre força refresh)
   useEffect(() => {
     if (lastRefresh) {
-      fetchData();
+      fetchData(true); // Força refresh ignorando cache
     }
   }, [lastRefresh]);
 

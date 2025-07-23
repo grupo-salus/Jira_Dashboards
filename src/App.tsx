@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Home } from "@/features/home/pages/Home";
 import { DashProjetos } from "@/features/projetos/pages/DashProjetos";
 import { TIDashboard } from "@/features/ti/pages/TIDashboard";
+import { SprintDashboard } from "@/features/sprint/pages/SprintDashboard";
 import { Navbar } from "@/shared/components/Navbar";
 import { DataSyncProvider } from "@/shared/context/DataSyncContext";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { CacheDebug } from "@/shared/components/CacheDebug";
 
 function App() {
   return (
@@ -19,10 +21,10 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/projetos" element={<DashProjetos />} />
                 <Route path="/ti" element={<TIDashboard />} />
-                {/* Futuramente adicionar outras rotas */}
-                {/* <Route path="/sprints" element={<SprintDashboard />} /> */}
+                <Route path="/sprints" element={<SprintDashboard />} />
               </Routes>
             </main>
+            <CacheDebug />
           </div>
         </ErrorBoundary>
       </DataSyncProvider>

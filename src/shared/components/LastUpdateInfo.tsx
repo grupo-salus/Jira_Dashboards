@@ -2,18 +2,18 @@ import { useTheme } from "@/shared/context/ThemeContext";
 import { useDataSync } from "@/shared/context/DataSyncContext";
 import { Clock, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
+import { DATA_SYNC_CONFIG } from "../../config";
 
 export const LastUpdateInfo = () => {
   const { theme } = useTheme();
-  const { lastRefresh, isAutoRefreshEnabled, enableAutoRefresh } =
-    useDataSync();
+  const { lastRefresh, refreshAllData } = useDataSync();
   const [now, setNow] = useState(new Date());
 
-  // Atualiza o estado 'now' a cada minuto para forçar re-render
+  // Atualiza o estado 'now' usando configuração
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(new Date());
-    }, 60000); // 1 minuto
+    }, DATA_SYNC_CONFIG.TIMESTAMP_UPDATE_INTERVAL);
     return () => clearInterval(interval);
   }, []);
 
@@ -48,26 +48,15 @@ export const LastUpdateInfo = () => {
         {formatLastUpdate(lastRefresh)}
       </span>
       <button
-        onClick={() => enableAutoRefresh(!isAutoRefreshEnabled)}
+        onClick={refreshAllData}
         className="p-0.5 rounded transition-colors hover:bg-opacity-50"
         style={{
-          backgroundColor: isAutoRefreshEnabled
-            ? theme.brand.primary
-            : "transparent",
-          color: isAutoRefreshEnabled
-            ? theme.text.inverse
-            : theme.text.subtitle,
+          backgroundColor: theme.brand.primary,
+          color: theme.text.inverse,
         }}
-        title={
-          isAutoRefreshEnabled
-            ? "Desabilitar auto-refresh"
-            : "Habilitar auto-refresh (1h)"
-        }
+        title="Atualizar agora"
       >
-        <RefreshCw
-          size={10}
-          className={isAutoRefreshEnabled ? "animate-spin" : ""}
-        />
+        <RefreshCw size={10} className="animate-spin" />
       </button>
     </div>
   );

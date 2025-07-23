@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
+import { DATA_SYNC_CONFIG } from "../../config";
 
 interface DataSyncContextType {
   refreshAllData: () => void;
@@ -34,33 +35,36 @@ export const DataSyncProvider: React.FC<{ children: React.ReactNode }> = ({
     // Simular um pequeno delay para mostrar o estado de loading
     setTimeout(() => {
       setIsRefreshing(false);
-    }, 1000);
+    }, DATA_SYNC_CONFIG.REFRESH_LOADING_DELAY);
   }, []);
 
-  const enableAutoRefresh = useCallback((enabled: boolean) => {
-    setIsAutoRefreshEnabled(enabled);
-    
-    if (enabled) {
-      // Limpar intervalo anterior se existir
-      if (autoRefreshIntervalRef.current) {
-        clearInterval(autoRefreshIntervalRef.current);
-      }
-      
-      // Configurar novo intervalo (1 hora = 3600000 ms)
-      autoRefreshIntervalRef.current = setInterval(() => {
+  const enableAutoRefresh = useCallback(
+    (enabled: boolean) => {
+      setIsAutoRefreshEnabled(enabled);
+
+      if (enabled) {
+        // Limpar intervalo anterior se existir
+        if (autoRefreshIntervalRef.current) {
+          clearInterval(autoRefreshIntervalRef.current);
+        }
+
+        // Configurar novo intervalo usando configuração
+        autoRefreshIntervalRef.current = setInterval(() => {
+          refreshAllData();
+        }, DATA_SYNC_CONFIG.AUTO_REFRESH_INTERVAL);
+
+        // Fazer refresh imediato
         refreshAllData();
-      }, 3600000);
-      
-      // Fazer refresh imediato
-      refreshAllData();
-    } else {
-      // Limpar intervalo se desabilitado
-      if (autoRefreshIntervalRef.current) {
-        clearInterval(autoRefreshIntervalRef.current);
-        autoRefreshIntervalRef.current = null;
+      } else {
+        // Limpar intervalo se desabilitado
+        if (autoRefreshIntervalRef.current) {
+          clearInterval(autoRefreshIntervalRef.current);
+          autoRefreshIntervalRef.current = null;
+        }
       }
-    }
-  }, [refreshAllData]);
+    },
+    [refreshAllData]
+  );
 
   // Limpar intervalo quando o componente for desmontado
   useEffect(() => {

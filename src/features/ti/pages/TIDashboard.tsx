@@ -1,61 +1,13 @@
 import { useTheme } from "@/shared/context/ThemeContext";
-import { TITable } from "@/features/ti/components/TITable";
-import { useTI } from "@/features/ti/hooks/useTI";
 import { LastUpdateInfo } from "@/shared/components/LastUpdateInfo";
 import { useAutoRefresh } from "@/shared/hooks/useAutoRefresh";
-import { ErrorScreen } from "@/shared/components/ErrorScreen";
-import { SUPPORT_CONFIG } from "@/shared/constants/support";
+import { Construction, AlertTriangle } from "lucide-react";
 
 export const TIDashboard = () => {
   const { theme } = useTheme();
-  const { data: tiData, loading, error, errorCode, refetch } = useTI();
 
   // Auto-refresh habilitado automaticamente para dashboards
   useAutoRefresh({ enabled: true });
-
-  // Estados de loading e erro
-  if (loading) {
-    return (
-      <div
-        className="min-h-screen p-6 flex items-center justify-center"
-        style={{ backgroundColor: theme.bg.base }}
-      >
-        <div className="text-center">
-          <div
-            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
-            style={{ borderColor: theme.brand.primary }}
-          ></div>
-          <p style={{ color: theme.text.base }}>Carregando dados de TI...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <ErrorScreen
-        error={error}
-        errorCode={errorCode}
-        onRetry={refetch}
-        onContactSupport={() => {
-          window.open(SUPPORT_CONFIG.website, "_blank");
-        }}
-      />
-    );
-  }
-
-  if (!tiData) {
-    return (
-      <div
-        className="min-h-screen p-6 flex items-center justify-center"
-        style={{ backgroundColor: theme.bg.base }}
-      >
-        <div className="text-center">
-          <p style={{ color: theme.text.base }}>Nenhum dado disponível</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -74,10 +26,48 @@ export const TIDashboard = () => {
       {/* Informação da última atualização */}
       <LastUpdateInfo />
 
-      {/* Tabela de TI */}
-      <section>
-        <TITable data={tiData} />
-      </section>
+      {/* Placeholder - Em desenvolvimento */}
+      <div
+        className="flex flex-col items-center justify-center py-16 px-6 rounded-lg border-2 border-dashed"
+        style={{ 
+          backgroundColor: theme.bg.surface,
+          borderColor: theme.border.base 
+        }}
+      >
+        <Construction 
+          size={64} 
+          style={{ color: theme.text.subtitle }}
+          className="mb-4"
+        />
+        <h2 
+          className="text-xl font-semibold mb-2"
+          style={{ color: theme.text.title }}
+        >
+          Dashboard em Desenvolvimento
+        </h2>
+        <p 
+          className="text-center max-w-md"
+          style={{ color: theme.text.subtitle }}
+        >
+          O dashboard de acompanhamento de TI está sendo desenvolvido. 
+          Em breve estará disponível com dados em tempo real.
+        </p>
+        
+        <div className="mt-6 p-4 rounded-lg flex items-center gap-3"
+          style={{ backgroundColor: theme.bg.muted }}
+        >
+          <AlertTriangle 
+            size={20} 
+            style={{ color: theme.text.subtitle }}
+          />
+          <span 
+            className="text-sm"
+            style={{ color: theme.text.subtitle }}
+          >
+            Funcionalidade em construção
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
