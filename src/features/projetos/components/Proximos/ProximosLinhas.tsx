@@ -44,7 +44,13 @@ export const ProximosLinhas = ({ responsaveis }: ProximosLinhasProps) => {
           </div>
 
           {/* Container dos projetos com scroll horizontal */}
-          <div className="flex gap-3 overflow-x-auto pb-1 flex-1 ml-3">
+          <div 
+            className="flex gap-3 overflow-x-auto pb-1 flex-1 ml-3"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: `${theme.border.base} transparent`,
+            }}
+          >
             {responsavel.projetos.map((projeto) => (
               <div key={projeto.id} className="min-w-[250px] max-w-[280px]">
                 <ProjetoCard

@@ -141,7 +141,15 @@ export const ResponsavelCard = ({
       }}
     >
       <ResponsavelHeader nome={nome} quantidade={projetos.length} />
-      <div className="p-3 space-y-2 max-h-64 overflow-y-auto">{children}</div>
+      <div 
+        className="p-3 space-y-2 max-h-64 overflow-y-auto"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: `${theme.border.base} transparent`,
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

@@ -100,6 +100,9 @@ export const ProximosProjetos = ({ projetos }: Props) => {
           backgroundColor: theme.bg.base,
           borderRadius: "12px",
           border: `1px solid ${theme.border.base}`,
+          // Estilo personalizado para scrollbar
+          scrollbarWidth: 'thin',
+          scrollbarColor: `${theme.border.base} transparent`,
         }}
       >
         <div className="p-4">
