@@ -30,13 +30,11 @@ backend/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py
-│   ├── config/
+│   ├── core/
 │   │   ├── __init__.py
 │   │   ├── settings.py
 │   │   ├── database.py
 │   │   └── logging_config.py
-│   ├── core/
-│   │   ├── __init__.py
 │   │   ├── security.py
 │   │   ├── exceptions.py
 │   │   └── dependencies.py
@@ -92,17 +90,13 @@ backend/
 │       ├── __init__.py
 │       ├── helpers.py
 │       └── validators.py
-├── alembic/
+├── migrations/
 │   ├── versions/
 │   ├── env.py
 │   └── alembic.ini
 ├── scripts/
-│   ├── __init__.py
-│   ├── config/
-│   ├── ldap/
-│   ├── jira/
-│   ├── utils/
-│   └── main.py
+│   ├── script1.py
+
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py
@@ -218,27 +212,7 @@ backend/
 
 ```
 scripts/
-├── __init__.py
-├── config/
-│   ├── __init__.py
-│   ├── settings.py
-│   └── logging_config.py
-├── ldap/
-│   ├── __init__.py
-│   ├── sync_users.py
-│   ├── update_passwords.py
-│   └── check_inactive_users.py
-├── jira/
-│   ├── __init__.py
-│   ├── sync_projects.py
-│   ├── sync_status.py
-│   └── sync_priorities.py
-├── utils/
-│   ├── __init__.py
-│   ├── database.py
-│   ├── notifications.py
-│   └── validators.py
-└── main.py
+
 ```
 
 ### **4.2 Repository Pattern**

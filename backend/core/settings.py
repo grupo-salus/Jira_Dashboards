@@ -59,7 +59,12 @@ class Settings(BaseSettings):
     # CORS
     # =============================================================================
     
-    CORS_ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    CORS_ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """Retorna a lista de origens CORS."""
+        return [origin.strip() for origin in self.CORS_ALLOWED_ORIGINS.split(',')]
     
     # =============================================================================
     # LOGGING
