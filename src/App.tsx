@@ -7,7 +7,6 @@ import { SprintDashboard } from "@/features/sprint/pages/SprintDashboard";
 import { Navbar } from "@/shared/components/Navbar";
 import { DataSyncProvider } from "@/shared/context/DataSyncContext";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
-import { CacheDebug } from "@/shared/components/CacheDebug";
 
 function App() {
   return (
@@ -24,7 +23,6 @@ function App() {
                 <Route path="/sprints" element={<SprintDashboard />} />
               </Routes>
             </main>
-            <CacheDebug />
           </div>
         </ErrorBoundary>
       </DataSyncProvider>
