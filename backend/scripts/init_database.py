@@ -8,8 +8,8 @@ from datetime import datetime
 # Adicionar o diretório raiz ao path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.database import get_session_factory, create_tables
-from models import User, Module, UserModule, AuditLog
+from core.database import create_tables
+from repositories import user_repository, module_repository, user_module_repository
 from core.settings import settings
 
 
@@ -43,16 +43,13 @@ def create_default_modules():
         }
     ]
     
-    session_factory = get_session_factory()
-    session = session_factory()
-    
     try:
         for module_data in default_modules:
             # Verificar se o módulo já existe
-            existing_module = session.query(Module).filter_by(name=module_data["name"]).first()
+            existing_module = module_repository.get_by_name(module_data["name"])
             
             if not existing_module:
-                module = Module(
+                module = module_repository.create(
                     name=module_data["name"],
                     display_name=module_data["display_name"],
                     description=module_data["description"],
@@ -63,38 +60,30 @@ def create_default_modules():
                     requires_authentication=True,
                     created_by="system"
                 )
-                session.add(module)
                 print(f"✅ Módulo '{module_data['name']}' criado")
             else:
                 print(f"ℹ️  Módulo '{module_data['name']}' já existe")
         
-        session.commit()
         print("✅ Módulos padrão criados com sucesso!")
         
     except Exception as e:
-        session.rollback()
         print(f"❌ Erro ao criar módulos: {e}")
         raise
-    finally:
-        session.close()
 
 
 def create_superuser():
     """Cria um usuário superuser padrão."""
     
-    session_factory = get_session_factory()
-    session = session_factory()
-    
     try:
         # Verificar se já existe um superuser
-        existing_superuser = session.query(User).filter_by(is_superuser=True).first()
+        existing_superuser = user_repository.get_superusers(limit=1)
         
         if existing_superuser:
-            print(f"ℹ️  Superuser já existe: {existing_superuser.username}")
-            return existing_superuser
+            print(f"ℹ️  Superuser já existe: {existing_superuser[0].username}")
+            return existing_superuser[0]
         
         # Criar superuser padrão
-        superuser = User(
+        superuser = user_repository.create(
             username="admin",
             email="admin@gruposalus.com.br",
             display_name="Administrador do Sistema",
@@ -105,39 +94,29 @@ def create_superuser():
             created_by="system"
         )
         
-        session.add(superuser)
-        session.commit()
-        
         print("✅ Superuser 'admin' criado com sucesso!")
         return superuser
         
     except Exception as e:
-        session.rollback()
         print(f"❌ Erro ao criar superuser: {e}")
         raise
-    finally:
-        session.close()
 
 
-def assign_modules_to_superuser(superuser: User):
+def assign_modules_to_superuser(superuser):
     """Atribui todos os módulos ao superuser."""
-    
-    session_factory = get_session_factory()
-    session = session_factory()
     
     try:
         # Buscar todos os módulos ativos
-        modules = session.query(Module).filter_by(is_active=True).all()
+        modules = module_repository.get_active_modules()
         
         for module in modules:
             # Verificar se já existe a atribuição
-            existing_assignment = session.query(UserModule).filter_by(
-                user_id=superuser.id,
-                module_id=module.id
-            ).first()
+            existing_assignment = user_module_repository.get_by_user_and_module(
+                superuser.id, module.id
+            )
             
             if not existing_assignment:
-                user_module = UserModule(
+                user_module = user_module_repository.create(
                     user_id=superuser.id,
                     module_id=module.id,
                     can_view=True,
@@ -147,20 +126,15 @@ def assign_modules_to_superuser(superuser: User):
                     is_active=True,
                     granted_by="system"
                 )
-                session.add(user_module)
                 print(f"✅ Permissões concedidas para módulo '{module.name}'")
             else:
                 print(f"ℹ️  Permissões já existem para módulo '{module.name}'")
         
-        session.commit()
         print("✅ Permissões atribuídas ao superuser!")
         
     except Exception as e:
-        session.rollback()
         print(f"❌ Erro ao atribuir permissões: {e}")
         raise
-    finally:
-        session.close()
 
 
 def main():

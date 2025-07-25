@@ -11,10 +11,10 @@ from datetime import datetime
 # Adicionar o diretório raiz ao path para importar módulos
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.database import get_session_factory, create_tables
+from core.database import create_tables
 from services.auth_service import auth_service
 from services.admin_service import admin_service
-from models import User, Module, UserModule, AuditLog
+from repositories import user_repository, audit_log_repository
 
 
 def exemplo_login_e_admin():
@@ -25,11 +25,9 @@ def exemplo_login_e_admin():
     # 1. Verificar banco de dados
     print("\n1. Verificando banco de dados...")
     try:
-        session_factory = get_session_factory()
-        session = session_factory()
-        session.execute("SELECT 1")
+        # Tentar buscar usuários para verificar se o banco está funcionando
+        test_users = user_repository.get_all(limit=1)
         print("✅ Banco de dados OK")
-        session.close()
     except Exception as e:
         print(f"❌ Erro no banco: {e}")
         print("🔄 Inicializando banco...")
@@ -76,36 +74,34 @@ def exemplo_atribuir_admin(user_info):
         return True
     
     try:
-        session_factory = get_session_factory()
-        session = session_factory()
-        
         # Buscar usuário no banco
-        user = session.query(User).filter_by(id=user_info['id']).first()
+        user = user_repository.get_by_id(user_info['id'])
         
         if not user:
             print("❌ Usuário não encontrado no banco")
             return False
         
         # Atualizar para admin
-        user.is_superuser = True
-        user.updated_at = datetime.utcnow()
-        user.updated_by = "exemplo_script"
+        updated_user = user_repository.update(
+            user.id,
+            is_superuser=True,
+            updated_by="exemplo_script"
+        )
         
-        session.commit()
+        if not updated_user:
+            print("❌ Erro ao atualizar usuário")
+            return False
         
         # Registrar no log de auditoria
-        audit_log = AuditLog(
-            user_id=user.id,
-            action="GRANT_ADMIN",
-            resource_type="USER",
-            resource_id=user.id,
-            details="Privilégios de admin concedidos via script de exemplo",
-            ip_address="127.0.0.1"
-        )
-        session.add(audit_log)
-        session.commit()
-        
-        session.close()
+        audit_data = {
+            'user_id': user.id,
+            'action': "GRANT_ADMIN",
+            'resource_type': "USER",
+            'resource_id': user.id,
+            'details': "Privilégios de admin concedidos via script de exemplo",
+            'ip_address': "127.0.0.1"
+        }
+        audit_log_repository.create(**audit_data)
         
         print(f"✅ Usuário '{user.username}' agora é administrador!")
         return True

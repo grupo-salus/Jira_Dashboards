@@ -12,9 +12,9 @@ from datetime import datetime
 # Adicionar o diretório raiz ao path para importar módulos
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.database import get_session_factory, create_tables
+from core.database import create_tables
 from services.auth_service import auth_service
-from models import User, AuditLog
+from repositories import user_repository, audit_log_repository
 
 
 def print_step(step: int, total: int, message: str):
@@ -43,32 +43,23 @@ def main():
     print("🚀 SCRIPT RÁPIDO - LOGIN E ATRIBUIÇÃO DE ADMIN")
     print("=" * 60)
     
-    session_factory = get_session_factory()
-    
     try:
         # Etapa 1: Verificar banco de dados
         print_step(1, 4, "Verificando banco de dados...")
         
         try:
-            session = session_factory()
-            session.execute("SELECT 1")
+            # Tentar buscar um usuário para verificar se o banco está funcionando
+            test_users = user_repository.get_all(limit=1)
             print_success("Conexão com banco estabelecida")
             
-            # Verificar se tabelas existem
-            tables = ['users', 'modules', 'user_modules', 'audit_logs']
-            for table in tables:
-                try:
-                    session.execute(f"SELECT COUNT(*) FROM {table}")
-                    print_success(f"Tabela {table} existe")
-                except:
-                    print_error(f"Tabela {table} não existe")
-                    print_info("Inicializando banco de dados...")
-                    session.close()
-                    create_tables()
-                    session = session_factory()
-                    break
-            
-            session.close()
+            # Verificar se tabelas existem tentando buscar dados
+            try:
+                user_repository.count()
+                print_success("Tabela users existe")
+            except:
+                print_error("Tabela users não existe")
+                print_info("Inicializando banco de dados...")
+                create_tables()
             
         except Exception as e:
             print_error(f"Erro no banco: {e}")
@@ -108,8 +99,7 @@ def main():
         # Etapa 4: Atribuir privilégios de admin
         print_step(4, 4, "Atribuindo privilégios de admin...")
         
-        session = session_factory()
-        user = session.query(User).filter_by(id=user_info['id']).first()
+        user = user_repository.get_by_id(user_info['id'])
         
         if not user:
             print_error("Usuário não encontrado no banco")
@@ -124,26 +114,26 @@ def main():
             return
         
         # Atualizar usuário
-        user.is_superuser = True
-        user.updated_at = datetime.utcnow()
-        user.updated_by = "quick_admin_setup"
+        updated_user = user_repository.update(
+            user.id, 
+            is_superuser=True, 
+            updated_by="quick_admin_setup"
+        )
         
-        session.commit()
-        session.refresh(user)
+        if not updated_user:
+            print_error("Erro ao atualizar usuário")
+            return
         
         # Registrar no log de auditoria
-        audit_log = AuditLog(
-            user_id=user.id,
-            action="GRANT_ADMIN",
-            resource_type="USER",
-            resource_id=user.id,
-            details="Privilégios de admin concedidos via script rápido",
-            ip_address="127.0.0.1"
-        )
-        session.add(audit_log)
-        session.commit()
-        
-        session.close()
+        audit_data = {
+            'user_id': user.id,
+            'action': "GRANT_ADMIN",
+            'resource_type': "USER",
+            'resource_id': user.id,
+            'details': "Privilégios de admin concedidos via script rápido",
+            'ip_address': "127.0.0.1"
+        }
+        audit_log_repository.create(**audit_data)
         
         print_success(f"Usuário '{user.username}' agora é administrador!")
         print_info("Você pode agora acessar todas as funcionalidades administrativas.")

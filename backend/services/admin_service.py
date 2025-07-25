@@ -4,10 +4,8 @@ Serviço administrativo para gerenciar usuários, módulos e permissões.
 import logging
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
 
-from core.database import get_session_factory
+from repositories import user_repository, module_repository, user_module_repository, audit_log_repository
 from models import User, Module, UserModule, AuditLog
 from schemas.admin import (
     UserCreate, UserUpdate, ModuleCreate, ModuleUpdate, UserModuleCreate
@@ -20,34 +18,28 @@ class AdminService:
     """Serviço para operações administrativas."""
     
     def __init__(self):
-        self.session_factory = get_session_factory()
-    
-    def _get_session(self) -> Session:
-        """Obtém uma sessão do banco de dados."""
-        return self.session_factory()
+        self.user_repo = user_repository
+        self.module_repo = module_repository
+        self.user_module_repo = user_module_repository
+        self.audit_repo = audit_log_repository
     
     def _log_audit(self, user_id: int, action: str, resource_type: str, 
                    resource_id: Optional[int] = None, details: Optional[str] = None,
                    ip_address: Optional[str] = None):
         """Registra um log de auditoria."""
         try:
-            session = self._get_session()
-            audit_log = AuditLog(
-                user_id=user_id,
-                action=action,
-                resource_type=resource_type,
-                resource_id=resource_id,
-                details=details,
-                ip_address=ip_address
-            )
-            session.add(audit_log)
-            session.commit()
+            audit_data = {
+                'user_id': user_id,
+                'action': action,
+                'resource_type': resource_type,
+                'resource_id': resource_id,
+                'details': details,
+                'ip_address': ip_address
+            }
+            self.audit_repo.create(**audit_data)
             logger.info(f"Audit log: {action} on {resource_type} by user {user_id}")
         except Exception as e:
             logger.error(f"Erro ao registrar audit log: {e}")
-            session.rollback()
-        finally:
-            session.close()
     
     # =============================================================================
     # OPERAÇÕES DE USUÁRIO
@@ -56,54 +48,39 @@ class AdminService:
     def list_users(self, skip: int = 0, limit: int = 100, 
                    search: Optional[str] = None, is_active: Optional[bool] = None) -> List[User]:
         """Lista usuários com filtros."""
-        session = self._get_session()
         try:
-            query = session.query(User)
-            
-            # Aplicar filtros
             if search:
-                search_term = f"%{search}%"
-                query = query.filter(
-                    or_(
-                        User.username.ilike(search_term),
-                        User.display_name.ilike(search_term),
-                        User.email.ilike(search_term),
-                        User.department.ilike(search_term)
-                    )
-                )
-            
-            if is_active is not None:
-                query = query.filter(User.is_active == is_active)
-            
-            # Aplicar paginação
-            users = query.offset(skip).limit(limit).all()
-            return users
-            
-        finally:
-            session.close()
+                return self.user_repo.search_users(search, skip=skip, limit=limit)
+            elif is_active is not None:
+                filters = {"is_active": is_active}
+                return self.user_repo.find_by_filters(filters, skip=skip, limit=limit)
+            else:
+                return self.user_repo.get_all(skip=skip, limit=limit)
+        except Exception as e:
+            logger.error(f"Erro ao listar usuários: {e}")
+            raise
     
     def get_user(self, user_id: int) -> Optional[User]:
         """Obtém um usuário por ID."""
-        session = self._get_session()
         try:
-            return session.query(User).filter(User.id == user_id).first()
-        finally:
-            session.close()
+            return self.user_repo.get_by_id(user_id)
+        except Exception as e:
+            logger.error(f"Erro ao buscar usuário {user_id}: {e}")
+            raise
     
     def create_user(self, user_data: UserCreate) -> User:
         """Cria um novo usuário."""
-        session = self._get_session()
         try:
             # Verificar se username já existe
-            existing_user = session.query(User).filter(User.username == user_data.username).first()
-            if existing_user:
+            if self.user_repo.username_exists(user_data.username):
                 raise ValueError("Username já existe")
             
+            # Verificar se email já existe
+            if user_data.email and self.user_repo.email_exists(user_data.email):
+                raise ValueError("Email já existe")
+            
             # Criar usuário
-            user = User(**user_data.dict())
-            session.add(user)
-            session.commit()
-            session.refresh(user)
+            user = self.user_repo.create(**user_data.dict())
             
             # Registrar audit log
             self._log_audit(
@@ -117,73 +94,71 @@ class AdminService:
             return user
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao criar usuário: {e}")
+            raise
     
     def update_user(self, user_id: int, user_data: UserUpdate) -> Optional[User]:
         """Atualiza um usuário existente."""
-        session = self._get_session()
         try:
-            user = session.query(User).filter(User.id == user_id).first()
+            # Verificar se usuário existe
+            user = self.user_repo.get_by_id(user_id)
             if not user:
                 return None
             
-            # Atualizar campos fornecidos
+            # Verificar se username já existe (se foi alterado)
+            if user_data.username and user_data.username != user.username:
+                if self.user_repo.username_exists(user_data.username):
+                    raise ValueError("Username já existe")
+            
+            # Verificar se email já existe (se foi alterado)
+            if user_data.email and user_data.email != user.email:
+                if self.user_repo.email_exists(user_data.email):
+                    raise ValueError("Email já existe")
+            
+            # Atualizar usuário
             update_data = user_data.dict(exclude_unset=True)
-            for field, value in update_data.items():
-                setattr(user, field, value)
+            updated_user = self.user_repo.update(user_id, **update_data)
             
-            user.updated_at = datetime.utcnow()
-            session.commit()
-            session.refresh(user)
+            if updated_user:
+                # Registrar audit log
+                self._log_audit(
+                    user_id=user_id,
+                    action="UPDATE",
+                    resource_type="USER",
+                    resource_id=user_id,
+                    details=f"Usuário atualizado: {updated_user.username}"
+                )
             
-            # Registrar audit log
-            self._log_audit(
-                user_id=user_id,
-                action="UPDATE",
-                resource_type="USER",
-                resource_id=user_id,
-                details=f"Usuário atualizado: {user.username}"
-            )
-            
-            return user
+            return updated_user
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao atualizar usuário {user_id}: {e}")
+            raise
     
     def delete_user(self, user_id: int) -> bool:
         """Desativa um usuário (soft delete)."""
-        session = self._get_session()
         try:
-            user = session.query(User).filter(User.id == user_id).first()
+            user = self.user_repo.get_by_id(user_id)
             if not user:
                 return False
             
-            user.is_active = False
-            user.updated_at = datetime.utcnow()
-            session.commit()
+            success = self.user_repo.delete(user_id)
             
-            # Registrar audit log
-            self._log_audit(
-                user_id=user_id,
-                action="DELETE",
-                resource_type="USER",
-                resource_id=user_id,
-                details=f"Usuário desativado: {user.username}"
-            )
+            if success:
+                # Registrar audit log
+                self._log_audit(
+                    user_id=user_id,
+                    action="DELETE",
+                    resource_type="USER",
+                    resource_id=user_id,
+                    details=f"Usuário desativado: {user.username}"
+                )
             
-            return True
+            return success
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao deletar usuário {user_id}: {e}")
+            raise
     
     # =============================================================================
     # OPERAÇÕES DE MÓDULO
@@ -192,55 +167,35 @@ class AdminService:
     def list_modules(self, skip: int = 0, limit: int = 100,
                      search: Optional[str] = None, is_active: Optional[bool] = None) -> List[Module]:
         """Lista módulos com filtros."""
-        session = self._get_session()
         try:
-            query = session.query(Module)
-            
-            # Aplicar filtros
             if search:
-                search_term = f"%{search}%"
-                query = query.filter(
-                    or_(
-                        Module.name.ilike(search_term),
-                        Module.description.ilike(search_term)
-                    )
-                )
-            
-            if is_active is not None:
-                query = query.filter(Module.is_active == is_active)
-            
-            # Ordenar por ordem
-            query = query.order_by(Module.order, Module.name)
-            
-            # Aplicar paginação
-            modules = query.offset(skip).limit(limit).all()
-            return modules
-            
-        finally:
-            session.close()
+                return self.module_repo.search_modules(search, skip=skip, limit=limit)
+            elif is_active is not None:
+                filters = {"is_active": is_active}
+                return self.module_repo.find_by_filters(filters, skip=skip, limit=limit)
+            else:
+                return self.module_repo.get_modules_by_order(skip=skip, limit=limit)
+        except Exception as e:
+            logger.error(f"Erro ao listar módulos: {e}")
+            raise
     
     def get_module(self, module_id: int) -> Optional[Module]:
         """Obtém um módulo por ID."""
-        session = self._get_session()
         try:
-            return session.query(Module).filter(Module.id == module_id).first()
-        finally:
-            session.close()
+            return self.module_repo.get_by_id(module_id)
+        except Exception as e:
+            logger.error(f"Erro ao buscar módulo {module_id}: {e}")
+            raise
     
     def create_module(self, module_data: ModuleCreate) -> Module:
         """Cria um novo módulo."""
-        session = self._get_session()
         try:
             # Verificar se nome já existe
-            existing_module = session.query(Module).filter(Module.name == module_data.name).first()
-            if existing_module:
+            if self.module_repo.name_exists(module_data.name):
                 raise ValueError("Nome do módulo já existe")
             
             # Criar módulo
-            module = Module(**module_data.dict())
-            session.add(module)
-            session.commit()
-            session.refresh(module)
+            module = self.module_repo.create(**module_data.dict())
             
             # Registrar audit log
             self._log_audit(
@@ -254,73 +209,66 @@ class AdminService:
             return module
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao criar módulo: {e}")
+            raise
     
     def update_module(self, module_id: int, module_data: ModuleUpdate) -> Optional[Module]:
         """Atualiza um módulo existente."""
-        session = self._get_session()
         try:
-            module = session.query(Module).filter(Module.id == module_id).first()
+            # Verificar se módulo existe
+            module = self.module_repo.get_by_id(module_id)
             if not module:
                 return None
             
-            # Atualizar campos fornecidos
+            # Verificar se nome já existe (se foi alterado)
+            if module_data.name and module_data.name != module.name:
+                if self.module_repo.name_exists(module_data.name):
+                    raise ValueError("Nome do módulo já existe")
+            
+            # Atualizar módulo
             update_data = module_data.dict(exclude_unset=True)
-            for field, value in update_data.items():
-                setattr(module, field, value)
+            updated_module = self.module_repo.update(module_id, **update_data)
             
-            module.updated_at = datetime.utcnow()
-            session.commit()
-            session.refresh(module)
+            if updated_module:
+                # Registrar audit log
+                self._log_audit(
+                    user_id=1,  # Sistema
+                    action="UPDATE",
+                    resource_type="MODULE",
+                    resource_id=module_id,
+                    details=f"Módulo atualizado: {updated_module.name}"
+                )
             
-            # Registrar audit log
-            self._log_audit(
-                user_id=1,  # Sistema
-                action="UPDATE",
-                resource_type="MODULE",
-                resource_id=module_id,
-                details=f"Módulo atualizado: {module.name}"
-            )
-            
-            return module
+            return updated_module
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao atualizar módulo {module_id}: {e}")
+            raise
     
     def delete_module(self, module_id: int) -> bool:
         """Desativa um módulo (soft delete)."""
-        session = self._get_session()
         try:
-            module = session.query(Module).filter(Module.id == module_id).first()
+            module = self.module_repo.get_by_id(module_id)
             if not module:
                 return False
             
-            module.is_active = False
-            module.updated_at = datetime.utcnow()
-            session.commit()
+            success = self.module_repo.delete(module_id)
             
-            # Registrar audit log
-            self._log_audit(
-                user_id=1,  # Sistema
-                action="DELETE",
-                resource_type="MODULE",
-                resource_id=module_id,
-                details=f"Módulo desativado: {module.name}"
-            )
+            if success:
+                # Registrar audit log
+                self._log_audit(
+                    user_id=1,  # Sistema
+                    action="DELETE",
+                    resource_type="MODULE",
+                    resource_id=module_id,
+                    details=f"Módulo desativado: {module.name}"
+                )
             
-            return True
+            return success
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao deletar módulo {module_id}: {e}")
+            raise
     
     # =============================================================================
     # OPERAÇÕES DE PERMISSÕES DE USUÁRIO
@@ -328,41 +276,34 @@ class AdminService:
     
     def list_user_modules(self, user_id: int) -> List[UserModule]:
         """Lista todos os módulos de um usuário."""
-        session = self._get_session()
         try:
-            return session.query(UserModule).filter(UserModule.user_id == user_id).all()
-        finally:
-            session.close()
+            return self.user_module_repo.get_user_modules(user_id)
+        except Exception as e:
+            logger.error(f"Erro ao listar módulos do usuário {user_id}: {e}")
+            raise
     
     def assign_module_to_user(self, user_id: int, user_module_data: UserModuleCreate) -> UserModule:
         """Atribui um módulo a um usuário."""
-        session = self._get_session()
         try:
             # Verificar se usuário existe
-            user = session.query(User).filter(User.id == user_id).first()
+            user = self.user_repo.get_by_id(user_id)
             if not user:
                 raise ValueError("Usuário não encontrado")
             
             # Verificar se módulo existe
-            module = session.query(Module).filter(Module.id == user_module_data.module_id).first()
+            module = self.module_repo.get_by_id(user_module_data.module_id)
             if not module:
                 raise ValueError("Módulo não encontrado")
             
             # Verificar se permissão já existe
-            existing_permission = session.query(UserModule).filter(
-                and_(
-                    UserModule.user_id == user_id,
-                    UserModule.module_id == user_module_data.module_id
-                )
-            ).first()
+            existing_permission = self.user_module_repo.get_by_user_and_module(
+                user_id, user_module_data.module_id
+            )
             
             if existing_permission:
                 # Atualizar permissão existente
-                for field, value in user_module_data.dict(exclude={'module_id'}).items():
-                    setattr(existing_permission, field, value)
-                existing_permission.updated_at = datetime.utcnow()
-                session.commit()
-                session.refresh(existing_permission)
+                update_data = user_module_data.dict(exclude={'module_id'})
+                updated_permission = self.user_module_repo.update(existing_permission.id, **update_data)
                 
                 # Registrar audit log
                 self._log_audit(
@@ -373,16 +314,13 @@ class AdminService:
                     details=f"Permissão atualizada para usuário {user.username} no módulo {module.name}"
                 )
                 
-                return existing_permission
+                return updated_permission
             else:
                 # Criar nova permissão
-                user_module = UserModule(
+                user_module = self.user_module_repo.create(
                     user_id=user_id,
                     **user_module_data.dict()
                 )
-                session.add(user_module)
-                session.commit()
-                session.refresh(user_module)
                 
                 # Registrar audit log
                 self._log_audit(
@@ -396,44 +334,28 @@ class AdminService:
                 return user_module
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao atribuir módulo ao usuário {user_id}: {e}")
+            raise
     
     def remove_module_from_user(self, user_id: int, module_id: int) -> bool:
         """Remove um módulo de um usuário."""
-        session = self._get_session()
         try:
-            user_module = session.query(UserModule).filter(
-                and_(
-                    UserModule.user_id == user_id,
-                    UserModule.module_id == module_id
+            success = self.user_module_repo.remove_user_module(user_id, module_id)
+            
+            if success:
+                # Registrar audit log
+                self._log_audit(
+                    user_id=1,  # Sistema
+                    action="DELETE",
+                    resource_type="USER_MODULE",
+                    details=f"Permissão removida do usuário {user_id} no módulo {module_id}"
                 )
-            ).first()
             
-            if not user_module:
-                return False
-            
-            session.delete(user_module)
-            session.commit()
-            
-            # Registrar audit log
-            self._log_audit(
-                user_id=1,  # Sistema
-                action="DELETE",
-                resource_type="USER_MODULE",
-                resource_id=user_module.id,
-                details=f"Permissão removida do usuário {user_id} no módulo {module_id}"
-            )
-            
-            return True
+            return success
             
         except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+            logger.error(f"Erro ao remover módulo do usuário {user_id}: {e}")
+            raise
     
     # =============================================================================
     # OPERAÇÕES DE AUDITORIA
@@ -443,48 +365,28 @@ class AdminService:
                         user_id: Optional[int] = None, action: Optional[str] = None,
                         start_date: Optional[str] = None, end_date: Optional[str] = None) -> List[AuditLog]:
         """Lista logs de auditoria com filtros."""
-        session = self._get_session()
         try:
-            query = session.query(AuditLog)
-            
-            # Aplicar filtros
             if user_id:
-                query = query.filter(AuditLog.user_id == user_id)
-            
-            if action:
-                query = query.filter(AuditLog.action == action)
-            
-            if start_date:
-                try:
-                    start_datetime = datetime.fromisoformat(start_date)
-                    query = query.filter(AuditLog.created_at >= start_datetime)
-                except ValueError:
-                    pass
-            
-            if end_date:
-                try:
-                    end_datetime = datetime.fromisoformat(end_date)
-                    query = query.filter(AuditLog.created_at <= end_datetime)
-                except ValueError:
-                    pass
-            
-            # Ordenar por data de criação (mais recente primeiro)
-            query = query.order_by(AuditLog.created_at.desc())
-            
-            # Aplicar paginação
-            audit_logs = query.offset(skip).limit(limit).all()
-            return audit_logs
-            
-        finally:
-            session.close()
+                return self.audit_repo.get_logs_by_user(user_id, skip=skip, limit=limit)
+            elif action:
+                return self.audit_repo.get_logs_by_action(action, skip=skip, limit=limit)
+            elif start_date and end_date:
+                start_dt = datetime.fromisoformat(start_date)
+                end_dt = datetime.fromisoformat(end_date)
+                return self.audit_repo.get_logs_by_date_range(start_dt, end_dt, skip=skip, limit=limit)
+            else:
+                return self.audit_repo.get_recent_logs(limit=limit)
+        except Exception as e:
+            logger.error(f"Erro ao listar logs de auditoria: {e}")
+            raise
     
     def get_audit_log(self, log_id: int) -> Optional[AuditLog]:
         """Obtém um log de auditoria por ID."""
-        session = self._get_session()
         try:
-            return session.query(AuditLog).filter(AuditLog.id == log_id).first()
-        finally:
-            session.close()
+            return self.audit_repo.get_by_id(log_id)
+        except Exception as e:
+            logger.error(f"Erro ao buscar log de auditoria {log_id}: {e}")
+            raise
 
 
 # Instância global do serviço

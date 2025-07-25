@@ -8,7 +8,7 @@ from ldap3 import Server, Connection, ALL, NTLM, SIMPLE
 from ldap3.core.exceptions import LDAPException
 
 from core.settings import settings
-from core.database import get_session_factory
+from repositories import user_repository, audit_log_repository
 from models import User, AuditLog
 
 logger = logging.getLogger(__name__)
@@ -20,6 +20,8 @@ class AuthService:
     def __init__(self):
         self.server = None
         self.connection = None
+        self.user_repo = user_repository
+        self.audit_repo = audit_log_repository
         
     def _connect_ldap(self) -> bool:
         """Conecta ao servidor LDAP."""
@@ -227,49 +229,48 @@ class AuthService:
         Returns:
             Dict com informações do usuário se encontrado/criado, None caso contrário
         """
-        session_factory = get_session_factory()
-        session = session_factory()
-        
         try:
             username = ldap_user_info['username']
             
             # Buscar usuário existente
-            user = session.query(User).filter_by(username=username).first()
+            user = self.user_repo.get_by_username(username)
             
             if user:
                 # Atualizar informações do usuário
-                user.email = ldap_user_info.get('email') or user.email
-                user.display_name = ldap_user_info.get('display_name') or user.display_name
-                user.first_name = ldap_user_info.get('first_name') or user.first_name
-                user.last_name = ldap_user_info.get('last_name') or user.last_name
-                user.department = ldap_user_info.get('department') or user.department
-                user.title = ldap_user_info.get('title') or user.title
-                user.ldap_dn = ldap_user_info.get('dn') or user.ldap_dn
-                user.ldap_sam_account_name = ldap_user_info.get('username') or user.ldap_sam_account_name
-                user.updated_at = datetime.utcnow()
-                user.updated_by = "ldap_sync"
+                update_data = {
+                    'email': ldap_user_info.get('email') or user.email,
+                    'display_name': ldap_user_info.get('display_name') or user.display_name,
+                    'first_name': ldap_user_info.get('first_name') or user.first_name,
+                    'last_name': ldap_user_info.get('last_name') or user.last_name,
+                    'department': ldap_user_info.get('department') or user.department,
+                    'title': ldap_user_info.get('title') or user.title,
+                    'ldap_dn': ldap_user_info.get('dn') or user.ldap_dn,
+                    'ldap_sam_account_name': ldap_user_info.get('username') or user.ldap_sam_account_name,
+                    'updated_by': "ldap_sync"
+                }
                 
+                updated_user = self.user_repo.update(user.id, **update_data)
                 logger.info(f"Usuário {username} atualizado no banco de dados")
+                user = updated_user
             else:
                 # Criar novo usuário
-                user = User(
-                    username=username,
-                    email=ldap_user_info.get('email', f"{username}@gruposalus.com.br"),
-                    display_name=ldap_user_info.get('display_name', username),
-                    first_name=ldap_user_info.get('first_name'),
-                    last_name=ldap_user_info.get('last_name'),
-                    department=ldap_user_info.get('department'),
-                    title=ldap_user_info.get('title'),
-                    ldap_dn=ldap_user_info.get('dn'),
-                    ldap_sam_account_name=ldap_user_info.get('username'),
-                    is_active=True,
-                    is_superuser=False,
-                    created_by="ldap_sync"
-                )
-                session.add(user)
+                user_data = {
+                    'username': username,
+                    'email': ldap_user_info.get('email', f"{username}@gruposalus.com.br"),
+                    'display_name': ldap_user_info.get('display_name', username),
+                    'first_name': ldap_user_info.get('first_name'),
+                    'last_name': ldap_user_info.get('last_name'),
+                    'department': ldap_user_info.get('department'),
+                    'title': ldap_user_info.get('title'),
+                    'ldap_dn': ldap_user_info.get('dn'),
+                    'ldap_sam_account_name': ldap_user_info.get('username'),
+                    'is_active': True,
+                    'is_superuser': False,
+                    'created_by': "ldap_sync"
+                }
+                
+                user = self.user_repo.create(**user_data)
                 logger.info(f"Usuário {username} criado no banco de dados")
-            
-            session.commit()
             
             # Retornar informações do usuário como dict para evitar problemas de sessão
             user_info = {
@@ -292,11 +293,8 @@ class AuthService:
             return user_info
             
         except Exception as e:
-            session.rollback()
             logger.error(f"Erro ao buscar/criar usuário no banco: {e}")
             return None
-        finally:
-            session.close()
     
     def _log_authentication_attempt(self, username: str, success: bool, ip_address: str = None, error_message: str = None):
         """
@@ -308,37 +306,30 @@ class AuthService:
             ip_address: Endereço IP do usuário
             error_message: Mensagem de erro (se houver)
         """
-        session_factory = get_session_factory()
-        session = session_factory()
-        
         try:
             # Buscar usuário no banco
-            user = session.query(User).filter_by(username=username).first()
+            user = self.user_repo.get_by_username(username)
             user_id = user.id if user else None
             
-            audit_log = AuditLog(
-                action="login" if success else "login_failed",
-                resource_type="user",
-                resource_id=str(user_id) if user_id else None,
-                user_id=user_id,
-                username=username,
-                ip_address=ip_address,
-                success=success,
-                error_message=error_message,
-                details={
+            audit_data = {
+                'action': "login" if success else "login_failed",
+                'resource_type': "user",
+                'resource_id': str(user_id) if user_id else None,
+                'user_id': user_id,
+                'username': username,
+                'ip_address': ip_address,
+                'success': success,
+                'error_message': error_message,
+                'details': {
                     "ldap_enabled": settings.LDAP_ENABLED,
                     "timestamp": datetime.utcnow().isoformat()
                 }
-            )
+            }
             
-            session.add(audit_log)
-            session.commit()
+            self.audit_repo.create(**audit_data)
             
         except Exception as e:
-            session.rollback()
             logger.error(f"Erro ao registrar log de auditoria: {e}")
-        finally:
-            session.close()
     
     def authenticate_user_with_db_check(self, username: str, password: str, ip_address: str = None) -> Optional[Dict[str, Any]]:
         """
@@ -381,21 +372,13 @@ class AuthService:
                 return None
             
             # Atualizar último login
-            session_factory = get_session_factory()
-            session = session_factory()
             try:
-                # Buscar o usuário novamente na nova sessão
-                user_to_update = session.query(User).filter_by(id=db_user_info['id']).first()
-                if user_to_update:
-                    user_to_update.last_login = datetime.utcnow()
-                    session.commit()
+                updated_user = self.user_repo.update_last_login(db_user_info['id'])
+                if updated_user:
                     # Atualizar o dict com o novo last_login
-                    db_user_info['last_login'] = user_to_update.last_login
+                    db_user_info['last_login'] = updated_user.last_login
             except Exception as e:
-                session.rollback()
                 logger.error(f"Erro ao atualizar último login: {e}")
-            finally:
-                session.close()
             
             # Registrar sucesso no log
             self._log_authentication_attempt(username, True, ip_address)

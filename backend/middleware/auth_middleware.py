@@ -7,8 +7,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from services.jwt_service import jwt_service
-from core.database import get_session_factory
-from models import User
+from repositories import user_repository
+from models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -38,22 +38,15 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             )
         
         # Buscar usuário no banco de dados
-        session_factory = get_session_factory()
-        session = session_factory()
+        user = user_repository.get_by_id(user_data["user_id"])
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Usuário não encontrado",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         
-        try:
-            user = session.query(User).filter_by(id=user_data["user_id"]).first()
-            if user is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Usuário não encontrado",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
-            
-            return user
-            
-        finally:
-            session.close()
+        return user
             
     except HTTPException:
         raise
