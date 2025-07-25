@@ -1,0 +1,74 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "username": "luis.gfonseca",
+      "display_name": "Luis Henrique Gomes da Fonseca",
+      "email": "luis.gfonseca@gruposalus.com.br",
+      "department": "TECNOLOGIA DA INFORMACAO",
+      "is_superuser": true,
+      "is_active": true
+    }
+  ],
+  "modulos": [
+    {
+      "id": 1,
+      "name": "projetos",
+      "display_name": "Projetos",
+      "route_path": "/projetos",
+      "order": 1,
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "name": "acompanhamento_ti",
+      "display_name": "Acompanhamento TI",
+      "route_path": "/ti",
+      "order": 2,
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "name": "sprint",
+      "display_name": "Sprint",
+      "route_path": "/sprint",
+      "order": 3,
+      "is_active": true
+    }
+  ],
+  "permissoes": [
+    {
+      "user_id": 1,
+      "module_id": 1,
+      "can_view": true,
+      "can_edit": true,
+      "can_delete": true,
+      "can_export": true,
+      "is_active": true
+    },
+    {
+      "user_id": 1,
+      "module_id": 2,
+      "can_view": true,
+      "can_edit": true,
+      "can_delete": true,
+      "can_export": true,
+      "is_active": true
+    },
+    {
+      "user_id": 1,
+      "module_id": 3,
+      "can_view": true,
+      "can_edit": true,
+      "can_delete": true,
+      "can_export": true,
+      "is_active": true
+    }
+  ],
+  "configuracoes": {
+    "ldap_enabled": true,
+    "jwt_secret": "***",
+    "database_type": "sqlite",
+    "database_path": "./jira_dashboards.db"
+  }
+}

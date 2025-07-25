@@ -110,6 +110,14 @@ class AuthService:
                 logger.warning(f"Falha na autenticação do usuário {username}")
                 return None
             
+            # Converter lastLogon de datetime para string se existir
+            last_logon = None
+            if user_entry.lastLogon and user_entry.lastLogon.value:
+                if hasattr(user_entry.lastLogon.value, 'strftime'):
+                    last_logon = user_entry.lastLogon.value.strftime('%Y-%m-%d %H:%M:%S')
+                else:
+                    last_logon = str(user_entry.lastLogon.value)
+            
             # Extrair informações do usuário
             user_info = {
                 'username': username,
@@ -122,7 +130,7 @@ class AuthService:
                 'phone': user_entry.telephoneNumber.value if user_entry.telephoneNumber else None,
                 'mobile': user_entry.mobile.value if user_entry.mobile else None,
                 'manager': user_entry.manager.value if user_entry.manager else None,
-                'last_logon': user_entry.lastLogon.value if user_entry.lastLogon else None,
+                'last_logon': last_logon,
                 'account_control': user_entry.userAccountControl.value if user_entry.userAccountControl else None
             }
             
@@ -171,6 +179,14 @@ class AuthService:
             
             user_entry = self.connection.entries[0]
             
+            # Converter lastLogon de datetime para string se existir
+            last_logon = None
+            if user_entry.lastLogon and user_entry.lastLogon.value:
+                if hasattr(user_entry.lastLogon.value, 'strftime'):
+                    last_logon = user_entry.lastLogon.value.strftime('%Y-%m-%d %H:%M:%S')
+                else:
+                    last_logon = str(user_entry.lastLogon.value)
+            
             user_info = {
                 'username': username,
                 'dn': user_entry.entry_dn,
@@ -182,7 +198,7 @@ class AuthService:
                 'phone': user_entry.telephoneNumber.value if user_entry.telephoneNumber else None,
                 'mobile': user_entry.mobile.value if user_entry.mobile else None,
                 'manager': user_entry.manager.value if user_entry.manager else None,
-                'last_logon': user_entry.lastLogon.value if user_entry.lastLogon else None,
+                'last_logon': last_logon,
                 'account_control': user_entry.userAccountControl.value if user_entry.userAccountControl else None
             }
             

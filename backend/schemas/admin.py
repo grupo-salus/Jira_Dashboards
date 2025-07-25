@@ -156,7 +156,7 @@ class AuditLogBase(BaseModel):
     action: str
     resource_type: str
     resource_id: Optional[int] = None
-    details: Optional[str] = None
+    details: Optional[dict] = None
     ip_address: Optional[str] = None
 
 
