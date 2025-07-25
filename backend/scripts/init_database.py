@@ -19,26 +19,26 @@ def create_default_modules():
     default_modules = [
         {
             "name": "projetos",
-            "display_name": "Dashboard de Projetos",
-            "description": "Visualização e acompanhamento de projetos",
+            "display_name": "Projetos",
+            "description": "Dashboard de projetos e acompanhamento",
             "route_path": "/projetos",
             "icon": "project",
             "order": 1
         },
         {
-            "name": "sprint",
-            "display_name": "Dashboard de Sprint",
-            "description": "Acompanhamento de sprints e entregas",
-            "route_path": "/sprint",
-            "icon": "sprint",
+            "name": "acompanhamento_ti",
+            "display_name": "Acompanhamento TI",
+            "description": "Dashboard de acompanhamento de TI",
+            "route_path": "/ti",
+            "icon": "computer",
             "order": 2
         },
         {
-            "name": "ti",
-            "display_name": "Dashboard de TI",
-            "description": "Acompanhamento de demandas de TI",
-            "route_path": "/ti",
-            "icon": "computer",
+            "name": "sprint",
+            "display_name": "Sprint",
+            "description": "Dashboard de sprints e entregas",
+            "route_path": "/sprint",
+            "icon": "sprint",
             "order": 3
         }
     ]
